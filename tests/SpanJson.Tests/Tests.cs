@@ -33,7 +33,7 @@ namespace SpanJson.Tests
             var fixture = new ExpressionTreeFixture();
             var model = fixture.Create(modelType);
             var serialized = JsonSerializer.NonGeneric.Utf16.Serialize(model);
-            var encoded = EscapeHelper.FullyEscape(serialized);
+            var encoded = EscapeHelper.NonAsciiEscape(serialized);
             Assert.NotNull(encoded);
             var deserialized = JsonSerializer.NonGeneric.Utf16.Deserialize(encoded.AsSpan(), modelType);
             Assert.NotNull(deserialized);
@@ -48,7 +48,7 @@ namespace SpanJson.Tests
             var fixture = new ExpressionTreeFixture();
             var model = fixture.Create(modelType);
             var serialized = JsonSerializer.NonGeneric.Utf16.Serialize(model);
-            var encoded = EscapeHelper.FullyEscape(serialized);
+            var encoded = EscapeHelper.NonAsciiEscape(serialized);
             Assert.NotNull(encoded);
             var encodedBytes = Encoding.UTF8.GetBytes(encoded);
             var deserialized = JsonSerializer.NonGeneric.Utf8.Deserialize(encodedBytes, modelType);
@@ -190,7 +190,7 @@ namespace SpanJson.Tests
             var fixture = new ExpressionTreeFixture();
             var model = fixture.Create(modelType);
             var serialized = JsonSerializer.NonGeneric.Utf16.Serialize(model);
-            serialized = JsonSerializer.PrettyPrinter.Print(serialized.AsSpan());
+            serialized = JsonSerializer.PrettyPrinter.Print(serialized);
             Assert.Contains("\r\n", serialized);
             Assert.Contains(": ", serialized);
             serialized = serialized.Replace(": ", " : "); // make sure we have even more whitespaces in
@@ -235,9 +235,9 @@ namespace SpanJson.Tests
             var fixture = new ExpressionTreeFixture();
             var model = fixture.Create(modelType);
             var serialized = JsonSerializer.NonGeneric.Utf16.Serialize(model);
-            var prettyPrinted = JsonSerializer.PrettyPrinter.Print(serialized.AsSpan());
+            var prettyPrinted = JsonSerializer.PrettyPrinter.Print(serialized);
             Assert.NotNull(prettyPrinted);
-            var minified = JsonSerializer.Minifier.Minify(prettyPrinted.AsSpan());
+            var minified = JsonSerializer.Minifier.Minify(prettyPrinted);
             Assert.NotNull(minified);
             Assert.DoesNotContain("\r\n", minified);
             Assert.DoesNotContain(": ", minified);

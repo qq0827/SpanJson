@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -11,6 +12,7 @@ using Microsoft.CSharp.RuntimeBinder;
 using SpanJson.Formatters.Dynamic;
 using SpanJson.Helpers;
 using SpanJson.Resolvers;
+using SpanJson.Internal;
 using Binder = Microsoft.CSharp.RuntimeBinder.Binder;
 
 namespace SpanJson.Formatters
@@ -74,13 +76,48 @@ namespace SpanJson.Formatters
             }
             else if (value is ISpanJsonDynamicValue<byte> bValue)
             {
-                var chars = Encoding.UTF8.GetChars(bValue.Symbols);
-                writer.WriteUtf16Verbatim(chars);
+                var cMaxLength = Encoding.UTF8.GetMaxCharCount(bValue.Symbols.Length);
+                char[] buffer = null;
+                try
+                {
+                    buffer = ArrayPool<char>.Shared.Rent(cMaxLength); // can't use stackalloc here
+#if NETSTANDARD2_0 || NET471 || NET451
+                    var written = TextEncodings.Utf8.GetChars(bValue.Symbols, buffer);
+#else
+                    var written = Encoding.UTF8.GetChars(bValue.Symbols, buffer);
+#endif
+                    writer.WriteUtf16Verbatim(buffer.AsSpan(0, written));
+                }
+                finally
+                {
+                    if (buffer != null)
+                    {
+                        ArrayPool<char>.Shared.Return(buffer);
+                    }
+                }
+
             }
             else if (value is ISpanJsonDynamicValue<char> cValue)
             {
-                var bytes = Encoding.UTF8.GetBytes(cValue.Symbols);
-                writer.WriteUtf8Verbatim(bytes);
+                var bMaxLength = TextEncodings.Utf8.GetMaxByteCount(cValue.Symbols.Length);
+                byte[] buffer = null;
+                try
+                {
+                    buffer = ArrayPool<byte>.Shared.Rent(bMaxLength); // can't use stackalloc here
+#if NETSTANDARD2_0 || NET471 || NET451
+                    var written = TextEncodings.Utf8.GetBytes(cValue.Symbols, buffer);
+#else
+                    var written = Encoding.UTF8.GetBytes(cValue.Symbols, buffer);
+#endif
+                    writer.WriteUtf8Verbatim(buffer.AsSpan(0, written));
+                }
+                finally
+                {
+                    if (buffer != null)
+                    {
+                        ArrayPool<byte>.Shared.Return(buffer);
+                    }
+                }
             }
             else if (value is ISpanJsonDynamicArray dynamicArray)
             {
@@ -108,11 +145,7 @@ namespace SpanJson.Formatters
                     }
 
                     writer.IncrementDepth();
-#if NETSTANDARD2_0 || NET471 || NET451
-                    writer.WriteName(memberInfo.Name.AsSpan());
-#else
                     writer.WriteName(memberInfo.Name);
-#endif
                     RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child);
                     writer.DecrementDepth();
                 }
@@ -134,11 +167,7 @@ namespace SpanJson.Formatters
                     }
 
                     writer.IncrementDepth();
-#if NETSTANDARD2_0 || NET471 || NET451
-                    writer.WriteName(memberInfo.Name.AsSpan());
-#else
                     writer.WriteName(memberInfo.Name);
-#endif
                     RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child);
                     writer.DecrementDepth();
                 }

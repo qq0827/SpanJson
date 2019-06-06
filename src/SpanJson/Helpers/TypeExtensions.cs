@@ -101,5 +101,27 @@ namespace SpanJson.Helpers
 #endif
             return publicMembers;
         }
+
+        public static bool IsInteger(this Type type)
+        {
+            if (type.IsEnum)
+            {
+                return false;
+            }
+            switch (Type.GetTypeCode(type))
+            {
+                case TypeCode.Byte:
+                case TypeCode.UInt16:
+                case TypeCode.UInt32:
+                case TypeCode.UInt64:
+                case TypeCode.SByte:
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
+                    return true;
+                default:
+                    return false;
+            }
+        }
     }
 }

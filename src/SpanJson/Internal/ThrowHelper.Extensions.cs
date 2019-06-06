@@ -34,7 +34,7 @@ namespace SpanJson
         internal static void ThrowException_UnreachedCode()
         {
             throw GetException();
-            Exception GetException()
+            static Exception GetException()
             {
                 return new Exception("unreached code.");
             }
@@ -44,7 +44,7 @@ namespace SpanJson
         internal static void ThrowException_UnreachableCode()
         {
             throw GetException();
-            Exception GetException()
+            static Exception GetException()
             {
                 return new Exception("Unreachable code.");
             }
@@ -54,7 +54,7 @@ namespace SpanJson
         internal static void ThrowException_InvalidMode()
         {
             throw GetException();
-            Exception GetException()
+            static Exception GetException()
             {
                 return new Exception("Invalid Mode.");
             }
@@ -80,7 +80,7 @@ namespace SpanJson
         internal static void ThrowArgumentException_Length()
         {
             throw GetException();
-            ArgumentException GetException()
+            static ArgumentException GetException()
             {
                 return new ArgumentException("length < newSize");
             }
@@ -90,7 +90,7 @@ namespace SpanJson
         internal static void ThrowArgumentException_InvalidDoubleValueForJson()
         {
             throw GetException();
-            ArgumentException GetException()
+            static ArgumentException GetException()
             {
                 return new ArgumentException("Invalid double value for JSON", "value");
             }
@@ -100,7 +100,7 @@ namespace SpanJson
         internal static void ThrowArgumentException_InvalidFloatValueForJson()
         {
             throw GetException();
-            ArgumentException GetException()
+            static ArgumentException GetException()
             {
                 return new ArgumentException("Invalid float value for JSON", "value");
             }
@@ -124,7 +124,7 @@ namespace SpanJson
         internal static void ThrowInvalidOperationException()
         {
             throw GetException();
-            InvalidOperationException GetException()
+            static InvalidOperationException GetException()
             {
                 return new InvalidOperationException();
             }
@@ -154,7 +154,7 @@ namespace SpanJson
         internal static void ThrowInvalidOperationException_Reached_MaximumSize()
         {
             throw GetException();
-            InvalidOperationException GetException()
+            static InvalidOperationException GetException()
             {
                 return new InvalidOperationException("byte[] size reached maximum size of array(0x7FFFFFC7), can not write to single byte[]. Details: https://msdn.microsoft.com/en-us/library/system.array");
             }
@@ -164,7 +164,7 @@ namespace SpanJson
         internal static void ThrowInvalidOperationException_NestingLimitOfExceeded()
         {
             throw GetException();
-            InvalidOperationException GetException()
+            static InvalidOperationException GetException()
             {
                 return new InvalidOperationException($"Nesting Limit of {JsonSharedConstant.NestingLimit} exceeded.");
             }

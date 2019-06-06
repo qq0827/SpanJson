@@ -254,7 +254,7 @@ namespace SpanJson.Formatters
                 return Expression.Lambda<DeserializeDelegate<T, TSymbol>>(Expression.Default(typeof(T)), readerParameter).Compile();
             }
 
-            if (memberInfos.Count == 0 && objectDescription.ExtensionMemberInfo == null)
+            if (0u >= (uint)memberInfos.Count && objectDescription.ExtensionMemberInfo == null)
             {
                 Expression createExpression = null;
                 if (typeof(T).IsClass)

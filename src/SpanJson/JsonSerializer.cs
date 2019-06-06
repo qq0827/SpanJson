@@ -14,6 +14,16 @@ namespace SpanJson
             /// </summary>
             /// <param name="input">Input</param>
             /// <returns>String</returns>
+            public static string Print(string input)
+            {
+                return Print(input.AsSpan());
+            }
+
+            /// <summary>
+            ///     Pretty prints a json input with 2 space indentation.
+            /// </summary>
+            /// <param name="input">Input</param>
+            /// <returns>String</returns>
             public static string Print(in ReadOnlySpan<char> input)
             {
                 var reader = new JsonReader<char>(input);
@@ -24,6 +34,23 @@ namespace SpanJson
 #endif
                 Print(ref reader, ref writer, 0);
                 return writer.ToString();
+            }
+
+            /// <summary>
+            ///     Pretty prints a json input with 2 space indentation.
+            /// </summary>
+            /// <param name="input">Input</param>
+            /// <returns>Byte array</returns>
+            public static byte[] Print(byte[] input)
+            {
+                var reader = new JsonReader<byte>(input);
+#if DEBUG
+                var writer = new JsonWriter<byte>(16);
+#else
+                var writer = new JsonWriter<byte>(true);
+#endif
+                Print(ref reader, ref writer, 0);
+                return writer.ToByteArray();
             }
 
             /// <summary>
@@ -137,6 +164,16 @@ namespace SpanJson
             /// </summary>
             /// <param name="input">Input</param>
             /// <returns>String</returns>
+            public static string Minify(string input)
+            {
+                return Minify(input.AsSpan());
+            }
+
+            /// <summary>
+            ///     Minifies the input
+            /// </summary>
+            /// <param name="input">Input</param>
+            /// <returns>String</returns>
             public static string Minify(in ReadOnlySpan<char> input)
             {
                 var reader = new JsonReader<char>(input);
@@ -147,6 +184,23 @@ namespace SpanJson
 #endif
                 Minify(ref reader, ref writer);
                 return writer.ToString();
+            }
+
+            /// <summary>
+            ///     Minifies the input
+            /// </summary>
+            /// <param name="input">Input</param>
+            /// <returns>Byte array</returns>
+            public static byte[] Minify(byte[] input)
+            {
+                var reader = new JsonReader<byte>(input);
+#if DEBUG
+                var writer = new JsonWriter<byte>(16);
+#else
+                var writer = new JsonWriter<byte>(true);
+#endif
+                Minify(ref reader, ref writer);
+                return writer.ToByteArray();
             }
 
             /// <summary>

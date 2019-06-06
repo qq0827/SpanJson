@@ -5,11 +5,18 @@ namespace SpanJson
     public static class JsonSharedConstant
     {
         public const int MaxNumberBufferSize = 32;
+        public const int MaxVersionLength = 45; // 4 * int + 3 . + 2 double quote
+        public const int NestingLimit = 256;
+        public const int StackAllocByteMaxLength = 256;
+        public const int StackAllocCharMaxLength = StackAllocByteMaxLength / sizeof(char);
+        public const int MaxDateTimeOffsetLength = 35; // o + 2 double quotes
+        public const int MaxDateTimeLength = 35; // o + 2 double quotes
+        public const int MaxTimeSpanLength = 27; // c + 2 double quotes
+        public const int MaxGuidLength = 42; // d + 2 double quotes
+
         public const int MaximumFormatDoubleLength = 128;  // default (i.e. 'G'), using 128 (rather than say 32) to be future-proof.
         public const int MaximumFormatSingleLength = 128;  // default (i.e. 'G'), using 128 (rather than say 32) to be future-proof.
         public const int MaximumFormatDecimalLength = 31; // default (i.e. 'G')
-        public const int MaxVersionLength = 45; // 4 * int + 3 . + 2 double quote
-        public const int NestingLimit = 256;
 
         public const uint TooBigOrNegative = int.MaxValue;
 

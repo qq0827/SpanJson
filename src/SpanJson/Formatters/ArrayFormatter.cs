@@ -41,7 +41,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                result = count == 0 ? JsonHelpers.Empty<T>() : FormatterUtils.CopyArray(temp, count);
+                result = 0u >= (uint)count ? JsonHelpers.Empty<T>() : FormatterUtils.CopyArray(temp, count);
             }
             finally
             {

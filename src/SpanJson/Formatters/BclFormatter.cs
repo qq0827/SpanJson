@@ -97,7 +97,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<SByte?>();
                 }
@@ -212,7 +212,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<SByte>();
                 }
@@ -366,7 +366,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<SByte?>();
                 }
@@ -481,7 +481,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<SByte>();
                 }
@@ -635,7 +635,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Int16?>();
                 }
@@ -750,7 +750,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Int16>();
                 }
@@ -904,7 +904,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Int16?>();
                 }
@@ -1019,7 +1019,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Int16>();
                 }
@@ -1173,7 +1173,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Int32?>();
                 }
@@ -1288,7 +1288,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Int32>();
                 }
@@ -1442,7 +1442,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Int32?>();
                 }
@@ -1557,7 +1557,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Int32>();
                 }
@@ -1711,7 +1711,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Int64?>();
                 }
@@ -1826,7 +1826,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Int64>();
                 }
@@ -1980,7 +1980,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Int64?>();
                 }
@@ -2095,7 +2095,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Int64>();
                 }
@@ -2249,7 +2249,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Byte?>();
                 }
@@ -2364,7 +2364,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Byte>();
                 }
@@ -2518,7 +2518,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Byte?>();
                 }
@@ -2633,7 +2633,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Byte>();
                 }
@@ -2787,7 +2787,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<UInt16?>();
                 }
@@ -2902,7 +2902,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<UInt16>();
                 }
@@ -3056,7 +3056,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<UInt16?>();
                 }
@@ -3171,7 +3171,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<UInt16>();
                 }
@@ -3325,7 +3325,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<UInt32?>();
                 }
@@ -3440,7 +3440,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<UInt32>();
                 }
@@ -3594,7 +3594,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<UInt32?>();
                 }
@@ -3709,7 +3709,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<UInt32>();
                 }
@@ -3863,7 +3863,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<UInt64?>();
                 }
@@ -3978,7 +3978,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<UInt64>();
                 }
@@ -4132,7 +4132,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<UInt64?>();
                 }
@@ -4247,7 +4247,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<UInt64>();
                 }
@@ -4401,7 +4401,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Single?>();
                 }
@@ -4516,7 +4516,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Single>();
                 }
@@ -4670,7 +4670,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Single?>();
                 }
@@ -4785,7 +4785,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Single>();
                 }
@@ -4939,7 +4939,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Double?>();
                 }
@@ -5054,7 +5054,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Double>();
                 }
@@ -5208,7 +5208,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Double?>();
                 }
@@ -5323,7 +5323,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Double>();
                 }
@@ -5477,7 +5477,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Decimal?>();
                 }
@@ -5592,7 +5592,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Decimal>();
                 }
@@ -5746,7 +5746,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Decimal?>();
                 }
@@ -5861,7 +5861,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Decimal>();
                 }
@@ -6015,7 +6015,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Boolean?>();
                 }
@@ -6130,7 +6130,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Boolean>();
                 }
@@ -6284,7 +6284,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Boolean?>();
                 }
@@ -6399,7 +6399,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Boolean>();
                 }
@@ -6553,7 +6553,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Char?>();
                 }
@@ -6668,7 +6668,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Char>();
                 }
@@ -6822,7 +6822,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Char?>();
                 }
@@ -6937,7 +6937,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Char>();
                 }
@@ -7091,7 +7091,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<DateTime?>();
                 }
@@ -7206,7 +7206,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<DateTime>();
                 }
@@ -7360,7 +7360,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<DateTime?>();
                 }
@@ -7475,7 +7475,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<DateTime>();
                 }
@@ -7629,7 +7629,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<DateTimeOffset?>();
                 }
@@ -7744,7 +7744,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<DateTimeOffset>();
                 }
@@ -7898,7 +7898,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<DateTimeOffset?>();
                 }
@@ -8013,7 +8013,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<DateTimeOffset>();
                 }
@@ -8167,7 +8167,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<TimeSpan?>();
                 }
@@ -8282,7 +8282,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<TimeSpan>();
                 }
@@ -8436,7 +8436,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<TimeSpan?>();
                 }
@@ -8551,7 +8551,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<TimeSpan>();
                 }
@@ -8705,7 +8705,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Guid?>();
                 }
@@ -8820,7 +8820,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Guid>();
                 }
@@ -8974,7 +8974,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Guid?>();
                 }
@@ -9089,7 +9089,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Guid>();
                 }
@@ -9223,7 +9223,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<String>();
                 }
@@ -9357,7 +9357,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<String>();
                 }
@@ -9491,7 +9491,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Version>();
                 }
@@ -9625,7 +9625,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Version>();
                 }
@@ -9759,7 +9759,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Uri>();
                 }
@@ -9893,7 +9893,7 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<Uri>();
                 }

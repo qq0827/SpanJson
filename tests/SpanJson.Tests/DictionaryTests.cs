@@ -10,7 +10,7 @@ using Xunit;
 
 namespace SpanJson.Tests
 {
-    public class DictionaryTests
+    public partial class DictionaryTests
     {
         public class DictionaryValue : IEquatable<DictionaryValue>
         {
@@ -397,54 +397,77 @@ namespace SpanJson.Tests
         [Fact]
         public void SerializeDeserializeEnumKeyDictionaryUtf8()
         {
-            var input = new Dictionary<DictionaryKey, int> {{DictionaryKey.Key1, 1}, {DictionaryKey.Key2, 2}};
+            var input = new Dictionary<DictionaryKey, int>
+            {
+                {DictionaryKey.Key1, 1},
+                {DictionaryKey.Key2, 2}
+            };
             var serialized = JsonSerializer.Generic.Utf8.Serialize(input);
+            Assert.Equal("{\"Key1\":1,\"Key2\":2}",Encoding.UTF8.GetString(serialized));
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<Dictionary<DictionaryKey, int>>(serialized);
             Assert.NotNull(deserialized);
+            Assert.Equal(input, deserialized);
         }
 
         [Fact]
         public void SerializeDeserializeEnumKeyDictionaryUtf16()
         {
-            var input = new Dictionary<DictionaryKey, int> {{DictionaryKey.Key1, 1}, {DictionaryKey.Key2, 2}};
+            var input = new Dictionary<DictionaryKey, int>
+            {
+                {DictionaryKey.Key1, 1},
+                {DictionaryKey.Key2, 2}
+            };
             var serialized = JsonSerializer.Generic.Utf16.Serialize(input);
+            Assert.Equal("{\"Key1\":1,\"Key2\":2}", serialized);
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<Dictionary<DictionaryKey, int>>(serialized);
             Assert.NotNull(deserialized);
+            Assert.Equal(input, deserialized);
         }
 
         [Fact]
         public void SerializeDeserializeEnumKeyConcurrentDictionaryUtf8()
         {
             var input = new ConcurrentDictionary<DictionaryKey, int>(new[]
-                {new KeyValuePair<DictionaryKey, int>(DictionaryKey.Key1, 1), new KeyValuePair<DictionaryKey, int>(DictionaryKey.Key2, 2)});
+            {
+                new KeyValuePair<DictionaryKey, int>(DictionaryKey.Key1, 1),
+                new KeyValuePair<DictionaryKey, int>(DictionaryKey.Key2, 2)
+            });
 
             var serialized = JsonSerializer.Generic.Utf8.Serialize(input);
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<Dictionary<DictionaryKey, int>>(serialized);
             Assert.NotNull(deserialized);
+            Assert.Equal(input, deserialized);
         }
 
         [Fact]
         public void SerializeDeserializeEnumKeyConcurrentDictionaryUtf16()
         {
             var input = new ConcurrentDictionary<DictionaryKey, int>(new[]
-                {new KeyValuePair<DictionaryKey, int>(DictionaryKey.Key1, 1), new KeyValuePair<DictionaryKey, int>(DictionaryKey.Key2, 2)});
+            {
+                new KeyValuePair<DictionaryKey, int>(DictionaryKey.Key1, 1),
+                new KeyValuePair<DictionaryKey, int>(DictionaryKey.Key2, 2)
+            });
             var serialized = JsonSerializer.Generic.Utf16.Serialize(input);
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<Dictionary<DictionaryKey, int>>(serialized);
             Assert.NotNull(deserialized);
+            Assert.Equal(input, deserialized);
         }
 
         [Fact]
         public void SerializeDeserializeEnumKeyIDictionaryDictionaryUtf8()
         {
             var values = new[]
-                {new KeyValuePair<DictionaryKey, int>(DictionaryKey.Key1, 1), new KeyValuePair<DictionaryKey, int>(DictionaryKey.Key2, 2)};
+            {
+                new KeyValuePair<DictionaryKey, int>(DictionaryKey.Key1, 1),
+                new KeyValuePair<DictionaryKey, int>(DictionaryKey.Key2, 2)
+            };
 #if DESKTOPCLR
             IDictionary<DictionaryKey, int> input = new Dictionary<DictionaryKey, int>();
-            foreach(var item in values)
+            foreach (var item in values)
             {
                 input.Add(item.Key, item.Value);
             }
@@ -456,13 +479,17 @@ namespace SpanJson.Tests
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<Dictionary<DictionaryKey, int>>(serialized);
             Assert.NotNull(deserialized);
+            Assert.Equal(input, deserialized);
         }
 
         [Fact]
         public void SerializeDeserializeEnumKeyIDictionaryDictionaryUtf16()
         {
             var values = new[]
-                {new KeyValuePair<DictionaryKey, int>(DictionaryKey.Key1, 1), new KeyValuePair<DictionaryKey, int>(DictionaryKey.Key2, 2)};
+            {
+                new KeyValuePair<DictionaryKey, int>(DictionaryKey.Key1, 1),
+                new KeyValuePair<DictionaryKey, int>(DictionaryKey.Key2, 2)
+            };
 #if DESKTOPCLR
             IDictionary<DictionaryKey, int> input = new Dictionary<DictionaryKey, int>();
             foreach (var item in values)
@@ -476,13 +503,17 @@ namespace SpanJson.Tests
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<Dictionary<DictionaryKey, int>>(serialized);
             Assert.NotNull(deserialized);
+            Assert.Equal(input, deserialized);
         }
 
         [Fact]
         public void SerializeDeserializeEnumKeyReadOnlyDictionaryDictionaryUtf8()
         {
             var values = new[]
-                {new KeyValuePair<DictionaryKey, int>(DictionaryKey.Key1, 1), new KeyValuePair<DictionaryKey, int>(DictionaryKey.Key2, 2)};
+            {
+                new KeyValuePair<DictionaryKey, int>(DictionaryKey.Key1, 1),
+                new KeyValuePair<DictionaryKey, int>(DictionaryKey.Key2, 2)
+            };
 #if DESKTOPCLR
             var dict = new Dictionary<DictionaryKey, int>();
             foreach (var item in values)
@@ -498,13 +529,17 @@ namespace SpanJson.Tests
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<Dictionary<DictionaryKey, int>>(serialized);
             Assert.NotNull(deserialized);
+            Assert.Equal(input, deserialized);
         }
 
         [Fact]
         public void SerializeDeserializeEnumKeyReadOnlyDictionaryDictionaryUtf16()
         {
             var values = new[]
-                {new KeyValuePair<DictionaryKey, int>(DictionaryKey.Key1, 1), new KeyValuePair<DictionaryKey, int>(DictionaryKey.Key2, 2)};
+            {
+                new KeyValuePair<DictionaryKey, int>(DictionaryKey.Key1, 1),
+                new KeyValuePair<DictionaryKey, int>(DictionaryKey.Key2, 2)
+            };
 #if DESKTOPCLR
             var dict = new Dictionary<DictionaryKey, int>();
             foreach (var item in values)
@@ -519,6 +554,7 @@ namespace SpanJson.Tests
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<Dictionary<DictionaryKey, int>>(serialized);
             Assert.NotNull(deserialized);
+            Assert.Equal(input, deserialized);
         }
 
 

@@ -23,8 +23,7 @@ namespace SpanJson.Formatters
         public T Deserialize(ref JsonReader<TSymbol> reader)
         {
             var span = reader.ReadStringSpan();
-            var length = span.Length;
-            if (length == 0)
+            if (span.IsEmpty)
             {
                 return default;
             }

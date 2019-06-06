@@ -93,7 +93,7 @@ void GenerateArrayDeserializeCode(string typeName, string utfName)
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
+                if (0u >= (uint)count)
                 {
                     result = JsonHelpers.Empty<<#= typeName #>>();
                 }

@@ -435,6 +435,23 @@
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteNameSeparator()
+        {
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                WriteUtf16NameSeparator();
+            }
+            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+            {
+                WriteUtf8NameSeparator();
+            }
+            else
+            {
+                ThrowHelper.ThrowNotSupportedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteVerbatimNameSpan(in ReadOnlySpan<TSymbol> values)
         {
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)

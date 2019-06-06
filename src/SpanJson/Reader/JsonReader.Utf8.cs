@@ -16,49 +16,49 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public sbyte ReadUtf8SByte()
         {
-            return checked((sbyte)ReadUtf8NumberInt64(ref MemoryMarshal.GetReference(_bytes), ref _pos, _nLength));
+            return checked((sbyte)ReadUtf8NumberInt64(ref MemoryMarshal.GetReference(_bytes), ref _pos, _length));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public short ReadUtf8Int16()
         {
-            return checked((short)ReadUtf8NumberInt64(ref MemoryMarshal.GetReference(_bytes), ref _pos, _nLength));
+            return checked((short)ReadUtf8NumberInt64(ref MemoryMarshal.GetReference(_bytes), ref _pos, _length));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int ReadUtf8Int32()
         {
-            return checked((int)ReadUtf8NumberInt64(ref MemoryMarshal.GetReference(_bytes), ref _pos, _nLength));
+            return checked((int)ReadUtf8NumberInt64(ref MemoryMarshal.GetReference(_bytes), ref _pos, _length));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public long ReadUtf8Int64()
         {
-            return ReadUtf8NumberInt64(ref MemoryMarshal.GetReference(_bytes), ref _pos, _nLength);
+            return ReadUtf8NumberInt64(ref MemoryMarshal.GetReference(_bytes), ref _pos, _length);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public byte ReadUtf8Byte()
         {
-            return checked((byte)ReadUtf8NumberUInt64(ref MemoryMarshal.GetReference(_bytes), ref _pos, _nLength));
+            return checked((byte)ReadUtf8NumberUInt64(ref MemoryMarshal.GetReference(_bytes), ref _pos, _length));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ushort ReadUtf8UInt16()
         {
-            return checked((ushort)ReadUtf8NumberUInt64(ref MemoryMarshal.GetReference(_bytes), ref _pos, _nLength));
+            return checked((ushort)ReadUtf8NumberUInt64(ref MemoryMarshal.GetReference(_bytes), ref _pos, _length));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public uint ReadUtf8UInt32()
         {
-            return checked((uint)ReadUtf8NumberUInt64(ref MemoryMarshal.GetReference(_bytes), ref _pos, _nLength));
+            return checked((uint)ReadUtf8NumberUInt64(ref MemoryMarshal.GetReference(_bytes), ref _pos, _length));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ulong ReadUtf8UInt64()
         {
-            return ReadUtf8NumberUInt64(ref MemoryMarshal.GetReference(_bytes), ref _pos, _nLength);
+            return ReadUtf8NumberUInt64(ref MemoryMarshal.GetReference(_bytes), ref _pos, _length);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -90,8 +90,8 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _nLength);
-            if (TryFindEndOfUtf8Number(ref bStart, pos, _nLength, out var bytesConsumed))
+            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
+            if (TryFindEndOfUtf8Number(ref bStart, pos, _length, out var bytesConsumed))
             {
                 var result = _bytes.Slice(pos, bytesConsumed);
                 pos += bytesConsumed;
@@ -189,8 +189,8 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _nLength);
-            if ((uint)pos <= _nLength - 4u)
+            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
+            if ((uint)pos <= _length - 4u)
             {
                 ref var start = ref Unsafe.AddByteOffset(ref bStart, (IntPtr)pos);
                 var value = Unsafe.ReadUnaligned<uint>(ref start);
@@ -200,7 +200,7 @@ namespace SpanJson
                     return true;
                 }
 
-                if ((uint)pos <= _nLength - 5u && value == 0x736C6166U /* slaf */ && Unsafe.AddByteOffset(ref bStart, (IntPtr)(pos + 4)) == (byte)'e')
+                if ((uint)pos <= _length - 5u && value == 0x736C6166U /* slaf */ && Unsafe.AddByteOffset(ref bStart, (IntPtr)(pos + 4)) == (byte)'e')
                 {
                     pos += 5;
                     return false;
@@ -214,8 +214,8 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _nLength);
-            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _nLength, out _);
+            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
+            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out _);
             return ReadUtf8CharInternal(span, pos);
         }
 
@@ -273,7 +273,28 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-            var span = ReadUtf8EscapedStringSpanInternal(ref bStart, ref pos, _nLength);
+            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
+            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out var escapedCharsSize);
+            return 0u >= (uint)escapedCharsSize ? ParseUtf8DateTime(span) : ParseUtf8DateTimeAllocating(span);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private DateTime ParseUtf8DateTime(in ReadOnlySpan<byte> span)
+        {
+            if (DateTimeParser.TryParseDateTime(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
+            {
+                return value;
+            }
+
+            throw GetJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.DateTime, _pos);
+        }
+
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private DateTime ParseUtf8DateTimeAllocating(in ReadOnlySpan<byte> input)
+        {
+            Span<byte> span = stackalloc byte[JsonSharedConstant.MaxDateTimeLength];
+            UnescapeUtf8Bytes(input, ref span);
             if (DateTimeParser.TryParseDateTime(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return value;
@@ -286,7 +307,28 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-            var span = ReadUtf8EscapedStringSpanInternal(ref bStart, ref pos, _nLength);
+            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
+            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out var escapedCharsSize);
+            return 0u >= (uint)escapedCharsSize ? ParseUtf8DateTimeOffset(span) : ParseUtf8DateTimeOffsetAllocating(span);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private DateTimeOffset ParseUtf8DateTimeOffset(in ReadOnlySpan<byte> span)
+        {
+            if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
+            {
+                return value;
+            }
+
+            throw GetJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.DateTimeOffset, _pos);
+        }
+
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private DateTimeOffset ParseUtf8DateTimeOffsetAllocating(in ReadOnlySpan<byte> input)
+        {
+            Span<byte> span = stackalloc byte[JsonSharedConstant.MaxDateTimeOffsetLength];
+            UnescapeUtf8Bytes(input, ref span);
             if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return value;
@@ -299,7 +341,27 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-            var span = ReadUtf8EscapedStringSpanInternal(ref bStart, ref pos, _nLength);
+            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
+            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out var escapedCharsSize);
+            return 0u >= (uint)escapedCharsSize ? ParseUtf8TimeSpan(span) : ParseUtf8TimeSpanAllocating(span);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private TimeSpan ParseUtf8TimeSpan(in ReadOnlySpan<byte> span)
+        {
+            if (Utf8Parser.TryParse(span, out TimeSpan result, out var bytesConsumed) && span.Length == bytesConsumed)
+            {
+                return result;
+            }
+
+            throw GetJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.TimeSpan, _pos);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private TimeSpan ParseUtf8TimeSpanAllocating(in ReadOnlySpan<byte> input)
+        {
+            Span<byte> span = stackalloc byte[JsonSharedConstant.MaxTimeSpanLength];
+            UnescapeUtf8Bytes(input, ref span);
             if (Utf8Parser.TryParse(span, out TimeSpan result, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return result;
@@ -312,8 +374,28 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-            var span = ReadUtf8EscapedStringSpanInternal(ref bStart, ref pos, _nLength);
-            if (Utf8Parser.TryParse(span, out Guid result, out _))
+            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
+            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out var escapedCharsSize);
+            return 0u >= (uint)escapedCharsSize ? ParseUtf8Guid(span) : ParseUtf8GuidAllocating(span);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Guid ParseUtf8Guid(in ReadOnlySpan<byte> span)
+        {
+            if (Utf8Parser.TryParse(span, out Guid result, out var bytesConsumed) && span.Length == bytesConsumed)
+            {
+                return result;
+            }
+
+            throw GetJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.Guid, _pos);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private Guid ParseUtf8GuidAllocating(in ReadOnlySpan<byte> input)
+        {
+            Span<byte> span = stackalloc byte[JsonSharedConstant.MaxGuidLength];
+            UnescapeUtf8Bytes(input, ref span);
+            if (Utf8Parser.TryParse(span, out Guid result, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return result;
             }
@@ -326,15 +408,15 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _nLength);
-            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _nLength, out var escapedCharsSize);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _nLength);
+            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
+            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out var escapedCharsSize);
+            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
             if (_bytes[_pos++] != JsonUtf8Constant.NameSeparator)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, _pos);
             }
 
-            return escapedCharsSize == 0 ? ConvertToString(span) : UnescapeUtf8(span, escapedCharsSize, _pos);
+            return 0u >= (uint)escapedCharsSize ? ConvertToString(span) : UnescapeUtf8(span, escapedCharsSize, _pos);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -342,14 +424,14 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _nLength);
-            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _nLength, out var escapedCharsSize);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _nLength);
+            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
+            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out var escapedCharsSize);
+            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
             if (_bytes[_pos++] != JsonUtf8Constant.NameSeparator)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, _pos);
             }
-            return escapedCharsSize == 0 ? span : UnescapeUtf8Bytes(span, _pos);
+            return 0u >= (uint)escapedCharsSize ? span : UnescapeUtf8Bytes(span);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -357,9 +439,9 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _nLength);
-            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _nLength, out _);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _nLength);
+            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
+            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out _);
+            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
             if (_bytes[_pos++] != JsonUtf8Constant.NameSeparator)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, _pos);
@@ -373,13 +455,13 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-            if (ReadUtf8IsNullInternal(ref bStart, ref pos, _nLength))
+            if (ReadUtf8IsNullInternal(ref bStart, ref pos, _length))
             {
                 return null;
             }
 
-            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _nLength, out var escapedCharsSize);
-            return escapedCharsSize == 0 ? ConvertToString(span) : UnescapeUtf8(span, escapedCharsSize, _pos);
+            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out var escapedCharsSize);
+            return 0u >= (uint)escapedCharsSize ? ConvertToString(span) : UnescapeUtf8(span, escapedCharsSize, _pos);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -498,17 +580,23 @@ namespace SpanJson
             return result;
         }
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static ReadOnlySpan<byte> UnescapeUtf8Bytes(in ReadOnlySpan<byte> span, int position)
+        private static ReadOnlySpan<byte> UnescapeUtf8Bytes(in ReadOnlySpan<byte> span)
         {
             // not necessarily correct, just needs to be a good upper bound
             // this gets slightly too high, as the normal escapes are two bytes, and the \u1234 escapes are 6 bytes, but we only need 4
             var unescapedLength = span.Length;
-            var nlen = (uint)unescapedLength;
-            var byteOffset = 0;
             Span<byte> result = new byte[unescapedLength];
+            UnescapeUtf8Bytes(span, ref result);
+            return result;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void UnescapeUtf8Bytes(in ReadOnlySpan<byte> span, ref Span<byte> result)
+        {
+            var byteOffset = 0;
             var from = 0;
             var index = 0;
+            var nlen = (uint)span.Length;
             ref byte source = ref MemoryMarshal.GetReference(span);
             var offset = (IntPtr)0;
             while ((uint)index < nlen)
@@ -556,8 +644,8 @@ namespace SpanJson
                                     index += bytesConsumed;
                                     var c = (char)value;
 #if NETSTANDARD2_0 || NET471 || NET451
-                                    Span<char> stack = new Span<char>(new[] { c });
-                                    Span<byte> destBytes = result.Slice(byteOffset);
+                                    var stack = new Span<char>(new[] { c });
+                                    var destBytes = result.Slice(byteOffset);
                                     unsafe
                                     {
                                         fixed (char* charsPtr = &MemoryMarshal.GetReference(stack))
@@ -565,19 +653,19 @@ namespace SpanJson
                                             byteOffset += Encoding.UTF8.GetBytes(charsPtr, stack.Length, bytesPtr, destBytes.Length);
                                     }
 #else
-                                    Span<char> stack = MemoryMarshal.CreateSpan(ref c, 1);
+                                    var stack = MemoryMarshal.CreateSpan(ref c, 1);
                                     byteOffset += Encoding.UTF8.GetBytes(stack, result.Slice(byteOffset));
 #endif
                                     from = index;
                                     continue;
                                 }
 
-                                ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, position);
+                                ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, index);
                                 break;
                             }
                         default:
                             {
-                                ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, position);
+                                ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, index);
                                 break;
                             }
                     }
@@ -593,12 +681,12 @@ namespace SpanJson
 
             if ((uint)from < nlen) // still data to copy
             {
-                var sliceLength = unescapedLength - from;
+                var sliceLength = span.Length - from;
                 span.Slice(from, sliceLength).CopyTo(result.Slice(byteOffset));
                 byteOffset += sliceLength;
             }
 
-            return result.Slice(0, byteOffset);
+            result = result.Slice(0, byteOffset);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -606,13 +694,13 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-            if (ReadUtf8IsNullInternal(ref bStart, ref pos, _nLength))
+            if (ReadUtf8IsNullInternal(ref bStart, ref pos, _length))
             {
                 return JsonUtf8Constant.NullTerminator;
             }
 
-            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _nLength, out var escapedCharsSize);
-            return escapedCharsSize == 0 ? span : UnescapeUtf8Bytes(span, pos);
+            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out var escapedCharsSize);
+            return 0u >= (uint)escapedCharsSize ? span : UnescapeUtf8Bytes(span);
         }
 
         private static ReadOnlySpan<byte> ReadUtf8StringSpanInternal(ref byte bStart, ref int pos, uint length, out int escapedCharsSize)
@@ -645,14 +733,6 @@ namespace SpanJson
             }
 
             throw GetJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, pos);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static ReadOnlySpan<byte> ReadUtf8EscapedStringSpanInternal(ref byte bStart, ref int pos, uint length)
-        {
-            SkipWhitespaceUtf8(ref bStart, ref pos, length);
-            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, length, out var escapedCharsSize);
-            return escapedCharsSize == 0 ? span : UnescapeUtf8Bytes(span, pos);
         }
 
         /// <summary>
@@ -704,7 +784,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool ReadUtf8IsNull()
         {
-            return ReadUtf8IsNullInternal(ref MemoryMarshal.GetReference(_bytes), ref _pos, _nLength);
+            return ReadUtf8IsNullInternal(ref MemoryMarshal.GetReference(_bytes), ref _pos, _length);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -765,8 +845,8 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _nLength);
-            if ((uint)pos < _nLength && Unsafe.AddByteOffset(ref bStart, (IntPtr)pos) == JsonUtf8Constant.BeginArray)
+            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
+            if ((uint)pos < _length && Unsafe.AddByteOffset(ref bStart, (IntPtr)pos) == JsonUtf8Constant.BeginArray)
             {
                 pos++;
                 return true;
@@ -780,8 +860,8 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _nLength);
-            if ((uint)pos < _nLength && Unsafe.AddByteOffset(ref bStart, (IntPtr)pos) == JsonUtf8Constant.EndArray)
+            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
+            if ((uint)pos < _length && Unsafe.AddByteOffset(ref bStart, (IntPtr)pos) == JsonUtf8Constant.EndArray)
             {
                 pos++;
                 return true;
@@ -789,7 +869,7 @@ namespace SpanJson
 
             if (count++ > 0)
             {
-                if ((uint)pos < _nLength && Unsafe.AddByteOffset(ref bStart, (IntPtr)pos) == JsonUtf8Constant.ValueSeparator)
+                if ((uint)pos < _length && Unsafe.AddByteOffset(ref bStart, (IntPtr)pos) == JsonUtf8Constant.ValueSeparator)
                 {
                     pos++;
                     return false;
@@ -806,7 +886,7 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _nLength);
+            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
             if (Unsafe.AddByteOffset(ref bStart, (IntPtr)pos) == JsonUtf8Constant.BeginObject)
             {
                 pos++;
@@ -849,7 +929,7 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _nLength);
+            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
             if (Unsafe.AddByteOffset(ref bStart, (IntPtr)pos) == JsonUtf8Constant.EndObject)
             {
                 pos++;
@@ -864,7 +944,7 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _nLength);
+            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
             if (Unsafe.AddByteOffset(ref bStart, (IntPtr)pos) == JsonUtf8Constant.EndArray)
             {
                 pos++;
@@ -879,8 +959,8 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _nLength);
-            if ((uint)pos < _nLength && Unsafe.AddByteOffset(ref bStart, (IntPtr)pos) == JsonUtf8Constant.EndObject)
+            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
+            if ((uint)pos < _length && Unsafe.AddByteOffset(ref bStart, (IntPtr)pos) == JsonUtf8Constant.EndObject)
             {
                 pos++;
                 return true;
@@ -925,9 +1005,33 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ReadUtf8SymbolOrThrow(byte constant)
+        {
+            if (!ReadUtf8IsSymbol(constant))
+            {
+                ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, _pos);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool ReadUtf8IsSymbol(byte constant)
+        {
+            ref var pos = ref _pos;
+            ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
+            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
+            if ((uint)pos < _length && Unsafe.AddByteOffset(ref bStart, (IntPtr)pos) == constant)
+            {
+                pos++;
+                return true;
+            }
+
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SkipNextUtf8Segment()
         {
-            SkipNextUtf8Segment(ref MemoryMarshal.GetReference(_bytes), ref _pos, _nLength, 0);
+            SkipNextUtf8Segment(ref MemoryMarshal.GetReference(_bytes), ref _pos, _length, 0);
         }
 
         private static void SkipNextUtf8Segment(ref byte bStart, ref int pos, uint length, int stack)
@@ -986,7 +1090,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SkipNextUtf8Value(JsonToken token)
         {
-            SkipNextUtf8ValueInternal(ref MemoryMarshal.GetReference(_bytes), ref _pos, _nLength, token);
+            SkipNextUtf8ValueInternal(ref MemoryMarshal.GetReference(_bytes), ref _pos, _length, token);
         }
 
         private static void SkipNextUtf8ValueInternal(ref byte bStart, ref int pos, uint length, JsonToken token)
@@ -1129,7 +1233,7 @@ namespace SpanJson
                     }
                 case JsonToken.String:
                     {
-                        var span = ReadUtf8StringSpanWithQuotes(ref MemoryMarshal.GetReference(_bytes), ref pos, _nLength);
+                        var span = ReadUtf8StringSpanWithQuotes(ref MemoryMarshal.GetReference(_bytes), ref pos, _length);
                         return new SpanJsonDynamicUtf8String(span);
                     }
                 case JsonToken.BeginObject:
@@ -1165,7 +1269,7 @@ namespace SpanJson
                             }
 
                             object[] result;
-                            if (count == 0)
+                            if (0u >= (uint)count)
                             {
                                 result = JsonHelpers.Empty<object>();
                             }
@@ -1195,7 +1299,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public JsonToken ReadUtf8NextToken()
         {
-            return ReadUtf8NextTokenInternal(ref MemoryMarshal.GetReference(_bytes), ref _pos, _nLength);
+            return ReadUtf8NextTokenInternal(ref MemoryMarshal.GetReference(_bytes), ref _pos, _length);
         }
 
         private static JsonToken ReadUtf8NextTokenInternal(ref byte bStart, ref int pos, uint length)

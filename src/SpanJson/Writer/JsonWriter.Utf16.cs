@@ -379,7 +379,7 @@
         public void WriteUtf16DateTime(DateTime value)
         {
             ref var pos = ref _pos;
-            const int dtSize = 35; // Form o + two JsonUtf16Constant.DoubleQuote
+            const int dtSize = JsonSharedConstant.MaxDateTimeLength; // Form o + two JsonUtf16Constant.DoubleQuote
             Ensure(pos, dtSize);
             ref char pinnableAddr = ref PinnableUtf16Address;
 
@@ -392,7 +392,7 @@
         public void WriteUtf16DateTimeOffset(DateTimeOffset value)
         {
             ref var pos = ref _pos;
-            const int dtSize = 35; // Form o + two JsonUtf16Constant.DoubleQuote
+            const int dtSize = JsonSharedConstant.MaxDateTimeOffsetLength; // Form o + two JsonUtf16Constant.DoubleQuote
             Ensure(pos, dtSize);
             ref char pinnableAddr = ref PinnableUtf16Address;
 
@@ -405,17 +405,17 @@
         public void WriteUtf16TimeSpan(TimeSpan value)
         {
             ref var pos = ref _pos;
-            const int tsSize = 28; // Form c + two JsonUtf16Constant.DoubleQuote
+            const int tsSize = JsonSharedConstant.MaxTimeSpanLength; // Form c + two JsonUtf16Constant.DoubleQuote
             Ensure(pos, tsSize);
             ref char pinnableAddr = ref PinnableUtf16Address;
 
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
-            Span<byte> byteSpan = TinyMemoryPool<byte>.GetBuffer(); /*stackalloc byte[tsSize];*/
+            Span<byte> byteSpan = stackalloc byte[tsSize];
             var result = Utf8Formatter.TryFormat(value, byteSpan, out var bytesWritten);
             Debug.Assert(result);
             ref byte utf8Source = ref MemoryMarshal.GetReference(byteSpan);
             var offset = (IntPtr)0;
-            for (int i = 0; i < bytesWritten; i++)
+            for (var i = 0; i < bytesWritten; i++)
             {
                 Unsafe.Add(ref pinnableAddr, pos + i) = (char)Unsafe.AddByteOffset(ref utf8Source, offset + i);
             }
@@ -427,7 +427,7 @@
         public void WriteUtf16Guid(Guid value)
         {
             ref var pos = ref _pos;
-            const int guidSize = 42; // Format D + two JsonUtf16Constant.DoubleQuote;
+            const int guidSize = JsonSharedConstant.MaxGuidLength; // Format D + two JsonUtf16Constant.DoubleQuote;
             Ensure(pos, guidSize);
             ref char pinnableAddr = ref PinnableUtf16Address;
 
@@ -636,6 +636,21 @@
         private static void WriteUtf16DoubleQuote(ref char destination, ref int pos)
         {
             Unsafe.Add(ref destination, pos++) = JsonUtf16Constant.String;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteUtf16NameSeparator()
+        {
+            ref var pos = ref _pos;
+            Ensure(pos, 1);
+
+            WriteUtf16NameSeparator(ref PinnableUtf16Address, ref pos);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void WriteUtf16NameSeparator(ref char destination, ref int pos)
+        {
+            Unsafe.Add(ref destination, pos++) = JsonUtf16Constant.NameSeparator;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

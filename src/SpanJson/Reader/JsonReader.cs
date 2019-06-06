@@ -8,8 +8,7 @@ namespace SpanJson
     {
         private readonly ReadOnlySpan<char> _chars;
         private readonly ReadOnlySpan<byte> _bytes;
-        private readonly int _length;
-        private readonly uint _nLength;
+        private readonly uint _length;
 
         private int _pos;
 
@@ -18,8 +17,7 @@ namespace SpanJson
         {
             if (null == input) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.input); }
 
-            _length = input.Length;
-            _nLength = (uint)_length;
+            _length = (uint)input.Length;
             _pos = 0;
 
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
@@ -43,8 +41,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public JsonReader(in ReadOnlySpan<TSymbol> input)
         {
-            _length = input.Length;
-            _nLength = (uint)_length;
+            _length = (uint)input.Length;
             _pos = 0;
 
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
@@ -302,13 +299,13 @@ namespace SpanJson
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
             {
                 ref var cStart = ref MemoryMarshal.GetReference(_chars);
-                return MemoryMarshal.Cast<char, TSymbol>(ReadUtf16StringSpanInternal(ref cStart, ref pos, _nLength, out _));
+                return MemoryMarshal.Cast<char, TSymbol>(ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out _));
             }
 
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
                 ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-                return MemoryMarshal.Cast<byte, TSymbol>(ReadUtf8StringSpanInternal(ref bStart, ref pos, _nLength, out _));
+                return MemoryMarshal.Cast<byte, TSymbol>(ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out _));
             }
 
             throw ThrowHelper.GetNotSupportedException();
@@ -363,5 +360,21 @@ namespace SpanJson
             throw ThrowHelper.GetNotSupportedException();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ReadSymbolOrThrow(TSymbol symbol)
+        {
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                ReadUtf16SymbolOrThrow(Unsafe.As<TSymbol, char>(ref symbol));
+            }
+            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+            {
+                ReadUtf8SymbolOrThrow(Unsafe.As<TSymbol, byte>(ref symbol));
+            }
+            else
+            {
+                ThrowHelper.ThrowNotSupportedException();
+            }
+        }
     }
 }

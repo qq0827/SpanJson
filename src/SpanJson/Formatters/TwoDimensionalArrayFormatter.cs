@@ -23,7 +23,7 @@ namespace SpanJson.Formatters
                 values.Add(ArrayFormatter<T, TSymbol, TResolver>.Default.Deserialize(ref reader));
             }
 
-            if (values.Count == 0)
+            if (0u >= (uint)values.Count)
             {
                 return new T[0, 0];
             }
