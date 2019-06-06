@@ -1,0 +1,16 @@
+<Project>
+  <!-- Set common properties regarding assembly information and nuget packages -->
+  <PropertyGroup>
+    <Authors>SpanJson Contributors</Authors>
+    <Company />
+    <Copyright>SpanJson Contributors</Copyright>
+    <Product>SpanJson</Product>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Tornhoof/SpanJson</PackageProjectUrl>
+    <RepositoryUrl>git://github.com/Tornhoof/SpanJson</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <IncludeSymbols>false</IncludeSymbols>
+    <IncludeSource>false</IncludeSource>
+  </PropertyGroup>
+</Project>

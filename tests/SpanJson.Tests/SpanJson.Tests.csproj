@@ -1,0 +1,71 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp2.2;netcoreapp2.0;net471;net452</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="JsonTestSuite\test_parsing.zip" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="JsonTestSuite\test_parsing.zip" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(ImportLibs)' == 'netcore' ">
+    <PackageReference Include="Jil" Version="$(JilPackageVersion)" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net452' ">
+    <PackageReference Include="System.IO.Compression" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNetTestSdkPackageVersion)" />
+    <PackageReference Include="xunit" Version="$(xUnitPackageVersion)" />
+    <PackageReference Include="xunit.analyzers" Version="$(xUnitAnalyzersPackageVersion)" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="$(xUnitRunnerVsPackageVersion)" />
+  
+    <PackageReference Include="Utf8Json" Version="$(Utf8JsonPackageVersion)" />
+    <PackageReference Include="System.Collections.Immutable" Version="$(SystemCollectionsImmutablePackageVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SpanJson\SpanJson.csproj" />
+    <ProjectReference Include="..\SpanJson.Shared\SpanJson.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="EnumFlagsTests.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>EnumFlagsTests.cs</LastGenOutput>
+    </None>
+    <Compile Update="EnumFlagsTests.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EnumFlagsTests.tt</DependentUpon>
+    </Compile>
+    <None Update="Generated\BclTests.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>BclTests.cs</LastGenOutput>
+    </None>
+    <None Update="JsonWriterPropertyNameLengthTests.TestObject.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>JsonWriterPropertyNameLengthTests.TestObject.cs</LastGenOutput>
+    </None>
+    <Compile Update="JsonWriterPropertyNameLengthTests.TestObject.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>JsonWriterPropertyNameLengthTests.TestObject.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Generated\BclTests.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>BclTests.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+</Project>
