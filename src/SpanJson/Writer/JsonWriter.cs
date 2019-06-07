@@ -5,6 +5,7 @@
     using System.Diagnostics;
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
+    using SpanJson.Internal;
 
     public ref partial struct JsonWriter<TSymbol> where TSymbol : struct
     {

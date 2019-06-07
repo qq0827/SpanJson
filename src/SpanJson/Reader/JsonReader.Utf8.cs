@@ -411,12 +411,12 @@ namespace SpanJson
             SkipWhitespaceUtf8(ref bStart, ref pos, _length);
             var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out var escapedCharsSize);
             SkipWhitespaceUtf8(ref bStart, ref pos, _length);
-            if (_bytes[_pos++] != JsonUtf8Constant.NameSeparator)
+            if (Unsafe.AddByteOffset(ref bStart, (IntPtr)pos++) != JsonUtf8Constant.NameSeparator)
             {
-                ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, _pos);
+                ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, pos);
             }
 
-            return 0u >= (uint)escapedCharsSize ? ConvertToString(span) : UnescapeUtf8(span, escapedCharsSize, _pos);
+            return 0u >= (uint)escapedCharsSize ? ConvertToString(span) : UnescapeUtf8(span, escapedCharsSize, pos);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -427,9 +427,9 @@ namespace SpanJson
             SkipWhitespaceUtf8(ref bStart, ref pos, _length);
             var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out var escapedCharsSize);
             SkipWhitespaceUtf8(ref bStart, ref pos, _length);
-            if (_bytes[_pos++] != JsonUtf8Constant.NameSeparator)
+            if (Unsafe.AddByteOffset(ref bStart, (IntPtr)pos++) != JsonUtf8Constant.NameSeparator)
             {
-                ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, _pos);
+                ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, pos);
             }
             return 0u >= (uint)escapedCharsSize ? span : UnescapeUtf8Bytes(span);
         }
@@ -442,9 +442,9 @@ namespace SpanJson
             SkipWhitespaceUtf8(ref bStart, ref pos, _length);
             var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out _);
             SkipWhitespaceUtf8(ref bStart, ref pos, _length);
-            if (_bytes[_pos++] != JsonUtf8Constant.NameSeparator)
+            if (Unsafe.AddByteOffset(ref bStart, (IntPtr)pos++) != JsonUtf8Constant.NameSeparator)
             {
-                ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, _pos);
+                ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, pos);
             }
 
             return span;
@@ -461,7 +461,7 @@ namespace SpanJson
             }
 
             var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out var escapedCharsSize);
-            return 0u >= (uint)escapedCharsSize ? ConvertToString(span) : UnescapeUtf8(span, escapedCharsSize, _pos);
+            return 0u >= (uint)escapedCharsSize ? ConvertToString(span) : UnescapeUtf8(span, escapedCharsSize, pos);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

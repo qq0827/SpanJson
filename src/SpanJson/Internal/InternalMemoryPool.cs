@@ -1,9 +1,9 @@
-﻿namespace SpanJson
+﻿namespace SpanJson.Internal
 {
     using System;
     using System.Runtime.CompilerServices;
 
-    static class InternalMemoryPool<TSymbol> where TSymbol : struct
+    public static class InternalMemoryPool<TSymbol> where TSymbol : struct
     {
         private static readonly int s_initialCapacity;
         internal static readonly uint InitialCapacity;
@@ -24,7 +24,7 @@
         }
     }
 
-    static class TinyMemoryPool<TSymbol> where TSymbol : struct
+    public static class TinyMemoryPool<TSymbol> where TSymbol : struct
     {
         [ThreadStatic]
         static TSymbol[] s_buffer = null;

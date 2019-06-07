@@ -431,9 +431,9 @@ namespace SpanJson
             SkipWhitespaceUtf16(ref cStart, ref pos, _length);
             var span = ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out var escapedCharsSize);
             SkipWhitespaceUtf16(ref cStart, ref pos, _length);
-            if (_chars[_pos++] != JsonUtf16Constant.NameSeparator)
+            if (Unsafe.Add(ref cStart, pos++) != JsonUtf16Constant.NameSeparator)
             {
-                ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, _pos);
+                ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, pos);
             }
 
             return 0u >= (uint)escapedCharsSize ? span.ToString() : UnescapeUtf16(span, escapedCharsSize);
@@ -447,9 +447,9 @@ namespace SpanJson
             SkipWhitespaceUtf16(ref cStart, ref pos, _length);
             var span = ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out _);
             SkipWhitespaceUtf16(ref cStart, ref pos, _length);
-            if (_chars[_pos++] != JsonUtf16Constant.NameSeparator)
+            if (Unsafe.Add(ref cStart, pos++) != JsonUtf16Constant.NameSeparator)
             {
-                ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, _pos);
+                ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, pos);
             }
 
             return span;
@@ -463,9 +463,9 @@ namespace SpanJson
             SkipWhitespaceUtf16(ref cStart, ref pos, _length);
             var span = ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out var escapedCharsSize);
             SkipWhitespaceUtf16(ref cStart, ref pos, _length);
-            if (_chars[_pos++] != JsonUtf16Constant.NameSeparator)
+            if (Unsafe.Add(ref cStart, pos++) != JsonUtf16Constant.NameSeparator)
             {
-                ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, _pos);
+                ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, pos);
             }
 
 #if NETSTANDARD2_0 || NET471 || NET451
