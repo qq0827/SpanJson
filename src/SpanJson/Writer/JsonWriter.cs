@@ -10,9 +10,11 @@
     {
         private const uint c_maximumBufferSize = int.MaxValue;
         private const int c_minimumBufferSize = 256;
-        private static readonly int c_defaultBufferSize = 1 + ((64 * 1024 - 1) / Unsafe.SizeOf<TSymbol>());
 
-        private ArrayPool<TSymbol> _arrayPool;
+        private static readonly int c_defaultBufferSize = 1 + ((64 * 1024 - 1) / Unsafe.SizeOf<TSymbol>());
+        private static readonly ArrayPool<TSymbol> s_sharedPool = ArrayPool<TSymbol>.Shared;
+
+        private bool _useThreadLocal;
 
         private TSymbol[] _borrowedBuffer;
         internal byte[] _utf8Buffer;
@@ -81,13 +83,13 @@
 
             if (useThreadLocalBuffer)
             {
-                _arrayPool = null;
+                _useThreadLocal = true;
                 _borrowedBuffer = InternalMemoryPool<TSymbol>.GetBuffer();
             }
             else
             {
-                _arrayPool = ArrayPool<TSymbol>.Shared;
-                _borrowedBuffer = _arrayPool.Rent(c_defaultBufferSize);
+                _useThreadLocal = false; ;
+                _borrowedBuffer = s_sharedPool.Rent(c_defaultBufferSize);
             }
             _utf8Buffer = _borrowedBuffer as byte[];
             _utf16Buffer = _borrowedBuffer as char[];
@@ -102,38 +104,22 @@
             _pos = 0;
             _depth = 0;
 
-            _arrayPool = ArrayPool<TSymbol>.Shared;
-            _borrowedBuffer = _arrayPool.Rent(c_defaultBufferSize);
+            _useThreadLocal = false;
+            _borrowedBuffer = s_sharedPool.Rent(c_defaultBufferSize);
             _utf8Buffer = _borrowedBuffer as byte[];
             _utf16Buffer = _borrowedBuffer as char[];
             _capacity = _borrowedBuffer.Length;
-        }
-
-        public void DiscardBuffer(out ArrayPool<TSymbol> arrayPool, out TSymbol[] writtenBuffer)
-        {
-            arrayPool = _arrayPool;
-            writtenBuffer = _borrowedBuffer;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void Dispose()
         {
             var toReturn = _borrowedBuffer;
-            var arrayPool = _arrayPool;
             this = default; // for safety, to avoid using pooled array if this instance is erroneously appended to again
-            if (arrayPool != null)
+            if (toReturn != null)
             {
-                arrayPool.Return(toReturn);
+                s_sharedPool.Return(toReturn);
             }
-        }
-
-        public IOwnedBuffer<TSymbol> ToOwnedBuffer()
-        {
-            if (null == _borrowedBuffer || 0u >= _pos) { return ArrayWrittenBuffer<TSymbol>.Empty; }
-
-            var buffer = new ArrayWrittenBuffer<TSymbol>(_arrayPool, _borrowedBuffer, _pos);
-            this = default;
-            return buffer;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -171,9 +157,7 @@
 
                 var oldBuffer = _borrowedBuffer;
 
-                var useThreadLocal = null == _arrayPool ? true : false;
-                if (useThreadLocal) { _arrayPool = ArrayPool<TSymbol>.Shared; }
-                _borrowedBuffer = _arrayPool.Rent(newSize);
+                _borrowedBuffer = s_sharedPool.Rent(newSize);
                 _utf8Buffer = _borrowedBuffer as byte[];
                 _utf16Buffer = _borrowedBuffer as char[];
 
@@ -188,9 +172,13 @@
 
                 _capacity = _borrowedBuffer.Length;
 
-                if (!useThreadLocal)
+                if (_useThreadLocal)
                 {
-                    _arrayPool.Return(oldBuffer);
+                    _useThreadLocal = false;
+                }
+                else
+                {
+                    s_sharedPool.Return(oldBuffer);
                 }
             }
         }
@@ -204,7 +192,7 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AssertDepth()
         {
-            if ((uint)_depth > (uint)JsonSharedConstant.NestingLimit)
+            if ((uint)_depth > JsonSharedConstant.NestingLimit)
             {
                 ThrowHelper.ThrowInvalidOperationException_NestingLimitOfExceeded();
             }

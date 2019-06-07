@@ -6,7 +6,7 @@ namespace SpanJson
     {
         public const int MaxNumberBufferSize = 32;
         public const int MaxVersionLength = 45; // 4 * int + 3 . + 2 double quote
-        public const int NestingLimit = 256;
+        public const uint NestingLimit = 256;
         public const int StackAllocByteMaxLength = 256;
         public const int StackAllocCharMaxLength = StackAllocByteMaxLength / sizeof(char);
         public const int MaxDateTimeOffsetLength = 35; // o + 2 double quotes
