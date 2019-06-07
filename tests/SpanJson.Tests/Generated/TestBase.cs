@@ -24,7 +24,7 @@ namespace SpanJson.Tests.Generated
             Assert.False(string.IsNullOrEmpty(serialized));
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<T>(serialized);
             Assert.Equal(value, deserialized);
-            var nonGeneric = JsonSerializer.NonGeneric.Utf16.Deserialize(serialized.AsSpan(), typeof(T));
+            var nonGeneric = JsonSerializer.NonGeneric.Utf16.Deserialize(serialized, typeof(T));
             var typedNonGeneric = Assert.IsType<T>(nonGeneric);
             Assert.Equal(value, typedNonGeneric);
         }
@@ -112,7 +112,7 @@ namespace SpanJson.Tests.Generated
             Assert.False(string.IsNullOrEmpty(serialized));
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<List<T>>(serialized);
             Assert.Equal(value, deserialized);
-            var nonGeneric = JsonSerializer.NonGeneric.Utf16.Deserialize(serialized.AsSpan(), typeof(List<T>));
+            var nonGeneric = JsonSerializer.NonGeneric.Utf16.Deserialize(serialized, typeof(List<T>));
             var typedNonGeneric = Assert.IsType<List<T>>(nonGeneric);
             Assert.Equal(value, typedNonGeneric);
         }
@@ -185,7 +185,7 @@ namespace SpanJson.Tests.Generated
             Assert.False(string.IsNullOrEmpty(serialized));
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<T[]>(serialized);
             Assert.Equal(value, deserialized);
-            var nonGeneric = JsonSerializer.NonGeneric.Utf16.Deserialize(serialized.AsSpan(), typeof(T[]));
+            var nonGeneric = JsonSerializer.NonGeneric.Utf16.Deserialize(serialized, typeof(T[]));
             var typedNonGeneric = Assert.IsType<T[]>(nonGeneric);
             Assert.Equal(value, typedNonGeneric);
         }

@@ -80,7 +80,7 @@ namespace SpanJson.Tests
             var includeNull = new IncludeNull {Key = 1};
             var serialized = JsonSerializer.Generic.Utf16.Serialize<IncludeNull, IncludeNullsOriginalCaseResolver<char>>(includeNull);
             Assert.NotNull(serialized);
-            var pretty = JsonSerializer.PrettyPrinter.Print(serialized.AsSpan());
+            var pretty = JsonSerializer.PrettyPrinter.Print(serialized);
             Assert.Contains("null", pretty);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<IncludeNull, IncludeNullsOriginalCaseResolver<char>>(pretty);
             Assert.NotNull(deserialized);
@@ -94,7 +94,7 @@ namespace SpanJson.Tests
             var serialized = JsonSerializer.NonGeneric.Utf16.Serialize<IncludeNullsOriginalCaseResolver<char>>(includeNull);
             Assert.NotNull(serialized);
             Assert.Contains("null", serialized);
-            var deserialized = JsonSerializer.NonGeneric.Utf16.Deserialize<IncludeNullsOriginalCaseResolver<char>>(serialized.AsSpan(), typeof(IncludeNull));
+            var deserialized = JsonSerializer.NonGeneric.Utf16.Deserialize<IncludeNullsOriginalCaseResolver<char>>(serialized, typeof(IncludeNull));
             Assert.NotNull(deserialized);
             Assert.Equal(includeNull, deserialized);
         }

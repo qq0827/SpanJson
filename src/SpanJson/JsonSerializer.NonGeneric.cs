@@ -368,6 +368,34 @@ namespace SpanJson
                 /// <param name="input">Input</param>
                 /// <param name="type">Object Type</param>
                 /// <returns>Deserialized object</returns>
+                public static object Deserialize<TResolver>(string input, Type type)
+                    where TResolver : IJsonFormatterResolver<char, TResolver>, new()
+                {
+#if NETSTANDARD2_0 || NET471 || NET451
+                    return Inner<char, TResolver>.InnerDeserialize(input.AsSpan(), type);
+#else
+                    return Inner<char, TResolver>.InnerDeserialize(input, type);
+#endif
+                }
+
+                /// <summary>
+                ///     Deserialize from string.
+                /// </summary>
+                /// <param name="input">Input</param>
+                /// <param name="type">Object Type</param>
+                /// <returns>Deserialized object</returns>
+                public static object Deserialize(string input, Type type)
+                {
+                    return Deserialize<ExcludeNullsOriginalCaseResolver<char>>(input, type);
+                }
+
+                /// <summary>
+                ///     Deserialize from string with specific resolver.
+                /// </summary>
+                /// <typeparam name="TResolver">Resolver</typeparam>
+                /// <param name="input">Input</param>
+                /// <param name="type">Object Type</param>
+                /// <returns>Deserialized object</returns>
                 public static object Deserialize<TResolver>(in ReadOnlySpan<char> input, Type type)
                     where TResolver : IJsonFormatterResolver<char, TResolver>, new()
                 {

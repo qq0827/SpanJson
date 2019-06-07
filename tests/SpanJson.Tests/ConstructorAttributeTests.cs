@@ -270,7 +270,7 @@ namespace SpanJson.Tests
         public void BaseClassAnnotationUtf16(object input)
         {
             var serialized = JsonSerializer.NonGeneric.Utf16.Serialize(input);
-            var deserialized = JsonSerializer.NonGeneric.Utf16.Deserialize(serialized.AsSpan(), input.GetType());
+            var deserialized = JsonSerializer.NonGeneric.Utf16.Deserialize(serialized, input.GetType());
             Assert.Equal(input, deserialized);
         }
 

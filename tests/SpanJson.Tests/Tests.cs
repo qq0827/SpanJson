@@ -20,7 +20,7 @@ namespace SpanJson.Tests
             var model = fixture.Create(modelType);
             var serialized = JsonSerializer.NonGeneric.Utf16.Serialize(model);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.NonGeneric.Utf16.Deserialize(serialized.AsSpan(), modelType);
+            var deserialized = JsonSerializer.NonGeneric.Utf16.Deserialize(serialized, modelType);
             Assert.NotNull(deserialized);
             Assert.IsType(modelType, deserialized);
             Assert.Equal(model, deserialized, GenericEqualityComparer.Default);
@@ -35,7 +35,7 @@ namespace SpanJson.Tests
             var serialized = JsonSerializer.NonGeneric.Utf16.Serialize(model);
             var encoded = EscapeHelper.NonAsciiEscape(serialized);
             Assert.NotNull(encoded);
-            var deserialized = JsonSerializer.NonGeneric.Utf16.Deserialize(encoded.AsSpan(), modelType);
+            var deserialized = JsonSerializer.NonGeneric.Utf16.Deserialize(encoded, modelType);
             Assert.NotNull(deserialized);
             Assert.IsType(modelType, deserialized);
             Assert.Equal(model, deserialized, GenericEqualityComparer.Default);
@@ -110,7 +110,7 @@ namespace SpanJson.Tests
             var model = fixture.Create(modelType);
             var serialized = JSON.Serialize(model, Options.ISO8601ExcludeNullsIncludeInherited);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.NonGeneric.Utf16.Deserialize(serialized.AsSpan(), modelType);
+            var deserialized = JsonSerializer.NonGeneric.Utf16.Deserialize(serialized, modelType);
             Assert.NotNull(deserialized);
             Assert.IsType(modelType, deserialized);
             Assert.Equal(model, deserialized, GenericEqualityComparer.Default);
@@ -151,7 +151,7 @@ namespace SpanJson.Tests
             ValueHelper.RandomlySetValuesToNull(model, 4); // 25%
             var serialized = JSON.Serialize(model, Options.ISO8601IncludeInherited);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.NonGeneric.Utf16.Deserialize(serialized.AsSpan(), modelType);
+            var deserialized = JsonSerializer.NonGeneric.Utf16.Deserialize(serialized, modelType);
             Assert.NotNull(deserialized);
             Assert.IsType(modelType, deserialized);
             Assert.Equal(model, deserialized, GenericEqualityComparer.Default);
@@ -198,7 +198,7 @@ namespace SpanJson.Tests
             serialized = serialized.Replace("]", " ]");
             serialized = serialized.Replace("[", " [");
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.NonGeneric.Utf16.Deserialize(serialized.AsSpan(), modelType);
+            var deserialized = JsonSerializer.NonGeneric.Utf16.Deserialize(serialized, modelType);
             Assert.NotNull(deserialized);
             Assert.IsType(modelType, deserialized);
             Assert.Equal(model, deserialized, GenericEqualityComparer.Default);

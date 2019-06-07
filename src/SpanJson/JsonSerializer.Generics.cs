@@ -112,6 +112,14 @@ namespace SpanJson
                 }
 
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                public static T InnerDeserialize(TSymbol[] input)
+                {
+                    _lastDeserializationSizeEstimate = input.Length;
+                    var jsonReader = new JsonReader<TSymbol>(input);
+                    return Formatter.Deserialize(ref jsonReader);
+                }
+
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static T InnerDeserialize(in ReadOnlySpan<TSymbol> input)
                 {
                     _lastDeserializationSizeEstimate = input.Length;
