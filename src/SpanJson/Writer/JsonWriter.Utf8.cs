@@ -278,11 +278,7 @@
                 if (c < 0x20 || c == JsonUtf8Constant.DoubleQuote || c == JsonUtf8Constant.Solidus || c == JsonUtf8Constant.ReverseSolidus)
                 {
                     var length = index - from;
-#if NETSTANDARD2_0 || NET471 || NET451
                     pos += TextEncodings.Utf8.GetBytes(value.Slice(from, length), Utf8Span);
-#else
-                    pos += TextEncodings.UTF8NoBOM.GetBytes(value.Slice(from, length), Utf8Span);
-#endif
                     WriteEscapedUtf8CharInternal(ref pinnableAddr, c, ref pos);
 
                     index++;
@@ -300,11 +296,7 @@
             // Still chars to encode
             if ((uint)from < nLen)
             {
-#if NETSTANDARD2_0 || NET471 || NET451
                 pos += TextEncodings.Utf8.GetBytes(value.Slice(from), Utf8Span);
-#else
-                pos += TextEncodings.UTF8NoBOM.GetBytes(value.Slice(from), Utf8Span);
-#endif
             }
 
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);

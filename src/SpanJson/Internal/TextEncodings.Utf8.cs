@@ -830,18 +830,20 @@ namespace SpanJson.Internal
                     return Encoding.UTF8.GetChars(bytesPtr, bytes.Length, charsPtr, chars.Length);
                 }
             }
-            public static unsafe int GetBytes(ReadOnlySpan<char> chars, Span<byte> bytes)
-            {
-                // It's ok for us to operate on null / empty spans.
-
-                fixed (char* charsPtr = &MemoryMarshal.GetReference(chars))
-                fixed (byte* bytesPtr = &MemoryMarshal.GetReference(bytes))
-                {
-                    return TextEncodings.UTF8NoBOM.GetBytes(charsPtr, chars.Length, bytesPtr, bytes.Length);
-                }
-            }
 
 #endif
+
+            public static unsafe int GetBytes(ReadOnlySpan<char> chars, Span<byte> bytes)
+            {
+#if NETCOREAPP_2_X_GREATER || NETSTANDARD_2_0_GREATER
+                return TextEncodings.UTF8NoBOM.GetBytes(chars, bytes);
+#else
+                var utf16Source = MemoryMarshal.AsBytes(chars);
+                var result = ToUtf8(ref MemoryMarshal.GetReference(utf16Source), utf16Source.Length, ref MemoryMarshal.GetReference(bytes), bytes.Length, out _, out var bytesWritten);
+                Debug.Assert(result == OperationStatus.Done);
+                return bytesWritten;
+#endif
+            }
         }
     }
 }

@@ -104,11 +104,7 @@ namespace SpanJson.Formatters
                 try
                 {
                     buffer = ArrayPool<byte>.Shared.Rent(bMaxLength); // can't use stackalloc here
-#if NETSTANDARD2_0 || NET471 || NET451
                     var written = TextEncodings.Utf8.GetBytes(cValue.Symbols, buffer);
-#else
-                    var written = TextEncodings.UTF8NoBOM.GetBytes(cValue.Symbols, buffer);
-#endif
                     writer.WriteUtf8Verbatim(buffer.AsSpan(0, written));
                 }
                 finally
