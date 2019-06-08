@@ -12,6 +12,9 @@
     <Utf8JsonPackageVersion>1.3.7</Utf8JsonPackageVersion>
 
     <MicrosoftCSharpPackageVersion>4.5.0</MicrosoftCSharpPackageVersion>
+    <MicrosoftAspNetCoreMvcPackageVersion>2.2.0</MicrosoftAspNetCoreMvcPackageVersion>
+    <MicrosoftAspNetCoreMvcCorePackageVersion>2.2.5</MicrosoftAspNetCoreMvcCorePackageVersion>
+    <MicrosoftAspNetCoreTestHostPackageVersion>2.2.0</MicrosoftAspNetCoreTestHostPackageVersion>
 
     <SystemBuffersPackageVersion>4.5.0</SystemBuffersPackageVersion>
     <SystemCollectionsImmutablePackageVersion>1.5.0</SystemCollectionsImmutablePackageVersion>
@@ -41,6 +44,7 @@
     <xUnitPackageVersion>2.4.1</xUnitPackageVersion>
     <xUnitAnalyzersPackageVersion>0.10.0</xUnitAnalyzersPackageVersion>
     <xUnitRunnerVsPackageVersion>2.4.1</xUnitRunnerVsPackageVersion>
+    <MoqPackageVersion>4.11.0</MoqPackageVersion>
 
     <NETCoreApp2RuntimeFrameworkVersion>2.0.9</NETCoreApp2RuntimeFrameworkVersion>
     <MicrosoftNETCoreApp20PackageVersion>2.0.9</MicrosoftNETCoreApp20PackageVersion>

@@ -17,6 +17,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmark", "benchmark", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpanJson.Benchmarks", "tests\SpanJson.Benchmarks\SpanJson.Benchmarks.csproj", "{49A216B2-AE67-4587-B38B-F4D38591BA2D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpanJson.AspNetCore.Formatter", "src\SpanJson.AspNetCore.Formatter\SpanJson.AspNetCore.Formatter.csproj", "{F3CE83BB-CF99-495C-8362-6733418FC41F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpanJson.AspNetCore.Formatter.Tests", "tests\SpanJson.AspNetCore.Formatter.Tests\SpanJson.AspNetCore.Formatter.Tests.csproj", "{02F04CFB-4DB6-4E0C-987D-376929D62B14}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{49A216B2-AE67-4587-B38B-F4D38591BA2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49A216B2-AE67-4587-B38B-F4D38591BA2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49A216B2-AE67-4587-B38B-F4D38591BA2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3CE83BB-CF99-495C-8362-6733418FC41F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3CE83BB-CF99-495C-8362-6733418FC41F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3CE83BB-CF99-495C-8362-6733418FC41F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3CE83BB-CF99-495C-8362-6733418FC41F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02F04CFB-4DB6-4E0C-987D-376929D62B14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02F04CFB-4DB6-4E0C-987D-376929D62B14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02F04CFB-4DB6-4E0C-987D-376929D62B14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02F04CFB-4DB6-4E0C-987D-376929D62B14}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,6 +60,8 @@ Global
 		{6AA82814-A872-4759-AE51-16F7A9FBD011} = {F8B2B379-E132-4DFA-A407-89EF3B657145}
 		{3B98E5B3-B8EE-4916-8B82-8098435164EF} = {F8B2B379-E132-4DFA-A407-89EF3B657145}
 		{49A216B2-AE67-4587-B38B-F4D38591BA2D} = {92DD3EE1-A91E-40DB-A057-A010CDC7B7B6}
+		{F3CE83BB-CF99-495C-8362-6733418FC41F} = {B51B4CA6-C3AE-48E2-B499-9FBED9296F76}
+		{02F04CFB-4DB6-4E0C-987D-376929D62B14} = {F8B2B379-E132-4DFA-A407-89EF3B657145}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FEEFB390-E34D-4BA7-8E75-63CAB99BC709}

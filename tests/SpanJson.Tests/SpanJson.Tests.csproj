@@ -24,7 +24,7 @@
     <PackageReference Include="xunit" Version="$(xUnitPackageVersion)" />
     <PackageReference Include="xunit.analyzers" Version="$(xUnitAnalyzersPackageVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(xUnitRunnerVsPackageVersion)" />
-  
+
     <PackageReference Include="Utf8Json" Version="$(Utf8JsonPackageVersion)" />
     <PackageReference Include="System.Collections.Immutable" Version="$(SystemCollectionsImmutablePackageVersion)" />
   </ItemGroup>
