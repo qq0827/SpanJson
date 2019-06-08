@@ -6,8 +6,8 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
-using System.Text;
 using SpanJson.Helpers;
+using SpanJson.Internal;
 using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
@@ -44,7 +44,7 @@ namespace SpanJson.Formatters
                 }
                 else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
                 {
-                    valueConstant = Expression.Constant(Encoding.UTF8.GetBytes(formattedValue));
+                    valueConstant = Expression.Constant(TextEncodings.UTF8NoBOM.GetBytes(formattedValue));
                 }
                 else
                 {

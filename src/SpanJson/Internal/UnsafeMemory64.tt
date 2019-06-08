@@ -5,7 +5,7 @@
 <#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".cs" #>
 <#
-    var Max = 31;
+    var Max = 32;
 #>
 
 namespace SpanJson.Internal
@@ -29,16 +29,16 @@ namespace SpanJson.Internal
             }
         }
 
-        public static void WriteRaw(ref byte destination, ref byte source, int sourceBytesToCopy, ref int idx)
+        public static void WriteRawUnsafe(ref byte destination, ref byte source, int sourceBytesToCopy, ref int idx)
         {
             var nCount = (uint)sourceBytesToCopy;
             switch (nCount)
             {
                 case 0u: return;
 <# for(var i = 1; i <= Max; i++) { #>
-                case <#= i #>u: WriteRaw<#= i #>(ref destination, ref source, ref idx); return;
+                case <#= i #>u: WriteRawUnsafe<#= i #>(ref destination, ref source, ref idx); return;
 <# } #>
-                default: UnsafeMemory.WriteRawBytes(ref destination, ref source, sourceBytesToCopy, ref idx); return;
+                default: UnsafeMemory.WriteRawBytesUnsafe(ref destination, ref source, sourceBytesToCopy, ref idx); return;
             }
         }
 
@@ -147,7 +147,7 @@ if (i % 2 != 0)
 
 <# for(var i = 2; i <= Max; i++) { #>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw<#= i #>(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRawUnsafe<#= i #>(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 

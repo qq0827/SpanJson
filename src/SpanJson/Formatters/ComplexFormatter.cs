@@ -9,10 +9,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using SpanJson.Helpers;
-using SpanJson.Resolvers;
-#if NETSTANDARD2_0 || NET471 || NET451
 using SpanJson.Internal;
-#endif
+using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
@@ -116,9 +114,9 @@ namespace SpanJson.Formatters
                 else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
                 {
                     // Everything above a length of 32 is not optimized
-                    if (formattedMemberInfoName.Length > 32)
+                    if ((uint)formattedMemberInfoName.Length > 32u)
                     {
-                        writeNameExpressions = new[] { Expression.Constant(Encoding.UTF8.GetBytes(formattedMemberInfoName)) };
+                        writeNameExpressions = new[] { Expression.Constant(TextEncodings.UTF8NoBOM.GetBytes(formattedMemberInfoName)) };
                         propertyNameWriterMethodInfo =
                             FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8Verbatim), typeof(byte[]));
                     }
@@ -558,7 +556,7 @@ namespace SpanJson.Formatters
         private static ConstantExpression[] GetIntegersForMemberName(string formattedMemberInfoName)
         {
             var result = new List<ConstantExpression>();
-            var bytes = Encoding.UTF8.GetBytes(formattedMemberInfoName);
+            var bytes = TextEncodings.UTF8NoBOM.GetBytes(formattedMemberInfoName);
             var remaining = bytes.Length;
             var ulongCount = Math.DivRem(remaining, 8, out remaining);
             var offset = 0;

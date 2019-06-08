@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using SpanJson.Internal;
 using SpanJson.Resolvers;
 
 namespace SpanJson.Helpers
@@ -188,22 +189,22 @@ namespace SpanJson.Helpers
             int remaining = GetLength<byte>(memberName) - index;
             if (remaining >= 8)
             {
-                return (BitConverter.ToUInt64(Encoding.UTF8.GetBytes(memberName), index), typeof(ulong), 8);
+                return (BitConverter.ToUInt64(TextEncodings.UTF8NoBOM.GetBytes(memberName), index), typeof(ulong), 8);
             }
 
             if (remaining >= 4)
             {
-                return (BitConverter.ToUInt32(Encoding.UTF8.GetBytes(memberName), index), typeof(uint), 4);
+                return (BitConverter.ToUInt32(TextEncodings.UTF8NoBOM.GetBytes(memberName), index), typeof(uint), 4);
             }
 
             if (remaining >= 2)
             {
-                return (BitConverter.ToUInt16(Encoding.UTF8.GetBytes(memberName), index), typeof(ushort), 2);
+                return (BitConverter.ToUInt16(TextEncodings.UTF8NoBOM.GetBytes(memberName), index), typeof(ushort), 2);
             }
 
             if (remaining >= 1)
             {
-                return (Encoding.UTF8.GetBytes(memberName)[index], typeof(byte), 1);
+                return (TextEncodings.UTF8NoBOM.GetBytes(memberName)[index], typeof(byte), 1);
             }
 
             return (0, typeof(uint), 0);

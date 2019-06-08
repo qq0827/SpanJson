@@ -136,7 +136,7 @@
 
             ref var pos = ref _pos;
             Ensure(pos, count);
-            UnsafeMemory.WriteRaw(ref PinnableUtf8Address, ref buffer[0], count, ref pos);
+            UnsafeMemory.WriteRawUnsafe(ref PinnableUtf8Address, ref buffer[0], count, ref pos);
         }
 
         public void WriteUtf8Double(double value)
@@ -155,7 +155,7 @@
 
             ref var pos = ref _pos;
             Ensure(pos, count);
-            UnsafeMemory.WriteRaw(ref PinnableUtf8Address, ref buffer[0], count, ref pos);
+            UnsafeMemory.WriteRawUnsafe(ref PinnableUtf8Address, ref buffer[0], count, ref pos);
         }
 
         public void WriteUtf8Decimal(decimal value)
@@ -281,7 +281,7 @@
 #if NETSTANDARD2_0 || NET471 || NET451
                     pos += TextEncodings.Utf8.GetBytes(value.Slice(from, length), Utf8Span);
 #else
-                    pos += Encoding.UTF8.GetBytes(value.Slice(from, length), Utf8Span);
+                    pos += TextEncodings.UTF8NoBOM.GetBytes(value.Slice(from, length), Utf8Span);
 #endif
                     WriteEscapedUtf8CharInternal(ref pinnableAddr, c, ref pos);
 
@@ -303,7 +303,7 @@
 #if NETSTANDARD2_0 || NET471 || NET451
                 pos += TextEncodings.Utf8.GetBytes(value.Slice(from), Utf8Span);
 #else
-                pos += Encoding.UTF8.GetBytes(value.Slice(from), Utf8Span);
+                pos += TextEncodings.UTF8NoBOM.GetBytes(value.Slice(from), Utf8Span);
 #endif
             }
 
@@ -437,9 +437,28 @@
             {
                 fixed (byte* bytesPtr = &Unsafe.AddByteOffset(ref destination, (IntPtr)pos))
                 {
-                    pos += TextEncodings.UTF8.GetBytes(&value, 1, bytesPtr, writer.FreeCapacity);
+                    pos += TextEncodings.UTF8NoBOM.GetBytes(&value, 1, bytesPtr, writer.FreeCapacity);
                 }
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteRaw(byte[] value)
+        {
+            if (null == value) { return; }
+
+            UnsafeMemory.WriteRaw(ref this, value, ref _pos);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteRaw(in ReadOnlySpan<byte> value)
+        {
+            var count = value.Length;
+            if (0u >= (uint)count) { return; }
+
+            ref var pos = ref _pos;
+            Ensure(pos, count);
+            UnsafeMemory.WriteRawUnsafe(ref PinnableUtf8Address, ref MemoryMarshal.GetReference(value), count, ref pos);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -448,9 +467,10 @@
             if (null == value) { return; }
 
             ref var pos = ref _pos;
-            UnsafeMemory.WriteRaw(ref this, value, ref pos);
+            UnsafeMemory.WriteRawBytes(ref this, value, ref pos);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteUtf8Verbatim(in ReadOnlySpan<byte> value)
         {
             var count = value.Length;
@@ -458,7 +478,7 @@
 
             ref var pos = ref _pos;
             Ensure(pos, count);
-            UnsafeMemory.WriteRaw(ref PinnableUtf8Address, ref MemoryMarshal.GetReference(value), count, ref pos);
+            UnsafeMemory.WriteRawBytesUnsafe(ref PinnableUtf8Address, ref MemoryMarshal.GetReference(value), count, ref pos);
         }
 
         public void WriteUtf8VerbatimNameSpan(in ReadOnlySpan<byte> value)
@@ -469,7 +489,7 @@
             ref byte pinnableAddr = ref PinnableUtf8Address;
 
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
-            UnsafeMemory.WriteRaw(ref pinnableAddr, ref MemoryMarshal.GetReference(value), value.Length, ref pos);
+            UnsafeMemory.WriteRawUnsafe(ref pinnableAddr, ref MemoryMarshal.GetReference(value), value.Length, ref pos);
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
             Unsafe.AddByteOffset(ref pinnableAddr, (IntPtr)pos++) = JsonUtf8Constant.NameSeparator;
         }
@@ -494,7 +514,7 @@
             fixed (char* charsPtr = &MemoryMarshal.GetReference(value))
             fixed (byte* bytesPtr = &Unsafe.AddByteOffset(ref pinnableAddr, (IntPtr)pos))
             {
-                pos += TextEncodings.UTF8.GetBytes(charsPtr, value.Length, bytesPtr, FreeCapacity);
+                pos += TextEncodings.UTF8NoBOM.GetBytes(charsPtr, value.Length, bytesPtr, FreeCapacity);
             }
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
             Unsafe.AddByteOffset(ref pinnableAddr, (IntPtr)pos++) = JsonUtf8Constant.NameSeparator;
@@ -646,7 +666,7 @@
             Span<char> tempSpan = TinyMemoryPool<char>.GetBuffer();
             var result = value.TryFormat(tempSpan, out var charsWritten);
             Debug.Assert(result);
-            pos += Encoding.UTF8.GetBytes(tempSpan.Slice(0, charsWritten), Utf8Span);
+            pos += TextEncodings.UTF8NoBOM.GetBytes(tempSpan.Slice(0, charsWritten), Utf8Span);
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
 #endif
         }

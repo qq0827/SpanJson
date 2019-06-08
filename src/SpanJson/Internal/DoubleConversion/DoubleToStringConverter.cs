@@ -68,7 +68,7 @@ namespace SpanJson.Internal.DoubleConversion
         {
             var charCount = str.Length;
             BinaryUtil.EnsureCapacity(ref buffer, offset, TextEncodings.Utf8.GetMaxByteCount(charCount));
-            offset += TextEncodings.UTF8.GetBytes(str, 0, charCount, buffer, offset);
+            offset += TextEncodings.UTF8NoBOM.GetBytes(str, 0, charCount, buffer, offset);
         }
     }
 
@@ -173,8 +173,8 @@ namespace SpanJson.Internal.DoubleConversion
         };
 
         // C# constants
-        static readonly byte[] infinity_symbol_ = TextEncodings.UTF8.GetBytes(double.PositiveInfinity.ToString());
-        static readonly byte[] nan_symbol_ = TextEncodings.UTF8.GetBytes(double.NaN.ToString());
+        static readonly byte[] infinity_symbol_ = TextEncodings.UTF8NoBOM.GetBytes(double.PositiveInfinity.ToString());
+        static readonly byte[] nan_symbol_ = TextEncodings.UTF8NoBOM.GetBytes(double.NaN.ToString());
 
         // constructor parameter, same as EcmaScriptConverter
         //DoubleToStringConverter(int flags,

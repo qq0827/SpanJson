@@ -107,7 +107,7 @@ namespace SpanJson.Formatters
 #if NETSTANDARD2_0 || NET471 || NET451
                     var written = TextEncodings.Utf8.GetBytes(cValue.Symbols, buffer);
 #else
-                    var written = Encoding.UTF8.GetBytes(cValue.Symbols, buffer);
+                    var written = TextEncodings.UTF8NoBOM.GetBytes(cValue.Symbols, buffer);
 #endif
                     writer.WriteUtf8Verbatim(buffer.AsSpan(0, written));
                 }

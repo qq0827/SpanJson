@@ -650,11 +650,11 @@ namespace SpanJson
                                     {
                                         fixed (char* charsPtr = &MemoryMarshal.GetReference(stack))
                                         fixed (byte* bytesPtr = &MemoryMarshal.GetReference(destBytes))
-                                            byteOffset += Encoding.UTF8.GetBytes(charsPtr, stack.Length, bytesPtr, destBytes.Length);
+                                            byteOffset += TextEncodings.UTF8NoBOM.GetBytes(charsPtr, stack.Length, bytesPtr, destBytes.Length);
                                     }
 #else
                                     var stack = MemoryMarshal.CreateSpan(ref c, 1);
-                                    byteOffset += Encoding.UTF8.GetBytes(stack, result.Slice(byteOffset));
+                                    byteOffset += TextEncodings.UTF8NoBOM.GetBytes(stack, result.Slice(byteOffset));
 #endif
                                     from = index;
                                     continue;

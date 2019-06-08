@@ -15,7 +15,7 @@ namespace SpanJson.Internal
         {
             static readonly int MaxBytesPerCharUtf8 = Encoding.UTF8.GetMaxByteCount(1);
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static int Utf8MaxBytes(string seq) => seq.Length * MaxBytesPerCharUtf8;
+            public static int GetMaxByteCount(string seq) => seq.Length * MaxBytesPerCharUtf8;
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static int GetMaxByteCount(int charCount) => charCount * MaxBytesPerCharUtf8;
 
@@ -837,7 +837,7 @@ namespace SpanJson.Internal
                 fixed (char* charsPtr = &MemoryMarshal.GetReference(chars))
                 fixed (byte* bytesPtr = &MemoryMarshal.GetReference(bytes))
                 {
-                    return Encoding.UTF8.GetBytes(charsPtr, chars.Length, bytesPtr, bytes.Length);
+                    return TextEncodings.UTF8NoBOM.GetBytes(charsPtr, chars.Length, bytesPtr, bytes.Length);
                 }
             }
 
