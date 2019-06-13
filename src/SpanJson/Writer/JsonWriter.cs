@@ -11,6 +11,7 @@
     {
         private const uint c_maximumBufferSize = int.MaxValue;
         private const int c_minimumBufferSize = 256;
+        private const uint c_stackallocThreshold = 256u;
 
         private static readonly int c_defaultBufferSize = 1 + ((64 * 1024 - 1) / Unsafe.SizeOf<TSymbol>());
         private static readonly ArrayPool<TSymbol> s_sharedPool = ArrayPool<TSymbol>.Shared;
@@ -305,6 +306,24 @@
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteChar(char value, StringEscapeHandling escapeHandling)
+        {
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                WriteUtf16Char(value, escapeHandling);
+            }
+            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+            {
+                WriteUtf8Char(value, escapeHandling);
+            }
+            else
+            {
+                ThrowHelper.ThrowNotSupportedException();
+            }
+        }
+
+        /// <summary>The value should already be properly escaped.</summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteName(string name)
         {
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
@@ -321,6 +340,7 @@
             }
         }
 
+        /// <summary>The value should already be properly escaped.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteName(in ReadOnlySpan<char> name)
         {
@@ -339,6 +359,57 @@
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteName(string name, StringEscapeHandling escapeHandling)
+        {
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                WriteUtf16Name(name.AsSpan(), escapeHandling);
+            }
+            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+            {
+                WriteUtf8Name(name.AsSpan(), escapeHandling);
+            }
+            else
+            {
+                ThrowHelper.ThrowNotSupportedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteName(in ReadOnlySpan<char> name, StringEscapeHandling escapeHandling)
+        {
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                WriteUtf16Name(name, escapeHandling);
+            }
+            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+            {
+                WriteUtf8Name(name, escapeHandling);
+            }
+            else
+            {
+                ThrowHelper.ThrowNotSupportedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteString(string value, StringEscapeHandling escapeHandling)
+        {
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                WriteUtf16String(value.AsSpan(), escapeHandling);
+            }
+            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+            {
+                WriteUtf8String(value.AsSpan(), escapeHandling);
+            }
+            else
+            {
+                ThrowHelper.ThrowNotSupportedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteString(in ReadOnlySpan<char> value)
         {
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
@@ -348,6 +419,23 @@
             else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
                 WriteUtf8String(value);
+            }
+            else
+            {
+                ThrowHelper.ThrowNotSupportedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteString(in ReadOnlySpan<char> value, StringEscapeHandling escapeHandling)
+        {
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                WriteUtf16String(value, escapeHandling);
+            }
+            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+            {
+                WriteUtf8String(value, escapeHandling);
             }
             else
             {
@@ -440,6 +528,7 @@
             }
         }
 
+        /// <summary>The value should already be properly escaped.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteVerbatimNameSpan(in ReadOnlySpan<TSymbol> values)
         {
@@ -450,6 +539,23 @@
             else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
                 WriteUtf8VerbatimNameSpan(MemoryMarshal.Cast<TSymbol, byte>(values));
+            }
+            else
+            {
+                ThrowHelper.ThrowNotSupportedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteVerbatimNameSpan(in ReadOnlySpan<TSymbol> values, StringEscapeHandling escapeHandling)
+        {
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                WriteUtf16VerbatimNameSpan(MemoryMarshal.Cast<TSymbol, char>(values), escapeHandling);
+            }
+            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+            {
+                WriteUtf8VerbatimNameSpan(MemoryMarshal.Cast<TSymbol, byte>(values), escapeHandling);
             }
             else
             {

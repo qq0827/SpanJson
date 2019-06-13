@@ -19,7 +19,7 @@ namespace SpanJson.Formatters
 
         private static readonly bool IsRecursionCandidate = RecursionCandidate<T>.IsRecursionCandidate;
 
-        public TList Deserialize(ref JsonReader<TSymbol> reader)
+        public TList Deserialize(ref JsonReader<TSymbol> reader, IJsonFormatterResolver<TSymbol> resolver)
         {
             if (reader.ReadIsNull())
             {
@@ -31,13 +31,13 @@ namespace SpanJson.Formatters
             var count = 0;
             while (!reader.TryReadIsEndArrayOrValueSeparator(ref count))
             {
-                list.Add(ElementFormatter.Deserialize(ref reader));
+                list.Add(ElementFormatter.Deserialize(ref reader, resolver));
             }
 
             return list;
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, TList value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, TList value, IJsonFormatterResolver<TSymbol> resolver)
         {
             if (value == null)
             {
@@ -53,11 +53,11 @@ namespace SpanJson.Formatters
             writer.WriteBeginArray();
             if (valueLength > 0)
             {
-                SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[0], ElementFormatter);
+                SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[0], ElementFormatter, resolver);
                 for (var i = 1; i < valueLength; i++)
                 {
                     writer.WriteValueSeparator();
-                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i], ElementFormatter);
+                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i], ElementFormatter, resolver);
                 }
             }
             if (IsRecursionCandidate)

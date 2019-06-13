@@ -13,7 +13,7 @@
   <PropertyGroup Label="NuGet">
     <PackageId>SpanJson.Unofficial</PackageId>
     <Title>SpanJson (Unofficial).</Title>
-    <Description>SpanJson is a JSON serializer for .NET Core 2.1+</Description>
+    <Description>SpanJson(Unofficial) is a JSON serializer for .Net451+</Description>
     <PackageTags>JSON</PackageTags>
     <PackageReleaseNotes>Bugfixes and improvements</PackageReleaseNotes>
   </PropertyGroup>

@@ -13,12 +13,12 @@ namespace SpanJson.Formatters
         public static readonly EnumIntegerFormatter<T, TSymbol, TResolver> Default = new EnumIntegerFormatter<T, TSymbol, TResolver>();
 
 
-        public T Deserialize(ref JsonReader<TSymbol> reader)
+        public T Deserialize(ref JsonReader<TSymbol> reader, IJsonFormatterResolver<TSymbol> resolver)
         {
             return Deserializer(ref reader);
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, T value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, T value, IJsonFormatterResolver<TSymbol> resolver)
         {
             Serializer(ref writer, value);
         }

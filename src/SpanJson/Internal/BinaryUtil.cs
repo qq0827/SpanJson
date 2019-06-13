@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Largely based on https://github.com/neuecc/Utf8Json/blob/master/src/Utf8Json/Internal/BinaryUtil.cs
+
+using System;
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 
 namespace SpanJson.Internal
@@ -132,6 +135,12 @@ namespace SpanJson.Internal
             CopyMemory(src, 0, dst, 0, newSize);
 
             return dst;
+        }
+
+        private static readonly ConcurrentDictionary<string, byte[]> s_cachedUtf8Bytes = new ConcurrentDictionary<string, byte[]>(StringComparer.Ordinal);
+        public static byte[] GetEncodedStringBytes(string formattedName)
+        {
+            return s_cachedUtf8Bytes.GetOrAdd(formattedName, _ => TextEncodings.UTF8NoBOM.GetBytes(_));
         }
     }
 }

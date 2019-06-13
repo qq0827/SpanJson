@@ -11,13 +11,21 @@ namespace SpanJson
         JsonObjectDescription GetDynamicObjectDescription(IDynamicMetaObjectProvider provider);
     }
 
-    public interface IJsonFormatterResolver<TSymbol, in TResolver> : IJsonFormatterResolver
-        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public interface IJsonFormatterResolver<TSymbol> : IJsonFormatterResolver
+        where TSymbol : struct
     {
+        SpanJsonOptions JsonOptions { get; }
+
         IJsonFormatter<T, TSymbol> GetFormatter<T>();
         JsonObjectDescription GetObjectDescription<T>();
 
         Func<T> GetCreateFunctor<T>();
         Func<T, TConverted> GetEnumerableConvertFunctor<T, TConverted>();
+    }
+
+    public interface IJsonFormatterResolver<TSymbol, in TResolver> : IJsonFormatterResolver<TSymbol>
+        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
+        where TSymbol : struct
+    {
     }
 }

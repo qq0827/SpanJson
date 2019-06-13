@@ -1,4 +1,6 @@
-﻿using System;
+﻿// borrowed from https://github.com/neuecc/Utf8Json/tree/master/src/Utf8Json/Internal/DoubleConversion
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 

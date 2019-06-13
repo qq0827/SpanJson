@@ -33,13 +33,20 @@ namespace SpanJson
 
             private static class Inner<T, TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
             {
-                private static readonly IJsonFormatter<T, TSymbol> Formatter = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
+                private static readonly IJsonFormatterResolver<TSymbol> Resolver;
+                private static readonly IJsonFormatter<T, TSymbol> Formatter;
+
+                static Inner()
+                {
+                    Resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
+                    Formatter = Resolver.GetFormatter<T>();
+                }
 
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static string InnerSerializeToString(T input)
                 {
                     var jsonWriter = new JsonWriter<TSymbol>(true);
-                    Formatter.Serialize(ref jsonWriter, input);
+                    Formatter.Serialize(ref jsonWriter, input, Resolver);
                     _lastSerializationSizeEstimate = jsonWriter.Data.Length;
                     var result = jsonWriter.ToString(); // includes Dispose
                     return result;
@@ -49,7 +56,7 @@ namespace SpanJson
                 public static ArraySegment<char> InnerSerializeToCharArrayPool(T input)
                 {
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
-                    Formatter.Serialize(ref jsonWriter, input);
+                    Formatter.Serialize(ref jsonWriter, input, Resolver);
                     var data = jsonWriter._utf16Buffer;
                     _lastSerializationSizeEstimate = data.Length;
                     return new ArraySegment<char>(data, 0, jsonWriter.Position);
@@ -59,7 +66,7 @@ namespace SpanJson
                 public static byte[] InnerSerializeToByteArray(T input)
                 {
                     var jsonWriter = new JsonWriter<TSymbol>(true);
-                    Formatter.Serialize(ref jsonWriter, input);
+                    Formatter.Serialize(ref jsonWriter, input, Resolver);
                     _lastSerializationSizeEstimate = jsonWriter.Data.Length;
                     var result = jsonWriter.ToByteArray();
                     return result;
@@ -69,7 +76,7 @@ namespace SpanJson
                 public static ArraySegment<byte> InnerSerializeToByteArrayPool(T input)
                 {
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
-                    Formatter.Serialize(ref jsonWriter, input);
+                    Formatter.Serialize(ref jsonWriter, input, Resolver);
                     var data = jsonWriter._utf8Buffer;
                     _lastSerializationSizeEstimate = data.Length;
                     return new ArraySegment<byte>(data, 0, jsonWriter.Position);
@@ -79,7 +86,7 @@ namespace SpanJson
                 public static ValueTask InnerSerializeAsync(T input, TextWriter writer, CancellationToken cancellationToken = default)
                 {
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
-                    Formatter.Serialize(ref jsonWriter, input);
+                    Formatter.Serialize(ref jsonWriter, input, Resolver);
                     var data = jsonWriter._utf16Buffer;
                     _lastSerializationSizeEstimate = data.Length;
                     var result = writer.WriteAsync(data, 0, jsonWriter.Position);
@@ -97,7 +104,7 @@ namespace SpanJson
                 public static ValueTask InnerSerializeAsync(T input, Stream stream, CancellationToken cancellationToken = default)
                 {
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
-                    Formatter.Serialize(ref jsonWriter, input);
+                    Formatter.Serialize(ref jsonWriter, input, Resolver);
                     var data = jsonWriter._utf8Buffer;
                     _lastSerializationSizeEstimate = data.Length;
                     var result = stream.WriteAsync(data, 0, jsonWriter.Position, cancellationToken);
@@ -116,7 +123,7 @@ namespace SpanJson
                 {
                     _lastDeserializationSizeEstimate = input.Length;
                     var jsonReader = new JsonReader<TSymbol>(input);
-                    return Formatter.Deserialize(ref jsonReader);
+                    return Formatter.Deserialize(ref jsonReader, Resolver);
                 }
 
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -124,7 +131,7 @@ namespace SpanJson
                 {
                     _lastDeserializationSizeEstimate = input.Length;
                     var jsonReader = new JsonReader<TSymbol>(input);
-                    return Formatter.Deserialize(ref jsonReader);
+                    return Formatter.Deserialize(ref jsonReader, Resolver);
                 }
 
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]

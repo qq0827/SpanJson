@@ -5,13 +5,14 @@ namespace SpanJson.Resolvers
 {
     public class JsonMemberInfo
     {
-        public JsonMemberInfo(string memberName, Type memberType, MethodInfo shouldSerialize, string name, bool excludeNull, bool canRead, bool canWrite,
-            Type customSerializer, object customSerializerArguments)
+        public JsonMemberInfo(string memberName, Type memberType, MethodInfo shouldSerialize, string name, string escapedName,
+            bool excludeNull, bool canRead, bool canWrite, Type customSerializer, object customSerializerArguments)
         {
             MemberName = memberName;
             MemberType = memberType;
             ShouldSerialize = shouldSerialize;
             Name = name;
+            EscapedName = escapedName;
             ExcludeNull = excludeNull;
             CanRead = canRead;
             CanWrite = canWrite;
@@ -23,6 +24,7 @@ namespace SpanJson.Resolvers
         public Type MemberType { get; }
         public MethodInfo ShouldSerialize { get; }
         public string Name { get; }
+        public string EscapedName { get; }
         public bool ExcludeNull { get; }
 
         public Type CustomSerializer { get; }

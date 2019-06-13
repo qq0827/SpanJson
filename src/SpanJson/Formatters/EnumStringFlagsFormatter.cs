@@ -20,7 +20,7 @@ namespace SpanJson.Formatters
         public static readonly EnumStringFlagsFormatter<T, TEnumBase, TSymbol, TResolver> Default =
             new EnumStringFlagsFormatter<T, TEnumBase, TSymbol, TResolver>();
 
-        public T Deserialize(ref JsonReader<TSymbol> reader)
+        public T Deserialize(ref JsonReader<TSymbol> reader, IJsonFormatterResolver<TSymbol> resolver)
         {
             var span = reader.ReadStringSpan();
             if (span.IsEmpty)
@@ -70,7 +70,7 @@ namespace SpanJson.Formatters
             throw ThrowHelper.GetNotSupportedException();
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, T value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, T value, IJsonFormatterResolver<TSymbol> resolver)
         {
             writer.WriteDoubleQuote();
 

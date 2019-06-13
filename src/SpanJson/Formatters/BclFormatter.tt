@@ -17,11 +17,11 @@ void GenerateListSerializeCode(string typeName, string utfName)
             writer.Write<#= utfName #>BeginArray();
             if (valueLength > 0)
             {
-                ElementFormatter.Serialize(ref writer, value[0]);
+                ElementFormatter.Serialize(ref writer, value[0], resolver);
                 for (var i = 1; i < valueLength; i++)
                 {
                     writer.Write<#= utfName #>ValueSeparator();
-                    ElementFormatter.Serialize(ref writer, value[i]);
+                    ElementFormatter.Serialize(ref writer, value[i], resolver);
                 }
             }
 
@@ -40,7 +40,7 @@ void GenerateListDeserializeCode(string typeName, string utfName)
             var count = 0;
             while (!reader.TryRead<#= utfName #>IsEndArrayOrValueSeparator(ref count))
             {
-                list.Add(ElementFormatter.Deserialize(ref reader));
+                list.Add(ElementFormatter.Deserialize(ref reader, resolver));
             }
 
             return list;
@@ -58,11 +58,11 @@ void GenerateArraySerializeCode(string typeName, string utfName)
             writer.Write<#= utfName #>BeginArray();
             if (valueLength > 0)
             {
-                ElementFormatter.Serialize(ref writer, value[0]);
+                ElementFormatter.Serialize(ref writer, value[0], resolver);
                 for (var i = 1; i < valueLength; i++)
                 {
                     writer.Write<#= utfName #>ValueSeparator();
-                    ElementFormatter.Serialize(ref writer, value[i]);
+                    ElementFormatter.Serialize(ref writer, value[i], resolver);
                 }
             }
 
@@ -90,7 +90,7 @@ void GenerateArrayDeserializeCode(string typeName, string utfName)
                         FormatterUtils.GrowArray(ref temp);
                     }
 
-                    temp[count - 1] = ElementFormatter.Deserialize(ref reader);
+                    temp[count - 1] = ElementFormatter.Deserialize(ref reader, resolver);
                 }
 
                 if (0u >= (uint)count)
@@ -168,7 +168,7 @@ namespace SpanJson.Formatters
     {
         public static readonly <#= t.Name #><#= utfName #>Formatter Default = new <#= t.Name #><#= utfName #>Formatter();
 
-        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #> value)
+        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #> value, IJsonFormatterResolver<<#= symbol.Name #>> resolver)
         {
 <# if(!t.IsValueType) { #>
             if(value == null)
@@ -180,7 +180,7 @@ namespace SpanJson.Formatters
             writer.Write<#= utfName #><#= t.Name #>(value);
         }
 
-        public <#= t.Name #> Deserialize(ref JsonReader<<#= symbol.Name #>> reader)
+        public <#= t.Name #> Deserialize(ref JsonReader<<#= symbol.Name #>> reader, IJsonFormatterResolver<<#= symbol.Name #>> resolver)
         {
             return reader.Read<#= utfName #><#= t.Name #>();
         }
@@ -190,7 +190,7 @@ namespace SpanJson.Formatters
     {
         public static readonly Nullable<#= t.Name #><#= utfName #>Formatter Default = new Nullable<#= t.Name #><#= utfName #>Formatter();
         private static readonly <#= t.Name #><#= utfName #>Formatter ElementFormatter = <#= t.Name #><#= utfName #>Formatter.Default;
-        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>? value)
+        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>? value, IJsonFormatterResolver<<#= symbol.Name #>> resolver)
         {
             if (value is null)
             {
@@ -198,17 +198,17 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault());
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), resolver);
         }
 
-        public <#= t.Name #>? Deserialize(ref JsonReader<<#= symbol.Name #>> reader)
+        public <#= t.Name #>? Deserialize(ref JsonReader<<#= symbol.Name #>> reader, IJsonFormatterResolver<<#= symbol.Name #>> resolver)
         {
             if (reader.Read<#= utfName #>IsNull())
             {
                 return null;
             }
 
-            return ElementFormatter.Deserialize(ref reader);
+            return ElementFormatter.Deserialize(ref reader, resolver);
         }
     }
 
@@ -216,14 +216,14 @@ namespace SpanJson.Formatters
     {
         public static readonly Nullable<#= t.Name #><#= utfName #>ArrayFormatter Default = new Nullable<#= t.Name #><#= utfName #>ArrayFormatter();
         private static readonly Nullable<#= t.Name #><#= utfName #>Formatter ElementFormatter = Nullable<#= t.Name #><#= utfName #>Formatter.Default;
-        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>?[] value)
+        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>?[] value, IJsonFormatterResolver<<#= symbol.Name #>> resolver)
         {
 <#
             GenerateArraySerializeCode(t.Name+"?", utfName);
 #>
         }
 
-        public <#= t.Name #>?[] Deserialize(ref JsonReader<<#= symbol.Name #>> reader)
+        public <#= t.Name #>?[] Deserialize(ref JsonReader<<#= symbol.Name #>> reader, IJsonFormatterResolver<<#= symbol.Name #>> resolver)
         {
 <#
             GenerateArrayDeserializeCode(t.Name+"?", utfName);
@@ -236,14 +236,14 @@ namespace SpanJson.Formatters
         public static readonly Nullable<#= t.Name #><#= utfName #>ListFormatter Default = new Nullable<#= t.Name #><#= utfName #>ListFormatter();
         private static readonly Nullable<#= t.Name #><#= utfName #>Formatter ElementFormatter = Nullable<#= t.Name #><#= utfName #>Formatter.Default;
 
-        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, List<<#= t.Name #>?> value)
+        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, List<<#= t.Name #>?> value, IJsonFormatterResolver<<#= symbol.Name #>> resolver)
         {
 <#
             GenerateListSerializeCode(t.Name+"?", utfName);
 #>
         }
 
-        public List<<#= t.Name #>?> Deserialize(ref JsonReader<<#= symbol.Name #>> reader)
+        public List<<#= t.Name #>?> Deserialize(ref JsonReader<<#= symbol.Name #>> reader, IJsonFormatterResolver<<#= symbol.Name #>> resolver)
         {
 <#
             GenerateListDeserializeCode(t.Name+"?", utfName);
@@ -256,14 +256,14 @@ namespace SpanJson.Formatters
     {
         public static readonly <#= t.Name #><#= utfName #>ArrayFormatter Default = new <#= t.Name #><#= utfName #>ArrayFormatter();
         private static readonly <#= t.Name #><#= utfName #>Formatter ElementFormatter = <#= t.Name #><#= utfName #>Formatter.Default;
-        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>[] value)
+        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>[] value, IJsonFormatterResolver<<#= symbol.Name #>> resolver)
         {
 <#
             GenerateArraySerializeCode(t.Name, utfName);
 #>
         }
 
-        public <#= t.Name #>[] Deserialize(ref JsonReader<<#= symbol.Name #>> reader)
+        public <#= t.Name #>[] Deserialize(ref JsonReader<<#= symbol.Name #>> reader, IJsonFormatterResolver<<#= symbol.Name #>> resolver)
         {
 <#
             GenerateArrayDeserializeCode(t.Name, utfName);
@@ -276,14 +276,14 @@ namespace SpanJson.Formatters
         public static readonly <#= t.Name #><#= utfName #>ListFormatter Default = new <#= t.Name #><#= utfName #>ListFormatter();
         private static readonly <#= t.Name #><#= utfName #>Formatter ElementFormatter = <#= t.Name #><#= utfName #>Formatter.Default;
 
-        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, List<<#= t.Name #>> value)
+        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, List<<#= t.Name #>> value, IJsonFormatterResolver<<#= symbol.Name #>> resolver)
         {
 <#
             GenerateListSerializeCode(t.Name, utfName);
 #>
         }
 
-        public List<<#= t.Name #>> Deserialize(ref JsonReader<<#= symbol.Name #>> reader)
+        public List<<#= t.Name #>> Deserialize(ref JsonReader<<#= symbol.Name #>> reader, IJsonFormatterResolver<<#= symbol.Name #>> resolver)
         {
 <#
             GenerateListDeserializeCode(t.Name, utfName);

@@ -25,7 +25,7 @@ namespace SpanJson.Formatters
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected static void SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer,
-            T value, IJsonFormatter<T, TSymbol> formatter)
+            T value, IJsonFormatter<T, TSymbol> formatter, IJsonFormatterResolver<TSymbol> resolver)
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
             // The first check is to get around the runtime check for primitive types and structs without references, i.e most of the blc types from the bclformatter.tt
@@ -38,11 +38,11 @@ namespace SpanJson.Formatters
             if (!RuntimeHelpers.IsReferenceOrContainsReferences<T>() || typeof(T) == typeof(string) || value == null || value.GetType() == typeof(T))
 #endif
             {
-                formatter.Serialize(ref writer, value);
+                formatter.Serialize(ref writer, value, resolver);
             }
             else
             {
-                RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, value);
+                RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, value, resolver);
             }
         }
     }

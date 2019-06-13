@@ -140,7 +140,7 @@
             }
             pos += count;
 #else
-            Ensure(pos, JsonSharedConstant.MaximumFormatDoubleLength);
+            Ensure(pos, JsonConstants.MaximumFormatDoubleLength);
             var result = value.TryFormat(Utf16Span, out var written, provider: CultureInfo.InvariantCulture);
             if (result)
             {
@@ -176,7 +176,7 @@
             }
             pos += count;
 #else
-            Ensure(pos, JsonSharedConstant.MaximumFormatDoubleLength);
+            Ensure(pos, JsonConstants.MaximumFormatDoubleLength);
             var result = value.TryFormat(Utf16Span, out var written, provider: CultureInfo.InvariantCulture);
             if (result)
             {
@@ -209,7 +209,7 @@
             Ensure(pos, written);
             utf16Text.AsSpan().CopyTo(Utf16Span);
 #else
-            Ensure(pos, JsonSharedConstant.MaximumFormatDecimalLength);
+            Ensure(pos, JsonConstants.MaximumFormatDecimalLength);
             var result = value.TryFormat(Utf16Span, out var written, provider: CultureInfo.InvariantCulture);
             Debug.Assert(result);
 #endif
@@ -244,119 +244,13 @@
             }
         }
 
-        private static void WriteEscapedUtf16CharInternal(ref char destination, char value, ref int pos)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteUtf16Char(char value)
         {
-            switch (value)
-            {
-                case JsonUtf16Constant.DoubleQuote:
-                    WriteUtf16SingleEscapedChar(ref destination, JsonUtf16Constant.DoubleQuote, ref pos);
-                    break;
-                case JsonUtf16Constant.Solidus:
-                    WriteUtf16SingleEscapedChar(ref destination, JsonUtf16Constant.Solidus, ref pos);
-                    break;
-                case JsonUtf16Constant.ReverseSolidus:
-                    WriteUtf16SingleEscapedChar(ref destination, JsonUtf16Constant.ReverseSolidus, ref pos);
-                    break;
-                case '\b':
-                    WriteUtf16SingleEscapedChar(ref destination, 'b', ref pos);
-                    break;
-                case '\f':
-                    WriteUtf16SingleEscapedChar(ref destination, 'f', ref pos);
-                    break;
-                case '\n':
-                    WriteUtf16SingleEscapedChar(ref destination, 'n', ref pos);
-                    break;
-                case '\r':
-                    WriteUtf16SingleEscapedChar(ref destination, 'r', ref pos);
-                    break;
-                case '\t':
-                    WriteUtf16SingleEscapedChar(ref destination, 't', ref pos);
-                    break;
-                case '\x0':
-                    WriteUtf16DoubleEscapedChar(ref destination, '0', '0', ref pos);
-                    break;
-                case '\x1':
-                    WriteUtf16DoubleEscapedChar(ref destination, '0', '1', ref pos);
-                    break;
-                case '\x2':
-                    WriteUtf16DoubleEscapedChar(ref destination, '0', '2', ref pos);
-                    break;
-                case '\x3':
-                    WriteUtf16DoubleEscapedChar(ref destination, '0', '3', ref pos);
-                    break;
-                case '\x4':
-                    WriteUtf16DoubleEscapedChar(ref destination, '0', '4', ref pos);
-                    break;
-                case '\x5':
-                    WriteUtf16DoubleEscapedChar(ref destination, '0', '5', ref pos);
-                    break;
-                case '\x6':
-                    WriteUtf16DoubleEscapedChar(ref destination, '0', '6', ref pos);
-                    break;
-                case '\x7':
-                    WriteUtf16DoubleEscapedChar(ref destination, '0', '7', ref pos);
-                    break;
-                case '\xB':
-                    WriteUtf16DoubleEscapedChar(ref destination, '0', 'B', ref pos);
-                    break;
-                case '\xE':
-                    WriteUtf16DoubleEscapedChar(ref destination, '0', 'E', ref pos);
-                    break;
-                case '\xF':
-                    WriteUtf16DoubleEscapedChar(ref destination, '0', 'F', ref pos);
-                    break;
-                case '\x10':
-                    WriteUtf16DoubleEscapedChar(ref destination, '1', '0', ref pos);
-                    break;
-                case '\x11':
-                    WriteUtf16DoubleEscapedChar(ref destination, '1', '1', ref pos);
-                    break;
-                case '\x12':
-                    WriteUtf16DoubleEscapedChar(ref destination, '1', '2', ref pos);
-                    break;
-                case '\x13':
-                    WriteUtf16DoubleEscapedChar(ref destination, '1', '3', ref pos);
-                    break;
-                case '\x14':
-                    WriteUtf16DoubleEscapedChar(ref destination, '1', '4', ref pos);
-                    break;
-                case '\x15':
-                    WriteUtf16DoubleEscapedChar(ref destination, '1', '5', ref pos);
-                    break;
-                case '\x16':
-                    WriteUtf16DoubleEscapedChar(ref destination, '1', '6', ref pos);
-                    break;
-                case '\x17':
-                    WriteUtf16DoubleEscapedChar(ref destination, '1', '7', ref pos);
-                    break;
-                case '\x18':
-                    WriteUtf16DoubleEscapedChar(ref destination, '1', '8', ref pos);
-                    break;
-                case '\x19':
-                    WriteUtf16DoubleEscapedChar(ref destination, '1', '9', ref pos);
-                    break;
-                case '\x1A':
-                    WriteUtf16DoubleEscapedChar(ref destination, '1', 'A', ref pos);
-                    break;
-                case '\x1B':
-                    WriteUtf16DoubleEscapedChar(ref destination, '1', 'B', ref pos);
-                    break;
-                case '\x1C':
-                    WriteUtf16DoubleEscapedChar(ref destination, '1', 'C', ref pos);
-                    break;
-                case '\x1D':
-                    WriteUtf16DoubleEscapedChar(ref destination, '1', 'D', ref pos);
-                    break;
-                case '\x1E':
-                    WriteUtf16DoubleEscapedChar(ref destination, '1', 'E', ref pos);
-                    break;
-                case '\x1F':
-                    WriteUtf16DoubleEscapedChar(ref destination, '1', 'F', ref pos);
-                    break;
-            }
+            WriteUtf16Char(value, StringEscapeHandling.Default);
         }
 
-        public void WriteUtf16Char(char value)
+        public void WriteUtf16Char(char value, StringEscapeHandling escapeHandling)
         {
             ref var pos = ref _pos;
             const int size = 8; // 1-6 chars + two JsonUtf16Constant.DoubleQuote
@@ -364,15 +258,14 @@
             ref char pinnableAddr = ref PinnableUtf16Address;
 
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
-            if (value < 0x20 || value == JsonUtf16Constant.DoubleQuote || value == JsonUtf16Constant.Solidus || value == JsonUtf16Constant.ReverseSolidus)
+            if (EscapingHelper.NeedsEscaping(value, escapeHandling))
             {
-                WriteEscapedUtf16CharInternal(ref pinnableAddr, value, ref pos);
+                EscapingHelper.EscapeChar(value, ref pinnableAddr, ref pos);
             }
             else
             {
                 Unsafe.Add(ref pinnableAddr, pos++) = value;
             }
-
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
         }
 
@@ -439,36 +332,32 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteUtf16String(string value)
         {
-            WriteUtf16String(value.AsSpan());
+            WriteUtf16String(value.AsSpan(), StringEscapeHandling.Default);
         }
 
         public void WriteUtf16String(in ReadOnlySpan<char> value)
         {
-            ref var pos = ref _pos;
-            var valueLength = value.Length;
-            var sLength = valueLength + 7; // assume that a fully escaped char fits too (5 + two double quotes)
-            Ensure(pos, sLength);
-            ref char pinnableAddr = ref PinnableUtf16Address;
+            WriteUtf16String(value, StringEscapeHandling.Default);
+        }
 
-            WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
-            ref char utf16Source = ref MemoryMarshal.GetReference(value);
-            for (var i = 0; i < valueLength; i++)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteUtf16String(string value, StringEscapeHandling escapeHandling)
+        {
+            WriteUtf16String(value.AsSpan(), escapeHandling);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteUtf16String(in ReadOnlySpan<char> value, StringEscapeHandling escapeHandling)
+        {
+            var firstEscapeIndex = EscapingHelper.NeedsEscaping(value, escapeHandling);
+            if ((uint)firstEscapeIndex > JsonSharedConstant.TooBigOrNegative) // -1
             {
-                ref readonly var c = ref Unsafe.Add(ref utf16Source, i);
-                if (c < 0x20 || c == JsonUtf16Constant.DoubleQuote || c == JsonUtf16Constant.Solidus || c == JsonUtf16Constant.ReverseSolidus)
-                {
-                    WriteEscapedUtf16CharInternal(ref pinnableAddr, c, ref pos);
-                    var remaining = 5 + valueLength - i; // make sure that all characters and an extra 5 for a full escape still fit
-                    Ensure(pos, remaining);
-                    pinnableAddr = ref PinnableUtf16Address;
-                }
-                else
-                {
-                    Unsafe.Add(ref pinnableAddr, pos++) = c;
-                }
+                WriteUtf16StringEscapedValue(ref this, value, false);
             }
-
-            WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
+            else
+            {
+                WriteUtf16StringEscapeValue(ref this, value, escapeHandling, firstEscapeIndex, false);
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -486,51 +375,95 @@
             pos += value.Length;
         }
 
+        /// <summary>The value should already be properly escaped.</summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteUtf16VerbatimNameSpan(in ReadOnlySpan<char> value)
         {
-            WriteUtf16Name(value);
+            WriteUtf16StringEscapedValue(ref this, value, true);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteUtf16VerbatimNameSpan(in ReadOnlySpan<char> value, StringEscapeHandling escapeHandling)
+        {
+            WriteUtf16Name(value, escapeHandling);
         }
 
         /// <summary>The value should already be properly escaped.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteUtf16Name(string value)
         {
-            WriteUtf16Name(value.AsSpan());
+            WriteUtf16StringEscapedValue(ref this, value.AsSpan(), true);
         }
 
         /// <summary>The value should already be properly escaped.</summary>
         public void WriteUtf16Name(in ReadOnlySpan<char> value)
         {
-            ref var pos = ref _pos;
-            Ensure(pos, value.Length + 3);
+            WriteUtf16StringEscapedValue(ref this, value, true);
+        }
 
-            ref char pinnableAddr = ref PinnableUtf16Address;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteUtf16Name(string value, StringEscapeHandling escapeHandling)
+        {
+            WriteUtf16Name(value.AsSpan(), escapeHandling);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteUtf16Name(in ReadOnlySpan<char> value, StringEscapeHandling escapeHandling)
+        {
+            var firstEscapeIndex = EscapingHelper.NeedsEscaping(value, escapeHandling);
+            if ((uint)firstEscapeIndex > JsonSharedConstant.TooBigOrNegative) // -1
+            {
+                WriteUtf16StringEscapedValue(ref this, value, true);
+            }
+            else
+            {
+                WriteUtf16StringEscapeValue(ref this, value, escapeHandling, firstEscapeIndex, true);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void WriteUtf16StringEscapeValue(ref JsonWriter<TSymbol> writer, in ReadOnlySpan<char> value,
+            StringEscapeHandling escapeHandling, int firstEscapeIndex, bool withNameSeparator)
+        {
+            char[] propertyArray = null;
+
+            int length = EscapingHelper.GetMaxEscapedLength(value.Length, firstEscapeIndex);
+            Span<char> escapedPropertyName;
+            if ((uint)length > c_stackallocThreshold)
+            {
+                propertyArray = ArrayPool<char>.Shared.Rent(length);
+                escapedPropertyName = propertyArray;
+            }
+            else
+            {
+                // Cannot create a span directly since it gets passed to instance methods on a ref struct.
+                unsafe
+                {
+                    char* ptr = stackalloc char[length];
+                    escapedPropertyName = new Span<char>(ptr, length);
+                }
+            }
+            EscapingHelper.EscapeString(value, escapedPropertyName, escapeHandling, firstEscapeIndex, out int written);
+
+            WriteUtf16StringEscapedValue(ref writer, escapedPropertyName.Slice(0, written), withNameSeparator);
+
+            if (propertyArray != null)
+            {
+                ArrayPool<char>.Shared.Return(propertyArray);
+            }
+        }
+
+        private static void WriteUtf16StringEscapedValue(ref JsonWriter<TSymbol> writer, in ReadOnlySpan<char> value, bool withNameSeparator)
+        {
+            ref var pos = ref writer._pos;
+            writer.Ensure(pos, value.Length + 3);
+
+            ref char pinnableAddr = ref writer.PinnableUtf16Address;
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
-            value.CopyTo(Utf16Span);
+            value.CopyTo(writer.Utf16Span);
             pos += value.Length;
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
-            Unsafe.Add(ref pinnableAddr, pos++) = JsonUtf16Constant.NameSeparator;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void WriteUtf16SingleEscapedChar(ref char destination, char toEscape, ref int pos)
-        {
-            Unsafe.Add(ref destination, pos + 1) = toEscape;
-            Unsafe.Add(ref destination, pos) = JsonUtf16Constant.ReverseSolidus;
-            pos += 2;
-        }
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void WriteUtf16DoubleEscapedChar(ref char destination, char firstToEscape, char secondToEscape, ref int pos)
-        {
-            Unsafe.Add(ref destination, pos + 5) = secondToEscape;
-            Unsafe.Add(ref destination, pos + 4) = firstToEscape;
-            Unsafe.Add(ref destination, pos + 3) = '0';
-            Unsafe.Add(ref destination, pos + 2) = '0';
-            Unsafe.Add(ref destination, pos + 1) = 'u';
-            Unsafe.Add(ref destination, pos) = JsonUtf16Constant.ReverseSolidus;
-            pos += 6;
+            if (withNameSeparator) { Unsafe.Add(ref pinnableAddr, pos++) = JsonUtf16Constant.NameSeparator; }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

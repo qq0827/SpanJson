@@ -297,7 +297,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private DateTime ParseUtf16DateTime(in ReadOnlySpan<char> span)
         {
-            if (DateTimeParser.TryParseDateTime(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
+            if (JsonHelpers.TryParseAsISO(span, out DateTime value, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return value;
             }
@@ -311,7 +311,7 @@ namespace SpanJson
         {
             Span<char> span = stackalloc char[JsonSharedConstant.MaxDateTimeLength];
             UnescapeUtf16Chars(input, ref span);
-            if (DateTimeParser.TryParseDateTime(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
+            if (JsonHelpers.TryParseAsISO(span, out DateTime value, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return value;
             }
@@ -331,7 +331,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private DateTimeOffset ParseUtf16DateTimeOffset(in ReadOnlySpan<char> span)
         {
-            if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
+            if (JsonHelpers.TryParseAsISO(span, out DateTimeOffset value, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return value;
             }
@@ -345,7 +345,7 @@ namespace SpanJson
         {
             Span<char> span = stackalloc char[JsonSharedConstant.MaxDateTimeOffsetLength];
             UnescapeUtf16Chars(input, ref span);
-            if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
+            if (JsonHelpers.TryParseAsISO(span, out DateTimeOffset value, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return value;
             }
@@ -1138,7 +1138,7 @@ namespace SpanJson
                     {
                         pos++;
                         var count = 0;
-                        var dictionary = new Dictionary<string, object>();
+                        var dictionary = new Dictionary<string, object>(StringComparer.Ordinal);
                         while (!TryReadUtf16IsEndObjectOrValueSeparator(ref count))
                         {
                             var name = ReadUtf16EscapedName();

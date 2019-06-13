@@ -78,12 +78,12 @@ namespace SpanJson.Formatters
             {
                 if (typeof(TKey).IsInteger()) // the integer values are quoted
                 {
-                    static TKey ReadIntegerKey(ref JsonReader<TSymbol> reader)
+                    static TKey ReadIntegerKey(ref JsonReader<TSymbol> reader, IJsonFormatterResolver<TSymbol> resolver)
                     {
                         var separator = JsonUtf16Constant.NameSeparator;
                         var doubleQuote = JsonUtf16Constant.DoubleQuote;
                         reader.ReadSymbolOrThrow(Unsafe.As<char, TSymbol>(ref doubleQuote));
-                        var key = KeyFormatter.Deserialize(ref reader);
+                        var key = KeyFormatter.Deserialize(ref reader, resolver);
                         reader.ReadSymbolOrThrow(Unsafe.As<char, TSymbol>(ref doubleQuote));
                         reader.ReadSymbolOrThrow(Unsafe.As<char, TSymbol>(ref separator));
                         return key;
@@ -91,10 +91,10 @@ namespace SpanJson.Formatters
                     return ReadIntegerKey;
                 }
 
-                static TKey ReadStringKey(ref JsonReader<TSymbol> reader)
+                static TKey ReadStringKey(ref JsonReader<TSymbol> reader, IJsonFormatterResolver<TSymbol> resolver)
                 {
                     var separator = JsonUtf16Constant.NameSeparator;
-                    var key = KeyFormatter.Deserialize(ref reader);
+                    var key = KeyFormatter.Deserialize(ref reader, resolver);
                     reader.ReadSymbolOrThrow(Unsafe.As<char, TSymbol>(ref separator));
                     return key;
                 }
@@ -106,12 +106,12 @@ namespace SpanJson.Formatters
             {
                 if (typeof(TKey).IsInteger()) // the integer values need to be quoted
                 {
-                    static TKey ReadIntegerKey(ref JsonReader<TSymbol> reader)
+                    static TKey ReadIntegerKey(ref JsonReader<TSymbol> reader, IJsonFormatterResolver<TSymbol> resolver)
                     {
                         var separator = JsonUtf8Constant.NameSeparator;
                         var doubleQuote = JsonUtf8Constant.DoubleQuote;
                         reader.ReadSymbolOrThrow(Unsafe.As<byte, TSymbol>(ref doubleQuote));
-                        var key = KeyFormatter.Deserialize(ref reader);
+                        var key = KeyFormatter.Deserialize(ref reader, resolver);
                         reader.ReadSymbolOrThrow(Unsafe.As<byte, TSymbol>(ref doubleQuote));
                         reader.ReadSymbolOrThrow(Unsafe.As<byte, TSymbol>(ref separator));
                         return key;
@@ -119,10 +119,10 @@ namespace SpanJson.Formatters
                     return ReadIntegerKey;
                 }
 
-                static TKey ReadStringKey(ref JsonReader<TSymbol> reader)
+                static TKey ReadStringKey(ref JsonReader<TSymbol> reader, IJsonFormatterResolver<TSymbol> resolver)
                 {
                     var separator = JsonUtf8Constant.NameSeparator;
-                    var key = KeyFormatter.Deserialize(ref reader);
+                    var key = KeyFormatter.Deserialize(ref reader, resolver);
                     reader.ReadSymbolOrThrow(Unsafe.As<byte, TSymbol>(ref separator));
                     return key;
                 }
@@ -136,10 +136,10 @@ namespace SpanJson.Formatters
         {
             if (typeof(TKey).IsInteger()) // the integer values need to be quoted
             {
-                static void WriteIntegerKey(ref JsonWriter<TSymbol> writer, TKey value)
+                static void WriteIntegerKey(ref JsonWriter<TSymbol> writer, TKey value, IJsonFormatterResolver<TSymbol> resolver)
                 {
                     writer.WriteDoubleQuote();
-                    KeyFormatter.Serialize(ref writer, value);
+                    KeyFormatter.Serialize(ref writer, value, resolver);
                     writer.WriteDoubleQuote();
                     writer.WriteNameSeparator();
                 }
@@ -147,16 +147,16 @@ namespace SpanJson.Formatters
                 return WriteIntegerKey;
             }
 
-            static void WriteStringKey(ref JsonWriter<TSymbol> writer, TKey value)
+            static void WriteStringKey(ref JsonWriter<TSymbol> writer, TKey value, IJsonFormatterResolver<TSymbol> resolver)
             {
-                KeyFormatter.Serialize(ref writer, value);
+                KeyFormatter.Serialize(ref writer, value, resolver);
                 writer.WriteNameSeparator();
             }
 
             return WriteStringKey;
         }
 
-        public TDictionary Deserialize(ref JsonReader<TSymbol> reader)
+        public TDictionary Deserialize(ref JsonReader<TSymbol> reader, IJsonFormatterResolver<TSymbol> resolver)
         {
             if (reader.ReadIsNull())
             {
@@ -168,15 +168,15 @@ namespace SpanJson.Formatters
             var count = 0;
             while (!reader.TryReadIsEndObjectOrValueSeparator(ref count))
             {
-                var key = ReadKeyFunctor(ref reader);
-                var value = ValueFormatter.Deserialize(ref reader);
+                var key = ReadKeyFunctor(ref reader, resolver);
+                var value = ValueFormatter.Deserialize(ref reader, resolver);
                 AssignKvpFunctor(result, key, value); // No shared interface for IReadOnlyDictionary and IDictionary to set the value via indexer (to make sure that for duplicated keys, we use the last one)
             }
 
             return Converter(result);
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, TDictionary value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, TDictionary value, IJsonFormatterResolver<TSymbol> resolver)
         {
             if (value == null)
             {
@@ -196,8 +196,8 @@ namespace SpanJson.Formatters
                 var counter = 0;
                 foreach (var kvp in value)
                 {
-                    WriteKeyFunctor(ref writer, kvp.Key);
-                    SerializeRuntimeDecisionInternal<TValue, TSymbol, TResolver>(ref writer, kvp.Value, ValueFormatter);
+                    WriteKeyFunctor(ref writer, kvp.Key, resolver);
+                    SerializeRuntimeDecisionInternal<TValue, TSymbol, TResolver>(ref writer, kvp.Value, ValueFormatter, resolver);
                     if (counter++ < valueLength - 1)
                     {
                         writer.WriteValueSeparator();
@@ -213,9 +213,9 @@ namespace SpanJson.Formatters
             writer.WriteEndObject();
         }
 
-        private delegate void WriteKeyDelegate(ref JsonWriter<TSymbol> writer, TKey input);
+        private delegate void WriteKeyDelegate(ref JsonWriter<TSymbol> writer, TKey input, IJsonFormatterResolver<TSymbol> resolver);
 
-        private delegate TKey ReadKeyDelegate(ref JsonReader<TSymbol> reader);
+        private delegate TKey ReadKeyDelegate(ref JsonReader<TSymbol> reader, IJsonFormatterResolver<TSymbol> resolver);
 
         private delegate void AssignKvpDelegate(TWritableDictionary dictionary, TKey key, TValue value);
     }

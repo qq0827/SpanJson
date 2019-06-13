@@ -67,5 +67,66 @@ namespace SpanJson.Internal
         }
 
 #endif
+
+        // borrowed from https://github.com/dotnet/corefx/blob/8135319caa7e457ed61053ca1418313b88057b51/src/System.Text.Json/src/System/Text/Json/JsonHelpers.cs#L11
+
+        /// <summary>
+        /// Returns <see langword="true"/> if <paramref name="value"/> is a valid Unicode scalar
+        /// value, i.e., is in [ U+0000..U+D7FF ], inclusive; or [ U+E000..U+10FFFF ], inclusive.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsValidUnicodeScalar(uint value)
+        {
+            // By XORing the incoming value with 0xD800, surrogate code points
+            // are moved to the range [ U+0000..U+07FF ], and all valid scalar
+            // values are clustered into the single range [ U+0800..U+10FFFF ],
+            // which allows performing a single fast range check.
+
+            return IsInRangeInclusive(value ^ 0xD800U, 0x800U, 0x10FFFFU);
+        }
+
+        /// <summary>
+        /// Returns <see langword="true"/> if <paramref name="value"/> is between
+        /// <paramref name="lowerBound"/> and <paramref name="upperBound"/>, inclusive.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsInRangeInclusive(uint value, uint lowerBound, uint upperBound)
+            => (value - lowerBound) <= (upperBound - lowerBound);
+
+        /// <summary>
+        /// Returns <see langword="true"/> if <paramref name="value"/> is between
+        /// <paramref name="lowerBound"/> and <paramref name="upperBound"/>, inclusive.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsInRangeInclusive(byte value, byte lowerBound, byte upperBound)
+            => (byte)(value - lowerBound) <= (byte)(upperBound - lowerBound);
+
+        /// <summary>
+        /// Returns <see langword="true"/> if <paramref name="value"/> is between
+        /// <paramref name="lowerBound"/> and <paramref name="upperBound"/>, inclusive.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsInRangeInclusive(int value, int lowerBound, int upperBound)
+            => (uint)(value - lowerBound) <= (uint)(upperBound - lowerBound);
+
+        /// <summary>
+        /// Returns <see langword="true"/> if <paramref name="value"/> is between
+        /// <paramref name="lowerBound"/> and <paramref name="upperBound"/>, inclusive.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsInRangeInclusive(long value, long lowerBound, long upperBound)
+            => (ulong)(value - lowerBound) <= (ulong)(upperBound - lowerBound);
+
+        /// <summary>
+        /// Returns <see langword="true"/> if <paramref name="value"/> is in the range [0..9].
+        /// Otherwise, returns <see langword="false"/>.
+        /// </summary>
+        public static bool IsDigit(byte value) => (uint)(value - '0') <= '9' - '0';
+
+        /// <summary>
+        /// Returns <see langword="true"/> if <paramref name="value"/> is in the range [0..9].
+        /// Otherwise, returns <see langword="false"/>.
+        /// </summary>
+        public static bool IsDigit(char value) => (uint)(value - '0') <= '9' - '0';
     }
 }

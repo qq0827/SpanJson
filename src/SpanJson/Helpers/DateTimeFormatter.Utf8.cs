@@ -9,7 +9,7 @@ namespace SpanJson.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryFormat(DateTimeOffset value, Span<byte> output, out int bytesWritten)
         {
-            if (output.Length < 33)
+            if ((uint)output.Length < 33u)
             {
                 bytesWritten = default;
                 return false;
@@ -20,7 +20,7 @@ namespace SpanJson.Helpers
 
             if (value.Offset == TimeSpan.Zero)
             {
-                Unsafe.Add(ref b, bytesWritten++) = (byte) 'Z';
+                Unsafe.AddByteOffset(ref b, (IntPtr)bytesWritten++) = (byte)'Z';
             }
             else
             {
@@ -33,7 +33,7 @@ namespace SpanJson.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryFormat(DateTime value, Span<byte> output, out int bytesWritten)
         {
-            if (output.Length < 33)
+            if ((uint)output.Length < 33u)
             {
                 bytesWritten = default;
                 return false;
@@ -48,7 +48,7 @@ namespace SpanJson.Helpers
             }
             else if (value.Kind == DateTimeKind.Utc)
             {
-                Unsafe.Add(ref b, bytesWritten++) = (byte) 'Z';
+                Unsafe.AddByteOffset(ref b, (IntPtr)bytesWritten++) = (byte)'Z';
             }
 
             return true;
@@ -57,22 +57,23 @@ namespace SpanJson.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void WriteDateAndTime(DateTime value, ref byte b, out int bytesWritten)
         {
-            WriteFourDigits((uint) value.Year, ref b, 0);
-            Unsafe.Add(ref b, 4) = (byte) '-';
+            IntPtr offset = (IntPtr)0;
+            WriteFourDigits((uint)value.Year, ref b, 0);
+            Unsafe.AddByteOffset(ref b, offset + 4) = (byte)'-';
             WriteTwoDigits(value.Month, ref b, 5);
-            Unsafe.Add(ref b, 7) = (byte) '-';
+            Unsafe.AddByteOffset(ref b, offset + 7) = (byte)'-';
             WriteTwoDigits(value.Day, ref b, 8);
-            Unsafe.Add(ref b, 10) = (byte) 'T';
+            Unsafe.AddByteOffset(ref b, offset + 10) = (byte)'T';
             WriteTwoDigits(value.Hour, ref b, 11);
-            Unsafe.Add(ref b, 13) = (byte) ':';
+            Unsafe.AddByteOffset(ref b, offset + 13) = (byte)':';
             WriteTwoDigits(value.Minute, ref b, 14);
-            Unsafe.Add(ref b, 16) = (byte) ':';
+            Unsafe.AddByteOffset(ref b, offset + 16) = (byte)':';
             WriteTwoDigits(value.Second, ref b, 17);
             bytesWritten = 19;
-            var fraction = (uint) ((ulong) value.Ticks % TimeSpan.TicksPerSecond);
+            var fraction = (uint)((ulong)value.Ticks % TimeSpan.TicksPerSecond);
             if (fraction > 0)
             {
-                Unsafe.Add(ref b, 19) = (byte) '.';
+                Unsafe.AddByteOffset(ref b, offset + 19) = (byte)'.';
                 WriteDigits(fraction, ref b, 20);
                 bytesWritten = 27;
             }
@@ -84,17 +85,17 @@ namespace SpanJson.Helpers
             byte sign;
             if (offset < default(TimeSpan))
             {
-                sign = (byte) '-';
+                sign = (byte)'-';
                 offset = TimeSpan.FromTicks(-offset.Ticks);
             }
             else
             {
-                sign = (byte) '+';
+                sign = (byte)'+';
             }
 
             Unsafe.Add(ref b, bytesWritten) = sign;
             WriteTwoDigits(offset.Hours, ref b, bytesWritten + 1);
-            Unsafe.Add(ref b, bytesWritten + 3) = (byte) ':';
+            Unsafe.Add(ref b, bytesWritten + 3) = (byte)':';
             WriteTwoDigits(offset.Minutes, ref b, bytesWritten + 4);
             bytesWritten += 6;
         }
@@ -102,19 +103,20 @@ namespace SpanJson.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void WriteFourDigits(uint value, ref byte b, int startIndex)
         {
+            IntPtr offset = (IntPtr)startIndex;
             var temp = '0' + value;
-            value /= 10;
-            Unsafe.Add(ref b, startIndex + 3) = (byte) (temp - value * 10);
+            value /= 10u;
+            Unsafe.AddByteOffset(ref b, offset + 3) = (byte)(temp - value * 10u);
 
             temp = '0' + value;
-            value /= 10;
-            Unsafe.Add(ref b, startIndex + 2) = (byte) (temp - value * 10);
+            value /= 10u;
+            Unsafe.AddByteOffset(ref b, offset + 2) = (byte)(temp - value * 10u);
 
             temp = '0' + value;
-            value /= 10;
-            Unsafe.Add(ref b, startIndex + 1) = (byte) (temp - value * 10);
+            value /= 10u;
+            Unsafe.AddByteOffset(ref b, offset + 1) = (byte)(temp - value * 10u);
 
-            Unsafe.Add(ref b, startIndex) = (byte) ('0' + value);
+            Unsafe.AddByteOffset(ref b, offset) = (byte)('0' + value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -122,18 +124,20 @@ namespace SpanJson.Helpers
         {
             var temp = '0' + value;
             value /= 10;
-            Unsafe.Add(ref b, startIndex + 1) = (byte) (temp - value * 10);
-            Unsafe.Add(ref b, startIndex) = (byte) ('0' + value);
+            IntPtr offset = (IntPtr)startIndex;
+            Unsafe.AddByteOffset(ref b, offset + 1) = (byte)(temp - value * 10);
+            Unsafe.AddByteOffset(ref b, offset) = (byte)('0' + value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void WriteDigits(uint value, ref byte b, int pos)
         {
-            for (var i = 7; i > 0; i--)
+            IntPtr offset = (IntPtr)pos;
+            for (var i = 6; i >= 0; i--)
             {
                 ulong temp = '0' + value;
-                value /= 10;
-                Unsafe.Add(ref b, pos + i - 1) = (byte) (temp - value * 10);
+                value /= 10u;
+                Unsafe.AddByteOffset(ref b, offset + i) = (byte)(temp - value * 10u);
             }
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Reflection;
+using System.Text;
 
 namespace SpanJson
 {
@@ -116,6 +117,45 @@ namespace SpanJson
             }
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowArgumentException_InvalidUTF16(int charAsInt)
+        {
+            throw GetException();
+            ArgumentException GetException()
+            {
+                return new ArgumentException(string.Format("Cannot encode invalid UTF-16 text as JSON. Invalid surrogate value: '{0}'.", $"0x{charAsInt:X2}"));
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowArgumentException_InvalidUTF8(ReadOnlySpan<byte> value, int consumed)
+        {
+            var builder = new StringBuilder();
+
+            value = value.Slice(consumed);
+            int printFirst10 = Math.Min(value.Length, 10);
+
+            for (int i = 0; i < printFirst10; i++)
+            {
+                byte nextByte = value[i];
+                if (IsPrintable(nextByte))
+                {
+                    builder.Append((char)nextByte);
+                }
+                else
+                {
+                    builder.Append($"0x{nextByte:X2}");
+                }
+            }
+
+            if (printFirst10 < value.Length)
+            {
+                builder.Append("...");
+            }
+
+            throw new ArgumentException($"Cannot encode invalid UTF-8 text as JSON. Invalid input: '{builder}'.");
+        }
+
         #endregion
 
         #region -- InvalidOperationException --
@@ -180,6 +220,26 @@ namespace SpanJson
             }
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowInvalidOperationException_ReadInvalidUTF16(int charAsInt)
+        {
+            throw GetException();
+            InvalidOperationException GetException()
+            {
+                return new InvalidOperationException(string.Format("Cannot read invalid UTF-16 JSON text as string. Invalid surrogate value: '{0}'.", $"0x{charAsInt:X2}"));
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowInvalidOperationException_ReadInvalidUTF16()
+        {
+            throw GetException();
+            InvalidOperationException GetException()
+            {
+                return new InvalidOperationException("Cannot read incomplete UTF-16 JSON text as string with missing low surrogate.");
+            }
+        }
+
         #endregion
 
         #region -- NotSupportedException --
@@ -213,5 +273,7 @@ namespace SpanJson
         }
 
         #endregion
+
+        private static bool IsPrintable(byte value) => value >= 0x20 && value < 0x7F;
     }
 }

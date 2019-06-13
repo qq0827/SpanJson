@@ -93,11 +93,11 @@ namespace SpanJson.Formatters
             }
 
             var memberInfos = new List<JsonMemberInfo>();
-            var dict = new Dictionary<string, TReturn>();
+            var dict = new Dictionary<string, TReturn>(StringComparer.Ordinal);
             foreach (var name in Enum.GetNames(typeof(T)))
             {
                 var formattedValue = GetFormattedValue(name);
-                memberInfos.Add(new JsonMemberInfo(name, typeof(T), null, formattedValue, false, true, false, null, null));
+                memberInfos.Add(new JsonMemberInfo(name, typeof(T), null, formattedValue, formattedValue, false, true, false, null, null));
                 var value = Enum.Parse(typeof(T), name);
                 dict.Add(name, (TReturn) Convert.ChangeType(value, typeof(TReturn)));
             }

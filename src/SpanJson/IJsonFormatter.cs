@@ -15,7 +15,7 @@
 
     public interface IJsonFormatter<T, TSymbol> : IJsonFormatter where TSymbol : struct
     {
-        void Serialize(ref JsonWriter<TSymbol> writer, T value);
-        T Deserialize(ref JsonReader<TSymbol> reader);
+        void Serialize(ref JsonWriter<TSymbol> writer, T value, IJsonFormatterResolver<TSymbol> resolver);
+        T Deserialize(ref JsonReader<TSymbol> reader, IJsonFormatterResolver<TSymbol> resolver);
     }
 }

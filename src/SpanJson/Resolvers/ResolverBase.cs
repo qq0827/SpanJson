@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -9,6 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using SpanJson.Formatters;
 using SpanJson.Helpers;
+using SpanJson.Internal;
 // ReSharper disable VirtualMemberNeverOverridden.Global
 
 namespace SpanJson.Resolvers
@@ -80,6 +82,8 @@ namespace SpanJson.Resolvers
             _spanJsonOptions = spanJsonOptions;
         }
 
+        public SpanJsonOptions JsonOptions => _spanJsonOptions;
+
         public virtual IJsonFormatter GetFormatter(Type type)
         {
             // ReSharper disable ConvertClosureToMethodGroup
@@ -129,13 +133,23 @@ namespace SpanJson.Resolvers
             var result = new List<JsonMemberInfo>();
             foreach (var memberInfoName in members)
             {
-                var name = Escape(memberInfoName);
-                if (_spanJsonOptions.NamingConvention == NamingConventions.CamelCase)
+                string name;
+                switch (_spanJsonOptions.NamingConvention)
                 {
-                    name = MakeCamelCase(name);
+                    case NamingConventions.CamelCase:
+                        name = StringMutator.ToCamelCase(memberInfoName);
+                        break;
+                    case NamingConventions.SnakeCase:
+                        name = StringMutator.ToSnakeCase(memberInfoName);
+                        break;
+                    case NamingConventions.OriginalCase:
+                    default:
+                        name = memberInfoName;
+                        break;
                 }
+                var escapedName = EscapingHelper.EscapeString(name, _spanJsonOptions.EscapeHandling);
 
-                result.Add(new JsonMemberInfo(memberInfoName, typeof(object), null, name,
+                result.Add(new JsonMemberInfo(memberInfoName, typeof(object), null, name, escapedName,
                     _spanJsonOptions.NullOption == NullOptions.ExcludeNulls, true, true, null, null));
             }
 
@@ -144,7 +158,7 @@ namespace SpanJson.Resolvers
 
         public virtual IJsonFormatter<T, TSymbol> GetFormatter<T>()
         {
-            return (IJsonFormatter<T, TSymbol>) GetFormatter(typeof(T));
+            return (IJsonFormatter<T, TSymbol>)GetFormatter(typeof(T));
         }
 
         public virtual JsonObjectDescription GetObjectDescription<T>()
@@ -172,11 +186,17 @@ namespace SpanJson.Resolvers
             {
                 var memberType = memberInfo is FieldInfo fi ? fi.FieldType :
                     memberInfo is PropertyInfo pi ? pi.PropertyType : null;
-                var name = Escape(GetAttributeName(memberInfo) ?? memberInfo.Name);
-                if (_spanJsonOptions.NamingConvention == NamingConventions.CamelCase)
+                var name = GetAttributeName(memberInfo) ?? memberInfo.Name;
+                switch (_spanJsonOptions.NamingConvention)
                 {
-                    name = MakeCamelCase(name);
+                    case NamingConventions.CamelCase:
+                        name = StringMutator.ToCamelCase(name);
+                        break;
+                    case NamingConventions.SnakeCase:
+                        name = StringMutator.ToSnakeCase(name);
+                        break;
                 }
+                var escapedName = EscapingHelper.EscapeString(name, _spanJsonOptions.EscapeHandling);
 
                 var canRead = true;
                 var canWrite = true;
@@ -194,7 +214,7 @@ namespace SpanJson.Resolvers
                 {
                     var customSerializerAttr = memberInfo.GetCustomAttribute<JsonCustomSerializerAttribute>();
                     var shouldSerialize = type.GetMethod($"ShouldSerialize{memberInfo.Name}");
-                    result.Add(new JsonMemberInfo(memberInfo.Name, memberType, shouldSerialize, name, excludeNulls, canRead, canWrite, customSerializerAttr?.Type, customSerializerAttr?.Arguments));
+                    result.Add(new JsonMemberInfo(memberInfo.Name, memberType, shouldSerialize, name, escapedName, excludeNulls, canRead, canWrite, customSerializerAttr?.Type, customSerializerAttr?.Arguments));
                 }
             }
 
@@ -222,11 +242,6 @@ namespace SpanJson.Resolvers
 
             constructor = default;
             attribute = default;
-        }
-
-        private static string Escape(string input)
-        {
-            return input; // TODO: Find out if necessary
         }
 
         private static bool IsIgnored(MemberInfo memberInfo)
@@ -286,15 +301,15 @@ namespace SpanJson.Resolvers
                 switch (_spanJsonOptions.EnumOption)
                 {
                     case EnumOptions.String:
-                    {
-                        if (type.GetCustomAttribute<FlagsAttribute>() != null)
                         {
-                            var enumBaseType = Enum.GetUnderlyingType(type);
-                            return GetDefaultOrCreate(typeof(EnumStringFlagsFormatter<,,,>).MakeGenericType(type, enumBaseType, typeof(TSymbol), typeof(TResolver)));
-                        }
+                            if (type.GetCustomAttribute<FlagsAttribute>() != null)
+                            {
+                                var enumBaseType = Enum.GetUnderlyingType(type);
+                                return GetDefaultOrCreate(typeof(EnumStringFlagsFormatter<,,,>).MakeGenericType(type, enumBaseType, typeof(TSymbol), typeof(TResolver)));
+                            }
 
-                        return GetDefaultOrCreate(typeof(EnumStringFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
-                    }
+                            return GetDefaultOrCreate(typeof(EnumStringFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
+                        }
                     case EnumOptions.Integer:
                         return GetDefaultOrCreate(typeof(EnumIntegerFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
                 }

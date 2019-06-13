@@ -1,11 +1,11 @@
 ﻿namespace SpanJson
 {
     using System;
+    using System.Buffers;
     using System.Buffers.Text;
     using System.Diagnostics;
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
-    using System.Text;
     using SpanJson.Helpers;
     using SpanJson.Internal;
     using SpanJson.Internal.DoubleConversion;
@@ -161,7 +161,7 @@
         public void WriteUtf8Decimal(decimal value)
         {
             ref var pos = ref _pos;
-            Ensure(pos, JsonSharedConstant.MaximumFormatDecimalLength);
+            Ensure(pos, JsonConstants.MaximumFormatDecimalLength);
             var result = Utf8Formatter.TryFormat(value, Utf8Span, out int bytesWritten);
             Debug.Assert(result);
             pos += bytesWritten;
@@ -180,7 +180,13 @@
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteUtf8Char(char value)
+        {
+            WriteUtf8Char(value, StringEscapeHandling.Default);
+        }
+
+        public void WriteUtf8Char(char value, StringEscapeHandling escapeHandling)
         {
             ref var pos = ref _pos;
             const int size = 8; // 1-6 chars + two JsonUtf8Constant.DoubleQuote
@@ -189,7 +195,20 @@
             ref byte pinnableAddr = ref PinnableUtf8Address;
 
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
-            WriteUtf8CharInternal(ref this, ref pinnableAddr, value, ref pos);
+            if (EscapingHelper.NeedsEscaping(value, escapeHandling))
+            {
+                EscapingHelper.EscapeChar(value, ref pinnableAddr, ref pos);
+            }
+            else
+            {
+                unsafe
+                {
+                    fixed (byte* bytesPtr = &Unsafe.AddByteOffset(ref pinnableAddr, (IntPtr)pos))
+                    {
+                        pos += TextEncodings.UTF8NoBOM.GetBytes(&value, 1, bytesPtr, FreeCapacity);
+                    }
+                }
+            }
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
         }
 
@@ -251,7 +270,7 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteUtf8String(string value)
         {
-            WriteUtf8String(value.AsSpan());
+            WriteUtf8String(value.AsSpan(), StringEscapeHandling.Default);
         }
 
         /// <summary>We know that for a pure ascii string all characters will fit if there are no escapes
@@ -261,181 +280,31 @@
         /// That's all done to make sure we don't have resizing in the fast path (the ascii case).</summary>
         public void WriteUtf8String(in ReadOnlySpan<char> value)
         {
-            ref var pos = ref _pos;
-            var valueLen = value.Length;
-            uint nLen = (uint)valueLen;
-            var sLength = Encoding.UTF8.GetMaxByteCount(valueLen) + 7; // assume that a fully escaped char fits too + 2 double quotes
-            Ensure(pos, sLength);
-            ref byte pinnableAddr = ref PinnableUtf8Address;
-
-            WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
-            var index = 0;
-            var from = 0;
-            ref char utf16Source = ref MemoryMarshal.GetReference(value);
-            while ((uint)index < nLen)
-            {
-                ref readonly var c = ref Unsafe.Add(ref utf16Source, index);
-                if (c < 0x20 || c == JsonUtf8Constant.DoubleQuote || c == JsonUtf8Constant.Solidus || c == JsonUtf8Constant.ReverseSolidus)
-                {
-                    var length = index - from;
-                    pos += TextEncodings.Utf8.GetBytes(value.Slice(from, length), Utf8Span);
-                    WriteEscapedUtf8CharInternal(ref pinnableAddr, c, ref pos);
-
-                    index++;
-                    var remaining = 5 + valueLen - index; // make sure that all characters and an extra 5 for a full escape still fit
-                    Ensure(pos, remaining);
-                    pinnableAddr = ref PinnableUtf8Address;
-                    from = index;
-                }
-                else
-                {
-                    index++;
-                }
-            }
-
-            // Still chars to encode
-            if ((uint)from < nLen)
-            {
-                pos += TextEncodings.Utf8.GetBytes(value.Slice(from), Utf8Span);
-            }
-
-            WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
-        }
-
-        private static void WriteEscapedUtf8CharInternal(ref byte destination, char value, ref int pos)
-        {
-            switch (value)
-            {
-                case JsonUtf16Constant.DoubleQuote:
-                    WriteUtf8SingleEscapedChar(ref destination, JsonUtf16Constant.DoubleQuote, ref pos);
-                    break;
-                case JsonUtf16Constant.Solidus:
-                    WriteUtf8SingleEscapedChar(ref destination, JsonUtf16Constant.Solidus, ref pos);
-                    break;
-                case JsonUtf16Constant.ReverseSolidus:
-                    WriteUtf8SingleEscapedChar(ref destination, JsonUtf16Constant.ReverseSolidus, ref pos);
-                    break;
-                case '\b':
-                    WriteUtf8SingleEscapedChar(ref destination, 'b', ref pos);
-                    break;
-                case '\f':
-                    WriteUtf8SingleEscapedChar(ref destination, 'f', ref pos);
-                    break;
-                case '\n':
-                    WriteUtf8SingleEscapedChar(ref destination, 'n', ref pos);
-                    break;
-                case '\r':
-                    WriteUtf8SingleEscapedChar(ref destination, 'r', ref pos);
-                    break;
-                case '\t':
-                    WriteUtf8SingleEscapedChar(ref destination, 't', ref pos);
-                    break;
-                case '\x0':
-                    WriteUtf8DoubleEscapedChar(ref destination, '0', '0', ref pos);
-                    break;
-                case '\x1':
-                    WriteUtf8DoubleEscapedChar(ref destination, '0', '1', ref pos);
-                    break;
-                case '\x2':
-                    WriteUtf8DoubleEscapedChar(ref destination, '0', '2', ref pos);
-                    break;
-                case '\x3':
-                    WriteUtf8DoubleEscapedChar(ref destination, '0', '3', ref pos);
-                    break;
-                case '\x4':
-                    WriteUtf8DoubleEscapedChar(ref destination, '0', '4', ref pos);
-                    break;
-                case '\x5':
-                    WriteUtf8DoubleEscapedChar(ref destination, '0', '5', ref pos);
-                    break;
-                case '\x6':
-                    WriteUtf8DoubleEscapedChar(ref destination, '0', '6', ref pos);
-                    break;
-                case '\x7':
-                    WriteUtf8DoubleEscapedChar(ref destination, '0', '7', ref pos);
-                    break;
-                case '\xB':
-                    WriteUtf8DoubleEscapedChar(ref destination, '0', 'B', ref pos);
-                    break;
-                case '\xE':
-                    WriteUtf8DoubleEscapedChar(ref destination, '0', 'E', ref pos);
-                    break;
-                case '\xF':
-                    WriteUtf8DoubleEscapedChar(ref destination, '0', 'F', ref pos);
-                    break;
-                case '\x10':
-                    WriteUtf8DoubleEscapedChar(ref destination, '1', '0', ref pos);
-                    break;
-                case '\x11':
-                    WriteUtf8DoubleEscapedChar(ref destination, '1', '1', ref pos);
-                    break;
-                case '\x12':
-                    WriteUtf8DoubleEscapedChar(ref destination, '1', '2', ref pos);
-                    break;
-                case '\x13':
-                    WriteUtf8DoubleEscapedChar(ref destination, '1', '3', ref pos);
-                    break;
-                case '\x14':
-                    WriteUtf8DoubleEscapedChar(ref destination, '1', '4', ref pos);
-                    break;
-                case '\x15':
-                    WriteUtf8DoubleEscapedChar(ref destination, '1', '5', ref pos);
-                    break;
-                case '\x16':
-                    WriteUtf8DoubleEscapedChar(ref destination, '1', '6', ref pos);
-                    break;
-                case '\x17':
-                    WriteUtf8DoubleEscapedChar(ref destination, '1', '7', ref pos);
-                    break;
-                case '\x18':
-                    WriteUtf8DoubleEscapedChar(ref destination, '1', '8', ref pos);
-                    break;
-                case '\x19':
-                    WriteUtf8DoubleEscapedChar(ref destination, '1', '9', ref pos);
-                    break;
-                case '\x1A':
-                    WriteUtf8DoubleEscapedChar(ref destination, '1', 'A', ref pos);
-                    break;
-                case '\x1B':
-                    WriteUtf8DoubleEscapedChar(ref destination, '1', 'B', ref pos);
-                    break;
-                case '\x1C':
-                    WriteUtf8DoubleEscapedChar(ref destination, '1', 'C', ref pos);
-                    break;
-                case '\x1D':
-                    WriteUtf8DoubleEscapedChar(ref destination, '1', 'D', ref pos);
-                    break;
-                case '\x1E':
-                    WriteUtf8DoubleEscapedChar(ref destination, '1', 'E', ref pos);
-                    break;
-                case '\x1F':
-                    WriteUtf8DoubleEscapedChar(ref destination, '1', 'F', ref pos);
-                    break;
-            }
+            WriteUtf8String(value, StringEscapeHandling.Default);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static unsafe void WriteUtf8CharInternal(ref JsonWriter<TSymbol> writer, ref byte destination, char value, ref int pos)
+        public void WriteUtf8String(string value, StringEscapeHandling escapeHandling)
         {
-            if (value < 0x20 || value == JsonUtf8Constant.DoubleQuote || value == JsonUtf8Constant.Solidus || value == JsonUtf8Constant.ReverseSolidus)
+            WriteUtf8String(value.AsSpan(), escapeHandling);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteUtf8String(in ReadOnlySpan<char> value, StringEscapeHandling escapeHandling)
+        {
+            var firstEscapeIndex = EscapingHelper.NeedsEscaping(value, escapeHandling);
+            if ((uint)firstEscapeIndex > JsonSharedConstant.TooBigOrNegative) // -1
             {
-                WriteEscapedUtf8CharInternal(ref destination, value, ref pos);
-            }
-            else if (value < 0x80)
-            {
-                Unsafe.AddByteOffset(ref destination, (IntPtr)pos++) = (byte)value;
+                WriteUtf8StringEscapedValue(ref this, value, false);
             }
             else
             {
-                fixed (byte* bytesPtr = &Unsafe.AddByteOffset(ref destination, (IntPtr)pos))
-                {
-                    pos += TextEncodings.UTF8NoBOM.GetBytes(&value, 1, bytesPtr, writer.FreeCapacity);
-                }
+                WriteUtf8StringEscapeValue(ref this, value, escapeHandling, firstEscapeIndex, false);
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteRaw(byte[] value)
+        public void WriteUtf8Raw(byte[] value)
         {
             if (null == value) { return; }
 
@@ -443,7 +312,7 @@
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteRaw(in ReadOnlySpan<byte> value)
+        public void WriteUtf8Raw(in ReadOnlySpan<byte> value)
         {
             var count = value.Length;
             if (0u >= (uint)count) { return; }
@@ -473,6 +342,7 @@
             UnsafeMemory.WriteRawBytesUnsafe(ref PinnableUtf8Address, ref MemoryMarshal.GetReference(value), count, ref pos);
         }
 
+        /// <summary>The value should already be properly escaped.</summary>
         public void WriteUtf8VerbatimNameSpan(in ReadOnlySpan<byte> value)
         {
             ref var pos = ref _pos;
@@ -486,53 +356,129 @@
             Unsafe.AddByteOffset(ref pinnableAddr, (IntPtr)pos++) = JsonUtf8Constant.NameSeparator;
         }
 
-        /// <summary>The value should already be properly escaped</summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteUtf8VerbatimNameSpan(in ReadOnlySpan<byte> value, StringEscapeHandling escapeHandling)
+        {
+            var firstEscapeIndex = EscapingHelper.NeedsEscaping(value, escapeHandling);
+            if ((uint)firstEscapeIndex > JsonSharedConstant.TooBigOrNegative) // -1
+            {
+                WriteUtf8VerbatimNameSpan(value);
+            }
+            else
+            {
+                WriteUtf8EscapeVerbatimNameSpan(value, escapeHandling, firstEscapeIndex);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void WriteUtf8EscapeVerbatimNameSpan(in ReadOnlySpan<byte> value, StringEscapeHandling escapeHandling, int firstEscapeIndex)
+        {
+
+            byte[] propertyArray = null;
+
+            int length = EscapingHelper.GetMaxEscapedLength(value.Length, firstEscapeIndex);
+            Span<byte> escapedPropertyName;
+            if ((uint)length > c_stackallocThreshold)
+            {
+                propertyArray = ArrayPool<byte>.Shared.Rent(length);
+                escapedPropertyName = propertyArray;
+            }
+            else
+            {
+                // Cannot create a span directly since it gets passed to instance methods on a ref struct.
+                unsafe
+                {
+                    byte* ptr = stackalloc byte[length];
+                    escapedPropertyName = new Span<byte>(ptr, length);
+                }
+            }
+            EscapingHelper.EscapeString(value, escapedPropertyName, escapeHandling, firstEscapeIndex, out int written);
+
+            WriteUtf8VerbatimNameSpan(escapedPropertyName.Slice(0, written));
+
+            if (propertyArray != null)
+            {
+                ArrayPool<byte>.Shared.Return(propertyArray);
+            }
+        }
+
+        /// <summary>The value should already be properly escaped.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteUtf8Name(string value)
         {
-            WriteUtf8Name(value.AsSpan());
+            WriteUtf8StringEscapedValue(ref this, value.AsSpan(), true);
         }
 
-        /// <summary>The value should already be properly escaped</summary>
-        public unsafe void WriteUtf8Name(in ReadOnlySpan<char> value)
+        /// <summary>The value should already be properly escaped.</summary>
+        public void WriteUtf8Name(in ReadOnlySpan<char> value)
         {
-            ref var pos = ref _pos;
-            var sLength = TextEncodings.Utf8.GetMaxByteCount(value.Length) + 3;
-            Ensure(pos, sLength);
+            WriteUtf8StringEscapedValue(ref this, value, true);
+        }
 
-            ref byte pinnableAddr = ref PinnableUtf8Address;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteUtf8Name(string value, StringEscapeHandling escapeHandling)
+        {
+            WriteUtf8Name(value.AsSpan(), escapeHandling);
+        }
 
-            WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
-            fixed (char* charsPtr = &MemoryMarshal.GetReference(value))
-            fixed (byte* bytesPtr = &Unsafe.AddByteOffset(ref pinnableAddr, (IntPtr)pos))
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteUtf8Name(in ReadOnlySpan<char> value, StringEscapeHandling escapeHandling)
+        {
+            var firstEscapeIndex = EscapingHelper.NeedsEscaping(value, escapeHandling);
+            if ((uint)firstEscapeIndex > JsonSharedConstant.TooBigOrNegative) // -1
             {
-                pos += TextEncodings.UTF8NoBOM.GetBytes(charsPtr, value.Length, bytesPtr, FreeCapacity);
+                WriteUtf8StringEscapedValue(ref this, value, true);
             }
+            else
+            {
+                WriteUtf8StringEscapeValue(ref this, value, escapeHandling, firstEscapeIndex, true);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void WriteUtf8StringEscapeValue(ref JsonWriter<TSymbol> writer, in ReadOnlySpan<char> value,
+            StringEscapeHandling escapeHandling, int firstEscapeIndex, bool withNameSeparator)
+        {
+            char[] propertyArray = null;
+
+            int length = EscapingHelper.GetMaxEscapedLength(value.Length, firstEscapeIndex);
+            Span<char> escapedPropertyName;
+            if ((uint)length > c_stackallocThreshold)
+            {
+                propertyArray = ArrayPool<char>.Shared.Rent(length);
+                escapedPropertyName = propertyArray;
+            }
+            else
+            {
+                // Cannot create a span directly since it gets passed to instance methods on a ref struct.
+                unsafe
+                {
+                    char* ptr = stackalloc char[length];
+                    escapedPropertyName = new Span<char>(ptr, length);
+                }
+            }
+            EscapingHelper.EscapeString(value, escapedPropertyName, escapeHandling, firstEscapeIndex, out int written);
+
+            WriteUtf8StringEscapedValue(ref writer, escapedPropertyName.Slice(0, written), withNameSeparator);
+
+            if (propertyArray != null)
+            {
+                ArrayPool<char>.Shared.Return(propertyArray);
+            }
+        }
+
+        private static void WriteUtf8StringEscapedValue(ref JsonWriter<TSymbol> writer, in ReadOnlySpan<char> value, bool withNameSeparator)
+        {
+            ref var pos = ref writer._pos;
+            var sLength = TextEncodings.UTF8NoBOM.GetMaxByteCount(value.Length) + 3;
+            writer.Ensure(pos, sLength);
+
+            ref byte pinnableAddr = ref writer.PinnableUtf8Address;
+
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
-            Unsafe.AddByteOffset(ref pinnableAddr, (IntPtr)pos++) = JsonUtf8Constant.NameSeparator;
-        }
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void WriteUtf8SingleEscapedChar(ref byte destination, char toEscape, ref int pos)
-        {
-            var offset = (IntPtr)pos;
-            Unsafe.AddByteOffset(ref destination, offset + 1) = (byte)toEscape;
-            Unsafe.AddByteOffset(ref destination, offset) = JsonUtf8Constant.ReverseSolidus;
-            pos += 2;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void WriteUtf8DoubleEscapedChar(ref byte destination, char firstToEscape, char secondToEscape, ref int pos)
-        {
-            var offset = (IntPtr)pos;
-            Unsafe.AddByteOffset(ref destination, offset + 5) = (byte)secondToEscape;
-            Unsafe.AddByteOffset(ref destination, offset + 4) = (byte)firstToEscape;
-            Unsafe.AddByteOffset(ref destination, offset + 3) = (byte)'0';
-            Unsafe.AddByteOffset(ref destination, offset + 2) = (byte)'0';
-            Unsafe.AddByteOffset(ref destination, offset + 1) = (byte)'u';
-            Unsafe.AddByteOffset(ref destination, offset) = JsonUtf8Constant.ReverseSolidus;
-            pos += 6;
+            pos += TextEncodings.Utf8.GetBytes(value, writer.Utf8Span);
+            WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
+            if (withNameSeparator) { Unsafe.AddByteOffset(ref pinnableAddr, (IntPtr)pos++) = JsonUtf8Constant.NameSeparator; }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

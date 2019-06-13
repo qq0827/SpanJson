@@ -1,4 +1,4 @@
-﻿namespace SpanJson.Resolvers
+﻿namespace SpanJson
 {
     public enum NullOptions
     {

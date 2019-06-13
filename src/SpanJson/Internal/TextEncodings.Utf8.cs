@@ -4,18 +4,21 @@ namespace SpanJson.Internal
     using System;
     using System.Buffers;
     using System.Diagnostics;
-    using System.Numerics;
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
     using System.Text;
 
     public static partial class TextEncodings
     {
+        // borrowed from https://github.com/dotnet/corefxlab/tree/master/src/System.Text.Primitives/System/Text/Encoders
+
         public static class Utf8
         {
             static readonly int MaxBytesPerCharUtf8 = Encoding.UTF8.GetMaxByteCount(1);
+            /// <summary>For short strings use only.</summary>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static int GetMaxByteCount(string seq) => seq.Length * MaxBytesPerCharUtf8;
+            /// <summary>For short strings use only.</summary>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static int GetMaxByteCount(int charCount) => charCount * MaxBytesPerCharUtf8;
 
@@ -790,6 +793,8 @@ namespace SpanJson.Internal
 
             public static string ToString(ReadOnlySpan<byte> utf8Bytes)
             {
+                if (utf8Bytes.IsEmpty) { return string.Empty; }
+
                 // TODO: why do we return status here?
                 var status = ToUtf16Length(utf8Bytes, out int bytesNeeded);
                 var result = new String(' ', bytesNeeded >> 1);
@@ -812,6 +817,8 @@ namespace SpanJson.Internal
 
             public static unsafe int GetCharCount(ReadOnlySpan<byte> bytes)
             {
+                if (bytes.IsEmpty) { return 0; }
+
                 // It's ok for us to pass null pointers down to the workhorse routine.
 
                 fixed (byte* bytesPtr = &MemoryMarshal.GetReference(bytes))
@@ -822,6 +829,8 @@ namespace SpanJson.Internal
 
             public static unsafe int GetChars(ReadOnlySpan<byte> bytes, Span<char> chars)
             {
+                if (bytes.IsEmpty) { return 0; }
+
                 // It's ok for us to pass null pointers down to the workhorse below.
 
                 fixed (byte* bytesPtr = &MemoryMarshal.GetReference(bytes))
@@ -838,6 +847,8 @@ namespace SpanJson.Internal
 #if NETCOREAPP_2_X_GREATER || NETSTANDARD_2_0_GREATER
                 return TextEncodings.UTF8NoBOM.GetBytes(chars, bytes);
 #else
+                if (chars.IsEmpty) { return 0; }
+
                 var utf16Source = MemoryMarshal.AsBytes(chars);
                 var result = ToUtf8(ref MemoryMarshal.GetReference(utf16Source), utf16Source.Length, ref MemoryMarshal.GetReference(bytes), bytes.Length, out _, out var bytesWritten);
                 Debug.Assert(result == OperationStatus.Done);

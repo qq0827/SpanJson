@@ -29,12 +29,12 @@ namespace SpanJson.Formatters
 
         private static readonly IJsonFormatterResolver<TSymbol, TResolver> Resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
         private static readonly Dictionary<string, DeserializeDelegate> KnownMembersDictionary = BuildKnownMembers();
-        private static readonly ConcurrentDictionary<string, Func<T, object>> GetMemberCache = new ConcurrentDictionary<string, Func<T, object>>();
+        private static readonly ConcurrentDictionary<string, Func<T, object>> GetMemberCache = new ConcurrentDictionary<string, Func<T, object>>(StringComparer.Ordinal);
 
 
-        private static readonly ConcurrentDictionary<string, Action<T, object>> SetMemberCache = new ConcurrentDictionary<string, Action<T, object>>();
+        private static readonly ConcurrentDictionary<string, Action<T, object>> SetMemberCache = new ConcurrentDictionary<string, Action<T, object>>(StringComparer.Ordinal);
 
-        public T Deserialize(ref JsonReader<TSymbol> reader)
+        public T Deserialize(ref JsonReader<TSymbol> reader, IJsonFormatterResolver<TSymbol> resolver)
         {
             if (reader.ReadIsNull())
             {
@@ -49,7 +49,7 @@ namespace SpanJson.Formatters
                 var name = reader.ReadEscapedName();
                 if (KnownMembersDictionary.TryGetValue(name, out var action))
                 {
-                    action(result, ref reader); // if we have known members we try to assign them directly without dynamic
+                    action(result, ref reader, resolver); // if we have known members we try to assign them directly without dynamic
                 }
                 else
                 {
@@ -61,7 +61,7 @@ namespace SpanJson.Formatters
             return result;
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, T value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, T value, IJsonFormatterResolver<TSymbol> resolver)
         {
             if (value == null)
             {
@@ -118,7 +118,7 @@ namespace SpanJson.Formatters
             else if (value is ISpanJsonDynamicArray dynamicArray)
             {
                 writer.IncrementDepth();
-                EnumerableFormatter<IEnumerable<object>, object, TSymbol, TResolver>.Default.Serialize(ref writer, dynamicArray);
+                EnumerableFormatter<IEnumerable<object>, object, TSymbol, TResolver>.Default.Serialize(ref writer, dynamicArray, resolver);
                 writer.DecrementDepth();
             }
             else
@@ -142,7 +142,7 @@ namespace SpanJson.Formatters
 
                     writer.IncrementDepth();
                     writer.WriteName(memberInfo.Name);
-                    RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child);
+                    RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child, resolver);
                     writer.DecrementDepth();
                 }
 
@@ -164,7 +164,7 @@ namespace SpanJson.Formatters
 
                     writer.IncrementDepth();
                     writer.WriteName(memberInfo.Name);
-                    RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child);
+                    RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child, resolver);
                     writer.DecrementDepth();
                 }
 
@@ -178,6 +178,7 @@ namespace SpanJson.Formatters
             var memberInfos = resolver.GetObjectDescription<T>().ToList();
             var inputParameter = Expression.Parameter(typeof(T), "input");
             var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
+            var resolverParameter = Expression.Parameter(typeof(IJsonFormatterResolver<TSymbol>), "resolver");
             var result = new Dictionary<string, DeserializeDelegate>(StringComparer.InvariantCulture);
             // can't deserialize abstract or interface
             foreach (var memberInfo in memberInfos)
@@ -186,7 +187,7 @@ namespace SpanJson.Formatters
                 {
                     var skipNextMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.SkipNextSegment));
                     var skipExpression = Expression
-                        .Lambda<DeserializeDelegate>(Expression.Call(readerParameter, skipNextMethodInfo), inputParameter, readerParameter).Compile();
+                        .Lambda<DeserializeDelegate>(Expression.Call(readerParameter, skipNextMethodInfo), inputParameter, readerParameter, resolverParameter).Compile();
                     result.Add(memberInfo.Name, skipExpression);
                     continue;
                 }
@@ -197,7 +198,7 @@ namespace SpanJson.Formatters
                     var throwExpression = Expression.Lambda<DeserializeDelegate>(Expression.Block(
                             Expression.Throw(Expression.Constant(new NotSupportedException($"{typeof(T).Name} contains abstract members."))),
                             Expression.Default(typeof(T))),
-                        inputParameter, readerParameter).Compile();
+                        inputParameter, readerParameter, resolverParameter).Compile();
                     result.Add(memberInfo.Name, throwExpression);
                     continue;
                 }
@@ -206,8 +207,8 @@ namespace SpanJson.Formatters
                 var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
                 var assignExpression = Expression.Assign(Expression.PropertyOrField(inputParameter, memberInfo.MemberName),
                     Expression.Call(Expression.Field(null, fieldInfo),
-                        FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType()), readerParameter));
-                var lambda = Expression.Lambda<DeserializeDelegate>(assignExpression, inputParameter, readerParameter).Compile();
+                        FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType(), resolverParameter.Type), readerParameter, resolverParameter));
+                var lambda = Expression.Lambda<DeserializeDelegate>(assignExpression, inputParameter, readerParameter, resolverParameter).Compile();
                 result.Add(memberInfo.Name, lambda);
             }
 
@@ -251,6 +252,6 @@ namespace SpanJson.Formatters
             });
         }
 
-        protected delegate void DeserializeDelegate(T input, ref JsonReader<TSymbol> reader);
+        protected delegate void DeserializeDelegate(T input, ref JsonReader<TSymbol> reader, IJsonFormatterResolver<TSymbol> resolver);
     }
 }

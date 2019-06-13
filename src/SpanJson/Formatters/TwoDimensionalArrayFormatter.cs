@@ -13,14 +13,14 @@ namespace SpanJson.Formatters
             StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
         private static readonly bool IsRecursionCandidate = RecursionCandidate<T>.IsRecursionCandidate;
 
-        public T[,] Deserialize(ref JsonReader<TSymbol> reader)
+        public T[,] Deserialize(ref JsonReader<TSymbol> reader, IJsonFormatterResolver<TSymbol> resolver)
         {
             var values = new List<T[]>(4);
             reader.ReadBeginArrayOrThrow();
             var count = 0;
             while (!reader.TryReadIsEndArrayOrValueSeparator(ref count)) // count is already preincremented, as it counts the separators
             {
-                values.Add(ArrayFormatter<T, TSymbol, TResolver>.Default.Deserialize(ref reader));
+                values.Add(ArrayFormatter<T, TSymbol, TResolver>.Default.Deserialize(ref reader, resolver));
             }
 
             if (0u >= (uint)values.Count)
@@ -46,7 +46,7 @@ namespace SpanJson.Formatters
             return result;
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, T[,] value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, T[,] value, IJsonFormatterResolver<TSymbol> resolver)
         {
             if (value == null)
             {
@@ -66,11 +66,11 @@ namespace SpanJson.Formatters
                 writer.WriteBeginArray();
                 if (secondLength > 0)
                 {
-                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[0, 0], ElementFormatter);
+                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[0, 0], ElementFormatter, resolver);
                     for (var k = 1; k < secondLength; k++)
                     {
                         writer.WriteValueSeparator();
-                        SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[0, k], ElementFormatter);
+                        SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[0, k], ElementFormatter, resolver);
                     }
                 }
 
@@ -81,11 +81,11 @@ namespace SpanJson.Formatters
                     writer.WriteBeginArray();
                     if (secondLength > 0)
                     {
-                        SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i, 0], ElementFormatter);
+                        SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i, 0], ElementFormatter, resolver);
                         for (var k = 1; k < secondLength; k++)
                         {
                             writer.WriteValueSeparator();
-                            SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i, k], ElementFormatter);
+                            SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i, k], ElementFormatter, resolver);
                         }
                     }
 

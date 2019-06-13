@@ -10,45 +10,45 @@ namespace SpanJson.Helpers
         {
             var digits = 1;
             uint part;
-            if (value >= 10000000)
+            if (value >= 10000000ul)
             {
-                if (value >= 100000000000000)
+                if (value >= 100000000000000ul)
                 {
-                    part = (uint) (value / 100000000000000);
+                    part = (uint)(value / 100000000000000ul);
                     digits += 14;
                 }
                 else
                 {
-                    part = (uint) (value / 10000000);
+                    part = (uint)(value / 10000000ul);
                     digits += 7;
                 }
             }
             else
             {
-                part = (uint) value;
+                part = (uint)value;
             }
 
-            if (part < 10)
+            if (part < 10u)
             {
                 // no-op
             }
-            else if (part < 100)
+            else if (part < 100u)
             {
                 digits += 1;
             }
-            else if (part < 1000)
+            else if (part < 1000u)
             {
                 digits += 2;
             }
-            else if (part < 10000)
+            else if (part < 10000u)
             {
                 digits += 3;
             }
-            else if (part < 100000)
+            else if (part < 100000u)
             {
                 digits += 4;
             }
-            else if (part < 1000000)
+            else if (part < 1000000u)
             {
                 digits += 5;
             }

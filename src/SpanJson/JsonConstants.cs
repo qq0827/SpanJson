@@ -14,10 +14,6 @@ namespace SpanJson
         public const int MaxTimeSpanLength = 27; // c + 2 double quotes
         public const int MaxGuidLength = 42; // d + 2 double quotes
 
-        public const int MaximumFormatDoubleLength = 128;  // default (i.e. 'G'), using 128 (rather than say 32) to be future-proof.
-        public const int MaximumFormatSingleLength = 128;  // default (i.e. 'G'), using 128 (rather than say 32) to be future-proof.
-        public const int MaximumFormatDecimalLength = 31; // default (i.e. 'G')
-
         public const uint TooBigOrNegative = int.MaxValue;
 
         public const uint ByteSize = sizeof(byte);

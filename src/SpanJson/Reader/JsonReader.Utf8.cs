@@ -281,7 +281,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private DateTime ParseUtf8DateTime(in ReadOnlySpan<byte> span)
         {
-            if (DateTimeParser.TryParseDateTime(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
+            if (JsonHelpers.TryParseAsISO(span, out DateTime value, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return value;
             }
@@ -295,7 +295,7 @@ namespace SpanJson
         {
             Span<byte> span = stackalloc byte[JsonSharedConstant.MaxDateTimeLength];
             UnescapeUtf8Bytes(input, ref span);
-            if (DateTimeParser.TryParseDateTime(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
+            if (JsonHelpers.TryParseAsISO(span, out DateTime value, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return value;
             }
@@ -315,7 +315,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private DateTimeOffset ParseUtf8DateTimeOffset(in ReadOnlySpan<byte> span)
         {
-            if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
+            if (JsonHelpers.TryParseAsISO(span, out DateTimeOffset value, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return value;
             }
@@ -329,7 +329,7 @@ namespace SpanJson
         {
             Span<byte> span = stackalloc byte[JsonSharedConstant.MaxDateTimeOffsetLength];
             UnescapeUtf8Bytes(input, ref span);
-            if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
+            if (JsonHelpers.TryParseAsISO(span, out DateTimeOffset value, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return value;
             }
@@ -643,19 +643,14 @@ namespace SpanJson
                                 {
                                     index += bytesConsumed;
                                     var c = (char)value;
-#if NETSTANDARD2_0 || NET471 || NET451
-                                    var stack = new Span<char>(new[] { c });
                                     var destBytes = result.Slice(byteOffset);
                                     unsafe
                                     {
-                                        fixed (char* charsPtr = &MemoryMarshal.GetReference(stack))
                                         fixed (byte* bytesPtr = &MemoryMarshal.GetReference(destBytes))
-                                            byteOffset += TextEncodings.UTF8NoBOM.GetBytes(charsPtr, stack.Length, bytesPtr, destBytes.Length);
+                                        {
+                                            byteOffset += TextEncodings.UTF8NoBOM.GetBytes(&c, 1, bytesPtr, destBytes.Length);
+                                        }
                                     }
-#else
-                                    var stack = MemoryMarshal.CreateSpan(ref c, 1);
-                                    byteOffset += TextEncodings.UTF8NoBOM.GetBytes(stack, result.Slice(byteOffset));
-#endif
                                     from = index;
                                     continue;
                                 }
@@ -1240,7 +1235,7 @@ namespace SpanJson
                     {
                         pos++;
                         var count = 0;
-                        var dictionary = new Dictionary<string, object>();
+                        var dictionary = new Dictionary<string, object>(StringComparer.Ordinal);
                         while (!TryReadUtf8IsEndObjectOrValueSeparator(ref count))
                         {
                             var name = ReadUtf8EscapedName();

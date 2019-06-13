@@ -13,17 +13,17 @@ namespace SpanJson.Formatters
         private static readonly IJsonFormatter<T, TSymbol> ElementFormatter =
             StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
 
-        public T? Deserialize(ref JsonReader<TSymbol> reader)
+        public T? Deserialize(ref JsonReader<TSymbol> reader, IJsonFormatterResolver<TSymbol> resolver)
         {
             if (reader.ReadIsNull())
             {
                 return null;
             }
 
-            return ElementFormatter.Deserialize(ref reader);
+            return ElementFormatter.Deserialize(ref reader, resolver);
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, T? value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, T? value, IJsonFormatterResolver<TSymbol> resolver)
         {
             if (value == null)
             {
@@ -31,7 +31,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault());
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), resolver);
         }
     }
 }

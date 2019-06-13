@@ -90,14 +90,14 @@ namespace SpanJson.Tests
 
             public object Arguments { get; set; }
 
-            public void Serialize(ref JsonWriter<char> writer, long value)
+            public void Serialize(ref JsonWriter<char> writer, long value, IJsonFormatterResolver<char> resolver)
             {
-                StringUtf16Formatter.Default.Serialize(ref writer, value.ToString(CultureInfo.InvariantCulture));
+                StringUtf16Formatter.Default.Serialize(ref writer, value.ToString(CultureInfo.InvariantCulture), resolver);
             }
 
-            public long Deserialize(ref JsonReader<char> reader)
+            public long Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
             {
-                var value = StringUtf16Formatter.Default.Deserialize(ref reader);
+                var value = StringUtf16Formatter.Default.Deserialize(ref reader, resolver);
                 if (long.TryParse(value, out long longValue))
                 {
                     return longValue;
@@ -106,14 +106,14 @@ namespace SpanJson.Tests
                 throw new InvalidOperationException("Invalid value.");
             }
 
-            public void Serialize(ref JsonWriter<byte> writer, long value)
+            public void Serialize(ref JsonWriter<byte> writer, long value, IJsonFormatterResolver<byte> resolver)
             {
-                StringUtf8Formatter.Default.Serialize(ref writer, value.ToString(CultureInfo.InvariantCulture));
+                StringUtf8Formatter.Default.Serialize(ref writer, value.ToString(CultureInfo.InvariantCulture), resolver);
             }
 
-            public long Deserialize(ref JsonReader<byte> reader)
+            public long Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
             {
-                var value = StringUtf8Formatter.Default.Deserialize(ref reader);
+                var value = StringUtf8Formatter.Default.Deserialize(ref reader, resolver);
                 if (long.TryParse(value, out long longValue))
                 {
                     return longValue;
@@ -129,24 +129,24 @@ namespace SpanJson.Tests
 
             public object Arguments { get; set; }
 
-            public void Serialize(ref JsonWriter<char> writer, TestDTO.TestEnum value)
+            public void Serialize(ref JsonWriter<char> writer, TestDTO.TestEnum value, IJsonFormatterResolver<char> resolver)
             {
-                Int32Utf16Formatter.Default.Serialize(ref writer, (int) value);
+                Int32Utf16Formatter.Default.Serialize(ref writer, (int) value, resolver);
             }
 
-            public TestDTO.TestEnum Deserialize(ref JsonReader<char> reader)
+            public TestDTO.TestEnum Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
             {
-                return (TestDTO.TestEnum) Int32Utf16Formatter.Default.Deserialize(ref reader);
+                return (TestDTO.TestEnum) Int32Utf16Formatter.Default.Deserialize(ref reader, resolver);
             }
 
-            public void Serialize(ref JsonWriter<byte> writer, TestDTO.TestEnum value)
+            public void Serialize(ref JsonWriter<byte> writer, TestDTO.TestEnum value, IJsonFormatterResolver<byte> resolver)
             {
-                Int32Utf8Formatter.Default.Serialize(ref writer, (int) value);
+                Int32Utf8Formatter.Default.Serialize(ref writer, (int) value, resolver);
             }
 
-            public TestDTO.TestEnum Deserialize(ref JsonReader<byte> reader)
+            public TestDTO.TestEnum Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
             {
-                return (TestDTO.TestEnum) Int32Utf8Formatter.Default.Deserialize(ref reader);
+                return (TestDTO.TestEnum) Int32Utf8Formatter.Default.Deserialize(ref reader, resolver);
             }
         }
 
@@ -156,24 +156,24 @@ namespace SpanJson.Tests
 
             public object Arguments { get; set; }
 
-            public void Serialize(ref JsonWriter<byte> writer, long value)
+            public void Serialize(ref JsonWriter<byte> writer, long value, IJsonFormatterResolver<byte> resolver)
             {
-                Int64Utf8Formatter.Default.Serialize(ref writer, value * (int) Arguments);
+                Int64Utf8Formatter.Default.Serialize(ref writer, value * (int) Arguments, resolver);
             }
 
-            public long Deserialize(ref JsonReader<byte> reader)
+            public long Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
             {
-                return Int64Utf8Formatter.Default.Deserialize(ref reader) / (int) Arguments;
+                return Int64Utf8Formatter.Default.Deserialize(ref reader, resolver) / (int) Arguments;
             }
 
-            public void Serialize(ref JsonWriter<char> writer, long value)
+            public void Serialize(ref JsonWriter<char> writer, long value, IJsonFormatterResolver<char> resolver)
             {
-                Int64Utf16Formatter.Default.Serialize(ref writer, value * (int) Arguments);
+                Int64Utf16Formatter.Default.Serialize(ref writer, value * (int) Arguments, resolver);
             }
 
-            public long Deserialize(ref JsonReader<char> reader)
+            public long Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
             {
-                return Int64Utf16Formatter.Default.Deserialize(ref reader) / (int) Arguments;
+                return Int64Utf16Formatter.Default.Deserialize(ref reader, resolver) / (int) Arguments;
             }
         }
 
@@ -233,7 +233,7 @@ namespace SpanJson.Tests
                 writer.WriteEndObject();
             }
 
-            public void Serialize(ref JsonWriter<byte> writer, TypeWithCustomSerializer value)
+            public void Serialize(ref JsonWriter<byte> writer, TypeWithCustomSerializer value, IJsonFormatterResolver<byte> resolver)
             {
                 SerializeInternal(ref writer, value);
             }
@@ -258,17 +258,17 @@ namespace SpanJson.Tests
                 return result;
             }
 
-            public TypeWithCustomSerializer Deserialize(ref JsonReader<byte> reader)
+            public TypeWithCustomSerializer Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
             {
                 return DeserializeInternal(ref reader);
             }
 
-            public void Serialize(ref JsonWriter<char> writer, TypeWithCustomSerializer value)
+            public void Serialize(ref JsonWriter<char> writer, TypeWithCustomSerializer value, IJsonFormatterResolver<char> resolver)
             {
                 SerializeInternal(ref writer, value);
             }
 
-            public TypeWithCustomSerializer Deserialize(ref JsonReader<char> reader)
+            public TypeWithCustomSerializer Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
             {
                 return DeserializeInternal(ref reader);
             }
@@ -445,7 +445,7 @@ namespace SpanJson.Tests
         {
             public static readonly NullableCustomStructFormatter Default = new NullableCustomStructFormatter();
 
-            public void Serialize(ref JsonWriter<byte> writer, CustomStruct? value)
+            public void Serialize(ref JsonWriter<byte> writer, CustomStruct? value, IJsonFormatterResolver<byte> resolver)
             {
                 if (value is null)
                 {
@@ -453,21 +453,21 @@ namespace SpanJson.Tests
                     return;
                 }
 
-                Int32Utf8Formatter.Default.Serialize(ref writer, value.GetValueOrDefault().Value);
+                Int32Utf8Formatter.Default.Serialize(ref writer, value.GetValueOrDefault().Value, resolver);
             }
 
-            public CustomStruct? Deserialize(ref JsonReader<byte> reader)
+            public CustomStruct? Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
             {
                 if (reader.ReadIsNull())
                 {
                     return null;
                 }
 
-                var v = Int32Utf8Formatter.Default.Deserialize(ref reader);
+                var v = Int32Utf8Formatter.Default.Deserialize(ref reader, resolver);
                 return new CustomStruct {Value = v};
             }
 
-            public void Serialize(ref JsonWriter<char> writer, CustomStruct? value)
+            public void Serialize(ref JsonWriter<char> writer, CustomStruct? value, IJsonFormatterResolver<char> resolver)
             {
                 if (value is null)
                 {
@@ -475,17 +475,17 @@ namespace SpanJson.Tests
                     return;
                 }
 
-                Int32Utf16Formatter.Default.Serialize(ref writer, value.GetValueOrDefault().Value);
+                Int32Utf16Formatter.Default.Serialize(ref writer, value.GetValueOrDefault().Value, resolver);
             }
 
-            public CustomStruct? Deserialize(ref JsonReader<char> reader)
+            public CustomStruct? Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
             {
                 if (reader.ReadIsNull())
                 {
                     return null;
                 }
 
-                var v = Int32Utf16Formatter.Default.Deserialize(ref reader);
+                var v = Int32Utf16Formatter.Default.Deserialize(ref reader, resolver);
                 return new CustomStruct {Value = v};
             }
 
@@ -652,22 +652,22 @@ namespace SpanJson.Tests
         }
 
 
-        public void Serialize(ref JsonWriter<byte> writer, CustomSerializerTests.AnnotatedCustomStruct value)
+        public void Serialize(ref JsonWriter<byte> writer, CustomSerializerTests.AnnotatedCustomStruct value, IJsonFormatterResolver<byte> resolver)
         {
             SerializeInternal(ref writer, value);
         }
 
-        public CustomSerializerTests.AnnotatedCustomStruct Deserialize(ref JsonReader<byte> reader)
+        public CustomSerializerTests.AnnotatedCustomStruct Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
         {
             return DeserializeInternal(ref reader);
         }
 
-        public void Serialize(ref JsonWriter<char> writer, CustomSerializerTests.AnnotatedCustomStruct value)
+        public void Serialize(ref JsonWriter<char> writer, CustomSerializerTests.AnnotatedCustomStruct value, IJsonFormatterResolver<char> resolver)
         {
             SerializeInternal(ref writer, value);
         }
 
-        public CustomSerializerTests.AnnotatedCustomStruct Deserialize(ref JsonReader<char> reader)
+        public CustomSerializerTests.AnnotatedCustomStruct Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
         {
             return DeserializeInternal(ref reader);
         }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Largely based on https://github.com/neuecc/Utf8Json/blob/master/src/Utf8Json/Internal/GuidBits.cs
+
+using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 

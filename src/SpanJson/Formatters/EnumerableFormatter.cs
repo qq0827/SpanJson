@@ -21,18 +21,18 @@ namespace SpanJson.Formatters
             StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
         private static readonly bool IsRecursionCandidate = RecursionCandidate<T>.IsRecursionCandidate;
 
-        public TEnumerable Deserialize(ref JsonReader<TSymbol> reader)
+        public TEnumerable Deserialize(ref JsonReader<TSymbol> reader, IJsonFormatterResolver<TSymbol> resolver)
         {
             if (reader.ReadIsNull())
             {
                 return default;
             }
 
-            var array = ArrayFormatter<T, TSymbol, TResolver>.Default.Deserialize(ref reader);
+            var array = ArrayFormatter<T, TSymbol, TResolver>.Default.Deserialize(ref reader, resolver);
             return Converter(array);
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, TEnumerable value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, TEnumerable value, IJsonFormatterResolver<TSymbol> resolver)
         {
             if (value == null)
             {
@@ -52,12 +52,12 @@ namespace SpanJson.Formatters
                 if (enumerator.MoveNext())
                 {
                     // first one, so we can write the separator prior to every following one
-                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, enumerator.Current, ElementFormatter);
+                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, enumerator.Current, ElementFormatter, resolver);
                     // write all the other ones
                     while (enumerator.MoveNext())
                     {
                         writer.WriteValueSeparator();
-                        SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, enumerator.Current, ElementFormatter);
+                        SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, enumerator.Current, ElementFormatter, resolver);
                     }
                 }
                 if (IsRecursionCandidate)

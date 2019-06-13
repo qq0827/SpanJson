@@ -71,24 +71,24 @@ namespace SpanJson.Tests
 
             public object Arguments { get; set; }
 
-            public DateTime Deserialize(ref JsonReader<byte> reader)
+            public DateTime Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
             {
                 return DateTimeOffset.FromUnixTimeSeconds(reader.ReadUtf8Int64()).DateTime;
             }
 
-            public DateTime Deserialize(ref JsonReader<char> reader)
+            public DateTime Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
             {
                 return DateTimeOffset.FromUnixTimeSeconds(reader.ReadUtf16Int64()).DateTime;
             }
 
-            public void Serialize(ref JsonWriter<byte> writer, DateTime value)
+            public void Serialize(ref JsonWriter<byte> writer, DateTime value, IJsonFormatterResolver<byte> resolver)
             {
                 writer.WriteUtf8Int64(value <= MinValueDateTime
                     ? MinUnixTimeSeconds
                     : new DateTimeOffset(DateTime.SpecifyKind(value, DateTimeKind.Utc)).ToUnixTimeSeconds());
             }
 
-            public void Serialize(ref JsonWriter<char> writer, DateTime value)
+            public void Serialize(ref JsonWriter<char> writer, DateTime value, IJsonFormatterResolver<char> resolver)
             {
                 writer.WriteUtf16Int64(value <= MinValueDateTime
                     ? MinUnixTimeSeconds
