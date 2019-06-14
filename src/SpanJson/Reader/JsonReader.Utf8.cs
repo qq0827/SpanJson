@@ -708,9 +708,8 @@ namespace SpanJson
                     ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, pos);
                 }
 
-                var stringLength = 0;
                 // We should also get info about how many escaped chars exist from here
-                if (TryFindEndOfUtf8String(ref stringStart, length - (uint)pos, ref stringLength, out escapedCharsSize))
+                if (TryFindEndOfUtf8String(ref stringStart, length - (uint)pos, out int stringLength, out escapedCharsSize))
                 {
 #if NETSTANDARD2_0 || NET471 || NET451
                     unsafe
@@ -743,9 +742,8 @@ namespace SpanJson
                     ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, pos);
                 }
 
-                var stringLength = 0;
                 // We should also get info about how many escaped chars exist from here
-                if (TryFindEndOfUtf8String(ref stringStart, length - (uint)pos, ref stringLength, out _))
+                if (TryFindEndOfUtf8String(ref stringStart, length - (uint)pos, out int stringLength, out _))
                 {
 #if NETSTANDARD2_0 || NET471 || NET451
                     unsafe
@@ -1174,25 +1172,33 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool TryFindEndOfUtf8String(ref byte stringStart, uint length, ref int stringLength, out int escapedCharsSize)
+        private static bool TryFindEndOfUtf8String(ref byte stringStart, uint length, out int stringLength, out int escapedCharsSize)
         {
+            const uint Quote = JsonUtf8Constant.String;
+            const uint BackSlash = JsonUtf8Constant.ReverseSolidus;
+            const uint Unicode = (byte)'u';
+
+            IntPtr offset = (IntPtr)1;
             escapedCharsSize = 0;
+            stringLength = 0;
+            uint currentByte;
             while ((uint)stringLength < length)
             {
-                ref var b = ref Unsafe.AddByteOffset(ref stringStart, (IntPtr)(++stringLength));
-                if (b == JsonUtf8Constant.ReverseSolidus)
+                currentByte = Unsafe.AddByteOffset(ref stringStart, offset + stringLength++);
+                switch (currentByte)
                 {
-                    escapedCharsSize++;
-                    b = ref Unsafe.AddByteOffset(ref stringStart, (IntPtr)(++stringLength));
-                    if (b == (byte)'u')
-                    {
-                        escapedCharsSize += 4; // add only 4 and not 5 as we still need one unescaped char
-                        stringLength += 4;
-                    }
-                }
-                else if (b == JsonUtf8Constant.String)
-                {
-                    return true;
+                    case BackSlash:
+                        escapedCharsSize++;
+                        currentByte = Unsafe.AddByteOffset(ref stringStart, offset + stringLength++);
+                        if (currentByte == Unicode)
+                        {
+                            escapedCharsSize += 4; // add only 4 and not 5 as we still need one unescaped char
+                            stringLength += 4;
+                        }
+                        break;
+
+                    case Quote:
+                        return true;
                 }
             }
 
@@ -1202,9 +1208,8 @@ namespace SpanJson
         private static bool SkipUtf8String(ref byte b, ref int pos, uint length)
         {
             ref var stringStart = ref Unsafe.AddByteOffset(ref b, (IntPtr)pos++);
-            var stringLength = 0;
             // We should also get info about how many escaped chars exist from here
-            if (TryFindEndOfUtf8String(ref stringStart, length - (uint)pos, ref stringLength, out _))
+            if (TryFindEndOfUtf8String(ref stringStart, length - (uint)pos, out int stringLength, out _))
             {
                 pos += stringLength; // skip the doublequote too
                 return true;

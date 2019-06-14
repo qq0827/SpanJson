@@ -1072,27 +1072,32 @@ namespace SpanJson
             return false;
         }
 
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool TryFindEndOfUtf16String(ref char stringStart, uint length, ref int stringLength, out int escapedCharsSize)
         {
+            const uint Quote = JsonUtf8Constant.String;
+            const uint BackSlash = JsonUtf8Constant.ReverseSolidus;
+            const uint Unicode = (byte)'u';
+
             escapedCharsSize = 0;
+            uint currentChar;
             while ((uint)stringLength < length)
             {
-                ref var c = ref Unsafe.Add(ref stringStart, ++stringLength);
-                if (c == JsonUtf16Constant.ReverseSolidus)
+                currentChar = Unsafe.Add(ref stringStart, ++stringLength);
+                switch (currentChar)
                 {
-                    escapedCharsSize++;
-                    c = ref Unsafe.Add(ref stringStart, ++stringLength);
-                    if (c == 'u')
-                    {
-                        escapedCharsSize += 4; // add only 4 and not 5 as we still need one unescaped char
-                        stringLength += 4;
-                    }
-                }
-                else if (c == JsonUtf16Constant.String)
-                {
-                    return true;
+                    case BackSlash:
+                        escapedCharsSize++;
+                        currentChar = Unsafe.Add(ref stringStart, ++stringLength);
+                        if (currentChar == Unicode)
+                        {
+                            escapedCharsSize += 4; // add only 4 and not 5 as we still need one unescaped char
+                            stringLength += 4;
+                        }
+                        break;
+
+                    case Quote:
+                        return true;
                 }
             }
 
