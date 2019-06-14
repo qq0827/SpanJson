@@ -159,32 +159,6 @@ namespace SpanJson
             return result;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsNumericUtf8Symbol(byte c)
-        {
-            switch (c)
-            {
-                case (byte)'0':
-                case (byte)'1':
-                case (byte)'2':
-                case (byte)'3':
-                case (byte)'4':
-                case (byte)'5':
-                case (byte)'6':
-                case (byte)'7':
-                case (byte)'8':
-                case (byte)'9':
-                case (byte)'+':
-                case (byte)'-':
-                case (byte)'.':
-                case (byte)'E':
-                case (byte)'e':
-                    return true;
-            }
-
-            return false;
-        }
-
         public bool ReadUtf8Boolean()
         {
             ref var pos = ref _pos;
@@ -1151,11 +1125,12 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool TryFindEndOfUtf8Number(ref byte bStart, int pos, uint length, out int bytesConsumed)
         {
+            uint nValue;
             var i = pos;
             for (; (uint)i < length; i++)
             {
-                ref readonly var b = ref Unsafe.AddByteOffset(ref bStart, (IntPtr)i);
-                if (!IsNumericUtf8Symbol(b))
+                nValue = Unsafe.AddByteOffset(ref bStart, (IntPtr)i);
+                if (!IsNumericSymbol(nValue))
                 {
                     break;
                 }

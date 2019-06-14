@@ -64,30 +64,6 @@ namespace SpanJson
 
         public int Position => _pos;
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void ThrowJsonParserException(JsonParserException.ParserError error, JsonParserException.ValueType type, int position)
-        {
-            throw GetJsonParserException(error, type, position);
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static JsonParserException GetJsonParserException(JsonParserException.ParserError error, JsonParserException.ValueType type, int position)
-        {
-            return new JsonParserException(error, type, position);
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void ThrowJsonParserException(JsonParserException.ParserError error, int position)
-        {
-            throw GetJsonParserException(error, position);
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static JsonParserException GetJsonParserException(JsonParserException.ParserError error, int position)
-        {
-            return new JsonParserException(error, position);
-        }
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReadBeginArrayOrThrow()
         {

@@ -156,32 +156,6 @@ namespace SpanJson
             return ReadUtf16NumberDigits(ref cStart, ref pos, length);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsNumericUtf16Symbol(char c)
-        {
-            switch (c)
-            {
-                case '0':
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                case '5':
-                case '6':
-                case '7':
-                case '8':
-                case '9':
-                case '+':
-                case '-':
-                case '.':
-                case 'E':
-                case 'e':
-                    return true;
-            }
-
-            return false;
-        }
-
         public bool ReadUtf16Boolean()
         {
             ref var pos = ref _pos;
@@ -1052,17 +1026,18 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool TryFindEndOfUtf16Number(ref char cStart, int pos, uint length, out int charsConsumed)
         {
+            uint nValue;
             var i = pos;
             for (; (uint)i < length; i++)
             {
-                var c = Unsafe.Add(ref cStart, i);
-                if (!IsNumericUtf16Symbol(c))
+                nValue = Unsafe.Add(ref cStart, i);
+                if (!IsNumericSymbol(nValue))
                 {
                     break;
                 }
             }
 
-            if (i > pos)
+            if ((uint)i > (uint)pos)
             {
                 charsConsumed = i - pos;
                 return true;
