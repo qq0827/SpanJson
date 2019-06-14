@@ -11,7 +11,7 @@ namespace SpanJson.Formatters
         public static readonly NullableFormatter<T, TSymbol, TResolver> Default = new NullableFormatter<T, TSymbol, TResolver>();
 
         private static readonly IJsonFormatter<T, TSymbol> ElementFormatter =
-            StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
+            StandardResolvers.GetFormatter<TSymbol, TResolver, T>();
 
         public T? Deserialize(ref JsonReader<TSymbol> reader, IJsonFormatterResolver<TSymbol> resolver)
         {

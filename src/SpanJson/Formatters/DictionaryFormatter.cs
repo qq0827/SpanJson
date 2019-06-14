@@ -17,7 +17,7 @@ namespace SpanJson.Formatters
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDictionary : IEnumerable<KeyValuePair<TKey, TValue>>
     {
         private static readonly Func<TWritableDictionary> CreateFunctor =
-            StandardResolvers.GetResolver<TSymbol, TResolver>().GetCreateFunctor<TWritableDictionary>();
+            StandardResolvers.GetCreateFunctor<TSymbol, TResolver, TWritableDictionary>();
 
         private static readonly Func<TDictionary, int> CountFunctor = BuildCountFunctor();
         private static readonly WriteKeyDelegate WriteKeyFunctor = BuildKeyToNameDelegate();
@@ -30,10 +30,10 @@ namespace SpanJson.Formatters
 
         private static readonly IJsonFormatter<TKey, TSymbol> KeyFormatter = GetKeyFormatter();
 
-        private static readonly IJsonFormatter<TValue, TSymbol> ValueFormatter = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<TValue>();
+        private static readonly IJsonFormatter<TValue, TSymbol> ValueFormatter = StandardResolvers.GetFormatter<TSymbol, TResolver, TValue>();
 
         private static readonly Func<TWritableDictionary, TDictionary> Converter =
-            StandardResolvers.GetResolver<TSymbol, TResolver>().GetEnumerableConvertFunctor<TWritableDictionary, TDictionary>();
+            StandardResolvers.GetEnumerableConvertFunctor<TSymbol, TResolver, TWritableDictionary, TDictionary>();
 
         private static readonly bool IsRecursionCandidate = RecursionCandidate<TValue>.IsRecursionCandidate;
 
@@ -46,7 +46,7 @@ namespace SpanJson.Formatters
                     typeof(EnumStringFormatter<,,>).MakeGenericType(typeof(TKey), typeof(TSymbol), typeof(TResolver)));
             }
 
-            return StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<TKey>();
+            return StandardResolvers.GetFormatter<TSymbol, TResolver, TKey>();
         }
 
 

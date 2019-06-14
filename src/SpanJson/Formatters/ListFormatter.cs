@@ -12,10 +12,10 @@ namespace SpanJson.Formatters
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TList : class, IList<T>
 
     {
-        private static readonly Func<TList> CreateFunctor = StandardResolvers.GetResolver<TSymbol, TResolver>().GetCreateFunctor<TList>();
+        private static readonly Func<TList> CreateFunctor = StandardResolvers.GetCreateFunctor<TSymbol, TResolver, TList>();
         public static readonly ListFormatter<TList, T, TSymbol, TResolver> Default = new ListFormatter<TList, T, TSymbol, TResolver>();
 
-        private static readonly IJsonFormatter<T, TSymbol> ElementFormatter = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
+        private static readonly IJsonFormatter<T, TSymbol> ElementFormatter = StandardResolvers.GetFormatter<TSymbol, TResolver, T>();
 
         private static readonly bool IsRecursionCandidate = RecursionCandidate<T>.IsRecursionCandidate;
 

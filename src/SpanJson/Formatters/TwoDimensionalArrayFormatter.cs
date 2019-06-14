@@ -10,7 +10,7 @@ namespace SpanJson.Formatters
         public static readonly TwoDimensionalArrayFormatter<T, TSymbol, TResolver> Default = new TwoDimensionalArrayFormatter<T, TSymbol, TResolver>();
 
         private static readonly IJsonFormatter<T, TSymbol> ElementFormatter =
-            StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
+            StandardResolvers.GetFormatter<TSymbol, TResolver, T>();
         private static readonly bool IsRecursionCandidate = RecursionCandidate<T>.IsRecursionCandidate;
 
         public T[,] Deserialize(ref JsonReader<TSymbol> reader, IJsonFormatterResolver<TSymbol> resolver)
