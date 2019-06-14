@@ -190,7 +190,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
             SkipWhitespaceUtf8(ref bStart, ref pos, _length);
-            if ((uint)pos <= _length - 4u)
+            if ((uint)pos + 4u <= _length)
             {
                 ref var start = ref Unsafe.AddByteOffset(ref bStart, (IntPtr)pos);
                 var value = Unsafe.ReadUnaligned<uint>(ref start);
@@ -200,7 +200,7 @@ namespace SpanJson
                     return true;
                 }
 
-                if ((uint)pos <= _length - 5u && value == 0x736C6166U /* slaf */ && Unsafe.AddByteOffset(ref bStart, (IntPtr)(pos + 4)) == (byte)'e')
+                if ((uint)pos + 5u <= _length && value == 0x736C6166U /* slaf */ && Unsafe.AddByteOffset(ref bStart, (IntPtr)(pos + 4)) == (byte)'e')
                 {
                     pos += 5;
                     return false;
@@ -700,7 +700,7 @@ namespace SpanJson
 
         private static ReadOnlySpan<byte> ReadUtf8StringSpanInternal(ref byte bStart, ref int pos, uint length, out int escapedCharsSize)
         {
-            if ((uint)pos <= length - 2u)
+            if ((uint)pos + 2u <= length)
             {
                 ref var stringStart = ref Unsafe.AddByteOffset(ref bStart, (IntPtr)pos++);
                 if (stringStart != JsonUtf8Constant.String)
@@ -735,7 +735,7 @@ namespace SpanJson
         /// </summary>
         private static ReadOnlySpan<byte> ReadUtf8StringSpanWithQuotes(ref byte bStart, ref int pos, uint length)
         {
-            if ((uint)pos <= length - 2u)
+            if ((uint)pos + 2u <= length)
             {
                 ref var stringStart = ref Unsafe.AddByteOffset(ref bStart, (IntPtr)pos++);
                 if (stringStart != JsonUtf8Constant.String)
@@ -787,7 +787,7 @@ namespace SpanJson
         {
             SkipWhitespaceUtf8(ref bStart, ref pos, length);
             ref var start = ref Unsafe.AddByteOffset(ref bStart, (IntPtr)pos);
-            if ((uint)pos <= length - 4u && Unsafe.ReadUnaligned<uint>(ref start) == 0x6C6C756EU /* llun */)
+            if ((uint)pos + 4u <= length && Unsafe.ReadUnaligned<uint>(ref start) == 0x6C6C756EU /* llun */)
             {
                 pos += 4;
                 return true;
@@ -807,6 +807,25 @@ namespace SpanJson
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void SkipWhitespaceUtf8(ref byte bStart, ref int pos, uint length)
+        {
+            var hasWhitespace = false;
+            switch (Unsafe.AddByteOffset(ref bStart, (IntPtr)pos))
+            {
+                case JsonUtf8Constant.Space:
+                case JsonUtf8Constant.Tab:
+                case JsonUtf8Constant.CarriageReturn:
+                case JsonUtf8Constant.LineFeed:
+                    {
+                        pos++;
+                        hasWhitespace = true;
+                        break;
+                    }
+            }
+            if (hasWhitespace) { SkipWhitespaceUtf8Slow(ref bStart, ref pos, length); }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void SkipWhitespaceUtf8Slow(ref byte bStart, ref int pos, uint length)
         {
             while ((uint)pos < length)
             {
@@ -1154,18 +1173,17 @@ namespace SpanJson
             return false;
         }
 
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool TryFindEndOfUtf8String(ref byte bStart, uint length, ref int stringLength, out int escapedCharsSize)
+        private static bool TryFindEndOfUtf8String(ref byte stringStart, uint length, ref int stringLength, out int escapedCharsSize)
         {
             escapedCharsSize = 0;
             while ((uint)stringLength < length)
             {
-                ref var b = ref Unsafe.AddByteOffset(ref bStart, (IntPtr)(++stringLength));
+                ref var b = ref Unsafe.AddByteOffset(ref stringStart, (IntPtr)(++stringLength));
                 if (b == JsonUtf8Constant.ReverseSolidus)
                 {
                     escapedCharsSize++;
-                    b = ref Unsafe.AddByteOffset(ref bStart, (IntPtr)(++stringLength));
+                    b = ref Unsafe.AddByteOffset(ref stringStart, (IntPtr)(++stringLength));
                     if (b == (byte)'u')
                     {
                         escapedCharsSize += 4; // add only 4 and not 5 as we still need one unescaped char

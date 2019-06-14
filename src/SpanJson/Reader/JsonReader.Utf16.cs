@@ -134,7 +134,7 @@ namespace SpanJson
             }
 
             pos++;
-            while ((uint)pos < length && (value = Unsafe.Add(ref c, pos) - 48U) <= 9)
+            while ((uint)pos < length && (value = Unsafe.Add(ref c, pos) - 48U) <= 9u)
             {
                 result = checked(result * 10ul + value);
                 pos++;
@@ -187,7 +187,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             ref var cStart = ref MemoryMarshal.GetReference(_chars);
             SkipWhitespaceUtf16(ref cStart, ref pos, _length);
-            if ((uint)pos <= _length - 4u)
+            if ((uint)pos + 4u <= _length)
             {
                 ref var start = ref Unsafe.Add(ref cStart, pos);
                 ref var bstart = ref Unsafe.As<char, byte>(ref start);
@@ -198,7 +198,7 @@ namespace SpanJson
                     return true;
                 }
 
-                if ((uint)pos <= _length - 5u && value == 0x0073006C00610066UL /* slaf */ && Unsafe.Add(ref cStart, pos + 4) == 'e')
+                if ((uint)pos + 5u <= _length && value == 0x0073006C00610066UL /* slaf */ && Unsafe.Add(ref cStart, pos + 4) == 'e')
                 {
                     pos += 5;
                     return false;
@@ -614,7 +614,7 @@ namespace SpanJson
 
         private static ReadOnlySpan<char> ReadUtf16StringSpanInternal(ref char cStart, ref int pos, uint length, out int escapedCharsSize)
         {
-            if ((uint)pos <= length - 2u)
+            if ((uint)pos + 2u <= length)
             {
                 ref var stringStart = ref Unsafe.Add(ref cStart, pos++);
                 if (stringStart != JsonUtf16Constant.String)
@@ -649,7 +649,7 @@ namespace SpanJson
         /// </summary>
         private static ReadOnlySpan<char> ReadUtf16StringSpanWithQuotes(ref char cStart, ref int pos, uint length)
         {
-            if ((uint)pos <= length - 2u)
+            if ((uint)pos + 2u <= length)
             {
                 ref var stringStart = ref Unsafe.Add(ref cStart, pos++);
                 if (stringStart != JsonUtf16Constant.String)
@@ -701,7 +701,7 @@ namespace SpanJson
             SkipWhitespaceUtf16(ref cStart, ref pos, length);
             ref var start = ref Unsafe.Add(ref cStart, pos);
             ref var bstart = ref Unsafe.As<char, byte>(ref start);
-            if ((uint)pos <= length - 4u && Unsafe.ReadUnaligned<ulong>(ref bstart) == 0x006C006C0075006EUL /* llun */)
+            if ((uint)pos + 4u <= length && Unsafe.ReadUnaligned<ulong>(ref bstart) == 0x006C006C0075006EUL /* llun */)
             {
                 pos += 4;
                 return true;
@@ -722,6 +722,27 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void SkipWhitespaceUtf16(ref char cStart, ref int pos, uint length)
         {
+            var hasWhitespace = false;
+            var c = Unsafe.Add(ref cStart, pos);
+            switch (c)
+            {
+                case JsonUtf16Constant.Space:
+                case JsonUtf16Constant.Tab:
+                case JsonUtf16Constant.CarriageReturn:
+                case JsonUtf16Constant.LineFeed:
+                    pos++;
+                    hasWhitespace = true;
+                    break;
+            }
+            if (hasWhitespace)
+            {
+                SkipWhitespaceUtf16Slow(ref cStart, ref pos, length);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void SkipWhitespaceUtf16Slow(ref char cStart, ref int pos, uint length)
+        {
             while ((uint)pos < length)
             {
                 var c = Unsafe.Add(ref cStart, pos);
@@ -740,7 +761,6 @@ namespace SpanJson
                 }
             }
         }
-
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReadUtf16BeginArrayOrThrow()
@@ -1054,16 +1074,16 @@ namespace SpanJson
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool TryFindEndOfUtf16String(ref char cStart, uint length, ref int stringLength, out int escapedCharsSize)
+        private static bool TryFindEndOfUtf16String(ref char stringStart, uint length, ref int stringLength, out int escapedCharsSize)
         {
             escapedCharsSize = 0;
             while ((uint)stringLength < length)
             {
-                ref var c = ref Unsafe.Add(ref cStart, ++stringLength);
+                ref var c = ref Unsafe.Add(ref stringStart, ++stringLength);
                 if (c == JsonUtf16Constant.ReverseSolidus)
                 {
                     escapedCharsSize++;
-                    c = ref Unsafe.Add(ref cStart, ++stringLength);
+                    c = ref Unsafe.Add(ref stringStart, ++stringLength);
                     if (c == 'u')
                     {
                         escapedCharsSize += 4; // add only 4 and not 5 as we still need one unescaped char
