@@ -14,7 +14,7 @@ namespace SpanJson.Internal
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
 
-    internal static partial class UnsafeMemory32
+    partial class UnsafeMemory32
     {
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void WriteRaw<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct

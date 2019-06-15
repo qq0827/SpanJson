@@ -842,6 +842,7 @@ namespace SpanJson.Internal
 
 #endif
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static unsafe int GetBytes(ReadOnlySpan<char> chars, Span<byte> bytes)
             {
 #if NETCOREAPP_2_X_GREATER || NETSTANDARD_2_0_GREATER

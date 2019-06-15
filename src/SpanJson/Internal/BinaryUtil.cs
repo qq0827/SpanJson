@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 
 namespace SpanJson.Internal
 {
-    internal static class BinaryUtil
+    public static class BinaryUtil
     {
         const int ArrayMaxSize = 0x7FFFFFC7; // https://msdn.microsoft.com/en-us/library/system.array
 

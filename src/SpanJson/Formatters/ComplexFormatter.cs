@@ -525,7 +525,7 @@ namespace SpanJson.Formatters
                             array = ArrayPool<char>.Shared.Rent(name.Length);
                             name.AsSpan().CopyTo(array);
                             array[0] = char.ToLower(array[0]);
-                            writer.WriteName(array.AsSpan(0, name.Length));
+                            writer.WriteName(array.AsSpan(0, name.Length), resolver.StringEscapeHandling);
                         }
                         finally
                         {
@@ -538,9 +538,9 @@ namespace SpanJson.Formatters
                     else
                     {
 #if NETSTANDARD2_0 || NET471 || NET451
-                        writer.WriteName(kvp.Key.AsSpan());
+                        writer.WriteName(kvp.Key.AsSpan(), resolver.StringEscapeHandling);
 #else
-                        writer.WriteName(kvp.Key);
+                        writer.WriteName(kvp.Key, resolver.StringEscapeHandling);
 #endif
                     }
 

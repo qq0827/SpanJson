@@ -5,7 +5,7 @@
 
     // for string key property name write optimization.
 
-    internal static class UnsafeMemory
+    public static class UnsafeMemory
     {
         public static readonly bool Is64BitProcess = IntPtr.Size >= 8;
 
@@ -55,7 +55,7 @@
         }
     }
 
-    internal static partial class UnsafeMemory32
+    public static partial class UnsafeMemory32
     {
         // 直接引用 byte[], 节省 byte[] => ReadOnlySpan<byte> 的转换
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -77,7 +77,7 @@
         }
     }
 
-    internal static partial class UnsafeMemory64
+    public static partial class UnsafeMemory64
     {
         // 直接引用 byte[], 节省 byte[] => ReadOnlySpan<byte> 的转换
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -16,6 +16,8 @@ namespace SpanJson
     {
         SpanJsonOptions JsonOptions { get; }
 
+        StringEscapeHandling StringEscapeHandling { get; }
+
         IJsonFormatter<T, TSymbol> GetFormatter<T>();
         JsonObjectDescription GetObjectDescription<T>();
 

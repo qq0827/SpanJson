@@ -84,6 +84,8 @@ namespace SpanJson.Resolvers
 
         public SpanJsonOptions JsonOptions => _spanJsonOptions;
 
+        public StringEscapeHandling StringEscapeHandling => _spanJsonOptions.StringEscapeHandling;
+
         public virtual IJsonFormatter GetFormatter(Type type)
         {
             // ReSharper disable ConvertClosureToMethodGroup
@@ -147,7 +149,7 @@ namespace SpanJson.Resolvers
                         name = memberInfoName;
                         break;
                 }
-                var escapedName = EscapingHelper.EscapeString(name, _spanJsonOptions.EscapeHandling);
+                var escapedName = EscapingHelper.EscapeString(name, _spanJsonOptions.StringEscapeHandling);
 
                 result.Add(new JsonMemberInfo(memberInfoName, typeof(object), null, name, escapedName,
                     _spanJsonOptions.NullOption == NullOptions.ExcludeNulls, true, true, null, null));
@@ -196,7 +198,7 @@ namespace SpanJson.Resolvers
                         name = StringMutator.ToSnakeCase(name);
                         break;
                 }
-                var escapedName = EscapingHelper.EscapeString(name, _spanJsonOptions.EscapeHandling);
+                var escapedName = EscapingHelper.EscapeString(name, _spanJsonOptions.StringEscapeHandling);
 
                 var canRead = true;
                 var canWrite = true;

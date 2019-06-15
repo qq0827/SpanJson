@@ -141,7 +141,7 @@ namespace SpanJson.Formatters
                     }
 
                     writer.IncrementDepth();
-                    writer.WriteName(memberInfo.Name);
+                    writer.WriteName(memberInfo.Name, resolver.StringEscapeHandling);
                     RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child, resolver);
                     writer.DecrementDepth();
                 }
@@ -163,7 +163,7 @@ namespace SpanJson.Formatters
                     }
 
                     writer.IncrementDepth();
-                    writer.WriteName(memberInfo.Name);
+                    writer.WriteName(memberInfo.Name, resolver.StringEscapeHandling);
                     RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child, resolver);
                     writer.DecrementDepth();
                 }

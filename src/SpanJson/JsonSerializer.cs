@@ -90,7 +90,7 @@ namespace SpanJson
                             }
 
                             writer.WriteIndentation(indent + 2);
-                            writer.WriteVerbatimNameSpan(reader.ReadVerbatimNameSpan());
+                            writer.WriteVerbatimEscapedNameSpan(reader.ReadVerbatimNameSpan());
                             writer.WriteIndentation(1);
                             Print(ref reader, ref writer, indent + 2);
                         }
@@ -237,7 +237,7 @@ namespace SpanJson
                                     writer.WriteValueSeparator();
                                 }
 
-                                writer.WriteVerbatimNameSpan(reader.ReadVerbatimNameSpan());
+                                writer.WriteVerbatimEscapedNameSpan(reader.ReadVerbatimNameSpan());
 
                                 Minify(ref reader, ref writer);
                             }

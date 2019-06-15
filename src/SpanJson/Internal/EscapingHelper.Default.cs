@@ -11,9 +11,9 @@ using System.Runtime.InteropServices;
 
 namespace SpanJson.Internal
 {
-    internal static partial class EscapingHelper
+    static partial class EscapingHelper
     {
-        static class Default
+        public static class Default
         {
             // Only allow ASCII characters between ' ' (0x20) and '~' (0x7E), inclusively,
             // exclude characters that need to be escaped by adding a backslash: '\n', '\r', '\t', '\\', '/', '\b', '\f', '"'
@@ -32,9 +32,9 @@ namespace SpanJson.Internal
             };
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static bool NeedsEscaping(byte value)
+            public static bool NeedsEscaping(byte utf8Value)
             {
-                return value < (uint)AllowList.Length && 0u >= AllowList[value] ? true : false;
+                return utf8Value < (uint)AllowList.Length && 0u >= AllowList[utf8Value] ? true : false;
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -42,28 +42,31 @@ namespace SpanJson.Internal
             {
                 const uint MaxAsciiChar = 127u;
 
-                if (value > MaxAsciiChar)
-                {
-                    switch (value)
-                    {
-                        case '\u0085': // Next Line
-                        case '\u2028': // Line Separator
-                        case '\u2029': // Paragraph Separator
-                            return true;
-                        default:
-                            return false;
-                    }
-                }
+                if (value > MaxAsciiChar) { return IsSpecialUnicodeSymbol(value); }
 
                 return 0u >= AllowList[value] ? true : false;
             }
 
-            public static int NeedsEscaping(in ReadOnlySpan<byte> value)
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            private static bool IsSpecialUnicodeSymbol(char value)
             {
-                ref byte space = ref MemoryMarshal.GetReference(value);
+                switch (value)
+                {
+                    case '\u0085': // Next Line
+                    case '\u2028': // Line Separator
+                    case '\u2029': // Paragraph Separator
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            public static int NeedsEscaping(in ReadOnlySpan<byte> utf8Source)
+            {
+                ref byte space = ref MemoryMarshal.GetReference(utf8Source);
                 IntPtr offset = (IntPtr)0;
                 int idx = 0;
-                uint nlen = (uint)value.Length;
+                uint nlen = (uint)utf8Source.Length;
                 while ((uint)idx < nlen)
                 {
                     if (NeedsEscaping(Unsafe.AddByteOffset(ref space, offset + idx))) { goto Return; }
@@ -76,11 +79,11 @@ namespace SpanJson.Internal
                 return idx;
             }
 
-            public static int NeedsEscaping(in ReadOnlySpan<char> value)
+            public static int NeedsEscaping(in ReadOnlySpan<char> utf16Source)
             {
-                ref char space = ref MemoryMarshal.GetReference(value);
+                ref char space = ref MemoryMarshal.GetReference(utf16Source);
                 int idx = 0;
-                uint nlen = (uint)value.Length;
+                uint nlen = (uint)utf16Source.Length;
                 while ((uint)idx < nlen)
                 {
                     if (NeedsEscaping(Unsafe.Add(ref space, idx))) { goto Return; }
@@ -93,17 +96,17 @@ namespace SpanJson.Internal
                 return idx;
             }
 
-            public static void EscapeString(in ReadOnlySpan<byte> value, Span<byte> destination, int indexOfFirstByteToEscape, out int written)
+            public static void EscapeString(in ReadOnlySpan<byte> utf8Source, Span<byte> destination, int indexOfFirstByteToEscape, out int written)
             {
-                Debug.Assert(indexOfFirstByteToEscape >= 0 && indexOfFirstByteToEscape < value.Length);
+                Debug.Assert(indexOfFirstByteToEscape >= 0 && indexOfFirstByteToEscape < utf8Source.Length);
 
-                value.Slice(0, indexOfFirstByteToEscape).CopyTo(destination);
+                utf8Source.Slice(0, indexOfFirstByteToEscape).CopyTo(destination);
                 written = indexOfFirstByteToEscape;
                 int consumed = indexOfFirstByteToEscape;
 
-                ref byte sourceSpace = ref MemoryMarshal.GetReference(value);
+                ref byte sourceSpace = ref MemoryMarshal.GetReference(utf8Source);
                 ref byte destSpace = ref MemoryMarshal.GetReference(destination);
-                uint nlen = (uint)value.Length;
+                uint nlen = (uint)utf8Source.Length;
                 while ((uint)consumed < nlen)
                 {
                     byte val = Unsafe.Add(ref sourceSpace, consumed);
@@ -111,7 +114,7 @@ namespace SpanJson.Internal
                     {
                         if (!EscapeNextBytes(ref sourceSpace, ref consumed, nlen - (uint)consumed, destination, ref destSpace, ref written))
                         {
-                            ThrowHelper.ThrowArgumentException_InvalidUTF8(value, consumed);
+                            ThrowHelper.ThrowArgumentException_InvalidUTF8(utf8Source, consumed);
                         }
                     }
                     else
@@ -123,17 +126,17 @@ namespace SpanJson.Internal
                 }
             }
 
-            public static void EscapeString(in ReadOnlySpan<char> value, Span<char> destination, int indexOfFirstByteToEscape, out int written)
+            public static void EscapeString(in ReadOnlySpan<char> utf16Source, Span<char> destination, int indexOfFirstByteToEscape, out int written)
             {
-                Debug.Assert(indexOfFirstByteToEscape >= 0 && indexOfFirstByteToEscape < value.Length);
+                Debug.Assert(indexOfFirstByteToEscape >= 0 && indexOfFirstByteToEscape < utf16Source.Length);
 
-                value.Slice(0, indexOfFirstByteToEscape).CopyTo(destination);
+                utf16Source.Slice(0, indexOfFirstByteToEscape).CopyTo(destination);
                 written = indexOfFirstByteToEscape;
                 int consumed = indexOfFirstByteToEscape;
 
-                ref char sourceSpace = ref MemoryMarshal.GetReference(value);
+                ref char sourceSpace = ref MemoryMarshal.GetReference(utf16Source);
                 ref char destSpace = ref MemoryMarshal.GetReference(destination);
-                uint nlen = (uint)value.Length;
+                uint nlen = (uint)utf16Source.Length;
                 while ((uint)consumed < nlen)
                 {
                     char val = Unsafe.Add(ref sourceSpace, consumed);
@@ -143,7 +146,7 @@ namespace SpanJson.Internal
                     }
                     else
                     {
-                        destination[written++] = val;
+                        Unsafe.Add(ref destSpace, written++) = val;
                     }
                     consumed++;
                 }

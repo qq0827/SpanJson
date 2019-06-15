@@ -50,15 +50,22 @@ namespace SpanJson.Resolvers
 
             private static readonly TResolver s_innerResolver;
 
+            private readonly StringEscapeHandling _stringEscapeHandling;
+
             static StandardResolver()
             {
                 s_innerResolver = Inner<TSymbol, TResolver>.Default;
                 Default = new StandardResolver<TSymbol, TResolver>();
             }
 
-            private StandardResolver() { }
+            private StandardResolver()
+            {
+                _stringEscapeHandling = s_innerResolver.StringEscapeHandling;
+            }
 
             public SpanJsonOptions JsonOptions => s_innerResolver.JsonOptions;
+
+            public StringEscapeHandling StringEscapeHandling => _stringEscapeHandling;
 
             public Func<T> GetCreateFunctor<T>()
             {

@@ -9,11 +9,10 @@ using System.Buffers;
 using System.Buffers.Text;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using SpanJson.Helpers;
 
 namespace SpanJson.Internal
 {
-    internal static partial class EscapingHelper
+    public static partial class EscapingHelper
     {
         // A simple lookup table for converting numbers to hex.
         private const string HexTableLower = "0123456789abcdef";
@@ -26,6 +25,21 @@ namespace SpanJson.Internal
             Debug.Assert(textLength > 0);
             Debug.Assert(firstIndexToEscape >= 0 && firstIndexToEscape < textLength);
             return firstIndexToEscape + JsonConstants.MaxExpansionFactorWhileEscaping * (textLength - firstIndexToEscape);
+        }
+
+        #region -- NeedsEscaping --
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool NeedsEscaping(byte utf8Value, StringEscapeHandling escapeHandling)
+        {
+            switch (escapeHandling)
+            {
+                case StringEscapeHandling.EscapeNonAscii:
+                    return NonAscii.NeedsEscaping(utf8Value);
+                case StringEscapeHandling.Default:
+                default:
+                    return Default.NeedsEscaping(utf8Value);
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -42,57 +56,61 @@ namespace SpanJson.Internal
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int NeedsEscaping(in ReadOnlySpan<byte> value, StringEscapeHandling escapeHandling)
+        public static int NeedsEscaping(in ReadOnlySpan<byte> utf8Source, StringEscapeHandling escapeHandling)
         {
             switch (escapeHandling)
             {
                 case StringEscapeHandling.EscapeNonAscii:
-                    return NonAscii.NeedsEscaping(value);
+                    return NonAscii.NeedsEscaping(utf8Source);
                 case StringEscapeHandling.Default:
                 default:
-                    return Default.NeedsEscaping(value);
+                    return Default.NeedsEscaping(utf8Source);
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int NeedsEscaping(in ReadOnlySpan<char> value, StringEscapeHandling escapeHandling)
+        public static int NeedsEscaping(in ReadOnlySpan<char> utf16Source, StringEscapeHandling escapeHandling)
         {
             switch (escapeHandling)
             {
                 case StringEscapeHandling.EscapeNonAscii:
-                    return NonAscii.NeedsEscaping(value);
+                    return NonAscii.NeedsEscaping(utf16Source);
                 case StringEscapeHandling.Default:
                 default:
-                    return Default.NeedsEscaping(value);
+                    return Default.NeedsEscaping(utf16Source);
+            }
+        }
+
+        #endregion
+
+        #region -- EscapeString --
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void EscapeString(in ReadOnlySpan<byte> utf8Source, Span<byte> destination, StringEscapeHandling escapeHandling, int indexOfFirstByteToEscape, out int written)
+        {
+            switch (escapeHandling)
+            {
+                case StringEscapeHandling.EscapeNonAscii:
+                    NonAscii.EscapeString(utf8Source, destination, indexOfFirstByteToEscape, out written);
+                    break;
+                case StringEscapeHandling.Default:
+                default:
+                    Default.EscapeString(utf8Source, destination, indexOfFirstByteToEscape, out written);
+                    break;
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void EscapeString(in ReadOnlySpan<byte> value, Span<byte> destination, StringEscapeHandling escapeHandling, int indexOfFirstByteToEscape, out int written)
+        public static void EscapeString(in ReadOnlySpan<char> utf16Source, Span<char> destination, StringEscapeHandling escapeHandling, int indexOfFirstByteToEscape, out int written)
         {
             switch (escapeHandling)
             {
                 case StringEscapeHandling.EscapeNonAscii:
-                    NonAscii.EscapeString(value, destination, indexOfFirstByteToEscape, out written);
+                    NonAscii.EscapeString(utf16Source, destination, indexOfFirstByteToEscape, out written);
                     break;
                 case StringEscapeHandling.Default:
                 default:
-                    Default.EscapeString(value, destination, indexOfFirstByteToEscape, out written);
-                    break;
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void EscapeString(in ReadOnlySpan<char> value, Span<char> destination, StringEscapeHandling escapeHandling, int indexOfFirstByteToEscape, out int written)
-        {
-            switch (escapeHandling)
-            {
-                case StringEscapeHandling.EscapeNonAscii:
-                    NonAscii.EscapeString(value, destination, indexOfFirstByteToEscape, out written);
-                    break;
-                case StringEscapeHandling.Default:
-                default:
-                    Default.EscapeString(value, destination, indexOfFirstByteToEscape, out written);
+                    Default.EscapeString(utf16Source, destination, indexOfFirstByteToEscape, out written);
                     break;
             }
         }
@@ -152,89 +170,245 @@ namespace SpanJson.Internal
             }
         }
 
-        public static void EscapeChar(int value, ref char destSpace, ref int written)
+        #endregion
+
+        #region == EscapeChar ==
+
+        internal static void EscapeChar(ref char destSpace, char value, ref int pos)
         {
-            Unsafe.Add(ref destSpace, written++) = '\\';
             switch (value)
             {
-                case JsonConstants.Quote:
-                    Unsafe.Add(ref destSpace, written++) = '"';
+                case JsonUtf16Constant.DoubleQuote:
+                    WriteSingleChar(ref destSpace, JsonUtf16Constant.DoubleQuote, ref pos);
                     break;
-                case JsonConstants.Slash:
-                    Unsafe.Add(ref destSpace, written++) = '/';
+                case JsonUtf16Constant.Solidus:
+                    WriteSingleChar(ref destSpace, JsonUtf16Constant.Solidus, ref pos);
+                    break;
+                case JsonUtf16Constant.ReverseSolidus:
+                    WriteSingleChar(ref destSpace, JsonUtf16Constant.ReverseSolidus, ref pos);
+                    break;
+                case '\b':
+                    WriteSingleChar(ref destSpace, 'b', ref pos);
+                    break;
+                case '\f':
+                    WriteSingleChar(ref destSpace, 'f', ref pos);
+                    break;
+                case '\n':
+                    WriteSingleChar(ref destSpace, 'n', ref pos);
+                    break;
+                case '\r':
+                    WriteSingleChar(ref destSpace, 'r', ref pos);
+                    break;
+                case '\t':
+                    WriteSingleChar(ref destSpace, 't', ref pos);
+                    break;
+                case '\x0':
+                    WriteDoubleChar(ref destSpace, '0', '0', ref pos);
+                    break;
+                case '\x1':
+                    WriteDoubleChar(ref destSpace, '0', '1', ref pos);
+                    break;
+                case '\x2':
+                    WriteDoubleChar(ref destSpace, '0', '2', ref pos);
+                    break;
+                case '\x3':
+                    WriteDoubleChar(ref destSpace, '0', '3', ref pos);
+                    break;
+                case '\x4':
+                    WriteDoubleChar(ref destSpace, '0', '4', ref pos);
+                    break;
+                case '\x5':
+                    WriteDoubleChar(ref destSpace, '0', '5', ref pos);
+                    break;
+                case '\x6':
+                    WriteDoubleChar(ref destSpace, '0', '6', ref pos);
+                    break;
+                case '\x7':
+                    WriteDoubleChar(ref destSpace, '0', '7', ref pos);
+                    break;
+                case '\xB':
+                    WriteDoubleChar(ref destSpace, '0', 'B', ref pos);
+                    break;
+                case '\xE':
+                    WriteDoubleChar(ref destSpace, '0', 'E', ref pos);
+                    break;
+                case '\xF':
+                    WriteDoubleChar(ref destSpace, '0', 'F', ref pos);
+                    break;
+                case '\x10':
+                    WriteDoubleChar(ref destSpace, '1', '0', ref pos);
+                    break;
+                case '\x11':
+                    WriteDoubleChar(ref destSpace, '1', '1', ref pos);
+                    break;
+                case '\x12':
+                    WriteDoubleChar(ref destSpace, '1', '2', ref pos);
+                    break;
+                case '\x13':
+                    WriteDoubleChar(ref destSpace, '1', '3', ref pos);
+                    break;
+                case '\x14':
+                    WriteDoubleChar(ref destSpace, '1', '4', ref pos);
+                    break;
+                case '\x15':
+                    WriteDoubleChar(ref destSpace, '1', '5', ref pos);
+                    break;
+                case '\x16':
+                    WriteDoubleChar(ref destSpace, '1', '6', ref pos);
+                    break;
+                case '\x17':
+                    WriteDoubleChar(ref destSpace, '1', '7', ref pos);
+                    break;
+                case '\x18':
+                    WriteDoubleChar(ref destSpace, '1', '8', ref pos);
+                    break;
+                case '\x19':
+                    WriteDoubleChar(ref destSpace, '1', '9', ref pos);
+                    break;
+                case '\x1A':
+                    WriteDoubleChar(ref destSpace, '1', 'A', ref pos);
+                    break;
+                case '\x1B':
+                    WriteDoubleChar(ref destSpace, '1', 'B', ref pos);
+                    break;
+                case '\x1C':
+                    WriteDoubleChar(ref destSpace, '1', 'C', ref pos);
+                    break;
+                case '\x1D':
+                    WriteDoubleChar(ref destSpace, '1', 'D', ref pos);
+                    break;
+                case '\x1E':
+                    WriteDoubleChar(ref destSpace, '1', 'E', ref pos);
+                    break;
+                case '\x1F':
+                    WriteDoubleChar(ref destSpace, '1', 'F', ref pos);
                     break;
 
-                case JsonConstants.LineFeed:
-                    Unsafe.Add(ref destSpace, written++) = 'n';
-                    break;
-                case JsonConstants.CarriageReturn:
-                    Unsafe.Add(ref destSpace, written++) = 'r';
-                    break;
-                case JsonConstants.Tab:
-                    Unsafe.Add(ref destSpace, written++) = 't';
-                    break;
-                case JsonConstants.BackSlash:
-                    Unsafe.Add(ref destSpace, written++) = '\\';
-                    break;
-                case JsonConstants.BackSpace:
-                    Unsafe.Add(ref destSpace, written++) = 'b';
-                    break;
-                case JsonConstants.FormFeed:
-                    Unsafe.Add(ref destSpace, written++) = 'f';
-                    break;
                 default:
-                    Unsafe.Add(ref destSpace, written++) = 'u';
-                    WriteHex(value, ref destSpace, ref written);
+                    WriteHexChar(ref destSpace, value, ref pos);
                     break;
             }
         }
 
-        public static void EscapeChar(int value, ref byte destSpace, ref int written)
+        internal static void EscapeChar(ref byte destSpace, char value, ref int pos)
         {
-            IntPtr offset = (IntPtr)written;
-            Unsafe.AddByteOffset(ref destSpace, offset) = (byte)'\\';
             switch (value)
             {
-                case JsonConstants.Quote:
-                    Unsafe.AddByteOffset(ref destSpace, offset + 1) = (byte)'"';
-                    written += 2;
+                case JsonUtf16Constant.DoubleQuote:
+                    WriteSingleChar(ref destSpace, JsonUtf16Constant.DoubleQuote, ref pos);
                     break;
-                case JsonConstants.Slash:
-                    Unsafe.AddByteOffset(ref destSpace, offset + 1) = (byte)'/';
-                    written += 2;
+                case JsonUtf16Constant.Solidus:
+                    WriteSingleChar(ref destSpace, JsonUtf16Constant.Solidus, ref pos);
+                    break;
+                case JsonUtf16Constant.ReverseSolidus:
+                    WriteSingleChar(ref destSpace, JsonUtf16Constant.ReverseSolidus, ref pos);
+                    break;
+                case '\b':
+                    WriteSingleChar(ref destSpace, 'b', ref pos);
+                    break;
+                case '\f':
+                    WriteSingleChar(ref destSpace, 'f', ref pos);
+                    break;
+                case '\n':
+                    WriteSingleChar(ref destSpace, 'n', ref pos);
+                    break;
+                case '\r':
+                    WriteSingleChar(ref destSpace, 'r', ref pos);
+                    break;
+                case '\t':
+                    WriteSingleChar(ref destSpace, 't', ref pos);
+                    break;
+                case '\x0':
+                    WriteDoubleChar(ref destSpace, '0', '0', ref pos);
+                    break;
+                case '\x1':
+                    WriteDoubleChar(ref destSpace, '0', '1', ref pos);
+                    break;
+                case '\x2':
+                    WriteDoubleChar(ref destSpace, '0', '2', ref pos);
+                    break;
+                case '\x3':
+                    WriteDoubleChar(ref destSpace, '0', '3', ref pos);
+                    break;
+                case '\x4':
+                    WriteDoubleChar(ref destSpace, '0', '4', ref pos);
+                    break;
+                case '\x5':
+                    WriteDoubleChar(ref destSpace, '0', '5', ref pos);
+                    break;
+                case '\x6':
+                    WriteDoubleChar(ref destSpace, '0', '6', ref pos);
+                    break;
+                case '\x7':
+                    WriteDoubleChar(ref destSpace, '0', '7', ref pos);
+                    break;
+                case '\xB':
+                    WriteDoubleChar(ref destSpace, '0', 'B', ref pos);
+                    break;
+                case '\xE':
+                    WriteDoubleChar(ref destSpace, '0', 'E', ref pos);
+                    break;
+                case '\xF':
+                    WriteDoubleChar(ref destSpace, '0', 'F', ref pos);
+                    break;
+                case '\x10':
+                    WriteDoubleChar(ref destSpace, '1', '0', ref pos);
+                    break;
+                case '\x11':
+                    WriteDoubleChar(ref destSpace, '1', '1', ref pos);
+                    break;
+                case '\x12':
+                    WriteDoubleChar(ref destSpace, '1', '2', ref pos);
+                    break;
+                case '\x13':
+                    WriteDoubleChar(ref destSpace, '1', '3', ref pos);
+                    break;
+                case '\x14':
+                    WriteDoubleChar(ref destSpace, '1', '4', ref pos);
+                    break;
+                case '\x15':
+                    WriteDoubleChar(ref destSpace, '1', '5', ref pos);
+                    break;
+                case '\x16':
+                    WriteDoubleChar(ref destSpace, '1', '6', ref pos);
+                    break;
+                case '\x17':
+                    WriteDoubleChar(ref destSpace, '1', '7', ref pos);
+                    break;
+                case '\x18':
+                    WriteDoubleChar(ref destSpace, '1', '8', ref pos);
+                    break;
+                case '\x19':
+                    WriteDoubleChar(ref destSpace, '1', '9', ref pos);
+                    break;
+                case '\x1A':
+                    WriteDoubleChar(ref destSpace, '1', 'A', ref pos);
+                    break;
+                case '\x1B':
+                    WriteDoubleChar(ref destSpace, '1', 'B', ref pos);
+                    break;
+                case '\x1C':
+                    WriteDoubleChar(ref destSpace, '1', 'C', ref pos);
+                    break;
+                case '\x1D':
+                    WriteDoubleChar(ref destSpace, '1', 'D', ref pos);
+                    break;
+                case '\x1E':
+                    WriteDoubleChar(ref destSpace, '1', 'E', ref pos);
+                    break;
+                case '\x1F':
+                    WriteDoubleChar(ref destSpace, '1', 'F', ref pos);
                     break;
 
-                case JsonConstants.LineFeed:
-                    Unsafe.AddByteOffset(ref destSpace, offset + 1) = (byte)'n';
-                    written += 2;
-                    break;
-                case JsonConstants.CarriageReturn:
-                    Unsafe.AddByteOffset(ref destSpace, offset + 1) = (byte)'r';
-                    written += 2;
-                    break;
-                case JsonConstants.Tab:
-                    Unsafe.AddByteOffset(ref destSpace, offset + 1) = (byte)'t';
-                    written += 2;
-                    break;
-                case JsonConstants.BackSlash:
-                    Unsafe.AddByteOffset(ref destSpace, offset + 1) = (byte)'\\';
-                    written += 2;
-                    break;
-                case JsonConstants.BackSpace:
-                    Unsafe.AddByteOffset(ref destSpace, offset + 1) = (byte)'b';
-                    written += 2;
-                    break;
-                case JsonConstants.FormFeed:
-                    Unsafe.AddByteOffset(ref destSpace, offset + 1) = (byte)'f';
-                    written += 2;
-                    break;
                 default:
-                    Unsafe.AddByteOffset(ref destSpace, offset + 1) = (byte)'u';
-                    WriteHex(value, ref destSpace, offset);
-                    written += 6;
+                    WriteHexChar(ref destSpace, value, ref pos);
                     break;
             }
         }
+
+        #endregion
+
+        #region == EscapeNextBytes ==
 
         private static bool EscapeNextBytes(ref byte sourceSpace, ref int consumed, uint remaining,
             Span<byte> destination, ref byte destSpace, ref int written)
@@ -326,6 +500,9 @@ namespace SpanJson.Internal
         /// <summary>Returns <see langword="true"/> if the low word of <paramref name="char"/> is a UTF-16 surrogate.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool IsLowWordSurrogate(uint @char) => (@char & 0xF800U) == 0xD800U ? true : false;
+
+        /// <summary>A scalar that represents the Unicode replacement character U+FFFD.</summary>
+        private const int ReplacementChar = 0xFFFD;
 
         // We can't use the type Rune since it is not available on netstandard2.0
         // To avoid extensive ifdefs and for simplicity, just using an int to reprepsent the scalar value, instead.
@@ -523,87 +700,347 @@ namespace SpanJson.Internal
             return SequenceValidity.Incomplete;
         }
 
-        private static void EscapeNextChars(ref char sourceSpace, uint srcLength, int firstChar, ref char destSpace, ref int consumed, ref int written)
+        #endregion
+
+        #region == EscapeNextChars ==
+
+        internal static void EscapeNextChars(ref char sourceSpace, uint srcLength, int firstChar, ref char destSpace, ref int consumed, ref int written)
         {
-            int nextChar = -1;
-            if (JsonHelpers.IsInRangeInclusive(firstChar, JsonConstants.HighSurrogateStartValue, JsonConstants.LowSurrogateEndValue))
-            {
-                consumed++;
-                if (srcLength <= (uint)consumed || firstChar >= JsonConstants.LowSurrogateStartValue)
-                {
-                    ThrowHelper.ThrowArgumentException_InvalidUTF16(firstChar);
-                }
-
-                nextChar = Unsafe.Add(ref sourceSpace, consumed);
-                if (!JsonHelpers.IsInRangeInclusive(nextChar, JsonConstants.LowSurrogateStartValue, JsonConstants.LowSurrogateEndValue))
-                {
-                    ThrowHelper.ThrowArgumentException_InvalidUTF16(nextChar);
-                }
-            }
-
-            Unsafe.Add(ref destSpace, written++) = '\\';
             switch (firstChar)
             {
-                case JsonConstants.Quote:
-                    Unsafe.Add(ref destSpace, written++) = '"';
+                case JsonUtf16Constant.DoubleQuote:
+                    WriteSingleChar(ref destSpace, JsonUtf16Constant.DoubleQuote, ref written);
                     break;
-                case JsonConstants.Slash:
-                    Unsafe.Add(ref destSpace, written++) = '/';
+                case JsonUtf16Constant.Solidus:
+                    WriteSingleChar(ref destSpace, JsonUtf16Constant.Solidus, ref written);
+                    break;
+                case JsonUtf16Constant.ReverseSolidus:
+                    WriteSingleChar(ref destSpace, JsonUtf16Constant.ReverseSolidus, ref written);
+                    break;
+                case '\b':
+                    WriteSingleChar(ref destSpace, 'b', ref written);
+                    break;
+                case '\f':
+                    WriteSingleChar(ref destSpace, 'f', ref written);
+                    break;
+                case '\n':
+                    WriteSingleChar(ref destSpace, 'n', ref written);
+                    break;
+                case '\r':
+                    WriteSingleChar(ref destSpace, 'r', ref written);
+                    break;
+                case '\t':
+                    WriteSingleChar(ref destSpace, 't', ref written);
+                    break;
+                case '\x0':
+                    WriteDoubleChar(ref destSpace, '0', '0', ref written);
+                    break;
+                case '\x1':
+                    WriteDoubleChar(ref destSpace, '0', '1', ref written);
+                    break;
+                case '\x2':
+                    WriteDoubleChar(ref destSpace, '0', '2', ref written);
+                    break;
+                case '\x3':
+                    WriteDoubleChar(ref destSpace, '0', '3', ref written);
+                    break;
+                case '\x4':
+                    WriteDoubleChar(ref destSpace, '0', '4', ref written);
+                    break;
+                case '\x5':
+                    WriteDoubleChar(ref destSpace, '0', '5', ref written);
+                    break;
+                case '\x6':
+                    WriteDoubleChar(ref destSpace, '0', '6', ref written);
+                    break;
+                case '\x7':
+                    WriteDoubleChar(ref destSpace, '0', '7', ref written);
+                    break;
+                case '\xB':
+                    WriteDoubleChar(ref destSpace, '0', 'B', ref written);
+                    break;
+                case '\xE':
+                    WriteDoubleChar(ref destSpace, '0', 'E', ref written);
+                    break;
+                case '\xF':
+                    WriteDoubleChar(ref destSpace, '0', 'F', ref written);
+                    break;
+                case '\x10':
+                    WriteDoubleChar(ref destSpace, '1', '0', ref written);
+                    break;
+                case '\x11':
+                    WriteDoubleChar(ref destSpace, '1', '1', ref written);
+                    break;
+                case '\x12':
+                    WriteDoubleChar(ref destSpace, '1', '2', ref written);
+                    break;
+                case '\x13':
+                    WriteDoubleChar(ref destSpace, '1', '3', ref written);
+                    break;
+                case '\x14':
+                    WriteDoubleChar(ref destSpace, '1', '4', ref written);
+                    break;
+                case '\x15':
+                    WriteDoubleChar(ref destSpace, '1', '5', ref written);
+                    break;
+                case '\x16':
+                    WriteDoubleChar(ref destSpace, '1', '6', ref written);
+                    break;
+                case '\x17':
+                    WriteDoubleChar(ref destSpace, '1', '7', ref written);
+                    break;
+                case '\x18':
+                    WriteDoubleChar(ref destSpace, '1', '8', ref written);
+                    break;
+                case '\x19':
+                    WriteDoubleChar(ref destSpace, '1', '9', ref written);
+                    break;
+                case '\x1A':
+                    WriteDoubleChar(ref destSpace, '1', 'A', ref written);
+                    break;
+                case '\x1B':
+                    WriteDoubleChar(ref destSpace, '1', 'B', ref written);
+                    break;
+                case '\x1C':
+                    WriteDoubleChar(ref destSpace, '1', 'C', ref written);
+                    break;
+                case '\x1D':
+                    WriteDoubleChar(ref destSpace, '1', 'D', ref written);
+                    break;
+                case '\x1E':
+                    WriteDoubleChar(ref destSpace, '1', 'E', ref written);
+                    break;
+                case '\x1F':
+                    WriteDoubleChar(ref destSpace, '1', 'F', ref written);
                     break;
 
-                case JsonConstants.LineFeed:
-                    Unsafe.Add(ref destSpace, written++) = 'n';
-                    break;
-                case JsonConstants.CarriageReturn:
-                    Unsafe.Add(ref destSpace, written++) = 'r';
-                    break;
-                case JsonConstants.Tab:
-                    Unsafe.Add(ref destSpace, written++) = 't';
-                    break;
-                case JsonConstants.BackSlash:
-                    Unsafe.Add(ref destSpace, written++) = '\\';
-                    break;
-                case JsonConstants.BackSpace:
-                    Unsafe.Add(ref destSpace, written++) = 'b';
-                    break;
-                case JsonConstants.FormFeed:
-                    Unsafe.Add(ref destSpace, written++) = 'f';
-                    break;
                 default:
-                    Unsafe.Add(ref destSpace, written++) = 'u';
-                    WriteHex(firstChar, ref destSpace, ref written);
+                    WriteHexChar(ref destSpace, firstChar, ref written);
+                    int nextChar = -1;
+                    if (JsonHelpers.IsInRangeInclusive(firstChar, JsonConstants.HighSurrogateStartValue, JsonConstants.LowSurrogateEndValue))
+                    {
+                        consumed++;
+                        if (srcLength <= (uint)consumed || firstChar >= JsonConstants.LowSurrogateStartValue)
+                        {
+                            ThrowHelper.ThrowArgumentException_InvalidUTF16(firstChar);
+                        }
+
+                        nextChar = Unsafe.Add(ref sourceSpace, consumed);
+                        if (!JsonHelpers.IsInRangeInclusive(nextChar, JsonConstants.LowSurrogateStartValue, JsonConstants.LowSurrogateEndValue))
+                        {
+                            ThrowHelper.ThrowArgumentException_InvalidUTF16(nextChar);
+                        }
+                    }
                     if (nextChar != -1)
                     {
-                        Unsafe.Add(ref destSpace, written++) = '\\';
-                        Unsafe.Add(ref destSpace, written++) = 'u';
-                        WriteHex(nextChar, ref destSpace, ref written);
+                        WriteHexChar(ref destSpace, nextChar, ref written);
                     }
                     break;
             }
         }
 
-        /// <summary>A scalar that represents the Unicode replacement character U+FFFD.</summary>
-        private const int ReplacementChar = 0xFFFD;
-
-        private static void WriteHex(int value, ref char destSpace, ref int written)
+        internal static void EscapeNextChars(ref char sourceSpace, uint srcLength, int firstChar, ref byte destSpace, ref int consumed, ref int written)
         {
-            Unsafe.Add(ref destSpace, written++) = (char)Int32LsbToHexDigit(value >> 12);
-            Unsafe.Add(ref destSpace, written++) = (char)Int32LsbToHexDigit((int)((value >> 8) & 0xFU));
-            Unsafe.Add(ref destSpace, written++) = (char)Int32LsbToHexDigit((int)((value >> 4) & 0xFU));
-            Unsafe.Add(ref destSpace, written++) = (char)Int32LsbToHexDigit((int)(value & 0xFU));
+            switch (firstChar)
+            {
+                case JsonUtf16Constant.DoubleQuote:
+                    WriteSingleChar(ref destSpace, JsonUtf16Constant.DoubleQuote, ref written);
+                    break;
+                case JsonUtf16Constant.Solidus:
+                    WriteSingleChar(ref destSpace, JsonUtf16Constant.Solidus, ref written);
+                    break;
+                case JsonUtf16Constant.ReverseSolidus:
+                    WriteSingleChar(ref destSpace, JsonUtf16Constant.ReverseSolidus, ref written);
+                    break;
+                case '\b':
+                    WriteSingleChar(ref destSpace, 'b', ref written);
+                    break;
+                case '\f':
+                    WriteSingleChar(ref destSpace, 'f', ref written);
+                    break;
+                case '\n':
+                    WriteSingleChar(ref destSpace, 'n', ref written);
+                    break;
+                case '\r':
+                    WriteSingleChar(ref destSpace, 'r', ref written);
+                    break;
+                case '\t':
+                    WriteSingleChar(ref destSpace, 't', ref written);
+                    break;
+                case '\x0':
+                    WriteDoubleChar(ref destSpace, '0', '0', ref written);
+                    break;
+                case '\x1':
+                    WriteDoubleChar(ref destSpace, '0', '1', ref written);
+                    break;
+                case '\x2':
+                    WriteDoubleChar(ref destSpace, '0', '2', ref written);
+                    break;
+                case '\x3':
+                    WriteDoubleChar(ref destSpace, '0', '3', ref written);
+                    break;
+                case '\x4':
+                    WriteDoubleChar(ref destSpace, '0', '4', ref written);
+                    break;
+                case '\x5':
+                    WriteDoubleChar(ref destSpace, '0', '5', ref written);
+                    break;
+                case '\x6':
+                    WriteDoubleChar(ref destSpace, '0', '6', ref written);
+                    break;
+                case '\x7':
+                    WriteDoubleChar(ref destSpace, '0', '7', ref written);
+                    break;
+                case '\xB':
+                    WriteDoubleChar(ref destSpace, '0', 'B', ref written);
+                    break;
+                case '\xE':
+                    WriteDoubleChar(ref destSpace, '0', 'E', ref written);
+                    break;
+                case '\xF':
+                    WriteDoubleChar(ref destSpace, '0', 'F', ref written);
+                    break;
+                case '\x10':
+                    WriteDoubleChar(ref destSpace, '1', '0', ref written);
+                    break;
+                case '\x11':
+                    WriteDoubleChar(ref destSpace, '1', '1', ref written);
+                    break;
+                case '\x12':
+                    WriteDoubleChar(ref destSpace, '1', '2', ref written);
+                    break;
+                case '\x13':
+                    WriteDoubleChar(ref destSpace, '1', '3', ref written);
+                    break;
+                case '\x14':
+                    WriteDoubleChar(ref destSpace, '1', '4', ref written);
+                    break;
+                case '\x15':
+                    WriteDoubleChar(ref destSpace, '1', '5', ref written);
+                    break;
+                case '\x16':
+                    WriteDoubleChar(ref destSpace, '1', '6', ref written);
+                    break;
+                case '\x17':
+                    WriteDoubleChar(ref destSpace, '1', '7', ref written);
+                    break;
+                case '\x18':
+                    WriteDoubleChar(ref destSpace, '1', '8', ref written);
+                    break;
+                case '\x19':
+                    WriteDoubleChar(ref destSpace, '1', '9', ref written);
+                    break;
+                case '\x1A':
+                    WriteDoubleChar(ref destSpace, '1', 'A', ref written);
+                    break;
+                case '\x1B':
+                    WriteDoubleChar(ref destSpace, '1', 'B', ref written);
+                    break;
+                case '\x1C':
+                    WriteDoubleChar(ref destSpace, '1', 'C', ref written);
+                    break;
+                case '\x1D':
+                    WriteDoubleChar(ref destSpace, '1', 'D', ref written);
+                    break;
+                case '\x1E':
+                    WriteDoubleChar(ref destSpace, '1', 'E', ref written);
+                    break;
+                case '\x1F':
+                    WriteDoubleChar(ref destSpace, '1', 'F', ref written);
+                    break;
+
+                default:
+                    WriteHexChar(ref destSpace, firstChar, ref written);
+                    int nextChar = -1;
+                    if (JsonHelpers.IsInRangeInclusive(firstChar, JsonConstants.HighSurrogateStartValue, JsonConstants.LowSurrogateEndValue))
+                    {
+                        consumed++;
+                        if (srcLength <= (uint)consumed || firstChar >= JsonConstants.LowSurrogateStartValue)
+                        {
+                            ThrowHelper.ThrowArgumentException_InvalidUTF16(firstChar);
+                        }
+
+                        nextChar = Unsafe.Add(ref sourceSpace, consumed);
+                        if (!JsonHelpers.IsInRangeInclusive(nextChar, JsonConstants.LowSurrogateStartValue, JsonConstants.LowSurrogateEndValue))
+                        {
+                            ThrowHelper.ThrowArgumentException_InvalidUTF16(nextChar);
+                        }
+                    }
+                    if (nextChar != -1)
+                    {
+                        WriteHexChar(ref destSpace, nextChar, ref written);
+                    }
+                    break;
+            }
         }
 
-        private static void WriteHex(int value, ref byte destSpace, IntPtr offset)
+        #endregion
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void WriteSingleChar(ref char destSpace, char toEscape, ref int pos)
         {
-            Unsafe.AddByteOffset(ref destSpace, offset + 2) = Int32LsbToHexDigit(value >> 12);
-            Unsafe.AddByteOffset(ref destSpace, offset + 3) = Int32LsbToHexDigit((int)((value >> 8) & 0xFU));
-            Unsafe.AddByteOffset(ref destSpace, offset + 4) = Int32LsbToHexDigit((int)((value >> 4) & 0xFU));
-            Unsafe.AddByteOffset(ref destSpace, offset + 5) = Int32LsbToHexDigit((int)(value & 0xFU));
+            Unsafe.Add(ref destSpace, pos++) = JsonUtf16Constant.ReverseSolidus;
+            Unsafe.Add(ref destSpace, pos++) = toEscape;
         }
 
-        /// <summary>
-        /// Converts a number 0 - 15 to its associated hex character '0' - 'f' as byte.
-        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void WriteSingleChar(ref byte destSpace, char toEscape, ref int pos)
+        {
+            var offset = (IntPtr)pos;
+            Unsafe.AddByteOffset(ref destSpace, offset) = JsonUtf8Constant.ReverseSolidus;
+            Unsafe.AddByteOffset(ref destSpace, offset + 1) = (byte)toEscape;
+            pos += 2;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void WriteDoubleChar(ref char destSpace, char firstToEscape, char secondToEscape, ref int pos)
+        {
+            Unsafe.Add(ref destSpace, pos++) = JsonUtf16Constant.ReverseSolidus;
+            Unsafe.Add(ref destSpace, pos++) = 'u';
+            Unsafe.Add(ref destSpace, pos++) = '0';
+            Unsafe.Add(ref destSpace, pos++) = '0';
+            Unsafe.Add(ref destSpace, pos++) = firstToEscape;
+            Unsafe.Add(ref destSpace, pos++) = secondToEscape;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void WriteDoubleChar(ref byte destSpace, char firstToEscape, char secondToEscape, ref int pos)
+        {
+            var offset = (IntPtr)pos;
+            Unsafe.AddByteOffset(ref destSpace, offset) = JsonUtf8Constant.ReverseSolidus;
+            Unsafe.AddByteOffset(ref destSpace, offset + 1) = (byte)'u';
+            Unsafe.AddByteOffset(ref destSpace, offset + 2) = (byte)'0';
+            Unsafe.AddByteOffset(ref destSpace, offset + 3) = (byte)'0';
+            Unsafe.AddByteOffset(ref destSpace, offset + 4) = (byte)firstToEscape;
+            Unsafe.AddByteOffset(ref destSpace, offset + 5) = (byte)secondToEscape;
+            pos += 6;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void WriteHexChar(ref char destSpace, int toEscape, ref int pos)
+        {
+            Unsafe.Add(ref destSpace, pos++) = JsonUtf16Constant.ReverseSolidus;
+            Unsafe.Add(ref destSpace, pos++) = 'u';
+            Unsafe.Add(ref destSpace, pos++) = (char)Int32LsbToHexDigit(toEscape >> 12);
+            Unsafe.Add(ref destSpace, pos++) = (char)Int32LsbToHexDigit((int)((toEscape >> 8) & 0xFU));
+            Unsafe.Add(ref destSpace, pos++) = (char)Int32LsbToHexDigit((int)((toEscape >> 4) & 0xFU));
+            Unsafe.Add(ref destSpace, pos++) = (char)Int32LsbToHexDigit((int)(toEscape & 0xFU));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void WriteHexChar(ref byte destSpace, int toEscape, ref int pos)
+        {
+            var offset = (IntPtr)pos;
+            Unsafe.AddByteOffset(ref destSpace, offset) = JsonUtf8Constant.ReverseSolidus;
+            Unsafe.AddByteOffset(ref destSpace, offset + 1) = (byte)'u';
+            Unsafe.AddByteOffset(ref destSpace, offset + 2) = Int32LsbToHexDigit(toEscape >> 12);
+            Unsafe.AddByteOffset(ref destSpace, offset + 3) = Int32LsbToHexDigit((int)((toEscape >> 8) & 0xFU));
+            Unsafe.AddByteOffset(ref destSpace, offset + 4) = Int32LsbToHexDigit((int)((toEscape >> 4) & 0xFU));
+            Unsafe.AddByteOffset(ref destSpace, offset + 5) = Int32LsbToHexDigit((int)(toEscape & 0xFU));
+            pos += 6;
+        }
+
+        /// <summary>Converts a number 0 - 15 to its associated hex character '0' - 'f' as byte.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static byte Int32LsbToHexDigit(int value)
         {

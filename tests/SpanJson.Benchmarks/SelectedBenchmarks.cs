@@ -23,7 +23,7 @@ namespace SpanJson.Benchmarks
         //    Encoding.UTF8.GetBytes(AccessTokenSerializedString);
 
 
-        private static readonly Answer Answer = ExpressionTreeFixture.Create<Answer>();
+        private static readonly WritePermission Answer = ExpressionTreeFixture.Create<WritePermission>();
 
         private static readonly string AnswerSerializedString = SpanJsonSerializer.Serialize(Answer);
 
@@ -79,15 +79,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public Answer DeserializeAnswerWithSpanJsonSerializer()
+        public WritePermission DeserializeAnswerWithSpanJsonSerializer()
         {
-            return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
+            return SpanJsonSerializer.Deserialize<WritePermission>(AnswerSerializedString);
         }
 
         [Benchmark]
-        public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
+        public WritePermission DeserializeAnswerWithSpanJsonSerializerUtf8()
         {
-            return JsonSerializer.Generic.Utf8.Deserialize<Answer>(AnswerSerializedByteArray);
+            return JsonSerializer.Generic.Utf8.Deserialize<WritePermission>(AnswerSerializedByteArray);
         }
 
 

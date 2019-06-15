@@ -170,14 +170,28 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #> value, IJsonFormatterResolver<<#= symbol.Name #>> resolver)
         {
-<# if(!t.IsValueType) { #>
+<# if(t == typeof(string)) { #>
             if(value == null)
             {
                 writer.Write<#= utfName #>Null();
                 return;
             }
+            writer.Write<#= utfName #><#= t.Name #>(value, resolver.StringEscapeHandling);
 <# } #>
+<# else if(t == typeof(char)) { #>
+            writer.Write<#= utfName #><#= t.Name #>(value, resolver.StringEscapeHandling);
+<# } #>
+<# else if(!t.IsValueType) { #>
+            if(value == null)
+            {
+                writer.Write<#= utfName #>Null();
+                return;
+            }
             writer.Write<#= utfName #><#= t.Name #>(value);
+<# } #>
+<# else { #>
+            writer.Write<#= utfName #><#= t.Name #>(value);
+<# } #>
         }
 
         public <#= t.Name #> Deserialize(ref JsonReader<<#= symbol.Name #>> reader, IJsonFormatterResolver<<#= symbol.Name #>> resolver)

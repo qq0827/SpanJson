@@ -72,7 +72,7 @@ namespace SpanJson.Tests
         public sealed class NonAsciiEscapeResolver<TSymbol> : ResolverBase<TSymbol, NonAsciiEscapeResolver<TSymbol>> where TSymbol : struct
         {
             public NonAsciiEscapeResolver()
-                : base(new SpanJsonOptions { EscapeHandling = StringEscapeHandling.EscapeNonAscii })
+                : base(new SpanJsonOptions { StringEscapeHandling = StringEscapeHandling.EscapeNonAscii })
             {
             }
         }
@@ -87,7 +87,7 @@ namespace SpanJson.Tests
                 数 = Numbers.三,
             };
             var serialized = JsonSerializer.Generic.Utf16.Serialize<Person, NonAsciiEscapeResolver<char>>(person);
-            Assert.Equal("{\"\\u4eba\\r\\n\\u624d\":\"自\",\"\\u540d\\r\\n\\u79f0\":\"男\",\"\\u6570\\r\\n\\u5b57\":\"三\"}", serialized);
+            Assert.Equal("{\"\\u4eba\\r\\n\\u624d\":\"\\u81ea\",\"\\u540d\\r\\n\\u79f0\":\"\\u7537\",\"\\u6570\\r\\n\\u5b57\":\"三\"}", serialized);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<Person, NonAsciiEscapeResolver<char>>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(person.人, deserialized.人);
@@ -106,7 +106,7 @@ namespace SpanJson.Tests
             };
             var serialized = JsonSerializer.Generic.Utf8.Serialize<Person, NonAsciiEscapeResolver<byte>>(person);
             var utf16Serialized = Encoding.UTF8.GetString(serialized);
-            Assert.Equal("{\"\\u4eba\\r\\n\\u624d\":\"然\",\"\\u540d\\r\\n\\u79f0\":\"女\",\"\\u6570\\r\\n\\u5b57\":\"二\"}", utf16Serialized);
+            Assert.Equal("{\"\\u4eba\\r\\n\\u624d\":\"\\u7136\",\"\\u540d\\r\\n\\u79f0\":\"\\u5973\",\"\\u6570\\r\\n\\u5b57\":\"二\"}", utf16Serialized);
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<Person, NonAsciiEscapeResolver<byte>>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(person.人, deserialized.人);

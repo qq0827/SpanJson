@@ -6,6 +6,6 @@
         public NullOptions NullOption { get; set; }
         public EnumOptions EnumOption { get; set; }
 
-        public StringEscapeHandling EscapeHandling { get; set; }
+        public StringEscapeHandling StringEscapeHandling { get; set; }
     }
 }
