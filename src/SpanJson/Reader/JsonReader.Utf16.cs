@@ -101,14 +101,14 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static long ReadUtf16NumberInt64(ref char cStart, ref int pos, uint length)
         {
-            SkipWhitespaceUtf16(ref cStart, ref pos, length);
+            var currentChar = SkipWhitespaceUtf16(ref cStart, ref pos, length);
             if ((uint)pos >= length)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.EndOfData, pos);
             }
 
             var neg = false;
-            if (Unsafe.Add(ref cStart, pos) == '-')
+            if (currentChar == '-')
             {
                 pos++;
                 neg = true;
@@ -404,8 +404,9 @@ namespace SpanJson
             ref var cStart = ref MemoryMarshal.GetReference(_chars);
             SkipWhitespaceUtf16(ref cStart, ref pos, _length);
             var span = ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out var escapedCharsSize);
-            SkipWhitespaceUtf16(ref cStart, ref pos, _length);
-            if (Unsafe.Add(ref cStart, pos++) != JsonUtf16Constant.NameSeparator)
+            var currentChar = SkipWhitespaceUtf16(ref cStart, ref pos, _length);
+            pos++;
+            if (currentChar != JsonUtf16Constant.NameSeparator)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, pos);
             }
@@ -420,8 +421,9 @@ namespace SpanJson
             ref var cStart = ref MemoryMarshal.GetReference(_chars);
             SkipWhitespaceUtf16(ref cStart, ref pos, _length);
             var span = ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out _);
-            SkipWhitespaceUtf16(ref cStart, ref pos, _length);
-            if (Unsafe.Add(ref cStart, pos++) != JsonUtf16Constant.NameSeparator)
+            var currentChar = SkipWhitespaceUtf16(ref cStart, ref pos, _length);
+            pos++;
+            if (currentChar != JsonUtf16Constant.NameSeparator)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, pos);
             }
@@ -436,8 +438,9 @@ namespace SpanJson
             ref var cStart = ref MemoryMarshal.GetReference(_chars);
             SkipWhitespaceUtf16(ref cStart, ref pos, _length);
             var span = ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out var escapedCharsSize);
-            SkipWhitespaceUtf16(ref cStart, ref pos, _length);
-            if (Unsafe.Add(ref cStart, pos++) != JsonUtf16Constant.NameSeparator)
+            var currentChar = SkipWhitespaceUtf16(ref cStart, ref pos, _length);
+            pos++;
+            if (currentChar != JsonUtf16Constant.NameSeparator)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, pos);
             }
@@ -694,46 +697,42 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void SkipWhitespaceUtf16(ref char cStart, ref int pos, uint length)
+        private static uint SkipWhitespaceUtf16(ref char cStart, ref int pos, uint length)
         {
-            var hasWhitespace = false;
-            var c = Unsafe.Add(ref cStart, pos);
-            switch (c)
+            uint currentChar = Unsafe.Add(ref cStart, pos);
+            switch (currentChar)
             {
                 case JsonUtf16Constant.Space:
                 case JsonUtf16Constant.Tab:
                 case JsonUtf16Constant.CarriageReturn:
                 case JsonUtf16Constant.LineFeed:
                     pos++;
-                    hasWhitespace = true;
                     break;
+                default: return currentChar;
             }
-            if (hasWhitespace)
-            {
-                SkipWhitespaceUtf16Slow(ref cStart, ref pos, length);
-            }
+            return SkipWhitespaceUtf16Slow(ref cStart, ref pos, length);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void SkipWhitespaceUtf16Slow(ref char cStart, ref int pos, uint length)
+        private static uint SkipWhitespaceUtf16Slow(ref char cStart, ref int pos, uint length)
         {
+            uint currentChar = 0u;
             while ((uint)pos < length)
             {
-                var c = Unsafe.Add(ref cStart, pos);
-                switch (c)
+                currentChar = Unsafe.Add(ref cStart, pos);
+                switch (currentChar)
                 {
                     case JsonUtf16Constant.Space:
                     case JsonUtf16Constant.Tab:
                     case JsonUtf16Constant.CarriageReturn:
                     case JsonUtf16Constant.LineFeed:
-                        {
-                            pos++;
-                            continue;
-                        }
+                        pos++;
+                        continue;
                     default:
-                        return;
+                        return currentChar;
                 }
             }
+            return currentChar;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -750,8 +749,8 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref var cStart = ref MemoryMarshal.GetReference(_chars);
-            SkipWhitespaceUtf16(ref cStart, ref pos, _length);
-            if ((uint)pos < _length && Unsafe.Add(ref cStart, pos) == JsonUtf16Constant.BeginArray)
+            var currentChar = SkipWhitespaceUtf16(ref cStart, ref pos, _length);
+            if ((uint)pos < _length && currentChar == JsonUtf16Constant.BeginArray)
             {
                 pos++;
                 return true;
@@ -765,8 +764,8 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref var cStart = ref MemoryMarshal.GetReference(_chars);
-            SkipWhitespaceUtf16(ref cStart, ref pos, _length);
-            if ((uint)pos < _length && Unsafe.Add(ref cStart, pos) == JsonUtf16Constant.EndArray)
+            var currentChar = SkipWhitespaceUtf16(ref cStart, ref pos, _length);
+            if ((uint)pos < _length && currentChar == JsonUtf16Constant.EndArray)
             {
                 pos++;
                 return true;
@@ -791,8 +790,8 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref var cStart = ref MemoryMarshal.GetReference(_chars);
-            SkipWhitespaceUtf16(ref cStart, ref pos, _length);
-            if (Unsafe.Add(ref cStart, pos) == JsonUtf16Constant.BeginObject)
+            var currentChar = SkipWhitespaceUtf16(ref cStart, ref pos, _length);
+            if (currentChar == JsonUtf16Constant.BeginObject)
             {
                 pos++;
                 return true;
@@ -816,8 +815,8 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref var cStart = ref MemoryMarshal.GetReference(_chars);
-            SkipWhitespaceUtf16(ref cStart, ref pos, _length);
-            if (Unsafe.Add(ref cStart, pos) == JsonUtf16Constant.EndObject)
+            var currentChar = SkipWhitespaceUtf16(ref cStart, ref pos, _length);
+            if (currentChar == JsonUtf16Constant.EndObject)
             {
                 pos++;
                 return true;
@@ -831,8 +830,8 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref var cStart = ref MemoryMarshal.GetReference(_chars);
-            SkipWhitespaceUtf16(ref cStart, ref pos, _length);
-            if (Unsafe.Add(ref cStart, pos) == JsonUtf16Constant.EndArray)
+            var currentChar = SkipWhitespaceUtf16(ref cStart, ref pos, _length);
+            if (currentChar == JsonUtf16Constant.EndArray)
             {
                 pos++;
                 return true;
@@ -846,8 +845,8 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref var cStart = ref MemoryMarshal.GetReference(_chars);
-            SkipWhitespaceUtf16(ref cStart, ref pos, _length);
-            if ((uint)pos < _length && Unsafe.Add(ref cStart, pos) == JsonUtf16Constant.EndObject)
+            var currentChar = SkipWhitespaceUtf16(ref cStart, ref pos, _length);
+            if ((uint)pos < _length && currentChar == JsonUtf16Constant.EndObject)
             {
                 pos++;
                 return true;
@@ -905,8 +904,8 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref var cStart = ref MemoryMarshal.GetReference(_chars);
-            SkipWhitespaceUtf16(ref cStart, ref pos, _length);
-            if (Unsafe.Add(ref cStart, pos) == constant)
+            var currentChar = SkipWhitespaceUtf16(ref cStart, ref pos, _length);
+            if (currentChar == constant)
             {
                 pos++;
                 return true;
@@ -1201,14 +1200,13 @@ namespace SpanJson
 
         public static JsonToken ReadUtf16NextTokenInternal(ref char cStart, ref int pos, uint length)
         {
-            SkipWhitespaceUtf16(ref cStart, ref pos, length);
+            var currentChar = SkipWhitespaceUtf16(ref cStart, ref pos, length);
             if ((uint)pos >= length)
             {
                 return JsonToken.None;
             }
 
-            var c = Unsafe.Add(ref cStart, pos);
-            switch (c)
+            switch (currentChar)
             {
                 case JsonUtf16Constant.BeginObject:
                     return JsonToken.BeginObject;

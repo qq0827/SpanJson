@@ -105,14 +105,14 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static long ReadUtf8NumberInt64(ref byte bStart, ref int pos, uint length)
         {
-            SkipWhitespaceUtf8(ref bStart, ref pos, length);
+            var currentByte = SkipWhitespaceUtf8(ref bStart, ref pos, length);
             if ((uint)pos >= length)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.EndOfData, pos);
             }
 
             var neg = false;
-            if (Unsafe.AddByteOffset(ref bStart, (IntPtr)pos) == (byte)'-')
+            if (currentByte == (byte)'-')
             {
                 pos++;
                 neg = true;
@@ -384,8 +384,9 @@ namespace SpanJson
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
             SkipWhitespaceUtf8(ref bStart, ref pos, _length);
             var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out var escapedCharsSize);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
-            if (Unsafe.AddByteOffset(ref bStart, (IntPtr)pos++) != JsonUtf8Constant.NameSeparator)
+            var currentByte = SkipWhitespaceUtf8(ref bStart, ref pos, _length);
+            pos++;
+            if (currentByte != JsonUtf8Constant.NameSeparator)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, pos);
             }
@@ -400,8 +401,9 @@ namespace SpanJson
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
             SkipWhitespaceUtf8(ref bStart, ref pos, _length);
             var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out var escapedCharsSize);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
-            if (Unsafe.AddByteOffset(ref bStart, (IntPtr)pos++) != JsonUtf8Constant.NameSeparator)
+            var currentByte = SkipWhitespaceUtf8(ref bStart, ref pos, _length);
+            pos++;
+            if (currentByte != JsonUtf8Constant.NameSeparator)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, pos);
             }
@@ -415,8 +417,9 @@ namespace SpanJson
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
             SkipWhitespaceUtf8(ref bStart, ref pos, _length);
             var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out _);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
-            if (Unsafe.AddByteOffset(ref bStart, (IntPtr)pos++) != JsonUtf8Constant.NameSeparator)
+            var currentByte = SkipWhitespaceUtf8(ref bStart, ref pos, _length);
+            pos++;
+            if (currentByte != JsonUtf8Constant.NameSeparator)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, pos);
             }
@@ -778,43 +781,42 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void SkipWhitespaceUtf8(ref byte bStart, ref int pos, uint length)
+        private static uint SkipWhitespaceUtf8(ref byte bStart, ref int pos, uint length)
         {
-            var hasWhitespace = false;
-            switch (Unsafe.AddByteOffset(ref bStart, (IntPtr)pos))
+            uint currentByte = Unsafe.AddByteOffset(ref bStart, (IntPtr)pos);
+            switch (currentByte)
             {
                 case JsonUtf8Constant.Space:
                 case JsonUtf8Constant.Tab:
                 case JsonUtf8Constant.CarriageReturn:
                 case JsonUtf8Constant.LineFeed:
-                    {
-                        pos++;
-                        hasWhitespace = true;
-                        break;
-                    }
+                    pos++;
+                    break;
+                default: return currentByte;
             }
-            if (hasWhitespace) { SkipWhitespaceUtf8Slow(ref bStart, ref pos, length); }
+            return SkipWhitespaceUtf8Slow(ref bStart, ref pos, length);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void SkipWhitespaceUtf8Slow(ref byte bStart, ref int pos, uint length)
+        private static uint SkipWhitespaceUtf8Slow(ref byte bStart, ref int pos, uint length)
         {
+            uint currentByte = 0u;
             while ((uint)pos < length)
             {
-                switch (Unsafe.AddByteOffset(ref bStart, (IntPtr)pos))
+                currentByte = Unsafe.AddByteOffset(ref bStart, (IntPtr)pos);
+                switch (currentByte)
                 {
                     case JsonUtf8Constant.Space:
                     case JsonUtf8Constant.Tab:
                     case JsonUtf8Constant.CarriageReturn:
                     case JsonUtf8Constant.LineFeed:
-                        {
-                            pos++;
-                            continue;
-                        }
+                        pos++;
+                        continue;
                     default:
-                        return;
+                        return currentByte;
                 }
             }
+            return currentByte;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -831,8 +833,8 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
-            if ((uint)pos < _length && Unsafe.AddByteOffset(ref bStart, (IntPtr)pos) == JsonUtf8Constant.BeginArray)
+            var currentByte = SkipWhitespaceUtf8(ref bStart, ref pos, _length);
+            if ((uint)pos < _length && currentByte == JsonUtf8Constant.BeginArray)
             {
                 pos++;
                 return true;
@@ -846,8 +848,8 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
-            if ((uint)pos < _length && Unsafe.AddByteOffset(ref bStart, (IntPtr)pos) == JsonUtf8Constant.EndArray)
+            var currentByte = SkipWhitespaceUtf8(ref bStart, ref pos, _length);
+            if ((uint)pos < _length && currentByte == JsonUtf8Constant.EndArray)
             {
                 pos++;
                 return true;
@@ -872,8 +874,8 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
-            if (Unsafe.AddByteOffset(ref bStart, (IntPtr)pos) == JsonUtf8Constant.BeginObject)
+            var currentByte = SkipWhitespaceUtf8(ref bStart, ref pos, _length);
+            if (currentByte == JsonUtf8Constant.BeginObject)
             {
                 pos++;
                 return true;
@@ -915,8 +917,8 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
-            if (Unsafe.AddByteOffset(ref bStart, (IntPtr)pos) == JsonUtf8Constant.EndObject)
+            var currentByte = SkipWhitespaceUtf8(ref bStart, ref pos, _length);
+            if (currentByte == JsonUtf8Constant.EndObject)
             {
                 pos++;
                 return true;
@@ -930,8 +932,8 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
-            if (Unsafe.AddByteOffset(ref bStart, (IntPtr)pos) == JsonUtf8Constant.EndArray)
+            var currentByte = SkipWhitespaceUtf8(ref bStart, ref pos, _length);
+            if (currentByte == JsonUtf8Constant.EndArray)
             {
                 pos++;
                 return true;
@@ -945,8 +947,8 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
-            if ((uint)pos < _length && Unsafe.AddByteOffset(ref bStart, (IntPtr)pos) == JsonUtf8Constant.EndObject)
+            var currentByte = SkipWhitespaceUtf8(ref bStart, ref pos, _length);
+            if ((uint)pos < _length && currentByte == JsonUtf8Constant.EndObject)
             {
                 pos++;
                 return true;
@@ -1004,8 +1006,8 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
-            if ((uint)pos < _length && Unsafe.AddByteOffset(ref bStart, (IntPtr)pos) == constant)
+            var currentByte = SkipWhitespaceUtf8(ref bStart, ref pos, _length);
+            if ((uint)pos < _length && currentByte == constant)
             {
                 pos++;
                 return true;
@@ -1297,13 +1299,13 @@ namespace SpanJson
 
         private static JsonToken ReadUtf8NextTokenInternal(ref byte bStart, ref int pos, uint length)
         {
-            SkipWhitespaceUtf8(ref bStart, ref pos, length);
+            var currentByte = SkipWhitespaceUtf8(ref bStart, ref pos, length);
             if ((uint)pos >= length)
             {
                 return JsonToken.None;
             }
 
-            switch (Unsafe.AddByteOffset(ref bStart, (IntPtr)pos))
+            switch (currentByte)
             {
                 case JsonUtf8Constant.BeginObject:
                     return JsonToken.BeginObject;
@@ -1325,17 +1327,17 @@ namespace SpanJson
                     return JsonToken.ValueSeparator;
                 case JsonUtf8Constant.NameSeparator:
                     return JsonToken.NameSeparator;
-                case (byte)'-':
-                case (byte)'1':
-                case (byte)'2':
-                case (byte)'3':
-                case (byte)'4':
-                case (byte)'5':
-                case (byte)'6':
-                case (byte)'7':
-                case (byte)'8':
-                case (byte)'9':
-                case (byte)'0':
+                case '-':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                case '0':
                     return JsonToken.Number;
                 default:
                     return JsonToken.None;
