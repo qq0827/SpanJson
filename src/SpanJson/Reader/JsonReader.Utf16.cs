@@ -200,10 +200,10 @@ namespace SpanJson
             {
                 return span[pos];
             }
-
+            
             if (span[pos++] == JsonUtf16Constant.ReverseSolidus)
             {
-                ref readonly var current = ref span[pos++];
+                var current = span[pos++];
                 switch (current)
                 {
                     case JsonUtf16Constant.DoubleQuote:
@@ -493,7 +493,7 @@ namespace SpanJson
             ref char source = ref MemoryMarshal.GetReference(span);
             while ((uint)index < ulen)
             {
-                ref readonly var current = ref Unsafe.Add(ref source, index);
+                uint current = Unsafe.Add(ref source, index);
                 if (current == JsonUtf16Constant.ReverseSolidus)
                 {
                     // We copy everything up to the escaped char as utf16 to the string
@@ -501,7 +501,7 @@ namespace SpanJson
                     span.Slice(from, copyLength).CopyTo(result.Slice(charOffset));
                     charOffset += copyLength;
                     index++;
-                    current = ref Unsafe.Add(ref source, index++);
+                    current = Unsafe.Add(ref source, index++);
                     char unescaped = default;
                     switch (current)
                     {
@@ -1049,9 +1049,9 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool TryFindEndOfUtf16String(ref char stringStart, uint length, ref int stringLength, out int escapedCharsSize)
         {
-            const uint Quote = JsonUtf8Constant.String;
-            const uint BackSlash = JsonUtf8Constant.ReverseSolidus;
-            const uint Unicode = (byte)'u';
+            const uint DoubleQuote = JsonUtf16Constant.String;
+            const uint BackSlash = JsonUtf16Constant.ReverseSolidus;
+            const uint Unicode = 'u';
 
             escapedCharsSize = 0;
             uint currentChar;
@@ -1070,7 +1070,7 @@ namespace SpanJson
                         }
                         break;
 
-                    case Quote:
+                    case DoubleQuote:
                         return true;
                 }
             }

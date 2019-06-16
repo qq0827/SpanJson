@@ -14,7 +14,7 @@ namespace SpanJson.Internal
 
         public static class Utf8
         {
-            static readonly int MaxBytesPerCharUtf8 = Encoding.UTF8.GetMaxByteCount(1);
+            static readonly int MaxBytesPerCharUtf8 = UTF8NoBOM.GetMaxByteCount(1);
             /// <summary>For short strings use only.</summary>
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static int GetMaxByteCount(string seq) => seq.Length * MaxBytesPerCharUtf8;
@@ -813,47 +813,43 @@ namespace SpanJson.Internal
                 return String.Empty; // TODO: is this what we want to do if Bytes are invalid UTF8? Can Bytes be invalid UTF8?
             }
 
-#if NETSTANDARD2_0 || NET471 || NET451
-
-            public static unsafe int GetCharCount(ReadOnlySpan<byte> bytes)
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static int GetCharCount(ReadOnlySpan<byte> bytes)
             {
+#if NETCOREAPP || NETSTANDARD_2_0_GREATER
+                return Encoding.UTF8.GetCharCount(bytes);
+#else
                 if (bytes.IsEmpty) { return 0; }
 
                 // It's ok for us to pass null pointers down to the workhorse routine.
 
-                fixed (byte* bytesPtr = &MemoryMarshal.GetReference(bytes))
+                unsafe
                 {
-                    return Encoding.UTF8.GetCharCount(bytesPtr, bytes.Length);
+                    fixed (byte* bytesPtr = &MemoryMarshal.GetReference(bytes))
+                    {
+                        return Encoding.UTF8.GetCharCount(bytesPtr, bytes.Length);
+                    }
                 }
+#endif
             }
 
-            public static unsafe int GetChars(ReadOnlySpan<byte> bytes, Span<char> chars)
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static int GetChars(ReadOnlySpan<byte> bytes, Span<char> chars)
             {
+#if NETCOREAPP || NETSTANDARD_2_0_GREATER
+                return Encoding.UTF8.GetChars(bytes, chars);
+#else
                 if (bytes.IsEmpty) { return 0; }
 
                 // It's ok for us to pass null pointers down to the workhorse below.
-
-                fixed (byte* bytesPtr = &MemoryMarshal.GetReference(bytes))
-                fixed (char* charsPtr = &MemoryMarshal.GetReference(chars))
+                unsafe
                 {
-                    return Encoding.UTF8.GetChars(bytesPtr, bytes.Length, charsPtr, chars.Length);
+                    fixed (byte* bytesPtr = &MemoryMarshal.GetReference(bytes))
+                    fixed (char* charsPtr = &MemoryMarshal.GetReference(chars))
+                    {
+                        return Encoding.UTF8.GetChars(bytesPtr, bytes.Length, charsPtr, chars.Length);
+                    }
                 }
-            }
-
-#endif
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static unsafe int GetBytes(ReadOnlySpan<char> chars, Span<byte> bytes)
-            {
-#if NETCOREAPP_2_X_GREATER || NETSTANDARD_2_0_GREATER
-                return UTF8NoBOM.GetBytes(chars, bytes);
-#else
-                if (chars.IsEmpty) { return 0; }
-
-                var utf16Source = MemoryMarshal.AsBytes(chars);
-                var result = ToUtf8(ref MemoryMarshal.GetReference(utf16Source), utf16Source.Length, ref MemoryMarshal.GetReference(bytes), bytes.Length, out _, out var bytesWritten);
-                Debug.Assert(result == OperationStatus.Done);
-                return bytesWritten;
 #endif
             }
 
@@ -864,6 +860,21 @@ namespace SpanJson.Internal
                 return Encoding.UTF8.GetString(utf8Text);
 #else
                 return ToString(utf8Text);
+#endif
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static int GetBytes(ReadOnlySpan<char> chars, Span<byte> bytes)
+            {
+#if NETCOREAPP_2_X_GREATER || NETSTANDARD_2_0_GREATER
+                return UTF8NoBOM.GetBytes(chars, bytes);
+#else
+                if (chars.IsEmpty) { return 0; }
+
+                var utf16Source = MemoryMarshal.AsBytes(chars);
+                var result = ToUtf8(ref MemoryMarshal.GetReference(utf16Source), utf16Source.Length, ref MemoryMarshal.GetReference(bytes), bytes.Length, out _, out var bytesWritten);
+                Debug.Assert(result == OperationStatus.Done);
+                return bytesWritten;
 #endif
             }
 

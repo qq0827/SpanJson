@@ -81,11 +81,7 @@ namespace SpanJson.Formatters
                 try
                 {
                     buffer = ArrayPool<char>.Shared.Rent(cMaxLength); // can't use stackalloc here
-#if NETSTANDARD2_0 || NET471 || NET451
                     var written = TextEncodings.Utf8.GetChars(bValue.Symbols, buffer);
-#else
-                    var written = Encoding.UTF8.GetChars(bValue.Symbols, buffer);
-#endif
                     writer.WriteUtf16Verbatim(buffer.AsSpan(0, written));
                 }
                 finally

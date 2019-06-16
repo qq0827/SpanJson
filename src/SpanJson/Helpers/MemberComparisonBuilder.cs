@@ -107,7 +107,7 @@ namespace SpanJson.Helpers
 
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
-                return Encoding.UTF8.GetByteCount(name);
+                return TextEncodings.UTF8NoBOM.GetByteCount(name);
             }
 
             throw ThrowHelper.GetNotSupportedException();
