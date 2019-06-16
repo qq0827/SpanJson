@@ -16,7 +16,7 @@ using Jil;
 
 namespace SpanJson.Tests
 {
-    public class DynamicTests : ModelTestBase
+    public partial class DynamicTests : ModelTestBase
     {
         [Theory]
         [MemberData(nameof(GetModels))]

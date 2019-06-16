@@ -243,7 +243,7 @@
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
             if (EscapingHelper.NeedsEscaping(value, escapeHandling))
             {
-                EscapingHelper.EscapeChar(ref pinnableAddr, value, ref pos);
+                EscapingHelper.EscapeChar(escapeHandling, ref pinnableAddr, value, ref pos);
             }
             else
             {

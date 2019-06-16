@@ -9,7 +9,7 @@ using Xunit;
 
 namespace SpanJson.Tests
 {
-    public class ExtensionAttributeTests
+    public partial class ExtensionAttributeTests
     {
         public class ExtensionTestDTO : IEquatable<ExtensionTestDTO>
         {

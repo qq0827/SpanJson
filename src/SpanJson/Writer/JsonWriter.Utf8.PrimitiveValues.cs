@@ -130,7 +130,7 @@
 
             ref var pos = ref _pos;
             Ensure(pos, count);
-            UnsafeMemory.WriteRawUnsafe(ref PinnableUtf8Address, ref buffer[0], count, ref pos);
+            UnsafeMemory.WriteRaw(ref PinnableUtf8Address, ref buffer[0], count, ref pos);
         }
 
         public void WriteUtf8Double(double value)
@@ -149,7 +149,7 @@
 
             ref var pos = ref _pos;
             Ensure(pos, count);
-            UnsafeMemory.WriteRawUnsafe(ref PinnableUtf8Address, ref buffer[0], count, ref pos);
+            UnsafeMemory.WriteRaw(ref PinnableUtf8Address, ref buffer[0], count, ref pos);
         }
 
         #endregion
@@ -187,7 +187,7 @@
 
             if (EscapingHelper.NeedsEscaping(value, escapeHandling))
             {
-                EscapingHelper.EscapeChar(ref pinnableAddr, value, ref pos);
+                EscapingHelper.EscapeChar(escapeHandling, ref pinnableAddr, value, ref pos);
             }
             else if (value < 0x80)
             {

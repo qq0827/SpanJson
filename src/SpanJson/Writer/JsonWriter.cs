@@ -322,33 +322,15 @@
 
         /// <summary>The value should already be properly escaped.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteEscapedName(string name)
+        public void WriteName(in JsonEncodedText name)
         {
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
             {
-                WriteUtf16EscapedName(name);
+                WriteUtf16Name(name);
             }
             else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
-                WriteUtf8EscapedName(name);
-            }
-            else
-            {
-                ThrowHelper.ThrowNotSupportedException();
-            }
-        }
-
-        /// <summary>The value should already be properly escaped.</summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteEscapedName(in ReadOnlySpan<char> name)
-        {
-            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
-            {
-                WriteUtf16EscapedName(name);
-            }
-            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
-            {
-                WriteUtf8EscapedName(name);
+                WriteUtf8Name(name);
             }
             else
             {
@@ -425,32 +407,15 @@
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteEscapedString(string value)
+        public void WriteString(in JsonEncodedText value)
         {
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
             {
-                WriteUtf16EscapedString(value);
+                WriteUtf16String(value);
             }
             else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
-                WriteUtf8EscapedString(value);
-            }
-            else
-            {
-                ThrowHelper.ThrowNotSupportedException();
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteEscapedString(in ReadOnlySpan<char> value)
-        {
-            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
-            {
-                WriteUtf16EscapedString(value);
-            }
-            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
-            {
-                WriteUtf8EscapedString(value);
+                WriteUtf8String(value);
             }
             else
             {
@@ -596,23 +561,6 @@
 
         /// <summary>The value should already be properly escaped.</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteVerbatimEscapedNameSpan(in ReadOnlySpan<TSymbol> values)
-        {
-            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
-            {
-                WriteUtf16VerbatimEscapedNameSpan(MemoryMarshal.Cast<TSymbol, char>(values));
-            }
-            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
-            {
-                WriteUtf8VerbatimEscapedNameSpan(MemoryMarshal.Cast<TSymbol, byte>(values));
-            }
-            else
-            {
-                ThrowHelper.ThrowNotSupportedException();
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteVerbatimNameSpan(in ReadOnlySpan<TSymbol> values)
         {
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
@@ -622,23 +570,6 @@
             else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
                 WriteUtf8VerbatimNameSpan(MemoryMarshal.Cast<TSymbol, byte>(values));
-            }
-            else
-            {
-                ThrowHelper.ThrowNotSupportedException();
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteVerbatimNameSpan(in ReadOnlySpan<TSymbol> values, StringEscapeHandling escapeHandling)
-        {
-            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
-            {
-                WriteUtf16VerbatimNameSpan(MemoryMarshal.Cast<TSymbol, char>(values), escapeHandling);
-            }
-            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
-            {
-                WriteUtf8VerbatimNameSpan(MemoryMarshal.Cast<TSymbol, byte>(values), escapeHandling);
             }
             else
             {

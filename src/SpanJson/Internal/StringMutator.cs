@@ -1,4 +1,7 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Globalization;
+using System.Runtime.CompilerServices;
 
 namespace SpanJson.Internal
 {
@@ -12,14 +15,21 @@ namespace SpanJson.Internal
 
         // borrowed from https://github.com/JamesNK/Newtonsoft.Json/blob/4ab34b0461fb595805d092a46a58f35f66c84d6a/Src/Newtonsoft.Json/Utilities/StringUtils.cs#L149
 
+        private static readonly ConcurrentDictionary<string, string> s_camelCaseCache =
+            new ConcurrentDictionary<string, string>(StringComparer.Ordinal);
+
         /// <summary>MyProperty -> myProperty</summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ToCamelCase(string s)
         {
-            if (string.IsNullOrEmpty(s) || !char.IsUpper(s[0]))
-            {
-                return s;
-            }
+            if (string.IsNullOrEmpty(s) || !char.IsUpper(s[0])) { return s; }
 
+            return s_camelCaseCache.GetOrAdd(s, _ => ToCamelCaseImpl(_));
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static string ToCamelCaseImpl(string s)
+        {
             char[] chars = s.ToCharArray();
 
             for (int i = 0; i < chars.Length; i++)
@@ -56,14 +66,21 @@ namespace SpanJson.Internal
 
         // borrowed from https://github.com/JamesNK/Newtonsoft.Json/blob/4ab34b0461fb595805d092a46a58f35f66c84d6a/Src/Newtonsoft.Json/Utilities/StringUtils.cs#L208
 
+        private static readonly ConcurrentDictionary<string, string> s_snakeCaseCache =
+            new ConcurrentDictionary<string, string>(StringComparer.Ordinal);
+
         /// <summary>MyProperty -> my_property</summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ToSnakeCase(string s)
         {
-            if (string.IsNullOrEmpty(s))
-            {
-                return s;
-            }
+            if (string.IsNullOrEmpty(s)) { return s; }
 
+            return s_snakeCaseCache.GetOrAdd(s, _ => ToSnakeCaseImpl(_));
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static string ToSnakeCaseImpl(string s)
+        {
             var sb = StringBuilderCache.Acquire();
             var state = SnakeCaseState.Start;
 

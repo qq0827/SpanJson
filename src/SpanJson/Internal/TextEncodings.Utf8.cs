@@ -846,7 +846,7 @@ namespace SpanJson.Internal
             public static unsafe int GetBytes(ReadOnlySpan<char> chars, Span<byte> bytes)
             {
 #if NETCOREAPP_2_X_GREATER || NETSTANDARD_2_0_GREATER
-                return TextEncodings.UTF8NoBOM.GetBytes(chars, bytes);
+                return UTF8NoBOM.GetBytes(chars, bytes);
 #else
                 if (chars.IsEmpty) { return 0; }
 
@@ -854,6 +854,36 @@ namespace SpanJson.Internal
                 var result = ToUtf8(ref MemoryMarshal.GetReference(utf16Source), utf16Source.Length, ref MemoryMarshal.GetReference(bytes), bytes.Length, out _, out var bytesWritten);
                 Debug.Assert(result == OperationStatus.Done);
                 return bytesWritten;
+#endif
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static string GetString(ReadOnlySpan<byte> utf8Text)
+            {
+#if NETCOREAPP || NETSTANDARD_2_0_GREATER
+                return Encoding.UTF8.GetString(utf8Text);
+#else
+                return ToString(utf8Text);
+#endif
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static int GetByteCount(ReadOnlySpan<char> text)
+            {
+#if NETCOREAPP || NETSTANDARD_2_0_GREATER
+                return UTF8NoBOM.GetByteCount(text);
+#else
+                if (text.IsEmpty)
+                {
+                    return 0;
+                }
+                unsafe
+                {
+                    fixed (char* charPtr = text)
+                    {
+                        return UTF8NoBOM.GetByteCount(charPtr, text.Length);
+                    }
+                }
 #endif
             }
         }

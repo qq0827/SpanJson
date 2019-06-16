@@ -482,11 +482,7 @@ namespace SpanJson.Formatters
             }
             else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
-#if NETSTANDARD2_0 || NET471 || NET451
-                key = TextEncodings.Utf8.ToString(nameSpan);
-#else
-                key = Encoding.UTF8.GetString(nameSpan);
-#endif
+                key = TextEncodings.Utf8.GetString(nameSpan);
             }
             else
             {
@@ -517,31 +513,18 @@ namespace SpanJson.Formatters
                     }
 
                     var name = kvp.Key;
-                    if (namingConvention == NamingConventions.CamelCase && char.IsUpper(name[0]))
+                    switch (namingConvention)
                     {
-                        char[] array = null;
-                        try
-                        {
-                            array = ArrayPool<char>.Shared.Rent(name.Length);
-                            name.AsSpan().CopyTo(array);
-                            array[0] = char.ToLower(array[0]);
-                            writer.WriteName(array.AsSpan(0, name.Length), resolver.StringEscapeHandling);
-                        }
-                        finally
-                        {
-                            if (array != null)
-                            {
-                                ArrayPool<char>.Shared.Return(array);
-                            }
-                        }
-                    }
-                    else
-                    {
-#if NETSTANDARD2_0 || NET471 || NET451
-                        writer.WriteName(kvp.Key.AsSpan(), resolver.StringEscapeHandling);
-#else
-                        writer.WriteName(kvp.Key, resolver.StringEscapeHandling);
-#endif
+                        case NamingConventions.CamelCase:
+                            writer.WriteName(EscapingHelper.GetEncodedText(StringMutator.ToCamelCase(name), resolver.StringEscapeHandling));
+                            break;
+                        case NamingConventions.SnakeCase:
+                            writer.WriteName(EscapingHelper.GetEncodedText(StringMutator.ToSnakeCase(name), resolver.StringEscapeHandling));
+                            break;
+                        case NamingConventions.OriginalCase:
+                        default:
+                            writer.WriteName(EscapingHelper.GetEncodedText(name, resolver.StringEscapeHandling));
+                            break;
                     }
 
                     if (knownNames.Contains(name))

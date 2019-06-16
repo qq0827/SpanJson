@@ -6,15 +6,19 @@
     partial struct JsonWriter<TSymbol>
     {
         /// <summary>The value should already be properly escaped.</summary>
-        public void WriteUtf16EscapedName(string value)
+        public void WriteUtf16Name(in JsonEncodedText value)
         {
-            WriteUtf16StringEscapedValue(value.AsSpan(), true);
-        }
+            ref var pos = ref _pos;
+            var utf16Text = value.ToString();
+            Ensure(pos, utf16Text.Length + 3);
 
-        /// <summary>The value should already be properly escaped.</summary>
-        public void WriteUtf16EscapedName(in ReadOnlySpan<char> value)
-        {
-            WriteUtf16StringEscapedValue(value, true);
+            ref char pinnableAddr = ref PinnableUtf16Address;
+            WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
+            utf16Text.AsSpan().CopyTo(Utf16Span);
+            pos += utf16Text.Length;
+            WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
+
+            Unsafe.Add(ref pinnableAddr, pos++) = JsonUtf16Constant.NameSeparator;
         }
 
         public void WriteUtf16Name(string value)
@@ -41,6 +45,10 @@
                     WriteUtf16StringEscapeNonAsciiValue(value, true);
                     break;
 
+                case StringEscapeHandling.EscapeHtml:
+                    WriteUtf16StringEscapeHtmlValue(value, true);
+                    break;
+
                 case StringEscapeHandling.Default:
                 default:
                     WriteUtf16StringEscapeValue(value, true);
@@ -49,20 +57,18 @@
         }
 
         /// <summary>The value should already be properly escaped.</summary>
-        public void WriteUtf16VerbatimEscapedNameSpan(in ReadOnlySpan<char> value)
-        {
-            WriteUtf16StringEscapedValue(value, true);
-        }
-
         public void WriteUtf16VerbatimNameSpan(in ReadOnlySpan<char> value)
         {
-            WriteUtf16StringEscapeValue(value, true);
-        }
+            ref var pos = ref _pos;
+            Ensure(pos, value.Length + 3);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteUtf16VerbatimNameSpan(in ReadOnlySpan<char> value, StringEscapeHandling escapeHandling)
-        {
-            WriteUtf16Name(value, escapeHandling);
+            ref char pinnableAddr = ref PinnableUtf16Address;
+            WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
+            value.CopyTo(Utf16Span);
+            pos += value.Length;
+            WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
+
+            Unsafe.Add(ref pinnableAddr, pos++) = JsonUtf16Constant.NameSeparator;
         }
     }
 }

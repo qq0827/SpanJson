@@ -149,7 +149,7 @@ namespace SpanJson.Resolvers
                         name = memberInfoName;
                         break;
                 }
-                var escapedName = EscapingHelper.EscapeString(name, _spanJsonOptions.StringEscapeHandling);
+                var escapedName = EscapingHelper.GetEncodedText(name, _spanJsonOptions.StringEscapeHandling);
 
                 result.Add(new JsonMemberInfo(memberInfoName, typeof(object), null, name, escapedName,
                     _spanJsonOptions.NullOption == NullOptions.ExcludeNulls, true, true, null, null));
@@ -198,7 +198,7 @@ namespace SpanJson.Resolvers
                         name = StringMutator.ToSnakeCase(name);
                         break;
                 }
-                var escapedName = EscapingHelper.EscapeString(name, _spanJsonOptions.StringEscapeHandling);
+                var escapedName = EscapingHelper.GetEncodedText(name, _spanJsonOptions.StringEscapeHandling);
 
                 var canRead = true;
                 var canWrite = true;

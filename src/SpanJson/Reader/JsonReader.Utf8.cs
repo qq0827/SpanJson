@@ -444,11 +444,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static string ConvertToString(in ReadOnlySpan<byte> span)
         {
-#if NETSTANDARD2_0 || NET471 || NET451
-            return TextEncodings.Utf8.ToString(span);
-#else
-            return Encoding.UTF8.GetString(span);
-#endif
+            return TextEncodings.Utf8.GetString(span);
         }
 
         /// <summary>

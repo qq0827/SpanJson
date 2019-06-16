@@ -55,11 +55,7 @@ namespace SpanJson.Internal
             utf8Unescaped = utf8Unescaped.Slice(0, written);
             Debug.Assert(!utf8Unescaped.IsEmpty);
 
-#if NETSTANDARD2_0 || NET471 || NET451
-            string utf8String = TextEncodings.Utf8.ToString(utf8Unescaped);
-#else
-            string utf8String = Encoding.UTF8.GetString(utf8Unescaped);
-#endif
+            string utf8String = TextEncodings.Utf8.GetString(utf8Unescaped);
 
             if (unescapedArray != null)
             {

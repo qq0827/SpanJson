@@ -5,6 +5,7 @@
 // Largely based on https://github.com/dotnet/corefx/blob/8135319caa7e457ed61053ca1418313b88057b51/src/System.Text.Json/src/System/Text/Json/Writer/JsonWriterHelper.Transcoding.cs#L12
 
 using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -15,16 +16,21 @@ namespace SpanJson.Internal
     {
         public static class NonAscii
         {
+            // Only allow ASCII characters between ' ' (0x20) and '~' (0x7E), inclusively,
+            // but exclude characters that need to be escaped as hex: '"', '\'', '&', '+', '<', '>', '`'
+            // and exclude characters that need to be escaped by adding a backslash: '\n', '\r', '\t', '\\', '/', '\b', '\f'
+            //
+            // non-zero = allowed, 0 = disallowed
             private static ReadOnlySpan<byte> AllowList => new byte[byte.MaxValue + 1]
             {
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
-                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0,
+                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1,
                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1,
-                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -34,6 +40,14 @@ namespace SpanJson.Internal
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             };
+
+            private static readonly ConcurrentDictionary<string, JsonEncodedText> s_encodedTextCache =
+                new ConcurrentDictionary<string, JsonEncodedText>(StringComparer.Ordinal);
+
+            public static JsonEncodedText GetEncodedText(string text)
+            {
+                return s_encodedTextCache.GetOrAdd(text, s => JsonEncodedText.Encode(s, StringEscapeHandling.EscapeNonAscii));
+            }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static bool NeedsEscaping(byte utf8Value) => 0u >= AllowList[utf8Value] ? true : false;
@@ -92,7 +106,7 @@ namespace SpanJson.Internal
                     byte val = Unsafe.Add(ref sourceSpace, consumed);
                     if (NeedsEscaping(val))
                     {
-                        if (!EscapeNextBytes(ref sourceSpace, ref consumed, nlen - (uint)consumed, destination, ref destSpace, ref written))
+                        if (!EscapeNextBytes(StringEscapeHandling.EscapeNonAscii, ref sourceSpace, ref consumed, nlen - (uint)consumed, destination, ref destSpace, ref written))
                         {
                             ThrowHelper.ThrowArgumentException_InvalidUTF8(utf8Source, consumed);
                         }
@@ -122,7 +136,7 @@ namespace SpanJson.Internal
                     char val = Unsafe.Add(ref sourceSpace, consumed);
                     if (NeedsEscaping(val))
                     {
-                        EscapeNextChars(ref sourceSpace, nlen, val, ref destSpace, ref consumed, ref written);
+                        EscapeNextChars(StringEscapeHandling.EscapeNonAscii, ref sourceSpace, nlen, val, ref destSpace, ref consumed, ref written);
                     }
                     else
                     {

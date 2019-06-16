@@ -7,96 +7,94 @@ namespace SpanJson.Internal
 
     partial class UnsafeMemory64
     {
-        public static void WriteRaw<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw(byte[] destination, byte[] source, ref int idx)
         {
             var nCount = (uint)source.Length;
             switch (nCount)
             {
                 case 0u: return;
-                case 1u: WriteRaw1(ref writer, source, ref idx); return;
-                case 2u: WriteRaw2(ref writer, source, ref idx); return;
-                case 3u: WriteRaw3(ref writer, source, ref idx); return;
-                case 4u: WriteRaw4(ref writer, source, ref idx); return;
-                case 5u: WriteRaw5(ref writer, source, ref idx); return;
-                case 6u: WriteRaw6(ref writer, source, ref idx); return;
-                case 7u: WriteRaw7(ref writer, source, ref idx); return;
-                case 8u: WriteRaw8(ref writer, source, ref idx); return;
-                case 9u: WriteRaw9(ref writer, source, ref idx); return;
-                case 10u: WriteRaw10(ref writer, source, ref idx); return;
-                case 11u: WriteRaw11(ref writer, source, ref idx); return;
-                case 12u: WriteRaw12(ref writer, source, ref idx); return;
-                case 13u: WriteRaw13(ref writer, source, ref idx); return;
-                case 14u: WriteRaw14(ref writer, source, ref idx); return;
-                case 15u: WriteRaw15(ref writer, source, ref idx); return;
-                case 16u: WriteRaw16(ref writer, source, ref idx); return;
-                case 17u: WriteRaw17(ref writer, source, ref idx); return;
-                case 18u: WriteRaw18(ref writer, source, ref idx); return;
-                case 19u: WriteRaw19(ref writer, source, ref idx); return;
-                case 20u: WriteRaw20(ref writer, source, ref idx); return;
-                case 21u: WriteRaw21(ref writer, source, ref idx); return;
-                case 22u: WriteRaw22(ref writer, source, ref idx); return;
-                case 23u: WriteRaw23(ref writer, source, ref idx); return;
-                case 24u: WriteRaw24(ref writer, source, ref idx); return;
-                case 25u: WriteRaw25(ref writer, source, ref idx); return;
-                case 26u: WriteRaw26(ref writer, source, ref idx); return;
-                case 27u: WriteRaw27(ref writer, source, ref idx); return;
-                case 28u: WriteRaw28(ref writer, source, ref idx); return;
-                case 29u: WriteRaw29(ref writer, source, ref idx); return;
-                case 30u: WriteRaw30(ref writer, source, ref idx); return;
-                case 31u: WriteRaw31(ref writer, source, ref idx); return;
-                case 32u: WriteRaw32(ref writer, source, ref idx); return;
-                default: UnsafeMemory.WriteRawBytes(ref writer, source, ref idx); return;
+                case 1u: WriteRaw1(destination, source, ref idx); return;
+                case 2u: WriteRaw2(destination, source, ref idx); return;
+                case 3u: WriteRaw3(destination, source, ref idx); return;
+                case 4u: WriteRaw4(destination, source, ref idx); return;
+                case 5u: WriteRaw5(destination, source, ref idx); return;
+                case 6u: WriteRaw6(destination, source, ref idx); return;
+                case 7u: WriteRaw7(destination, source, ref idx); return;
+                case 8u: WriteRaw8(destination, source, ref idx); return;
+                case 9u: WriteRaw9(destination, source, ref idx); return;
+                case 10u: WriteRaw10(destination, source, ref idx); return;
+                case 11u: WriteRaw11(destination, source, ref idx); return;
+                case 12u: WriteRaw12(destination, source, ref idx); return;
+                case 13u: WriteRaw13(destination, source, ref idx); return;
+                case 14u: WriteRaw14(destination, source, ref idx); return;
+                case 15u: WriteRaw15(destination, source, ref idx); return;
+                case 16u: WriteRaw16(destination, source, ref idx); return;
+                case 17u: WriteRaw17(destination, source, ref idx); return;
+                case 18u: WriteRaw18(destination, source, ref idx); return;
+                case 19u: WriteRaw19(destination, source, ref idx); return;
+                case 20u: WriteRaw20(destination, source, ref idx); return;
+                case 21u: WriteRaw21(destination, source, ref idx); return;
+                case 22u: WriteRaw22(destination, source, ref idx); return;
+                case 23u: WriteRaw23(destination, source, ref idx); return;
+                case 24u: WriteRaw24(destination, source, ref idx); return;
+                case 25u: WriteRaw25(destination, source, ref idx); return;
+                case 26u: WriteRaw26(destination, source, ref idx); return;
+                case 27u: WriteRaw27(destination, source, ref idx); return;
+                case 28u: WriteRaw28(destination, source, ref idx); return;
+                case 29u: WriteRaw29(destination, source, ref idx); return;
+                case 30u: WriteRaw30(destination, source, ref idx); return;
+                case 31u: WriteRaw31(destination, source, ref idx); return;
+                case 32u: WriteRaw32(destination, source, ref idx); return;
+                default: UnsafeMemory.WriteRawBytes(destination, source, ref idx); return;
             }
         }
 
-        public static void WriteRawUnsafe(ref byte destination, ref byte source, int sourceBytesToCopy, ref int idx)
+        public static void WriteRaw(ref byte destination, ref byte source, int sourceBytesToCopy, ref int idx)
         {
             var nCount = (uint)sourceBytesToCopy;
             switch (nCount)
             {
                 case 0u: return;
-                case 1u: WriteRawUnsafe1(ref destination, ref source, ref idx); return;
-                case 2u: WriteRawUnsafe2(ref destination, ref source, ref idx); return;
-                case 3u: WriteRawUnsafe3(ref destination, ref source, ref idx); return;
-                case 4u: WriteRawUnsafe4(ref destination, ref source, ref idx); return;
-                case 5u: WriteRawUnsafe5(ref destination, ref source, ref idx); return;
-                case 6u: WriteRawUnsafe6(ref destination, ref source, ref idx); return;
-                case 7u: WriteRawUnsafe7(ref destination, ref source, ref idx); return;
-                case 8u: WriteRawUnsafe8(ref destination, ref source, ref idx); return;
-                case 9u: WriteRawUnsafe9(ref destination, ref source, ref idx); return;
-                case 10u: WriteRawUnsafe10(ref destination, ref source, ref idx); return;
-                case 11u: WriteRawUnsafe11(ref destination, ref source, ref idx); return;
-                case 12u: WriteRawUnsafe12(ref destination, ref source, ref idx); return;
-                case 13u: WriteRawUnsafe13(ref destination, ref source, ref idx); return;
-                case 14u: WriteRawUnsafe14(ref destination, ref source, ref idx); return;
-                case 15u: WriteRawUnsafe15(ref destination, ref source, ref idx); return;
-                case 16u: WriteRawUnsafe16(ref destination, ref source, ref idx); return;
-                case 17u: WriteRawUnsafe17(ref destination, ref source, ref idx); return;
-                case 18u: WriteRawUnsafe18(ref destination, ref source, ref idx); return;
-                case 19u: WriteRawUnsafe19(ref destination, ref source, ref idx); return;
-                case 20u: WriteRawUnsafe20(ref destination, ref source, ref idx); return;
-                case 21u: WriteRawUnsafe21(ref destination, ref source, ref idx); return;
-                case 22u: WriteRawUnsafe22(ref destination, ref source, ref idx); return;
-                case 23u: WriteRawUnsafe23(ref destination, ref source, ref idx); return;
-                case 24u: WriteRawUnsafe24(ref destination, ref source, ref idx); return;
-                case 25u: WriteRawUnsafe25(ref destination, ref source, ref idx); return;
-                case 26u: WriteRawUnsafe26(ref destination, ref source, ref idx); return;
-                case 27u: WriteRawUnsafe27(ref destination, ref source, ref idx); return;
-                case 28u: WriteRawUnsafe28(ref destination, ref source, ref idx); return;
-                case 29u: WriteRawUnsafe29(ref destination, ref source, ref idx); return;
-                case 30u: WriteRawUnsafe30(ref destination, ref source, ref idx); return;
-                case 31u: WriteRawUnsafe31(ref destination, ref source, ref idx); return;
-                case 32u: WriteRawUnsafe32(ref destination, ref source, ref idx); return;
-                default: UnsafeMemory.WriteRawBytesUnsafe(ref destination, ref source, sourceBytesToCopy, ref idx); return;
+                case 1u: WriteRaw1(ref destination, ref source, ref idx); return;
+                case 2u: WriteRaw2(ref destination, ref source, ref idx); return;
+                case 3u: WriteRaw3(ref destination, ref source, ref idx); return;
+                case 4u: WriteRaw4(ref destination, ref source, ref idx); return;
+                case 5u: WriteRaw5(ref destination, ref source, ref idx); return;
+                case 6u: WriteRaw6(ref destination, ref source, ref idx); return;
+                case 7u: WriteRaw7(ref destination, ref source, ref idx); return;
+                case 8u: WriteRaw8(ref destination, ref source, ref idx); return;
+                case 9u: WriteRaw9(ref destination, ref source, ref idx); return;
+                case 10u: WriteRaw10(ref destination, ref source, ref idx); return;
+                case 11u: WriteRaw11(ref destination, ref source, ref idx); return;
+                case 12u: WriteRaw12(ref destination, ref source, ref idx); return;
+                case 13u: WriteRaw13(ref destination, ref source, ref idx); return;
+                case 14u: WriteRaw14(ref destination, ref source, ref idx); return;
+                case 15u: WriteRaw15(ref destination, ref source, ref idx); return;
+                case 16u: WriteRaw16(ref destination, ref source, ref idx); return;
+                case 17u: WriteRaw17(ref destination, ref source, ref idx); return;
+                case 18u: WriteRaw18(ref destination, ref source, ref idx); return;
+                case 19u: WriteRaw19(ref destination, ref source, ref idx); return;
+                case 20u: WriteRaw20(ref destination, ref source, ref idx); return;
+                case 21u: WriteRaw21(ref destination, ref source, ref idx); return;
+                case 22u: WriteRaw22(ref destination, ref source, ref idx); return;
+                case 23u: WriteRaw23(ref destination, ref source, ref idx); return;
+                case 24u: WriteRaw24(ref destination, ref source, ref idx); return;
+                case 25u: WriteRaw25(ref destination, ref source, ref idx); return;
+                case 26u: WriteRaw26(ref destination, ref source, ref idx); return;
+                case 27u: WriteRaw27(ref destination, ref source, ref idx); return;
+                case 28u: WriteRaw28(ref destination, ref source, ref idx); return;
+                case 29u: WriteRaw29(ref destination, ref source, ref idx); return;
+                case 30u: WriteRaw30(ref destination, ref source, ref idx); return;
+                case 31u: WriteRaw31(ref destination, ref source, ref idx); return;
+                case 32u: WriteRaw32(ref destination, ref source, ref idx); return;
+                default: UnsafeMemory.WriteRawBytes(ref destination, ref source, sourceBytesToCopy, ref idx); return;
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw2<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw2(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 2);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, short>(ref dest) = Unsafe.As<byte, short>(ref src);
@@ -104,11 +102,9 @@ namespace SpanJson.Internal
             idx += 2;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw3<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw3(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 3);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, short>(ref dest) = Unsafe.As<byte, short>(ref src);
@@ -117,11 +113,9 @@ namespace SpanJson.Internal
             idx += 3;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw4<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw4(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 4);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, int>(ref dest) = Unsafe.As<byte, int>(ref src);
@@ -129,11 +123,9 @@ namespace SpanJson.Internal
             idx += 4;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw5<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw5(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 5);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, int>(ref dest) = Unsafe.As<byte, int>(ref src);
@@ -142,11 +134,9 @@ namespace SpanJson.Internal
             idx += 5;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw6<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw6(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 6);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, int>(ref dest) = Unsafe.As<byte, int>(ref src);
@@ -155,11 +145,9 @@ namespace SpanJson.Internal
             idx += 6;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw7<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw7(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 7);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, int>(ref dest) = Unsafe.As<byte, int>(ref src);
@@ -169,11 +157,9 @@ namespace SpanJson.Internal
             idx += 7;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw8<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw8(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 8);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, long>(ref dest) = Unsafe.As<byte, long>(ref src);
@@ -181,11 +167,9 @@ namespace SpanJson.Internal
             idx += 8;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw9<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw9(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 9);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, long>(ref dest) = Unsafe.As<byte, long>(ref src);
@@ -194,11 +178,9 @@ namespace SpanJson.Internal
             idx += 9;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw10<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw10(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 10);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, long>(ref dest) = Unsafe.As<byte, long>(ref src);
@@ -207,11 +189,9 @@ namespace SpanJson.Internal
             idx += 10;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw11<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw11(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 11);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, long>(ref dest) = Unsafe.As<byte, long>(ref src);
@@ -221,11 +201,9 @@ namespace SpanJson.Internal
             idx += 11;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw12<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw12(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 12);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, long>(ref dest) = Unsafe.As<byte, long>(ref src);
@@ -234,11 +212,9 @@ namespace SpanJson.Internal
             idx += 12;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw13<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw13(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 13);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, long>(ref dest) = Unsafe.As<byte, long>(ref src);
@@ -248,11 +224,9 @@ namespace SpanJson.Internal
             idx += 13;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw14<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw14(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 14);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, long>(ref dest) = Unsafe.As<byte, long>(ref src);
@@ -262,11 +236,9 @@ namespace SpanJson.Internal
             idx += 14;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw15<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw15(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 15);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, long>(ref dest) = Unsafe.As<byte, long>(ref src);
@@ -277,11 +249,9 @@ namespace SpanJson.Internal
             idx += 15;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw16<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw16(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 16);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, long>(ref dest) = Unsafe.As<byte, long>(ref src);
@@ -290,11 +260,9 @@ namespace SpanJson.Internal
             idx += 16;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw17<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw17(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 17);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, long>(ref dest) = Unsafe.As<byte, long>(ref src);
@@ -304,11 +272,9 @@ namespace SpanJson.Internal
             idx += 17;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw18<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw18(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 18);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, long>(ref dest) = Unsafe.As<byte, long>(ref src);
@@ -318,11 +284,9 @@ namespace SpanJson.Internal
             idx += 18;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw19<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw19(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 19);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, long>(ref dest) = Unsafe.As<byte, long>(ref src);
@@ -333,11 +297,9 @@ namespace SpanJson.Internal
             idx += 19;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw20<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw20(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 20);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, long>(ref dest) = Unsafe.As<byte, long>(ref src);
@@ -347,11 +309,9 @@ namespace SpanJson.Internal
             idx += 20;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw21<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw21(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 21);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, long>(ref dest) = Unsafe.As<byte, long>(ref src);
@@ -362,11 +322,9 @@ namespace SpanJson.Internal
             idx += 21;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw22<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw22(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 22);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, long>(ref dest) = Unsafe.As<byte, long>(ref src);
@@ -377,11 +335,9 @@ namespace SpanJson.Internal
             idx += 22;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw23<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw23(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 23);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, long>(ref dest) = Unsafe.As<byte, long>(ref src);
@@ -393,11 +349,9 @@ namespace SpanJson.Internal
             idx += 23;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw24<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw24(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 24);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, long>(ref dest) = Unsafe.As<byte, long>(ref src);
@@ -407,11 +361,9 @@ namespace SpanJson.Internal
             idx += 24;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw25<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw25(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 25);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, long>(ref dest) = Unsafe.As<byte, long>(ref src);
@@ -422,11 +374,9 @@ namespace SpanJson.Internal
             idx += 25;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw26<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw26(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 26);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, long>(ref dest) = Unsafe.As<byte, long>(ref src);
@@ -437,11 +387,9 @@ namespace SpanJson.Internal
             idx += 26;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw27<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw27(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 27);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, long>(ref dest) = Unsafe.As<byte, long>(ref src);
@@ -453,11 +401,9 @@ namespace SpanJson.Internal
             idx += 27;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw28<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw28(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 28);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, long>(ref dest) = Unsafe.As<byte, long>(ref src);
@@ -468,11 +414,9 @@ namespace SpanJson.Internal
             idx += 28;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw29<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw29(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 29);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, long>(ref dest) = Unsafe.As<byte, long>(ref src);
@@ -484,11 +428,9 @@ namespace SpanJson.Internal
             idx += 29;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw30<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw30(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 30);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, long>(ref dest) = Unsafe.As<byte, long>(ref src);
@@ -500,11 +442,9 @@ namespace SpanJson.Internal
             idx += 30;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw31<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw31(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 31);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, long>(ref dest) = Unsafe.As<byte, long>(ref src);
@@ -517,11 +457,9 @@ namespace SpanJson.Internal
             idx += 31;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw32<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw32(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, 32);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
             Unsafe.As<byte, long>(ref dest) = Unsafe.As<byte, long>(ref src);
@@ -533,7 +471,7 @@ namespace SpanJson.Internal
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe2(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw2(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -542,7 +480,7 @@ namespace SpanJson.Internal
             idx += 2;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe3(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw3(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -552,7 +490,7 @@ namespace SpanJson.Internal
             idx += 3;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe4(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw4(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -561,7 +499,7 @@ namespace SpanJson.Internal
             idx += 4;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe5(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw5(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -571,7 +509,7 @@ namespace SpanJson.Internal
             idx += 5;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe6(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw6(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -581,7 +519,7 @@ namespace SpanJson.Internal
             idx += 6;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe7(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw7(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -592,7 +530,7 @@ namespace SpanJson.Internal
             idx += 7;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe8(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw8(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -601,7 +539,7 @@ namespace SpanJson.Internal
             idx += 8;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe9(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw9(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -611,7 +549,7 @@ namespace SpanJson.Internal
             idx += 9;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe10(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw10(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -621,7 +559,7 @@ namespace SpanJson.Internal
             idx += 10;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe11(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw11(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -632,7 +570,7 @@ namespace SpanJson.Internal
             idx += 11;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe12(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw12(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -642,7 +580,7 @@ namespace SpanJson.Internal
             idx += 12;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe13(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw13(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -653,7 +591,7 @@ namespace SpanJson.Internal
             idx += 13;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe14(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw14(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -664,7 +602,7 @@ namespace SpanJson.Internal
             idx += 14;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe15(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw15(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -676,7 +614,7 @@ namespace SpanJson.Internal
             idx += 15;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe16(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw16(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -686,7 +624,7 @@ namespace SpanJson.Internal
             idx += 16;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe17(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw17(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -697,7 +635,7 @@ namespace SpanJson.Internal
             idx += 17;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe18(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw18(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -708,7 +646,7 @@ namespace SpanJson.Internal
             idx += 18;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe19(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw19(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -720,7 +658,7 @@ namespace SpanJson.Internal
             idx += 19;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe20(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw20(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -731,7 +669,7 @@ namespace SpanJson.Internal
             idx += 20;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe21(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw21(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -743,7 +681,7 @@ namespace SpanJson.Internal
             idx += 21;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe22(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw22(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -755,7 +693,7 @@ namespace SpanJson.Internal
             idx += 22;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe23(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw23(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -768,7 +706,7 @@ namespace SpanJson.Internal
             idx += 23;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe24(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw24(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -779,7 +717,7 @@ namespace SpanJson.Internal
             idx += 24;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe25(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw25(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -791,7 +729,7 @@ namespace SpanJson.Internal
             idx += 25;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe26(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw26(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -803,7 +741,7 @@ namespace SpanJson.Internal
             idx += 26;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe27(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw27(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -816,7 +754,7 @@ namespace SpanJson.Internal
             idx += 27;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe28(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw28(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -828,7 +766,7 @@ namespace SpanJson.Internal
             idx += 28;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe29(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw29(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -841,7 +779,7 @@ namespace SpanJson.Internal
             idx += 29;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe30(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw30(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -854,7 +792,7 @@ namespace SpanJson.Internal
             idx += 30;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe31(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw31(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 
@@ -868,7 +806,7 @@ namespace SpanJson.Internal
             idx += 31;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe32(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw32(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 

@@ -16,39 +16,37 @@ namespace SpanJson.Internal
 
     partial class UnsafeMemory64
     {
-        public static void WriteRaw<TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw(byte[] destination, byte[] source, ref int idx)
         {
             var nCount = (uint)source.Length;
             switch (nCount)
             {
                 case 0u: return;
 <# for(var i = 1; i <= Max; i++) { #>
-                case <#= i #>u: WriteRaw<#= i #>(ref writer, source, ref idx); return;
+                case <#= i #>u: WriteRaw<#= i #>(destination, source, ref idx); return;
 <# } #>
-                default: UnsafeMemory.WriteRawBytes(ref writer, source, ref idx); return;
+                default: UnsafeMemory.WriteRawBytes(destination, source, ref idx); return;
             }
         }
 
-        public static void WriteRawUnsafe(ref byte destination, ref byte source, int sourceBytesToCopy, ref int idx)
+        public static void WriteRaw(ref byte destination, ref byte source, int sourceBytesToCopy, ref int idx)
         {
             var nCount = (uint)sourceBytesToCopy;
             switch (nCount)
             {
                 case 0u: return;
 <# for(var i = 1; i <= Max; i++) { #>
-                case <#= i #>u: WriteRawUnsafe<#= i #>(ref destination, ref source, ref idx); return;
+                case <#= i #>u: WriteRaw<#= i #>(ref destination, ref source, ref idx); return;
 <# } #>
-                default: UnsafeMemory.WriteRawBytesUnsafe(ref destination, ref source, sourceBytesToCopy, ref idx); return;
+                default: UnsafeMemory.WriteRawBytes(ref destination, ref source, sourceBytesToCopy, ref idx); return;
             }
         }
 
 <# for(var i = 2; i <= Max; i++) { #>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw<#= i #><TSymbol>(ref JsonWriter<TSymbol> writer, byte[] source, ref int idx) where TSymbol : struct
+        public static void WriteRaw<#= i #>(byte[] destination, byte[] source, ref int idx)
         {
-            writer.Ensure(idx, <#= i #>);
-
-            ref byte dest = ref Unsafe.Add(ref writer.PinnableUtf8Address, (IntPtr)(ulong)idx);
+            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(ulong)idx);
             ref byte src = ref source[0];
 
 <#
@@ -147,7 +145,7 @@ if (i % 2 != 0)
 
 <# for(var i = 2; i <= Max; i++) { #>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRawUnsafe<#= i #>(ref byte destination, ref byte src, ref int idx)
+        public static void WriteRaw<#= i #>(ref byte destination, ref byte src, ref int idx)
         {
             ref byte dest = ref Unsafe.Add(ref destination, (IntPtr)(ulong)idx);
 

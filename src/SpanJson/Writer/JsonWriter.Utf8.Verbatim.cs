@@ -11,8 +11,13 @@
         public void WriteUtf8Raw(byte[] value)
         {
             if (null == value) { return; }
+            var count = value.Length;
+            if (0u >= (uint)count) { return; }
 
-            UnsafeMemory.WriteRaw(ref this, value, ref _pos);
+            ref var pos = ref _pos;
+            Ensure(pos, count);
+
+            UnsafeMemory.WriteRaw(_utf8Buffer, value, ref _pos);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -23,16 +28,19 @@
 
             ref var pos = ref _pos;
             Ensure(pos, count);
-            UnsafeMemory.WriteRawUnsafe(ref PinnableUtf8Address, ref MemoryMarshal.GetReference(value), count, ref pos);
+            UnsafeMemory.WriteRaw(ref PinnableUtf8Address, ref MemoryMarshal.GetReference(value), count, ref pos);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteUtf8Verbatim(byte[] value)
         {
             if (null == value) { return; }
+            var count = value.Length;
+            if (0u >= (uint)count) { return; }
 
             ref var pos = ref _pos;
-            UnsafeMemory.WriteRawBytes(ref this, value, ref pos);
+            Ensure(pos, count);
+            UnsafeMemory.WriteRawBytes(_utf8Buffer, value, ref pos);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -43,7 +51,7 @@
 
             ref var pos = ref _pos;
             Ensure(pos, count);
-            UnsafeMemory.WriteRawBytesUnsafe(ref PinnableUtf8Address, ref MemoryMarshal.GetReference(value), count, ref pos);
+            UnsafeMemory.WriteRawBytes(ref PinnableUtf8Address, ref MemoryMarshal.GetReference(value), count, ref pos);
         }
     }
 }

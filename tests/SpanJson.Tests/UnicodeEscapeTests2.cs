@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using System.Runtime.Serialization;
 using SpanJson.Resolvers;
 using Xunit;
@@ -112,6 +113,223 @@ namespace SpanJson.Tests
             Assert.Equal(person.人, deserialized.人);
             Assert.Equal(person.名称, deserialized.名称);
             Assert.Equal(person.数, deserialized.数);
+        }
+
+        [Fact]
+        public void HtmlStringEscapeHandling()
+        {
+            var writer = new JsonWriter<char>(16);
+
+            //var temp = "a/b";
+            //var je = JsonEncodedText.Encode(temp, StringEscapeHandling.EscapeNonAscii);
+            //var utf16Text = je.EncodedValue;
+
+            string script = @"<script type=""text/javascript"">alert('hi');</script>";
+
+            writer.WriteString(script, StringEscapeHandling.EscapeHtml);
+
+            string json = writer.ToString();
+
+            Assert.Equal(@"""\u003cscript type=\u0022text/javascript\u0022\u003ealert(\u0027hi\u0027);\u003c/script\u003e""", json);
+
+            var reader = new JsonReader<char>(json.AsSpan());
+
+            Assert.Equal(script, reader.ReadString());
+        }
+
+        [Fact]
+        public void NonAsciiStringEscapeHandling()
+        {
+            var writer = new JsonWriter<char>(16);
+
+            string unicode = "\u5f20";
+
+            writer.WriteString(unicode, StringEscapeHandling.EscapeNonAscii);
+
+            string json = writer.ToString();
+
+            Assert.Equal(8, json.Length);
+            Assert.Equal(@"""\u5f20""", json);
+
+            var reader = new JsonReader<char>(json.AsSpan());
+
+            Assert.Equal(unicode, reader.ReadString());
+
+            writer = new JsonWriter<char>(16);
+
+            writer.WriteString(unicode);
+
+            json = writer.ToString();
+
+            Assert.Equal(3, json.Length);
+            Assert.Equal("\"\u5f20\"", json);
+        }
+
+        [Fact]
+        public void ToStringStringEscapeHandling()
+        {
+            string v = "<b>hi " + '\u20AC' + "</b>";
+
+            var json = JsonEncodedText.Encode(v);
+            Assert.Equal(@"<b>hi " + '\u20AC' + @"</b>", json.ToString());
+            Assert.Equal(@"<b>hi " + '\u20AC' + @"</b>", Internal.EscapingHelper.EscapeString(v));
+
+            json = JsonEncodedText.Encode(v, StringEscapeHandling.EscapeHtml);
+            Assert.Equal(@"\u003cb\u003ehi " + '\u20AC' + @"\u003c/b\u003e", json.ToString());
+            Assert.Equal(@"\u003cb\u003ehi " + '\u20AC' + @"\u003c/b\u003e", Internal.EscapingHelper.EscapeString(v, StringEscapeHandling.EscapeHtml));
+
+            json = JsonEncodedText.Encode(v, StringEscapeHandling.EscapeNonAscii);
+            Assert.Equal(@"\u003cb\u003ehi \u20ac\u003c\u002fb\u003e", json.ToString());
+            Assert.Equal(@"\u003cb\u003ehi \u20ac\u003c\u002fb\u003e", Internal.EscapingHelper.EscapeString(v, StringEscapeHandling.EscapeNonAscii));
+        }
+
+        [Fact]
+        public void EscapeJavaScriptString_UnicodeLinefeeds()
+        {
+            var text0085 = "before" + '\u0085' + "after";
+            var text2028 = "before" + '\u2028' + "after";
+            var text2029 = "before" + '\u2029' + "after";
+
+            var escapedString = Internal.EscapingHelper.EscapeString(text0085, StringEscapeHandling.Default);
+            Assert.Equal(@"before\u0085after", escapedString);
+
+            escapedString = Internal.EscapingHelper.EscapeString(text2028, StringEscapeHandling.Default);
+            Assert.Equal(@"before\u2028after", escapedString);
+
+            escapedString = Internal.EscapingHelper.EscapeString(text2029, StringEscapeHandling.Default);
+            Assert.Equal(@"before\u2029after", escapedString);
+
+            var result = JsonEncodedText.Encode(text0085, StringEscapeHandling.EscapeNonAscii);
+            Assert.Equal(@"before\u0085after", result.ToString());
+
+            result = JsonEncodedText.Encode(text2028, StringEscapeHandling.EscapeNonAscii);
+            Assert.Equal(@"before\u2028after", result.ToString());
+
+            result = JsonEncodedText.Encode(text2029, StringEscapeHandling.EscapeNonAscii);
+            Assert.Equal(@"before\u2029after", result.ToString());
+
+            result = JsonEncodedText.Encode(text0085, StringEscapeHandling.Default);
+            Assert.Equal(text0085, result.ToString()); // TODO
+
+            result = JsonEncodedText.Encode(text2028, StringEscapeHandling.Default);
+            Assert.Equal(text2028, result.ToString()); // TODO
+
+            result = JsonEncodedText.Encode(text2029, StringEscapeHandling.Default);
+            Assert.Equal(text2029, result.ToString()); // TODO
+        }
+
+        [Fact]
+        public void EscapeJavaScriptString()
+        {
+            var escapedString = Internal.EscapingHelper.EscapeString("How now brown cow?",  StringEscapeHandling.Default);
+            Assert.Equal(@"How now brown cow?", escapedString);
+
+            escapedString = Internal.EscapingHelper.EscapeString("How now 'brown' cow?",  StringEscapeHandling.Default);
+            Assert.Equal(@"How now 'brown' cow?", escapedString);
+
+            escapedString = Internal.EscapingHelper.EscapeString("How now <brown> cow?",  StringEscapeHandling.Default);
+            Assert.Equal(@"How now <brown> cow?", escapedString);
+
+            escapedString = Internal.EscapingHelper.EscapeString("How \r\nnow brown cow?",  StringEscapeHandling.Default);
+            Assert.Equal(@"How \r\nnow brown cow?", escapedString);
+
+            escapedString = Internal.EscapingHelper.EscapeString("\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007",  StringEscapeHandling.Default);
+            Assert.Equal(@"\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007", escapedString);
+
+            escapedString =
+                Internal.EscapingHelper.EscapeString("\b\t\n\u000b\f\r\u000e\u000f\u0010\u0011\u0012\u0013", StringEscapeHandling.Default);
+            Assert.Equal(@"\b\t\n\u000b\f\r\u000e\u000f\u0010\u0011\u0012\u0013", escapedString);
+
+            escapedString =
+                Internal.EscapingHelper.EscapeString(
+                    "\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f ", StringEscapeHandling.Default);
+            Assert.Equal(@"\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f ", escapedString);
+
+            escapedString =
+                Internal.EscapingHelper.EscapeString(
+                    "!\"#$%&\u0027()*+,-./0123456789:;\u003c=\u003e?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]", StringEscapeHandling.Default);
+            Assert.Equal(@"!\""#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]", escapedString);
+
+            escapedString = Internal.EscapingHelper.EscapeString("^_`abcdefghijklmnopqrstuvwxyz{|}~", StringEscapeHandling.Default);
+            Assert.Equal(@"^_`abcdefghijklmnopqrstuvwxyz{|}~", escapedString);
+
+            string data =
+                "\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\b\t\n\u000b\f\r\u000e\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f !\"#$%&\u0027()*+,-./0123456789:;\u003c=\u003e?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+            string expected =
+                @"\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\b\t\n\u000b\f\r\u000e\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f !\""#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+
+            escapedString = Internal.EscapingHelper.EscapeString(data, StringEscapeHandling.Default);
+            Assert.Equal(expected, escapedString);
+
+            escapedString = Internal.EscapingHelper.EscapeString("Fred's cat.", StringEscapeHandling.Default);
+            Assert.Equal(@"Fred's cat.", escapedString);
+
+            escapedString = Internal.EscapingHelper.EscapeString(@"""How are you gentlemen?"" said Cats.", StringEscapeHandling.Default);
+            Assert.Equal(@"\""How are you gentlemen?\"" said Cats.", escapedString);
+
+            escapedString = Internal.EscapingHelper.EscapeString(@"""How are' you gentlemen?"" said Cats.", StringEscapeHandling.Default);
+            Assert.Equal(@"\""How are' you gentlemen?\"" said Cats.", escapedString);
+
+            escapedString = Internal.EscapingHelper.EscapeString(@"Fred's ""cat"".", StringEscapeHandling.Default);
+            Assert.Equal(@"Fred's \""cat\"".", escapedString);
+
+            escapedString = Internal.EscapingHelper.EscapeString("\u001farray\u003caddress", StringEscapeHandling.Default);
+            Assert.Equal(@"\u001farray<address", escapedString);
+
+            var result = JsonEncodedText.Encode("How now brown cow?", StringEscapeHandling.Default);
+            Assert.Equal(@"How now brown cow?", result.ToString());
+
+            result = JsonEncodedText.Encode("How now 'brown' cow?", StringEscapeHandling.Default);
+            Assert.Equal(@"How now 'brown' cow?", result.ToString());
+
+            result = JsonEncodedText.Encode("How now <brown> cow?", StringEscapeHandling.Default);
+            Assert.Equal(@"How now <brown> cow?", result.ToString());
+
+            result = JsonEncodedText.Encode("How \r\nnow brown cow?", StringEscapeHandling.Default);
+            Assert.Equal(@"How \r\nnow brown cow?", result.ToString());
+
+            result = JsonEncodedText.Encode("\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007", StringEscapeHandling.Default);
+            Assert.Equal(@"\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007", result.ToString());
+
+            result =
+                JsonEncodedText.Encode("\b\t\n\u000b\f\r\u000e\u000f\u0010\u0011\u0012\u0013", StringEscapeHandling.Default);
+            Assert.Equal(@"\b\t\n\u000b\f\r\u000e\u000f\u0010\u0011\u0012\u0013", result.ToString());
+
+            result =
+                JsonEncodedText.Encode(
+                    "\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f ", StringEscapeHandling.Default);
+            Assert.Equal(@"\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f ", result.ToString());
+
+            result =
+                JsonEncodedText.Encode(
+                    "!\"#$%&\u0027()*+,-./0123456789:;\u003c=\u003e?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]", StringEscapeHandling.Default);
+            Assert.Equal(@"!\""#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]", result.ToString());
+
+            result = JsonEncodedText.Encode("^_`abcdefghijklmnopqrstuvwxyz{|}~", StringEscapeHandling.Default);
+            Assert.Equal(@"^_`abcdefghijklmnopqrstuvwxyz{|}~", result.ToString());
+
+            data =
+                "\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\b\t\n\u000b\f\r\u000e\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f !\"#$%&\u0027()*+,-./0123456789:;\u003c=\u003e?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+            expected =
+                @"\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\b\t\n\u000b\f\r\u000e\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f !\""#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+
+            result = JsonEncodedText.Encode(data, StringEscapeHandling.Default);
+            Assert.Equal(expected, result.ToString());
+
+            result = JsonEncodedText.Encode("Fred's cat.", StringEscapeHandling.Default);
+            Assert.Equal(@"Fred's cat.", result.ToString());
+
+            result = JsonEncodedText.Encode(@"""How are you gentlemen?"" said Cats.", StringEscapeHandling.Default);
+            Assert.Equal(@"\""How are you gentlemen?\"" said Cats.", result.ToString());
+
+            result = JsonEncodedText.Encode(@"""How are' you gentlemen?"" said Cats.", StringEscapeHandling.Default);
+            Assert.Equal(@"\""How are' you gentlemen?\"" said Cats.", result.ToString());
+
+            result = JsonEncodedText.Encode(@"Fred's ""cat"".", StringEscapeHandling.Default);
+            Assert.Equal(@"Fred's \""cat\"".", result.ToString());
+
+            result = JsonEncodedText.Encode("\u001farray\u003caddress", StringEscapeHandling.Default);
+            Assert.Equal(@"\u001farray<address", result.ToString());
         }
     }
 }

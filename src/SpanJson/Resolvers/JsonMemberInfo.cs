@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Reflection;
+using SpanJson.Internal;
 
 namespace SpanJson.Resolvers
 {
     public class JsonMemberInfo
     {
-        public JsonMemberInfo(string memberName, Type memberType, MethodInfo shouldSerialize, string name, string escapedName,
+        public JsonMemberInfo(string memberName, Type memberType, MethodInfo shouldSerialize, string name, JsonEncodedText escapedName,
             bool excludeNull, bool canRead, bool canWrite, Type customSerializer, object customSerializerArguments)
         {
             MemberName = memberName;
@@ -24,7 +25,7 @@ namespace SpanJson.Resolvers
         public Type MemberType { get; }
         public MethodInfo ShouldSerialize { get; }
         public string Name { get; }
-        public string EscapedName { get; }
+        public JsonEncodedText EscapedName { get; }
         public bool ExcludeNull { get; }
 
         public Type CustomSerializer { get; }
