@@ -41,17 +41,17 @@ namespace SpanJson.Formatters
             MethodInfo separatorWriteMethodInfo;
             MethodInfo writeBeginObjectMethodInfo;
             MethodInfo writeEndObjectMethodInfo;
-            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
-            {
-                separatorWriteMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16ValueSeparator));
-                writeBeginObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16BeginObject));
-                writeEndObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16EndObject));
-            }
-            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
                 separatorWriteMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8ValueSeparator));
                 writeBeginObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8BeginObject));
                 writeEndObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8EndObject));
+            }
+            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                separatorWriteMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16ValueSeparator));
+                writeBeginObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16BeginObject));
+                writeEndObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16EndObject));
             }
             else
             {
@@ -107,14 +107,8 @@ namespace SpanJson.Formatters
                 var formattedMemberInfoName = $"\"{memberInfo.EscapedName}\":";
 
                 MethodInfo propertyNameWriterMethodInfo = null;
-                if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
-                {
-                    writeNameExpressions = new[] { Expression.Constant(formattedMemberInfoName) };
-                    propertyNameWriterMethodInfo =
-                        FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16Verbatim), typeof(string));
-                }
                 // utf8 has special logic for writing the attribute names as Expression.Constant(byte-Array) is slower than Expression.Constant(string)
-                else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+                if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
                 {
                     // Everything above a length of 32 is not optimized
                     // 这儿不应直接采用字符串长度来判断
@@ -133,6 +127,12 @@ namespace SpanJson.Formatters
                         propertyNameWriterMethodInfo =
                             FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8Verbatim), typesToMatch.ToArray());
                     }
+                }
+                else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+                {
+                    writeNameExpressions = new[] { Expression.Constant(formattedMemberInfoName) };
+                    propertyNameWriterMethodInfo =
+                        FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16Verbatim), typeof(string));
                 }
                 else
                 {
@@ -283,18 +283,18 @@ namespace SpanJson.Formatters
             MethodInfo nameSpanMethodInfo = null;
             MethodInfo tryReadEndObjectMethodInfo = null;
             MethodInfo beginObjectOrThrowMethodInfo = null;
-            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+            {
+                nameSpanMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf8EscapedNameSpan));
+                tryReadEndObjectMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.TryReadUtf8IsEndObjectOrValueSeparator));
+                beginObjectOrThrowMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf8BeginObjectOrThrow));
+            }
+            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
             {
                 nameSpanMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf16EscapedNameSpan));
                 tryReadEndObjectMethodInfo =
                     FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.TryReadUtf16IsEndObjectOrValueSeparator));
                 beginObjectOrThrowMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf16BeginObjectOrThrow));
-            }
-            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
-            {
-                nameSpanMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf8EscapedNameSpan));
-                tryReadEndObjectMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.TryReadUtf8IsEndObjectOrValueSeparator));
-                beginObjectOrThrowMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf8BeginObjectOrThrow));
             }
             else
             {
@@ -364,13 +364,13 @@ namespace SpanJson.Formatters
             }
 
             MethodInfo skipNextMethodInfo = null;
-            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
-            {
-                skipNextMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.SkipNextUtf16Segment));
-            }
-            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
                 skipNextMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.SkipNextUtf8Segment));
+            }
+            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                skipNextMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.SkipNextUtf16Segment));
             }
             else
             {
@@ -464,7 +464,11 @@ namespace SpanJson.Formatters
             }
 
             string key = null;
-            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+            {
+                key = TextEncodings.Utf8.GetString(nameSpan);
+            }
+            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
             {
 #if NET451
                 key = Encoding.Unicode.GetString(nameSpan.ToArray());
@@ -479,10 +483,6 @@ namespace SpanJson.Formatters
 #else
                 key = Encoding.Unicode.GetString(nameSpan);
 #endif
-            }
-            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
-            {
-                key = TextEncodings.Utf8.GetString(nameSpan);
             }
             else
             {

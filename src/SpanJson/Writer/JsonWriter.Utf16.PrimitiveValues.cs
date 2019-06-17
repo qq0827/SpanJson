@@ -49,7 +49,7 @@
                 ref var pos = ref _pos;
                 Ensure(pos, 1);
 
-                ref char pinnableAddr = ref PinnableUtf16Address;
+                ref char pinnableAddr = ref Utf16PinnableAddress;
                 Unsafe.Add(ref pinnableAddr, pos++) = '-';
 
                 value = unchecked(-value);
@@ -70,7 +70,7 @@
             {
                 Ensure(pos, 1);
 
-                ref char pinnableAddr0 = ref PinnableUtf16Address;
+                ref char pinnableAddr0 = ref Utf16PinnableAddress;
                 Unsafe.Add(ref pinnableAddr0, pos++) = (char)('0' + value);
                 return;
             }
@@ -78,7 +78,7 @@
             var digits = FormatterUtils.CountDigits(value);
 
             Ensure(pos, digits);
-            ref char pinnableAddr = ref PinnableUtf16Address;
+            ref char pinnableAddr = ref Utf16PinnableAddress;
 
             for (var i = digits - 1; i >= 0; i--)
             {
@@ -134,7 +134,7 @@
             var buffer = TinyMemoryPool<byte>.GetBuffer();
             var count = DoubleToStringConverter.GetBytes(ref buffer, 0, value);
             Ensure(pos, count);
-            ref char pinnableAddr = ref PinnableUtf16Address;
+            ref char pinnableAddr = ref Utf16PinnableAddress;
             ref byte utf8Source = ref buffer[0];
             var offset = (IntPtr)0;
             for (int i = 0; i < count; i++)
@@ -170,7 +170,7 @@
             var buffer = TinyMemoryPool<byte>.GetBuffer();
             var count = DoubleToStringConverter.GetBytes(ref buffer, 0, value);
             Ensure(pos, count);
-            ref char pinnableAddr = ref PinnableUtf16Address;
+            ref char pinnableAddr = ref Utf16PinnableAddress;
             ref byte utf8Source = ref buffer[0];
             var offset = (IntPtr)0;
             for (int i = 0; i < count; i++)
@@ -238,7 +238,7 @@
             ref var pos = ref _pos;
             const int size = 8; // 1-6 chars + two JsonUtf16Constant.DoubleQuote
             Ensure(pos, size);
-            ref char pinnableAddr = ref PinnableUtf16Address;
+            ref char pinnableAddr = ref Utf16PinnableAddress;
 
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
             if (EscapingHelper.NeedsEscaping(value, escapeHandling))
@@ -261,7 +261,7 @@
             ref var pos = ref _pos;
             const int dtSize = JsonSharedConstant.MaxDateTimeLength; // Form o + two JsonUtf16Constant.DoubleQuote
             Ensure(pos, dtSize);
-            ref char pinnableAddr = ref PinnableUtf16Address;
+            ref char pinnableAddr = ref Utf16PinnableAddress;
 
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
             DateTimeFormatter.TryFormat(value, Utf16Span, out var written);
@@ -278,7 +278,7 @@
             ref var pos = ref _pos;
             const int dtSize = JsonSharedConstant.MaxDateTimeOffsetLength; // Form o + two JsonUtf16Constant.DoubleQuote
             Ensure(pos, dtSize);
-            ref char pinnableAddr = ref PinnableUtf16Address;
+            ref char pinnableAddr = ref Utf16PinnableAddress;
 
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
             DateTimeFormatter.TryFormat(value, Utf16Span, out var written);
@@ -295,7 +295,7 @@
             ref var pos = ref _pos;
             const int tsSize = JsonSharedConstant.MaxTimeSpanLength; // Form c + two JsonUtf16Constant.DoubleQuote
             Ensure(pos, tsSize);
-            ref char pinnableAddr = ref PinnableUtf16Address;
+            ref char pinnableAddr = ref Utf16PinnableAddress;
 
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
             Span<byte> byteSpan = stackalloc byte[tsSize];
@@ -321,7 +321,7 @@
             ref var pos = ref _pos;
             const int guidSize = JsonSharedConstant.MaxGuidLength; // Format D + two JsonUtf16Constant.DoubleQuote;
             Ensure(pos, guidSize);
-            ref char pinnableAddr = ref PinnableUtf16Address;
+            ref char pinnableAddr = ref Utf16PinnableAddress;
 
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
             new GuidBits(ref value).Write(ref pinnableAddr, ref pos); // len = 36
@@ -339,7 +339,7 @@
             ref var pos = ref _pos;
             Ensure(pos, versionLength);
 
-            ref char pinnableAddr = ref PinnableUtf16Address;
+            ref char pinnableAddr = ref Utf16PinnableAddress;
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
 #if NETSTANDARD2_0 || NET471 || NET451
             var utf16Text = value.ToString();

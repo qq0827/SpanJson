@@ -18,7 +18,7 @@
             ref var pos = ref _pos;
             Ensure(pos, 1);
 
-            Unsafe.Add(ref PinnableUtf16Address, pos++) = JsonUtf16Constant.BeginObject;
+            Unsafe.Add(ref Utf16PinnableAddress, pos++) = JsonUtf16Constant.BeginObject;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -27,7 +27,7 @@
             ref var pos = ref _pos;
             Ensure(pos, 1);
 
-            Unsafe.Add(ref PinnableUtf16Address, pos++) = JsonUtf16Constant.EndObject;
+            Unsafe.Add(ref Utf16PinnableAddress, pos++) = JsonUtf16Constant.EndObject;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -36,7 +36,7 @@
             ref var pos = ref _pos;
             Ensure(pos, 1);
 
-            Unsafe.Add(ref PinnableUtf16Address, pos++) = JsonUtf16Constant.BeginArray;
+            Unsafe.Add(ref Utf16PinnableAddress, pos++) = JsonUtf16Constant.BeginArray;
         }
 
 
@@ -46,7 +46,7 @@
             ref var pos = ref _pos;
             Ensure(pos, 1);
 
-            Unsafe.Add(ref PinnableUtf16Address, pos++) = JsonUtf16Constant.EndArray;
+            Unsafe.Add(ref Utf16PinnableAddress, pos++) = JsonUtf16Constant.EndArray;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -55,7 +55,7 @@
             ref var pos = ref _pos;
             Ensure(pos, 1);
 
-            Unsafe.Add(ref PinnableUtf16Address, pos++) = JsonUtf16Constant.ValueSeparator;
+            Unsafe.Add(ref Utf16PinnableAddress, pos++) = JsonUtf16Constant.ValueSeparator;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -66,7 +66,7 @@
             ref var pos = ref _pos;
             Ensure(pos, newLineLength);
 
-            ref char pinnableAddr = ref PinnableUtf16Address;
+            ref char pinnableAddr = ref Utf16PinnableAddress;
             Unsafe.Add(ref pinnableAddr, pos) = JsonUtf16Constant.CarriageReturn;
             Unsafe.Add(ref pinnableAddr, pos + 1) = JsonUtf16Constant.LineFeed;
             pos += newLineLength;
@@ -78,7 +78,7 @@
             ref var pos = ref _pos;
             Ensure(pos, count);
 
-            ref char pinnableAddr = ref Unsafe.Add(ref PinnableUtf16Address, pos);
+            ref char pinnableAddr = ref Unsafe.Add(ref Utf16PinnableAddress, pos);
             for (var i = 0; i < count; i++)
             {
                 Unsafe.Add(ref pinnableAddr, i) = JsonUtf16Constant.Space;
@@ -92,7 +92,7 @@
             ref var pos = ref _pos;
             Ensure(pos, 1);
 
-            WriteUtf16DoubleQuote(ref PinnableUtf16Address, ref pos);
+            WriteUtf16DoubleQuote(ref Utf16PinnableAddress, ref pos);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -107,7 +107,7 @@
             ref var pos = ref _pos;
             Ensure(pos, 1);
 
-            WriteUtf16NameSeparator(ref PinnableUtf16Address, ref pos);
+            WriteUtf16NameSeparator(ref Utf16PinnableAddress, ref pos);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

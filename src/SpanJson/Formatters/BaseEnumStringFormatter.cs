@@ -20,13 +20,13 @@ namespace SpanJson.Formatters
             var writerParameter = Expression.Parameter(typeof(JsonWriter<TSymbol>).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
             MethodInfo writerMethodInfo = null;
-            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
-            {
-                writerMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16Verbatim), typeof(string));
-            }
-            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
                 writerMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8Verbatim), typeof(byte[]));
+            }
+            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                writerMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16Verbatim), typeof(string));
             }
             else
             {
@@ -38,13 +38,13 @@ namespace SpanJson.Formatters
             {
                 Expression valueConstant = null;
                 var formattedValue = escapeFunctor(GetFormattedValue(name));
-                if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
-                {
-                    valueConstant = Expression.Constant(formattedValue);
-                }
-                else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+                if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
                 {
                     valueConstant = Expression.Constant(TextEncodings.UTF8NoBOM.GetBytes(formattedValue));
+                }
+                else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+                {
+                    valueConstant = Expression.Constant(formattedValue);
                 }
                 else
                 {

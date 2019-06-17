@@ -44,7 +44,7 @@
                 ref var pos = ref _pos;
                 Ensure(pos, 1);
 
-                ref byte pinnableAddr = ref PinnableUtf8Address;
+                ref byte pinnableAddr = ref Utf8PinnableAddress;
                 Unsafe.AddByteOffset(ref pinnableAddr, (IntPtr)pos++) = (byte)'-';
 
                 value = unchecked(-value);
@@ -66,14 +66,14 @@
             {
                 Ensure(pos, 1);
 
-                Unsafe.AddByteOffset(ref PinnableUtf8Address, (IntPtr)pos++) = (byte)('0' + value);
+                Unsafe.AddByteOffset(ref Utf8PinnableAddress, (IntPtr)pos++) = (byte)('0' + value);
                 return;
             }
 
             var digits = FormatterUtils.CountDigits(value);
 
             Ensure(pos, digits);
-            ref byte pinnableAddr = ref PinnableUtf8Address;
+            ref byte pinnableAddr = ref Utf8PinnableAddress;
 
             var offset = (IntPtr)pos;
             for (var i = digits - 1; i >= 0; i--)
@@ -130,7 +130,7 @@
 
             ref var pos = ref _pos;
             Ensure(pos, count);
-            UnsafeMemory.WriteRaw(ref PinnableUtf8Address, ref buffer[0], count, ref pos);
+            UnsafeMemory.WriteRaw(ref Utf8PinnableAddress, ref buffer[0], count, ref pos);
         }
 
         public void WriteUtf8Double(double value)
@@ -149,7 +149,7 @@
 
             ref var pos = ref _pos;
             Ensure(pos, count);
-            UnsafeMemory.WriteRaw(ref PinnableUtf8Address, ref buffer[0], count, ref pos);
+            UnsafeMemory.WriteRaw(ref Utf8PinnableAddress, ref buffer[0], count, ref pos);
         }
 
         #endregion
@@ -181,7 +181,7 @@
             const int size = 8; // 1-6 chars + two JsonUtf8Constant.DoubleQuote
             Ensure(pos, size);
 
-            ref byte pinnableAddr = ref PinnableUtf8Address;
+            ref byte pinnableAddr = ref Utf8PinnableAddress;
 
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
 
@@ -217,7 +217,7 @@
             const int dtSize = JsonSharedConstant.MaxDateTimeLength; // Form o + two JsonUtf8Constant.DoubleQuote
             Ensure(pos, dtSize);
 
-            ref byte pinnableAddr = ref PinnableUtf8Address;
+            ref byte pinnableAddr = ref Utf8PinnableAddress;
 
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
             DateTimeFormatter.TryFormat(value, Utf8Span, out var bytesWritten);
@@ -235,7 +235,7 @@
             const int dtSize = JsonSharedConstant.MaxDateTimeOffsetLength; // Form o + two JsonUtf8Constant.DoubleQuote
             Ensure(pos, dtSize);
 
-            ref byte pinnableAddr = ref PinnableUtf8Address;
+            ref byte pinnableAddr = ref Utf8PinnableAddress;
 
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
             DateTimeFormatter.TryFormat(value, Utf8Span, out var bytesWritten);
@@ -253,7 +253,7 @@
             const int tsSize = JsonSharedConstant.MaxTimeSpanLength; // Form o + two JsonUtf8Constant.DoubleQuote
             Ensure(pos, tsSize);
 
-            ref byte pinnableAddr = ref PinnableUtf8Address;
+            ref byte pinnableAddr = ref Utf8PinnableAddress;
 
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
             Utf8Formatter.TryFormat(value, Utf8Span, out var bytesWritten);
@@ -271,7 +271,7 @@
             const int guidSize = JsonSharedConstant.MaxGuidLength; // Format D + two JsonUtf8Constant.DoubleQuote;
             Ensure(pos, guidSize);
 
-            ref byte pinnableAddr = ref PinnableUtf8Address;
+            ref byte pinnableAddr = ref Utf8PinnableAddress;
 
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
             new GuidBits(ref value).Write(ref pinnableAddr, ref pos); // len = 36
@@ -291,7 +291,7 @@
             ref var pos = ref _pos;
             Ensure(JsonSharedConstant.MaxVersionLength);
 
-            ref byte pinnableAddr = ref PinnableUtf8Address;
+            ref byte pinnableAddr = ref Utf8PinnableAddress;
 
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
             Span<char> tempSpan = TinyMemoryPool<char>.GetBuffer();

@@ -13,7 +13,7 @@
             var utf8Text = value.EncodedUtf8Bytes;
             Ensure(pos, utf8Text.Length + 3);
 
-            ref byte pinnableAddr = ref PinnableUtf8Address;
+            ref byte pinnableAddr = ref Utf8PinnableAddress;
 
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
             UnsafeMemory.WriteRaw(_utf8Buffer, utf8Text, ref _pos);
@@ -68,7 +68,7 @@
             uint nValueLength = (uint)valueLength;
             Ensure(pos, TextEncodings.UTF8NoBOM.GetMaxByteCount(valueLength) + 12); // assume that a fully escaped char fits too + 2 double quotes
 
-            ref byte pinnableAddr = ref PinnableUtf8Address;
+            ref byte pinnableAddr = ref Utf8PinnableAddress;
 
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
 
@@ -88,7 +88,7 @@
                     if ((uint)remaining >= (uint)(_capacity - pos))
                     {
                         CheckAndResizeBuffer(pos, remaining);
-                        pinnableAddr = ref PinnableUtf8Address;
+                        pinnableAddr = ref Utf8PinnableAddress;
                     }
                     from = index;
                 }
@@ -117,7 +117,7 @@
             uint nValueLength = (uint)valueLength;
             Ensure(pos, TextEncodings.UTF8NoBOM.GetMaxByteCount(valueLength) + 12); // assume that a fully escaped char fits too + 2 double quotes
 
-            ref byte pinnableAddr = ref PinnableUtf8Address;
+            ref byte pinnableAddr = ref Utf8PinnableAddress;
 
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
 
@@ -137,7 +137,7 @@
                     if ((uint)remaining >= (uint)(_capacity - pos))
                     {
                         CheckAndResizeBuffer(pos, remaining);
-                        pinnableAddr = ref PinnableUtf8Address;
+                        pinnableAddr = ref Utf8PinnableAddress;
                     }
                     from = index;
                 }
@@ -166,7 +166,7 @@
             uint nValueLength = (uint)valueLength;
             Ensure(pos, TextEncodings.UTF8NoBOM.GetMaxByteCount(valueLength) + 12); // assume that a fully escaped char fits too + 2 double quotes
 
-            ref byte pinnableAddr = ref PinnableUtf8Address;
+            ref byte pinnableAddr = ref Utf8PinnableAddress;
 
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
 
@@ -186,7 +186,7 @@
                     if ((uint)remaining >= (uint)(_capacity - pos))
                     {
                         CheckAndResizeBuffer(pos, remaining);
-                        pinnableAddr = ref PinnableUtf8Address;
+                        pinnableAddr = ref Utf8PinnableAddress;
                     }
                     from = index;
                 }

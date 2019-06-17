@@ -12,7 +12,7 @@
             ref var pos = ref _pos;
             Ensure(pos, falseLength);
 
-            ref char pinnableAddr = ref PinnableUtf16Address;
+            ref char pinnableAddr = ref Utf16PinnableAddress;
             if (value)
             {
                 Unsafe.Add(ref pinnableAddr, pos + 3) = 'e';
@@ -40,7 +40,7 @@
             ref var pos = ref _pos;
             Ensure(pos, nullLength);
 
-            ref char pinnableAddr = ref PinnableUtf16Address;
+            ref char pinnableAddr = ref Utf16PinnableAddress;
             Unsafe.Add(ref pinnableAddr, pos + 3) = 'l';
             Unsafe.Add(ref pinnableAddr, pos + 2) = 'l';
             Unsafe.Add(ref pinnableAddr, pos + 1) = 'u';

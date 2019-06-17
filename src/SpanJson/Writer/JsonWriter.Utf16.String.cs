@@ -13,7 +13,7 @@
             var utf16Text = value.ToString();
             Ensure(pos, utf16Text.Length + 3);
 
-            ref char pinnableAddr = ref PinnableUtf16Address;
+            ref char pinnableAddr = ref Utf16PinnableAddress;
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
             utf16Text.AsSpan().CopyTo(Utf16Span);
             pos += utf16Text.Length;
@@ -63,7 +63,7 @@
             uint nValueLength = (uint)valueLength;
             Ensure(pos, valueLength + 12); // assume that a fully escaped char fits too (5 * 2 + two double quotes)
 
-            ref char pinnableAddr = ref PinnableUtf16Address;
+            ref char pinnableAddr = ref Utf16PinnableAddress;
 
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
 
@@ -79,7 +79,7 @@
                     if ((uint)remaining >= (uint)(_capacity - pos))
                     {
                         CheckAndResizeBuffer(pos, remaining);
-                        pinnableAddr = ref PinnableUtf16Address;
+                        pinnableAddr = ref Utf16PinnableAddress;
                     }
                 }
                 else
@@ -102,7 +102,7 @@
             uint nValueLength = (uint)valueLength;
             Ensure(pos, valueLength + 12); // assume that a fully escaped char fits too (5 * 2 + two double quotes)
 
-            ref char pinnableAddr = ref PinnableUtf16Address;
+            ref char pinnableAddr = ref Utf16PinnableAddress;
 
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
 
@@ -118,7 +118,7 @@
                     if ((uint)remaining >= (uint)(_capacity - pos))
                     {
                         CheckAndResizeBuffer(pos, remaining);
-                        pinnableAddr = ref PinnableUtf16Address;
+                        pinnableAddr = ref Utf16PinnableAddress;
                     }
                 }
                 else
@@ -141,7 +141,7 @@
             uint nValueLength = (uint)valueLength;
             Ensure(pos, valueLength + 12); // assume that a fully escaped char fits too (5 * 2 + two double quotes)
 
-            ref char pinnableAddr = ref PinnableUtf16Address;
+            ref char pinnableAddr = ref Utf16PinnableAddress;
 
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
 
@@ -157,7 +157,7 @@
                     if ((uint)remaining >= (uint)(_capacity - pos))
                     {
                         CheckAndResizeBuffer(pos, remaining);
-                        pinnableAddr = ref PinnableUtf16Address;
+                        pinnableAddr = ref Utf16PinnableAddress;
                     }
                 }
                 else

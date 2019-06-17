@@ -5,13 +5,11 @@
 
     public static class InternalMemoryPool<TSymbol> where TSymbol : struct
     {
-        private static readonly int s_initialCapacity;
-        internal static readonly uint InitialCapacity;
+        internal static readonly int InitialCapacity;
 
         static InternalMemoryPool()
         {
-            s_initialCapacity = 1 + ((64 * 1024 - 1) / Unsafe.SizeOf<TSymbol>());
-            InitialCapacity = (uint)s_initialCapacity;
+            InitialCapacity = 1 + ((64 * 1024 - 1) / Unsafe.SizeOf<TSymbol>());
         }
 
         [ThreadStatic]
@@ -19,7 +17,7 @@
 
         public static TSymbol[] GetBuffer()
         {
-            if (s_buffer == null) { s_buffer = new TSymbol[s_initialCapacity]; }
+            if (s_buffer == null) { s_buffer = new TSymbol[InitialCapacity]; }
             return s_buffer;
         }
     }

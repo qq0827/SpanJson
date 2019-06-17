@@ -28,7 +28,7 @@
 
             ref var pos = ref _pos;
             Ensure(pos, count);
-            UnsafeMemory.WriteRaw(ref PinnableUtf8Address, ref MemoryMarshal.GetReference(value), count, ref pos);
+            UnsafeMemory.WriteRaw(ref Utf8PinnableAddress, ref MemoryMarshal.GetReference(value), count, ref pos);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -51,7 +51,7 @@
 
             ref var pos = ref _pos;
             Ensure(pos, count);
-            UnsafeMemory.WriteRawBytes(ref PinnableUtf8Address, ref MemoryMarshal.GetReference(value), count, ref pos);
+            UnsafeMemory.WriteRawBytes(ref Utf8PinnableAddress, ref MemoryMarshal.GetReference(value), count, ref pos);
         }
     }
 }

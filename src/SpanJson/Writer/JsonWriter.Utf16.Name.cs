@@ -12,7 +12,7 @@
             var utf16Text = value.ToString();
             Ensure(pos, utf16Text.Length + 3);
 
-            ref char pinnableAddr = ref PinnableUtf16Address;
+            ref char pinnableAddr = ref Utf16PinnableAddress;
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
             utf16Text.AsSpan().CopyTo(Utf16Span);
             pos += utf16Text.Length;
@@ -62,7 +62,7 @@
             ref var pos = ref _pos;
             Ensure(pos, value.Length + 3);
 
-            ref char pinnableAddr = ref PinnableUtf16Address;
+            ref char pinnableAddr = ref Utf16PinnableAddress;
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
             value.CopyTo(Utf16Span);
             pos += value.Length;

@@ -14,7 +14,7 @@
             var utf8Text = value.EncodedUtf8Bytes;
             Ensure(pos, utf8Text.Length + 3);
 
-            ref byte pinnableAddr = ref PinnableUtf8Address;
+            ref byte pinnableAddr = ref Utf8PinnableAddress;
 
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
             UnsafeMemory.WriteRaw(_utf8Buffer, utf8Text, ref _pos);
@@ -64,7 +64,7 @@
             ref var pos = ref _pos;
             Ensure(pos, value.Length + 3);
 
-            ref byte pinnableAddr = ref PinnableUtf8Address;
+            ref byte pinnableAddr = ref Utf8PinnableAddress;
 
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
             UnsafeMemory.WriteRaw(ref pinnableAddr, ref MemoryMarshal.GetReference(value), value.Length, ref pos);

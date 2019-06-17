@@ -26,7 +26,7 @@
             ref var pos = ref _pos;
             Ensure(1);
 
-            Unsafe.AddByteOffset(ref PinnableUtf8Address, (IntPtr)pos++) = JsonUtf8Constant.BeginObject;
+            Unsafe.AddByteOffset(ref Utf8PinnableAddress, (IntPtr)pos++) = JsonUtf8Constant.BeginObject;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -35,7 +35,7 @@
             ref var pos = ref _pos;
             Ensure(1);
 
-            Unsafe.AddByteOffset(ref PinnableUtf8Address, (IntPtr)pos++) = JsonUtf8Constant.EndObject;
+            Unsafe.AddByteOffset(ref Utf8PinnableAddress, (IntPtr)pos++) = JsonUtf8Constant.EndObject;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -44,7 +44,7 @@
             ref var pos = ref _pos;
             Ensure(1);
 
-            Unsafe.AddByteOffset(ref PinnableUtf8Address, (IntPtr)pos++) = JsonUtf8Constant.BeginArray;
+            Unsafe.AddByteOffset(ref Utf8PinnableAddress, (IntPtr)pos++) = JsonUtf8Constant.BeginArray;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -53,7 +53,7 @@
             ref var pos = ref _pos;
             Ensure(1);
 
-            Unsafe.AddByteOffset(ref PinnableUtf8Address, (IntPtr)pos++) = JsonUtf8Constant.EndArray;
+            Unsafe.AddByteOffset(ref Utf8PinnableAddress, (IntPtr)pos++) = JsonUtf8Constant.EndArray;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -62,7 +62,7 @@
             ref var pos = ref _pos;
             Ensure(1);
 
-            Unsafe.AddByteOffset(ref PinnableUtf8Address, (IntPtr)pos++) = JsonUtf8Constant.ValueSeparator;
+            Unsafe.AddByteOffset(ref Utf8PinnableAddress, (IntPtr)pos++) = JsonUtf8Constant.ValueSeparator;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -73,7 +73,7 @@
             ref var pos = ref _pos;
             Ensure(pos, newLineLength);
 
-            ref byte pinnableAddr = ref PinnableUtf8Address;
+            ref byte pinnableAddr = ref Utf8PinnableAddress;
             var offset = (IntPtr)pos;
             Unsafe.AddByteOffset(ref pinnableAddr, offset) = JsonUtf8Constant.CarriageReturn;
             Unsafe.AddByteOffset(ref pinnableAddr, offset + 1) = JsonUtf8Constant.LineFeed;
@@ -86,7 +86,7 @@
             ref var pos = ref _pos;
             Ensure(pos, count);
 
-            ref byte pinnableAddr = ref Unsafe.AddByteOffset(ref PinnableUtf8Address, (IntPtr)pos);
+            ref byte pinnableAddr = ref Unsafe.AddByteOffset(ref Utf8PinnableAddress, (IntPtr)pos);
             Unsafe.InitBlockUnaligned(ref pinnableAddr, JsonUtf8Constant.Space, unchecked((uint)count));
             pos += count;
         }
@@ -97,7 +97,7 @@
             ref var pos = ref _pos;
             Ensure(pos, 1);
 
-            WriteUtf8DoubleQuote(ref PinnableUtf8Address, ref pos);
+            WriteUtf8DoubleQuote(ref Utf8PinnableAddress, ref pos);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -113,7 +113,7 @@
             ref var pos = ref _pos;
             Ensure(pos, 1);
 
-            WriteUtf8NameSeparator(ref PinnableUtf8Address, ref pos);
+            WriteUtf8NameSeparator(ref Utf8PinnableAddress, ref pos);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

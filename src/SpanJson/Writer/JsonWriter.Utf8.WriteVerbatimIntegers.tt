@@ -52,7 +52,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, <#=i#>);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
 <#
             for(int k = 0;k<sizes.Count;k++)
             {

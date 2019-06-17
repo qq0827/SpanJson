@@ -30,13 +30,13 @@ namespace SpanJson.Formatters
             var writerParameter = Expression.Parameter(typeof(JsonWriter<TSymbol>).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
             string methodName = null;
-            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
-            {
-                methodName = $"WriteUtf16{underlyingType.Name}";
-            }
-            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
                 methodName = $"WriteUtf8{underlyingType.Name}";
+            }
+            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                methodName = $"WriteUtf16{underlyingType.Name}";
             }
             else
             {
@@ -55,13 +55,13 @@ namespace SpanJson.Formatters
             var underlyingType = Enum.GetUnderlyingType(typeof(T));
             var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
             string methodName = null;
-            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
-            {
-                methodName = $"ReadUtf16{underlyingType.Name}";
-            }
-            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
                 methodName = $"ReadUtf8{underlyingType.Name}";
+            }
+            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                methodName = $"ReadUtf16{underlyingType.Name}";
             }
             else
             {

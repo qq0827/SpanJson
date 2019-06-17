@@ -10,7 +10,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 4);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 4;
         }
@@ -21,7 +21,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 5);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 4;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -34,7 +34,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 6);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 4;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -47,7 +47,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 7);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 4;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -62,7 +62,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 8);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 8;
         }
@@ -73,7 +73,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 9);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 8;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -86,7 +86,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 10);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 8;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -99,7 +99,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 11);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 8;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -114,7 +114,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 12);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 8;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -127,7 +127,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 13);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 8;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -142,7 +142,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 14);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 8;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -157,7 +157,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 15);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 8;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -174,7 +174,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 16);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 8;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -187,7 +187,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 17);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 8;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -202,7 +202,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 18);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 8;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -217,7 +217,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 19);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 8;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -234,7 +234,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 20);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 8;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -249,7 +249,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 21);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 8;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -266,7 +266,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 22);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 8;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -283,7 +283,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 23);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 8;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -302,7 +302,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 24);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 8;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -317,7 +317,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 25);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 8;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -334,7 +334,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 26);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 8;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -351,7 +351,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 27);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 8;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -370,7 +370,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 28);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 8;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -387,7 +387,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 29);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 8;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -406,7 +406,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 30);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 8;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -425,7 +425,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 31);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 8;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
@@ -446,7 +446,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             Ensure(pos, 32);
 
-            ref var bStart = ref PinnableUtf8Address;
+            ref var bStart = ref Utf8PinnableAddress;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
             pos += 8;
             Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
