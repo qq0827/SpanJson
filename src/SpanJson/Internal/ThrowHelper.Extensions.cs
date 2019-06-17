@@ -153,6 +153,8 @@ namespace SpanJson
                 builder.Append("...");
             }
 
+            static bool IsPrintable(byte value) => value >= 0x20 && value < 0x7F;
+
             throw new ArgumentException($"Cannot encode invalid UTF-8 text as JSON. Invalid input: '{builder}'.");
         }
 
@@ -274,6 +276,32 @@ namespace SpanJson
 
         #endregion
 
-        private static bool IsPrintable(byte value) => value >= 0x20 && value < 0x7F;
+        #region -- JsonParserException --
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static void ThrowJsonParserException(JsonParserException.ParserError error, JsonParserException.ValueType type, int position)
+        {
+            throw GetJsonParserException(error, type, position);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static JsonParserException GetJsonParserException(JsonParserException.ParserError error, JsonParserException.ValueType type, int position)
+        {
+            return new JsonParserException(error, type, position);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static void ThrowJsonParserException(JsonParserException.ParserError error, int position)
+        {
+            throw GetJsonParserException(error, position);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static JsonParserException GetJsonParserException(JsonParserException.ParserError error, int position)
+        {
+            return new JsonParserException(error, position);
+        }
+
+        #endregion
     }
 }

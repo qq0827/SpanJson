@@ -9,10 +9,6 @@
 
     public ref partial struct JsonWriter<TSymbol> where TSymbol : struct
     {
-        private const uint c_maximumBufferSize = int.MaxValue;
-        private const int c_minimumBufferSize = 256;
-        private const uint c_stackallocThreshold = 256u;
-
         private ArrayPool<TSymbol> _arrayPool;
 
         private TSymbol[] _borrowedBuffer;
@@ -99,7 +95,7 @@
         /// <summary>Constructs a new <see cref="JsonWriter{TSymbol}"/> instance.</summary>
         public JsonWriter(int initialCapacity)
         {
-            if (((uint)(initialCapacity - 1)) > c_maximumBufferSize) { initialCapacity = InternalMemoryPool<TSymbol>.InitialCapacity; }
+            if (((uint)(initialCapacity - 1)) > JsonSharedConstant.TooBigOrNegative) { initialCapacity = InternalMemoryPool<TSymbol>.InitialCapacity; }
 
             _pos = 0;
             _depth = 0;
@@ -153,11 +149,13 @@
         {
             Debug.Assert(_borrowedBuffer != null);
 
+            const int MinimumBufferSize = 256;
+
             //if (sizeHint < 0) ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.sizeHint);
             //if (sizeHint == 0)
-            if (unchecked((uint)(sizeHint - 1)) > c_maximumBufferSize)
+            if (unchecked((uint)(sizeHint - 1)) > JsonSharedConstant.TooBigOrNegative)
             {
-                sizeHint = c_minimumBufferSize;
+                sizeHint = MinimumBufferSize;
             }
 
             int availableSpace = _capacity - alreadyWritten;

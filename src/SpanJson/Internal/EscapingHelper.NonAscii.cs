@@ -58,12 +58,11 @@ namespace SpanJson.Internal
             public static int NeedsEscaping(in ReadOnlySpan<byte> utf8Source)
             {
                 ref byte space = ref MemoryMarshal.GetReference(utf8Source);
-                IntPtr offset = (IntPtr)0;
                 int idx = 0;
                 uint nlen = (uint)utf8Source.Length;
                 while ((uint)idx < nlen)
                 {
-                    if (NeedsEscaping(Unsafe.AddByteOffset(ref space, offset + idx))) { goto Return; }
+                    if (NeedsEscaping(Unsafe.Add(ref space, idx))) { goto Return; }
                     idx++;
                 }
 

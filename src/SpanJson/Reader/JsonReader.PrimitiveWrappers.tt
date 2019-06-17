@@ -42,14 +42,14 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public <#= t.Name #> Read<#= t.Name #>()
         {
-            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
-            {
-                return ReadUtf16<#= t.Name #>();
-            }
-
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
                 return ReadUtf8<#= t.Name #>();
+            }
+
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                return ReadUtf16<#= t.Name #>();
             }
 
             throw ThrowHelper.GetNotSupportedException();

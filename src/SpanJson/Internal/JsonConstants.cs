@@ -54,7 +54,7 @@ namespace SpanJson.Internal
         public const int MaxWriterDepth = 1_000;
         public const int RemoveFlagsBitMask = 0x7FFFFFFF;
 
-        public const int StackallocThreshold = 256;
+        public const uint StackallocThreshold = 256u;
 
         // In the worst case, an ASCII character represented as a single utf-8 byte could expand 6x when escaped.
         // For example: '+' becomes '\u0043'
