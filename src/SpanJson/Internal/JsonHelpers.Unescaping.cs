@@ -17,7 +17,7 @@ namespace SpanJson.Internal
         {
             byte[] unescapedArray = null;
 
-            Span<byte> utf8Unescaped = utf8Source.Length <= JsonSharedConstant.StackallocThreshold ?
+            Span<byte> utf8Unescaped = (uint)utf8Source.Length <= JsonSharedConstant.StackallocThreshold ?
                 stackalloc byte[utf8Source.Length] :
                 (unescapedArray = ArrayPool<byte>.Shared.Rent(utf8Source.Length));
 
@@ -45,7 +45,7 @@ namespace SpanJson.Internal
         public static string GetUnescapedString(in ReadOnlySpan<byte> utf8Source, int idx)
         {
             byte[] unescapedArray = null;
-            Span<byte> utf8Unescaped = utf8Source.Length <= JsonSharedConstant.StackallocThreshold ?
+            Span<byte> utf8Unescaped = (uint)utf8Source.Length <= JsonSharedConstant.StackallocThreshold ?
                 stackalloc byte[utf8Source.Length] :
                 (unescapedArray = ArrayPool<byte>.Shared.Rent(utf8Source.Length));
             try
@@ -56,7 +56,7 @@ namespace SpanJson.Internal
                 utf8Unescaped = utf8Unescaped.Slice(0, written);
                 Debug.Assert(!utf8Unescaped.IsEmpty);
 
-                return TextEncodings.Utf8.GetString(utf8Unescaped);
+                return TextEncodings.GetTextFromUtf8(utf8Unescaped);
             }
             finally
             {
@@ -74,7 +74,7 @@ namespace SpanJson.Internal
 
             byte[] unescapedArray = null;
 
-            Span<byte> utf8Unescaped = utf8Source.Length <= JsonSharedConstant.StackallocThreshold ?
+            Span<byte> utf8Unescaped = (uint)utf8Source.Length <= JsonSharedConstant.StackallocThreshold ?
                 stackalloc byte[utf8Source.Length] :
                 (unescapedArray = ArrayPool<byte>.Shared.Rent(utf8Source.Length));
 
@@ -105,11 +105,11 @@ namespace SpanJson.Internal
 
             int length = checked((int)utf8Source.Length);
 
-            Span<byte> utf8Unescaped = length <= JsonSharedConstant.StackallocThreshold ?
+            Span<byte> utf8Unescaped = (uint)length <= JsonSharedConstant.StackallocThreshold ?
                 stackalloc byte[length] :
                 (unescapedArray = ArrayPool<byte>.Shared.Rent(length));
 
-            Span<byte> utf8Escaped = length <= JsonSharedConstant.StackallocThreshold ?
+            Span<byte> utf8Escaped = (uint)length <= JsonSharedConstant.StackallocThreshold ?
                 stackalloc byte[length] :
                 (escapedArray = ArrayPool<byte>.Shared.Rent(length));
 
@@ -152,7 +152,7 @@ namespace SpanJson.Internal
         {
             byte[] pooledArray = null;
 
-            Span<byte> byteSpan = utf8Unescaped.Length <= JsonSharedConstant.StackallocThreshold ?
+            Span<byte> byteSpan = (uint)utf8Unescaped.Length <= JsonSharedConstant.StackallocThreshold ?
                 stackalloc byte[utf8Unescaped.Length] :
                 (pooledArray = ArrayPool<byte>.Shared.Rent(utf8Unescaped.Length));
 

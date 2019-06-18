@@ -284,7 +284,7 @@ namespace SpanJson
         private DateTime ParseUtf16DateTimeAllocating(in ReadOnlySpan<char> input)
         {
             char[] unescapedArray = null;
-            Span<char> utf16Unescaped = input.Length <= JsonSharedConstant.StackallocThreshold ?
+            Span<char> utf16Unescaped = (uint)input.Length <= JsonSharedConstant.StackallocThreshold ?
                 stackalloc char[input.Length] :
                 (unescapedArray = ArrayPool<char>.Shared.Rent(input.Length));
             try
@@ -328,7 +328,7 @@ namespace SpanJson
         private DateTimeOffset ParseUtf16DateTimeOffsetAllocating(in ReadOnlySpan<char> input)
         {
             char[] unescapedArray = null;
-            Span<char> utf16Unescaped = input.Length <= JsonSharedConstant.StackallocThreshold ?
+            Span<char> utf16Unescaped = (uint)input.Length <= JsonSharedConstant.StackallocThreshold ?
                 stackalloc char[input.Length] :
                 (unescapedArray = ArrayPool<char>.Shared.Rent(input.Length));
             try
@@ -360,7 +360,7 @@ namespace SpanJson
         private TimeSpan ParseUtf16TimeSpanAllocating(in ReadOnlySpan<char> input)
         {
             char[] unescapedArray = null;
-            Span<char> utf16Unescaped = input.Length <= JsonSharedConstant.StackallocThreshold ?
+            Span<char> utf16Unescaped = (uint)input.Length <= JsonSharedConstant.StackallocThreshold ?
                 stackalloc char[input.Length] :
                 (unescapedArray = ArrayPool<char>.Shared.Rent(input.Length));
             try
@@ -387,7 +387,7 @@ namespace SpanJson
         private Guid ParseUtf16GuidAllocating(in ReadOnlySpan<char> input)
         {
             char[] unescapedArray = null;
-            Span<char> utf16Unescaped = input.Length <= JsonSharedConstant.StackallocThreshold ?
+            Span<char> utf16Unescaped = (uint)input.Length <= JsonSharedConstant.StackallocThreshold ?
                 stackalloc char[input.Length] :
                 (unescapedArray = ArrayPool<char>.Shared.Rent(input.Length));
             try

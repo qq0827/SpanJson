@@ -830,7 +830,7 @@ namespace SpanJson.Internal
             public static int GetCharCount(ReadOnlySpan<byte> bytes)
             {
 #if NETCOREAPP || NETSTANDARD_2_0_GREATER
-                return Encoding.UTF8.GetCharCount(bytes);
+                return UTF8NoBOM.GetCharCount(bytes);
 #else
                 if (bytes.IsEmpty) { return 0; }
 
@@ -840,7 +840,7 @@ namespace SpanJson.Internal
                 {
                     fixed (byte* bytesPtr = &MemoryMarshal.GetReference(bytes))
                     {
-                        return Encoding.UTF8.GetCharCount(bytesPtr, bytes.Length);
+                        return UTF8NoBOM.GetCharCount(bytesPtr, bytes.Length);
                     }
                 }
 #endif
@@ -850,7 +850,7 @@ namespace SpanJson.Internal
             public static int GetChars(ReadOnlySpan<byte> bytes, Span<char> chars)
             {
 #if NETCOREAPP || NETSTANDARD_2_0_GREATER
-                return Encoding.UTF8.GetChars(bytes, chars);
+                return UTF8NoBOM.GetChars(bytes, chars);
 #else
                 if (bytes.IsEmpty) { return 0; }
 
@@ -860,7 +860,7 @@ namespace SpanJson.Internal
                     fixed (byte* bytesPtr = &MemoryMarshal.GetReference(bytes))
                     fixed (char* charsPtr = &MemoryMarshal.GetReference(chars))
                     {
-                        return Encoding.UTF8.GetChars(bytesPtr, bytes.Length, charsPtr, chars.Length);
+                        return UTF8NoBOM.GetChars(bytesPtr, bytes.Length, charsPtr, chars.Length);
                     }
                 }
 #endif
@@ -870,7 +870,7 @@ namespace SpanJson.Internal
             public static string GetString(ReadOnlySpan<byte> utf8Text)
             {
 #if NETCOREAPP || NETSTANDARD_2_0_GREATER
-                return Encoding.UTF8.GetString(utf8Text);
+                return UTF8NoBOM.GetString(utf8Text);
 #else
                 return ToString(utf8Text);
 #endif

@@ -158,6 +158,11 @@ namespace SpanJson
             throw new ArgumentException($"Cannot encode invalid UTF-8 text as JSON. Invalid input: '{builder}'.");
         }
 
+        public static ArgumentException GetArgumentException_ReadInvalidUTF16(EncoderFallbackException innerException)
+        {
+            return new ArgumentException("Cannot transcode invalid UTF-16 string to UTF-8 JSON text.", innerException);
+        }
+
         #endregion
 
         #region -- InvalidOperationException --
@@ -272,6 +277,12 @@ namespace SpanJson
         internal static void ThrowInvalidCastException()
         {
             throw GetInvalidCastException();
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static InvalidOperationException GetInvalidOperationException_ReadInvalidUTF8(DecoderFallbackException innerException)
+        {
+            return new InvalidOperationException("Cannot transcode invalid UTF-8 JSON text to UTF-16 string.", innerException);
         }
 
         #endregion

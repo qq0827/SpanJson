@@ -16,7 +16,7 @@
             ref byte pinnableAddr = ref Utf8PinnableAddress;
 
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
-            UnsafeMemory.WriteRaw(ref pinnableAddr, ref utf8Text[0], utf8Text.Length, ref _pos);
+            UnsafeMemory.WriteRaw(ref pinnableAddr, ref MemoryMarshal.GetReference(utf8Text), utf8Text.Length, ref _pos);
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
         }
 

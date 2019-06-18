@@ -25,7 +25,7 @@ namespace SpanJson
         /// <summary>
         /// Returns the UTF-8 encoded representation of the pre-encoded JSON text.
         /// </summary>
-        public byte[] EncodedUtf8Bytes => _utf8Value;
+        public ReadOnlySpan<byte> EncodedUtf8Bytes => _utf8Value;
 
         public bool IsEmpty => 0U >= (uint)_utf8Value.Length;
 
@@ -92,14 +92,14 @@ namespace SpanJson
         {
             //JsonWriterHelper.ValidateValue(value);
 
-            int expectedByteCount = TextEncodings.Utf8.GetByteCount(value);
+            int expectedByteCount = TextEncodings.GetUtf8ByteCount(value);
             byte[] utf8Bytes = ArrayPool<byte>.Shared.Rent(expectedByteCount);
 
             JsonEncodedText encodedText;
 
             // Since GetUtf8ByteCount above already throws on invalid input, the transcoding
             // to UTF-8 is guaranteed to succeed here. Therefore, there's no need for a try-catch-finally block.
-            int actualByteCount = TextEncodings.Utf8.GetBytes(value, utf8Bytes);
+            int actualByteCount = TextEncodings.GetUtf8FromText(value, utf8Bytes);
             Debug.Assert(expectedByteCount == actualByteCount);
 
             encodedText = EncodeHelper(utf8Bytes.AsSpan(0, actualByteCount), escapeHandling);
