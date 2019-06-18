@@ -10,14 +10,12 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteUtf8Raw(byte[] value)
         {
-            if (null == value) { return; }
             var count = value.Length;
             if (0u >= (uint)count) { return; }
 
             ref var pos = ref _pos;
             Ensure(pos, count);
-
-            UnsafeMemory.WriteRaw(_utf8Buffer, value, ref _pos);
+            UnsafeMemory.WriteRaw(ref Utf8PinnableAddress, ref value[0], count, ref pos);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -34,13 +32,12 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteUtf8Verbatim(byte[] value)
         {
-            if (null == value) { return; }
             var count = value.Length;
             if (0u >= (uint)count) { return; }
 
             ref var pos = ref _pos;
             Ensure(pos, count);
-            UnsafeMemory.WriteRawBytes(_utf8Buffer, value, ref pos);
+            UnsafeMemory.WriteRawBytes(ref Utf8PinnableAddress, ref value[0], count, ref pos);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

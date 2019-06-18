@@ -209,13 +209,13 @@ namespace SpanJson.Tests
             Assert.Equal(@"before\u2029after", result.ToString());
 
             result = JsonEncodedText.Encode(text0085, StringEscapeHandling.Default);
-            Assert.Equal(text0085, result.ToString()); // TODO
+            Assert.Equal(@"before\u0085after", result.ToString());
 
             result = JsonEncodedText.Encode(text2028, StringEscapeHandling.Default);
-            Assert.Equal(text2028, result.ToString()); // TODO
+            Assert.Equal(@"before\u2028after", result.ToString());
 
             result = JsonEncodedText.Encode(text2029, StringEscapeHandling.Default);
-            Assert.Equal(text2029, result.ToString()); // TODO
+            Assert.Equal(@"before\u2029after", result.ToString());
         }
 
         [Fact]

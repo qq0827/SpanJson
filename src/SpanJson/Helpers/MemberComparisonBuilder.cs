@@ -14,14 +14,14 @@ namespace SpanJson.Helpers
     {
         private static int GetSymbolSize<TSymbol>() where TSymbol : struct
         {
-            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
-            {
-                return sizeof(char);
-            }
-
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
                 return sizeof(byte);
+            }
+
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                return sizeof(char);
             }
 
             throw ThrowHelper.GetNotSupportedException();
@@ -100,14 +100,14 @@ namespace SpanJson.Helpers
 
         private static int GetLength<TSymbol>(string name)
         {
-            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
-            {
-                return name.Length;
-            }
-
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
                 return TextEncodings.UTF8NoBOM.GetByteCount(name);
+            }
+
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                return name.Length;
             }
 
             throw ThrowHelper.GetNotSupportedException();
@@ -171,14 +171,14 @@ namespace SpanJson.Helpers
 
         private static (ulong Key, Type intType, int offset) CalculateKey<TSymbol>(string memberName, int index)
         {
-            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
-            {
-                return CalculateKeyUtf16(memberName, index);
-            }
-
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
                 return CalculateKeyUtf8(memberName, index);
+            }
+
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                return CalculateKeyUtf16(memberName, index);
             }
 
             throw ThrowHelper.GetNotSupportedException();

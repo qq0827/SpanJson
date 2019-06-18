@@ -147,17 +147,17 @@ namespace SpanJson
                 /// </summary>
                 private static Invoker BuildInvoker(Type type)
                 {
+                    if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+                    {
+                        return new Invoker(null, BuildToByteArraySerializer(type), null, BuildToByteArrayPoolSerializer(type), BuildDeserializer(type),
+                            null, null, BuildAsyncStreamSerializer(type), BuildAsyncStreamDeserializer(type));
+                    }
+
                     if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
                     {
                         return new Invoker(BuildToStringSerializer(type), null, BuildToCharArrayPoolSerializer(type), null, BuildDeserializer(type),
                             BuildAsyncTextWriterSerializer(type),
                             BuildAsyncTextReaderDeserializer(type), null, null);
-                    }
-
-                    if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
-                    {
-                        return new Invoker(null, BuildToByteArraySerializer(type), null, BuildToByteArrayPoolSerializer(type), BuildDeserializer(type),
-                            null, null, BuildAsyncStreamSerializer(type), BuildAsyncStreamDeserializer(type));
                     }
 
                     throw ThrowHelper.GetNotSupportedException();

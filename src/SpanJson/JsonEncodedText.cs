@@ -71,17 +71,24 @@ namespace SpanJson
         /// <exception cref="ArgumentException">
         /// Thrown when the specified value is too large or if it contains invalid UTF-16 characters.
         /// </exception>
-        public static JsonEncodedText Encode(ReadOnlySpan<char> value, StringEscapeHandling escapeHandling = StringEscapeHandling.Default)
+        public static JsonEncodedText Encode(in ReadOnlySpan<char> value, StringEscapeHandling escapeHandling = StringEscapeHandling.Default)
         {
             if (value.IsEmpty)
             {
                 return new JsonEncodedText(JsonHelpers.Empty<byte>());
             }
 
-            return TranscodeAndEncode(value, escapeHandling);
+            if (escapeHandling == StringEscapeHandling.EscapeNonAscii)
+            {
+                return TranscodeAndEncode(value, escapeHandling);
+            }
+            else
+            {
+                return new JsonEncodedText(EscapingHelper.EscapeString(value, escapeHandling));
+            }
         }
 
-        private static JsonEncodedText TranscodeAndEncode(ReadOnlySpan<char> value, StringEscapeHandling escapeHandling)
+        private static JsonEncodedText TranscodeAndEncode(in ReadOnlySpan<char> value, StringEscapeHandling escapeHandling)
         {
             //JsonWriterHelper.ValidateValue(value);
 
@@ -112,7 +119,7 @@ namespace SpanJson
         /// <exception cref="ArgumentException">
         /// Thrown when the specified value is too large or if it contains invalid UTF-8 bytes.
         /// </exception>
-        public static JsonEncodedText Encode(ReadOnlySpan<byte> utf8Value, StringEscapeHandling escapeHandling = StringEscapeHandling.Default)
+        public static JsonEncodedText Encode(in ReadOnlySpan<byte> utf8Value, StringEscapeHandling escapeHandling = StringEscapeHandling.Default)
         {
             if (utf8Value.IsEmpty)
             {
@@ -123,7 +130,7 @@ namespace SpanJson
             return EncodeHelper(utf8Value, escapeHandling);
         }
 
-        private static JsonEncodedText EncodeHelper(ReadOnlySpan<byte> utf8Value, StringEscapeHandling escapeHandling)
+        private static JsonEncodedText EncodeHelper(in ReadOnlySpan<byte> utf8Value, StringEscapeHandling escapeHandling)
         {
             int idx = EscapingHelper.NeedsEscaping(utf8Value, escapeHandling);
 
@@ -137,7 +144,7 @@ namespace SpanJson
             }
         }
 
-        private static byte[] GetEscapedString(ReadOnlySpan<byte> utf8Value, StringEscapeHandling escapeHandling, int firstEscapeIndexVal)
+        private static byte[] GetEscapedString(in ReadOnlySpan<byte> utf8Value, StringEscapeHandling escapeHandling, int firstEscapeIndexVal)
         {
             Debug.Assert(int.MaxValue / JsonSharedConstant.MaxExpansionFactorWhileEscaping >= utf8Value.Length);
             Debug.Assert(firstEscapeIndexVal >= 0 && firstEscapeIndexVal < utf8Value.Length);

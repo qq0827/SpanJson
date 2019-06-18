@@ -17,20 +17,6 @@ namespace SpanJson.Internal
     partial class UnsafeMemory32
     {
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void WriteRaw(byte[] destination, byte[] source, ref int idx)
-        {
-            var nCount = (uint)source.Length;
-            switch (nCount)
-            {
-                case 0u: return;
-<# for(var i = 1; i <= Max; i++) { #>
-                case <#= i #>u: WriteRaw<#= i #>(destination, source, ref idx); return;
-<# } #>
-                default: UnsafeMemory.WriteRawBytes(destination, source, ref idx); return;
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
         public static void WriteRaw(ref byte destination, ref byte source, int sourceBytesToCopy, ref int idx)
         {
             var nCount = (uint)sourceBytesToCopy;
@@ -43,86 +29,6 @@ namespace SpanJson.Internal
                 default: UnsafeMemory.WriteRawBytes(ref destination, ref source, sourceBytesToCopy, ref idx); return;
             }
         }
-
-<# for(var i = 2; i <= Max; i++) { #>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void WriteRaw<#= i #>(byte[] destination, byte[] source, ref int idx)
-        {
-            ref byte dest = ref Unsafe.Add(ref destination[0], (IntPtr)(uint)idx);
-            ref byte src = ref source[0];
-
-<#
-int index = 0;
-int count = i;
-int lengthToExamine = i;
-
-if (lengthToExamine >= 4)
-{
-    for (int j = 0; j < (count / 4); j++)
-    {
-        lengthToExamine -= 4;
-        if ((4 * j) > 0)
-        {
-#>
-            Unsafe.As<byte, int>(ref Unsafe.Add(ref dest, <#= 4 * j #>)) = Unsafe.As<byte, int>(ref Unsafe.Add(ref src, <#= 4 * j #>));
-<#
-        }
-        else
-        {
-#>
-            Unsafe.As<byte, int>(ref dest) = Unsafe.As<byte, int>(ref src);
-<#
-        }
-        index += 4;
-    }
-}
-
-if (lengthToExamine >= 2)
-{
-    count = lengthToExamine;
-    for (int j = 0; j < (count / 2); j++)
-    {
-        lengthToExamine -= 2;
-        if ((index + 2 * j) > 0)
-        {
-#>
-            Unsafe.As<byte, short>(ref Unsafe.Add(ref dest, <#= index + 2 * j #>)) = Unsafe.As<byte, short>(ref Unsafe.Add(ref src, <#= index + 2 * j #>));
-<#
-        }
-        else
-        {
-#>
-            Unsafe.As<byte, short>(ref dest) = Unsafe.As<byte, short>(ref src);
-<#
-        }
-        index += 2;
-    }
-}
-
-if (i % 2 != 0)
-{
-    for (int j = 0; j < lengthToExamine; j++)
-    {
-        if (index > 0)
-        {
-#>
-            Unsafe.AddByteOffset(ref dest, (IntPtr)<#= index #>) = Unsafe.AddByteOffset(ref src, (IntPtr)<#= index #>);
-<#
-        }
-        else
-        {
-#>
-            dest = src;
-<#
-        }
-        index += 1;
-    }
-}
-#>
-
-            idx += <#= i #>;
-        }
-<# } #>
 
 <# for(var i = 2; i <= Max; i++) { #>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

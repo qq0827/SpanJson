@@ -182,6 +182,35 @@ namespace SpanJson.Internal
             }
         }
 
+        public static string EscapeString(ReadOnlySpan<char> input, StringEscapeHandling escapeHandling = StringEscapeHandling.Default)
+        {
+            if (input.IsEmpty) { return string.Empty ; }
+
+            var firstEscapeIndex = NeedsEscaping(input, escapeHandling);
+            if ((uint)firstEscapeIndex > JsonSharedConstant.TooBigOrNegative) // -1
+            {
+                return input.ToString();
+            }
+            else
+            {
+                char[] tempArray = null;
+                var length = GetMaxEscapedLength(input.Length, firstEscapeIndex);
+                try
+                {
+                    Span<char> escapedName = (uint)length <= JsonSharedConstant.StackallocThreshold ?
+                        stackalloc char[length] :
+                        (tempArray = ArrayPool<char>.Shared.Rent(length));
+                    EscapeString(input, escapedName, escapeHandling, firstEscapeIndex, out int written);
+
+                    return escapedName.Slice(0, written).ToString();
+                }
+                finally
+                {
+                    if (tempArray != null) { ArrayPool<char>.Shared.Return(tempArray); }
+                }
+            }
+        }
+
         #endregion
 
         #region == EscapeChar ==

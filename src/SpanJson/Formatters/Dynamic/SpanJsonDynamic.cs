@@ -27,18 +27,18 @@ namespace SpanJson.Formatters.Dynamic
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override string ToString()
         {
-            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
-            {
-                var temp = Symbols;
-                var chars = Unsafe.As<TSymbol[], char[]>(ref temp);
-                return new string(chars);
-            }
-
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
                 var temp = Symbols;
                 var bytes = Unsafe.As<TSymbol[], byte[]>(ref temp);
                 return Encoding.UTF8.GetString(bytes);
+            }
+
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                var temp = Symbols;
+                var chars = Unsafe.As<TSymbol[], char[]>(ref temp);
+                return new string(chars);
             }
 
             throw ThrowHelper.GetNotSupportedException();
