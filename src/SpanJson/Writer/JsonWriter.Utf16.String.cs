@@ -11,7 +11,7 @@
         {
             ref var pos = ref _pos;
             var utf16Text = value.ToString();
-            Ensure(pos, utf16Text.Length + 3);
+            EnsureUnsafe(pos, utf16Text.Length + 3);
 
             ref char pinnableAddr = ref Utf16PinnableAddress;
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
@@ -61,7 +61,7 @@
             ref var pos = ref _pos;
             var valueLength = value.Length;
             uint nValueLength = (uint)valueLength;
-            Ensure(pos, valueLength + 12); // assume that a fully escaped char fits too (5 * 2 + two double quotes)
+            EnsureUnsafe(pos, valueLength + 12); // assume that a fully escaped char fits too (5 * 2 + two double quotes)
 
             ref char pinnableAddr = ref Utf16PinnableAddress;
 
@@ -100,7 +100,7 @@
             ref var pos = ref _pos;
             var valueLength = value.Length;
             uint nValueLength = (uint)valueLength;
-            Ensure(pos, valueLength + 12); // assume that a fully escaped char fits too (5 * 2 + two double quotes)
+            EnsureUnsafe(pos, valueLength + 12); // assume that a fully escaped char fits too (5 * 2 + two double quotes)
 
             ref char pinnableAddr = ref Utf16PinnableAddress;
 
@@ -139,7 +139,7 @@
             ref var pos = ref _pos;
             var valueLength = value.Length;
             uint nValueLength = (uint)valueLength;
-            Ensure(pos, valueLength + 12); // assume that a fully escaped char fits too (5 * 2 + two double quotes)
+            EnsureUnsafe(pos, valueLength + 12); // assume that a fully escaped char fits too (5 * 2 + two double quotes)
 
             ref char pinnableAddr = ref Utf16PinnableAddress;
 

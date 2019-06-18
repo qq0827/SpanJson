@@ -12,7 +12,7 @@
         {
             ref var pos = ref _pos;
             var utf8Text = value.EncodedUtf8Bytes;
-            Ensure(pos, utf8Text.Length + 3);
+            EnsureUnsafe(pos, utf8Text.Length + 3);
 
             ref byte pinnableAddr = ref Utf8PinnableAddress;
 
@@ -62,7 +62,7 @@
         public void WriteUtf8VerbatimNameSpan(in ReadOnlySpan<byte> value)
         {
             ref var pos = ref _pos;
-            Ensure(pos, value.Length + 3);
+            EnsureUnsafe(pos, value.Length + 3);
 
             ref byte pinnableAddr = ref Utf8PinnableAddress;
 

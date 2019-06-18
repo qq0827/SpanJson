@@ -9,7 +9,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(uint a)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 4);
+            EnsureUnsafe(pos, 4);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -21,7 +21,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(uint a, byte b)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 5);
+            EnsureUnsafe(pos, 5);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -34,7 +34,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(uint a, ushort b)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 6);
+            EnsureUnsafe(pos, 6);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -47,7 +47,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(uint a, ushort b, byte c)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 7);
+            EnsureUnsafe(pos, 7);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -61,7 +61,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(ulong a)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 8);
+            EnsureUnsafe(pos, 8);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -73,7 +73,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(ulong a, byte b)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 9);
+            EnsureUnsafe(pos, 9);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -86,7 +86,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(ulong a, ushort b)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 10);
+            EnsureUnsafe(pos, 10);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -99,7 +99,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(ulong a, ushort b, byte c)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 11);
+            EnsureUnsafe(pos, 11);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -113,7 +113,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(ulong a, uint b)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 12);
+            EnsureUnsafe(pos, 12);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -126,7 +126,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(ulong a, uint b, byte c)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 13);
+            EnsureUnsafe(pos, 13);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -140,7 +140,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(ulong a, uint b, ushort c)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 14);
+            EnsureUnsafe(pos, 14);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -154,7 +154,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(ulong a, uint b, ushort c, byte d)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 15);
+            EnsureUnsafe(pos, 15);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -169,7 +169,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(ulong a, ulong b)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 16);
+            EnsureUnsafe(pos, 16);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -182,7 +182,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(ulong a, ulong b, byte c)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 17);
+            EnsureUnsafe(pos, 17);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -196,7 +196,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(ulong a, ulong b, ushort c)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 18);
+            EnsureUnsafe(pos, 18);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -210,7 +210,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(ulong a, ulong b, ushort c, byte d)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 19);
+            EnsureUnsafe(pos, 19);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -225,7 +225,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(ulong a, ulong b, uint c)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 20);
+            EnsureUnsafe(pos, 20);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -239,7 +239,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(ulong a, ulong b, uint c, byte d)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 21);
+            EnsureUnsafe(pos, 21);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -254,7 +254,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(ulong a, ulong b, uint c, ushort d)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 22);
+            EnsureUnsafe(pos, 22);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -269,7 +269,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(ulong a, ulong b, uint c, ushort d, byte e)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 23);
+            EnsureUnsafe(pos, 23);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -285,7 +285,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(ulong a, ulong b, ulong c)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 24);
+            EnsureUnsafe(pos, 24);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -299,7 +299,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(ulong a, ulong b, ulong c, byte d)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 25);
+            EnsureUnsafe(pos, 25);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -314,7 +314,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(ulong a, ulong b, ulong c, ushort d)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 26);
+            EnsureUnsafe(pos, 26);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -329,7 +329,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(ulong a, ulong b, ulong c, ushort d, byte e)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 27);
+            EnsureUnsafe(pos, 27);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -345,7 +345,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(ulong a, ulong b, ulong c, uint d)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 28);
+            EnsureUnsafe(pos, 28);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -360,7 +360,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(ulong a, ulong b, ulong c, uint d, byte e)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 29);
+            EnsureUnsafe(pos, 29);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -376,7 +376,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(ulong a, ulong b, ulong c, uint d, ushort e)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 30);
+            EnsureUnsafe(pos, 30);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -392,7 +392,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(ulong a, ulong b, ulong c, uint d, ushort e, byte f)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 31);
+            EnsureUnsafe(pos, 31);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;
@@ -409,7 +409,7 @@ namespace SpanJson
         public void WriteUtf8Verbatim(ulong a, ulong b, ulong c, ulong d)
         {
             ref var pos = ref _pos;
-            Ensure(pos, 32);
+            EnsureUnsafe(pos, 32);
 
             ref var bStart = ref Utf8PinnableAddress;
             IntPtr offset = (IntPtr)pos;

@@ -139,7 +139,7 @@
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Ensure(int alreadyWritten, int sizeHintt)
+        public void EnsureUnsafe(int alreadyWritten, int sizeHintt)
         {
             if ((uint)sizeHintt >= (uint)(_capacity - alreadyWritten)) { CheckAndResizeBuffer(alreadyWritten, sizeHintt); }
         }

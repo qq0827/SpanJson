@@ -42,7 +42,7 @@
             if (value < 0L)
             {
                 ref var pos = ref _pos;
-                Ensure(pos, 1);
+                EnsureUnsafe(pos, 1);
 
                 ref byte pinnableAddr = ref Utf8PinnableAddress;
                 Unsafe.AddByteOffset(ref pinnableAddr, (IntPtr)pos++) = (byte)'-';
@@ -64,7 +64,7 @@
 
             if (value < 10ul)
             {
-                Ensure(pos, 1);
+                EnsureUnsafe(pos, 1);
 
                 Unsafe.AddByteOffset(ref Utf8PinnableAddress, (IntPtr)pos++) = (byte)('0' + value);
                 return;
@@ -72,7 +72,7 @@
 
             var digits = FormatterUtils.CountDigits(value);
 
-            Ensure(pos, digits);
+            EnsureUnsafe(pos, digits);
             ref byte pinnableAddr = ref Utf8PinnableAddress;
 
             var offset = (IntPtr)pos;
@@ -129,7 +129,7 @@
             var count = DoubleToStringConverter.GetBytes(ref buffer, 0, value);
 
             ref var pos = ref _pos;
-            Ensure(pos, count);
+            EnsureUnsafe(pos, count);
             UnsafeMemory.WriteRaw(ref Utf8PinnableAddress, ref buffer[0], count, ref pos);
         }
 
@@ -148,7 +148,7 @@
             var count = DoubleToStringConverter.GetBytes(ref buffer, 0, value);
 
             ref var pos = ref _pos;
-            Ensure(pos, count);
+            EnsureUnsafe(pos, count);
             UnsafeMemory.WriteRaw(ref Utf8PinnableAddress, ref buffer[0], count, ref pos);
         }
 
@@ -159,7 +159,7 @@
         public void WriteUtf8Decimal(decimal value)
         {
             ref var pos = ref _pos;
-            Ensure(pos, JsonSharedConstant.MaximumFormatDecimalLength);
+            EnsureUnsafe(pos, JsonSharedConstant.MaximumFormatDecimalLength);
             var result = Utf8Formatter.TryFormat(value, Utf8Span, out int bytesWritten);
             Debug.Assert(result);
             pos += bytesWritten;
@@ -179,7 +179,7 @@
         {
             ref var pos = ref _pos;
             const int size = 8; // 1-6 chars + two JsonUtf8Constant.DoubleQuote
-            Ensure(pos, size);
+            EnsureUnsafe(pos, size);
 
             ref byte pinnableAddr = ref Utf8PinnableAddress;
 
@@ -215,7 +215,7 @@
         {
             ref var pos = ref _pos;
             const int dtSize = JsonSharedConstant.MaxDateTimeLength; // Form o + two JsonUtf8Constant.DoubleQuote
-            Ensure(pos, dtSize);
+            EnsureUnsafe(pos, dtSize);
 
             ref byte pinnableAddr = ref Utf8PinnableAddress;
 
@@ -233,7 +233,7 @@
         {
             ref var pos = ref _pos;
             const int dtSize = JsonSharedConstant.MaxDateTimeOffsetLength; // Form o + two JsonUtf8Constant.DoubleQuote
-            Ensure(pos, dtSize);
+            EnsureUnsafe(pos, dtSize);
 
             ref byte pinnableAddr = ref Utf8PinnableAddress;
 
@@ -251,7 +251,7 @@
         {
             ref var pos = ref _pos;
             const int tsSize = JsonSharedConstant.MaxTimeSpanLength; // Form o + two JsonUtf8Constant.DoubleQuote
-            Ensure(pos, tsSize);
+            EnsureUnsafe(pos, tsSize);
 
             ref byte pinnableAddr = ref Utf8PinnableAddress;
 
@@ -269,7 +269,7 @@
         {
             ref var pos = ref _pos;
             const int guidSize = JsonSharedConstant.MaxGuidLength; // Format D + two JsonUtf8Constant.DoubleQuote;
-            Ensure(pos, guidSize);
+            EnsureUnsafe(pos, guidSize);
 
             ref byte pinnableAddr = ref Utf8PinnableAddress;
 

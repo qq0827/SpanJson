@@ -16,7 +16,7 @@
         public void WriteUtf16BeginObject()
         {
             ref var pos = ref _pos;
-            Ensure(pos, 1);
+            EnsureUnsafe(pos, 1);
 
             Unsafe.Add(ref Utf16PinnableAddress, pos++) = JsonUtf16Constant.BeginObject;
         }
@@ -25,7 +25,7 @@
         public void WriteUtf16EndObject()
         {
             ref var pos = ref _pos;
-            Ensure(pos, 1);
+            EnsureUnsafe(pos, 1);
 
             Unsafe.Add(ref Utf16PinnableAddress, pos++) = JsonUtf16Constant.EndObject;
         }
@@ -34,7 +34,7 @@
         public void WriteUtf16BeginArray()
         {
             ref var pos = ref _pos;
-            Ensure(pos, 1);
+            EnsureUnsafe(pos, 1);
 
             Unsafe.Add(ref Utf16PinnableAddress, pos++) = JsonUtf16Constant.BeginArray;
         }
@@ -44,7 +44,7 @@
         public void WriteUtf16EndArray()
         {
             ref var pos = ref _pos;
-            Ensure(pos, 1);
+            EnsureUnsafe(pos, 1);
 
             Unsafe.Add(ref Utf16PinnableAddress, pos++) = JsonUtf16Constant.EndArray;
         }
@@ -53,7 +53,7 @@
         public void WriteUtf16ValueSeparator()
         {
             ref var pos = ref _pos;
-            Ensure(pos, 1);
+            EnsureUnsafe(pos, 1);
 
             Unsafe.Add(ref Utf16PinnableAddress, pos++) = JsonUtf16Constant.ValueSeparator;
         }
@@ -64,7 +64,7 @@
             const int newLineLength = 2;
 
             ref var pos = ref _pos;
-            Ensure(pos, newLineLength);
+            EnsureUnsafe(pos, newLineLength);
 
             ref char pinnableAddr = ref Utf16PinnableAddress;
             Unsafe.Add(ref pinnableAddr, pos) = JsonUtf16Constant.CarriageReturn;
@@ -76,7 +76,7 @@
         public void WriteUtf16Indentation(int count)
         {
             ref var pos = ref _pos;
-            Ensure(pos, count);
+            EnsureUnsafe(pos, count);
 
             ref char pinnableAddr = ref Unsafe.Add(ref Utf16PinnableAddress, pos);
             for (var i = 0; i < count; i++)
@@ -90,7 +90,7 @@
         public void WriteUtf16DoubleQuote()
         {
             ref var pos = ref _pos;
-            Ensure(pos, 1);
+            EnsureUnsafe(pos, 1);
 
             WriteUtf16DoubleQuote(ref Utf16PinnableAddress, ref pos);
         }
@@ -105,7 +105,7 @@
         public void WriteUtf16NameSeparator()
         {
             ref var pos = ref _pos;
-            Ensure(pos, 1);
+            EnsureUnsafe(pos, 1);
 
             WriteUtf16NameSeparator(ref Utf16PinnableAddress, ref pos);
         }

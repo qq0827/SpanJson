@@ -10,7 +10,7 @@
             const int falseLength = 5;
 
             ref var pos = ref _pos;
-            Ensure(pos, falseLength);
+            EnsureUnsafe(pos, falseLength);
 
             ref char pinnableAddr = ref Utf16PinnableAddress;
             if (value)
@@ -38,7 +38,7 @@
             const int nullLength = 4;
 
             ref var pos = ref _pos;
-            Ensure(pos, nullLength);
+            EnsureUnsafe(pos, nullLength);
 
             ref char pinnableAddr = ref Utf16PinnableAddress;
             Unsafe.Add(ref pinnableAddr, pos + 3) = 'l';

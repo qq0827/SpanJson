@@ -71,7 +71,7 @@
             const int newLineLength = 2;
 
             ref var pos = ref _pos;
-            Ensure(pos, newLineLength);
+            EnsureUnsafe(pos, newLineLength);
 
             ref byte pinnableAddr = ref Utf8PinnableAddress;
             var offset = (IntPtr)pos;
@@ -84,7 +84,7 @@
         public void WriteUtf8Indentation(int count)
         {
             ref var pos = ref _pos;
-            Ensure(pos, count);
+            EnsureUnsafe(pos, count);
 
             ref byte pinnableAddr = ref Unsafe.AddByteOffset(ref Utf8PinnableAddress, (IntPtr)pos);
             Unsafe.InitBlockUnaligned(ref pinnableAddr, JsonUtf8Constant.Space, unchecked((uint)count));
@@ -95,7 +95,7 @@
         public void WriteUtf8DoubleQuote()
         {
             ref var pos = ref _pos;
-            Ensure(pos, 1);
+            EnsureUnsafe(pos, 1);
 
             WriteUtf8DoubleQuote(ref Utf8PinnableAddress, ref pos);
         }
@@ -111,7 +111,7 @@
         public void WriteUtf8NameSeparator()
         {
             ref var pos = ref _pos;
-            Ensure(pos, 1);
+            EnsureUnsafe(pos, 1);
 
             WriteUtf8NameSeparator(ref Utf8PinnableAddress, ref pos);
         }

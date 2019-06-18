@@ -14,7 +14,7 @@
         public void WriteUtf16Verbatim(in ReadOnlySpan<char> value)
         {
             ref var pos = ref _pos;
-            Ensure(pos, value.Length);
+            EnsureUnsafe(pos, value.Length);
 
             value.CopyTo(Utf16Span);
             pos += value.Length;

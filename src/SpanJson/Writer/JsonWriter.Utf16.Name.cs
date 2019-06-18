@@ -10,7 +10,7 @@
         {
             ref var pos = ref _pos;
             var utf16Text = value.ToString();
-            Ensure(pos, utf16Text.Length + 3);
+            EnsureUnsafe(pos, utf16Text.Length + 3);
 
             ref char pinnableAddr = ref Utf16PinnableAddress;
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
@@ -60,7 +60,7 @@
         public void WriteUtf16VerbatimNameSpan(in ReadOnlySpan<char> value)
         {
             ref var pos = ref _pos;
-            Ensure(pos, value.Length + 3);
+            EnsureUnsafe(pos, value.Length + 3);
 
             ref char pinnableAddr = ref Utf16PinnableAddress;
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);

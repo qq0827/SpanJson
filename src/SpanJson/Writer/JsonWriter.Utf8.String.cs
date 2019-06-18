@@ -11,7 +11,7 @@
         {
             ref var pos = ref _pos;
             var utf8Text = value.EncodedUtf8Bytes;
-            Ensure(pos, utf8Text.Length + 3);
+            EnsureUnsafe(pos, utf8Text.Length + 3);
 
             ref byte pinnableAddr = ref Utf8PinnableAddress;
 
@@ -66,7 +66,7 @@
             ref var pos = ref _pos;
             var valueLength = value.Length;
             uint nValueLength = (uint)valueLength;
-            Ensure(pos, TextEncodings.UTF8NoBOM.GetMaxByteCount(valueLength) + 12); // assume that a fully escaped char fits too + 2 double quotes
+            EnsureUnsafe(pos, TextEncodings.UTF8NoBOM.GetMaxByteCount(valueLength) + 12); // assume that a fully escaped char fits too + 2 double quotes
 
             ref byte pinnableAddr = ref Utf8PinnableAddress;
 
@@ -115,7 +115,7 @@
             ref var pos = ref _pos;
             var valueLength = value.Length;
             uint nValueLength = (uint)valueLength;
-            Ensure(pos, TextEncodings.UTF8NoBOM.GetMaxByteCount(valueLength) + 12); // assume that a fully escaped char fits too + 2 double quotes
+            EnsureUnsafe(pos, TextEncodings.UTF8NoBOM.GetMaxByteCount(valueLength) + 12); // assume that a fully escaped char fits too + 2 double quotes
 
             ref byte pinnableAddr = ref Utf8PinnableAddress;
 
@@ -164,7 +164,7 @@
             ref var pos = ref _pos;
             var valueLength = value.Length;
             uint nValueLength = (uint)valueLength;
-            Ensure(pos, TextEncodings.UTF8NoBOM.GetMaxByteCount(valueLength) + 12); // assume that a fully escaped char fits too + 2 double quotes
+            EnsureUnsafe(pos, TextEncodings.UTF8NoBOM.GetMaxByteCount(valueLength) + 12); // assume that a fully escaped char fits too + 2 double quotes
 
             ref byte pinnableAddr = ref Utf8PinnableAddress;
 

@@ -47,7 +47,7 @@
             if (value < 0)
             {
                 ref var pos = ref _pos;
-                Ensure(pos, 1);
+                EnsureUnsafe(pos, 1);
 
                 ref char pinnableAddr = ref Utf16PinnableAddress;
                 Unsafe.Add(ref pinnableAddr, pos++) = '-';
@@ -68,7 +68,7 @@
             ref var pos = ref _pos;
             if (value < 10ul)
             {
-                Ensure(pos, 1);
+                EnsureUnsafe(pos, 1);
 
                 ref char pinnableAddr0 = ref Utf16PinnableAddress;
                 Unsafe.Add(ref pinnableAddr0, pos++) = (char)('0' + value);
@@ -77,7 +77,7 @@
 
             var digits = FormatterUtils.CountDigits(value);
 
-            Ensure(pos, digits);
+            EnsureUnsafe(pos, digits);
             ref char pinnableAddr = ref Utf16PinnableAddress;
 
             for (var i = digits - 1; i >= 0; i--)
@@ -133,7 +133,7 @@
 #if NETSTANDARD2_0 || NET471 || NET451
             var buffer = TinyMemoryPool<byte>.GetBuffer();
             var count = DoubleToStringConverter.GetBytes(ref buffer, 0, value);
-            Ensure(pos, count);
+            EnsureUnsafe(pos, count);
             ref char pinnableAddr = ref Utf16PinnableAddress;
             ref byte utf8Source = ref buffer[0];
             var offset = (IntPtr)0;
@@ -143,7 +143,7 @@
             }
             pos += count;
 #else
-            Ensure(pos, JsonSharedConstant.MaximumFormatDoubleLength);
+            EnsureUnsafe(pos, JsonSharedConstant.MaximumFormatDoubleLength);
             var result = value.TryFormat(Utf16Span, out var written, provider: CultureInfo.InvariantCulture);
             if (result)
             {
@@ -169,7 +169,7 @@
 #if NETSTANDARD2_0 || NET471 || NET451
             var buffer = TinyMemoryPool<byte>.GetBuffer();
             var count = DoubleToStringConverter.GetBytes(ref buffer, 0, value);
-            Ensure(pos, count);
+            EnsureUnsafe(pos, count);
             ref char pinnableAddr = ref Utf16PinnableAddress;
             ref byte utf8Source = ref buffer[0];
             var offset = (IntPtr)0;
@@ -179,7 +179,7 @@
             }
             pos += count;
 #else
-            Ensure(pos, JsonSharedConstant.MaximumFormatDoubleLength);
+            EnsureUnsafe(pos, JsonSharedConstant.MaximumFormatDoubleLength);
             var result = value.TryFormat(Utf16Span, out var written, provider: CultureInfo.InvariantCulture);
             if (result)
             {
@@ -198,7 +198,7 @@
             string utf16Text = value.ToString(formatString, CultureInfo.InvariantCulture);
 
             int length = utf16Text.Length;
-            writer.Ensure(pos, length);
+            writer.EnsureUnsafe(pos, length);
             utf16Text.AsSpan().CopyTo(writer.Utf16Span);
             pos += length;
         }
@@ -213,10 +213,10 @@
 #if NETSTANDARD2_0 || NET471 || NET451
             var utf16Text = value.ToString("G", CultureInfo.InvariantCulture);
             var written = utf16Text.Length;
-            Ensure(pos, written);
+            EnsureUnsafe(pos, written);
             utf16Text.AsSpan().CopyTo(Utf16Span);
 #else
-            Ensure(pos, JsonSharedConstant.MaximumFormatDecimalLength);
+            EnsureUnsafe(pos, JsonSharedConstant.MaximumFormatDecimalLength);
             var result = value.TryFormat(Utf16Span, out var written, provider: CultureInfo.InvariantCulture);
             Debug.Assert(result);
 #endif
@@ -237,7 +237,7 @@
         {
             ref var pos = ref _pos;
             const int size = 8; // 1-6 chars + two JsonUtf16Constant.DoubleQuote
-            Ensure(pos, size);
+            EnsureUnsafe(pos, size);
             ref char pinnableAddr = ref Utf16PinnableAddress;
 
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
@@ -260,7 +260,7 @@
         {
             ref var pos = ref _pos;
             const int dtSize = JsonSharedConstant.MaxDateTimeLength; // Form o + two JsonUtf16Constant.DoubleQuote
-            Ensure(pos, dtSize);
+            EnsureUnsafe(pos, dtSize);
             ref char pinnableAddr = ref Utf16PinnableAddress;
 
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
@@ -277,7 +277,7 @@
         {
             ref var pos = ref _pos;
             const int dtSize = JsonSharedConstant.MaxDateTimeOffsetLength; // Form o + two JsonUtf16Constant.DoubleQuote
-            Ensure(pos, dtSize);
+            EnsureUnsafe(pos, dtSize);
             ref char pinnableAddr = ref Utf16PinnableAddress;
 
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
@@ -294,7 +294,7 @@
         {
             ref var pos = ref _pos;
             const int tsSize = JsonSharedConstant.MaxTimeSpanLength; // Form c + two JsonUtf16Constant.DoubleQuote
-            Ensure(pos, tsSize);
+            EnsureUnsafe(pos, tsSize);
             ref char pinnableAddr = ref Utf16PinnableAddress;
 
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
@@ -320,7 +320,7 @@
         {
             ref var pos = ref _pos;
             const int guidSize = JsonSharedConstant.MaxGuidLength; // Format D + two JsonUtf16Constant.DoubleQuote;
-            Ensure(pos, guidSize);
+            EnsureUnsafe(pos, guidSize);
             ref char pinnableAddr = ref Utf16PinnableAddress;
 
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
@@ -337,7 +337,7 @@
         {
             const int versionLength = JsonSharedConstant.MaxVersionLength;
             ref var pos = ref _pos;
-            Ensure(pos, versionLength);
+            EnsureUnsafe(pos, versionLength);
 
             ref char pinnableAddr = ref Utf16PinnableAddress;
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);

@@ -14,7 +14,7 @@
             if (0u >= (uint)count) { return; }
 
             ref var pos = ref _pos;
-            Ensure(pos, count);
+            EnsureUnsafe(pos, count);
             UnsafeMemory.WriteRaw(ref Utf8PinnableAddress, ref value[0], count, ref pos);
         }
 
@@ -25,7 +25,7 @@
             if (0u >= (uint)count) { return; }
 
             ref var pos = ref _pos;
-            Ensure(pos, count);
+            EnsureUnsafe(pos, count);
             UnsafeMemory.WriteRaw(ref Utf8PinnableAddress, ref MemoryMarshal.GetReference(value), count, ref pos);
         }
 
@@ -36,7 +36,7 @@
             if (0u >= (uint)count) { return; }
 
             ref var pos = ref _pos;
-            Ensure(pos, count);
+            EnsureUnsafe(pos, count);
             UnsafeMemory.WriteRawBytes(ref Utf8PinnableAddress, ref value[0], count, ref pos);
         }
 
@@ -47,7 +47,7 @@
             if (0u >= (uint)count) { return; }
 
             ref var pos = ref _pos;
-            Ensure(pos, count);
+            EnsureUnsafe(pos, count);
             UnsafeMemory.WriteRawBytes(ref Utf8PinnableAddress, ref MemoryMarshal.GetReference(value), count, ref pos);
         }
     }
