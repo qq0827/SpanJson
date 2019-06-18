@@ -10,6 +10,7 @@ namespace SpanJson
     /// <summary>The convention for this enum is using the argument name as the enum name</summary>
     internal enum ExceptionArgument
     {
+        count,
         input,
         value,
         source,
@@ -165,6 +166,21 @@ namespace SpanJson
 
         #endregion
 
+        #region -- ArgumentOutOfRangeException --
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static void ThrowArgumentOutOfRangeException_Nonnegative(ExceptionArgument argument)
+        {
+            throw GetException();
+            ArgumentOutOfRangeException GetException()
+            {
+                var argumentName = GetArgumentName(argument);
+                return new ArgumentOutOfRangeException(argumentName, $"{argumentName} should be non negative.");
+            }
+        }
+
+        #endregion
+
         #region -- InvalidOperationException --
 
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -244,6 +260,16 @@ namespace SpanJson
             InvalidOperationException GetException()
             {
                 return new InvalidOperationException("Cannot read incomplete UTF-16 JSON text as string with missing low surrogate.");
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void ThrowInvalidOperationException_AdvancedTooFar(int capacity)
+        {
+            throw GetException();
+            InvalidOperationException GetException()
+            {
+                return new InvalidOperationException($"Cannot advance past the end of the buffer, which has a size of {capacity}.");
             }
         }
 

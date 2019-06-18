@@ -144,6 +144,15 @@
             if ((uint)sizeHintt >= (uint)(_capacity - alreadyWritten)) { CheckAndResizeBuffer(alreadyWritten, sizeHintt); }
         }
 
+        public void Advance(int count)
+        {
+            if (count < 0) { ThrowHelper.ThrowArgumentOutOfRangeException_Nonnegative(ExceptionArgument.count); }
+
+            if (_pos > _capacity - count) { ThrowHelper.ThrowInvalidOperationException_AdvancedTooFar(_capacity); }
+
+            _pos += count;
+        }
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void CheckAndResizeBuffer(int alreadyWritten, int sizeHint)
         {
