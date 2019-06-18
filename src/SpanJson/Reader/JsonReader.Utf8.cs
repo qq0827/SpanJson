@@ -265,7 +265,7 @@ namespace SpanJson
         private DateTime ParseUtf8DateTimeAllocating(in ReadOnlySpan<byte> input, int backslashIdx)
         {
             byte[] unescapedArray = null;
-            Span<byte> utf8Unescaped = input.Length <= JsonConstants.StackallocThreshold ?
+            Span<byte> utf8Unescaped = input.Length <= JsonSharedConstant.StackallocThreshold ?
                 stackalloc byte[input.Length] :
                 (unescapedArray = ArrayPool<byte>.Shared.Rent(input.Length));
             try
@@ -308,7 +308,7 @@ namespace SpanJson
         private DateTimeOffset ParseUtf8DateTimeOffsetAllocating(in ReadOnlySpan<byte> input, int backslashIdx)
         {
             byte[] unescapedArray = null;
-            Span<byte> utf8Unescaped = input.Length <= JsonConstants.StackallocThreshold ?
+            Span<byte> utf8Unescaped = input.Length <= JsonSharedConstant.StackallocThreshold ?
                 stackalloc byte[input.Length] :
                 (unescapedArray = ArrayPool<byte>.Shared.Rent(input.Length));
             try
@@ -351,7 +351,7 @@ namespace SpanJson
         private TimeSpan ParseUtf8TimeSpanAllocating(in ReadOnlySpan<byte> input, int backslashIdx)
         {
             byte[] unescapedArray = null;
-            Span<byte> utf8Unescaped = input.Length <= JsonConstants.StackallocThreshold ?
+            Span<byte> utf8Unescaped = input.Length <= JsonSharedConstant.StackallocThreshold ?
                 stackalloc byte[input.Length] :
                 (unescapedArray = ArrayPool<byte>.Shared.Rent(input.Length));
             try
@@ -394,7 +394,7 @@ namespace SpanJson
         private Guid ParseUtf8GuidAllocating(in ReadOnlySpan<byte> input, int backslashIdx)
         {
             byte[] unescapedArray = null;
-            Span<byte> utf8Unescaped = input.Length <= JsonConstants.StackallocThreshold ?
+            Span<byte> utf8Unescaped = input.Length <= JsonSharedConstant.StackallocThreshold ?
                 stackalloc byte[input.Length] :
                 (unescapedArray = ArrayPool<byte>.Shared.Rent(input.Length));
             try

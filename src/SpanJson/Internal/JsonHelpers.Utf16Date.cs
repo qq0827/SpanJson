@@ -83,7 +83,7 @@ namespace SpanJson.Internal
                 year = (int)(digit1 * 1000 + digit2 * 100 + digit3 * 10 + digit4);
             }
 
-            if (source[4] != JsonConstants.HyphenChar)
+            if (source[4] != JsonUtf16Constant.Hyphen)
             {
                 goto ReturnFalse;
             }
@@ -93,7 +93,7 @@ namespace SpanJson.Internal
                 goto ReturnFalse;
             }
 
-            if (source[7] != JsonConstants.HyphenChar)
+            if (source[7] != JsonUtf16Constant.Hyphen)
             {
                 goto ReturnFalse;
             }
@@ -121,11 +121,11 @@ namespace SpanJson.Internal
 
             char curChar = source[10];
 
-            if (curChar == JsonConstants.UtcOffsetTokenChar || curChar == JsonConstants.PlusChar || curChar == JsonConstants.HyphenChar)
+            if (curChar == JsonUtf16Constant.UtcOffsetToken || curChar == JsonUtf16Constant.Plus || curChar == JsonUtf16Constant.Hyphen)
             {
                 goto ReturnFalse;
             }
-            else if (curChar != JsonConstants.TimePrefixChar)
+            else if (curChar != JsonUtf16Constant.TimePrefix)
             {
                 goto FinishedParsing;
             }
@@ -141,7 +141,7 @@ namespace SpanJson.Internal
                 goto ReturnFalse;
             }
 
-            if (source[13] != JsonConstants.ColonChar)
+            if (source[13] != JsonUtf16Constant.Colon)
             {
                 goto ReturnFalse;
             }
@@ -163,19 +163,19 @@ namespace SpanJson.Internal
 
             int sourceIndex = 16;
 
-            if (curChar == JsonConstants.UtcOffsetTokenChar)
+            if (curChar == JsonUtf16Constant.UtcOffsetToken)
             {
                 bytesConsumed++;
-                offsetToken = JsonConstants.UtcOffsetTokenChar;
+                offsetToken = JsonUtf16Constant.UtcOffsetToken;
                 goto FinishedParsing;
             }
-            else if (curChar == JsonConstants.PlusChar || curChar == JsonConstants.HyphenChar)
+            else if (curChar == JsonUtf16Constant.Plus || curChar == JsonUtf16Constant.Hyphen)
             {
                 offsetToken = curChar;
                 sourceIndex++;
                 goto ParseOffset;
             }
-            else if (curChar != JsonConstants.ColonChar)
+            else if (curChar != JsonUtf16Constant.Colon)
             {
                 goto FinishedParsing;
             }
@@ -196,19 +196,19 @@ namespace SpanJson.Internal
             curChar = source[19];
             sourceIndex = 19;
 
-            if (curChar == JsonConstants.UtcOffsetTokenChar)
+            if (curChar == JsonUtf16Constant.UtcOffsetToken)
             {
                 bytesConsumed++;
-                offsetToken = JsonConstants.UtcOffsetTokenChar;
+                offsetToken = JsonUtf16Constant.UtcOffsetToken;
                 goto FinishedParsing;
             }
-            else if (curChar == JsonConstants.PlusChar || curChar == JsonConstants.HyphenChar)
+            else if (curChar == JsonUtf16Constant.Plus || curChar == JsonUtf16Constant.Hyphen)
             {
                 offsetToken = curChar;
                 sourceIndex++;
                 goto ParseOffset;
             }
-            else if (curChar != JsonConstants.PeriodChar)
+            else if (curChar != JsonUtf16Constant.Period)
             {
                 goto FinishedParsing;
             }
@@ -224,11 +224,11 @@ namespace SpanJson.Internal
             // Parse fraction. This value should never be greater than 9_999_999
             {
                 int numDigitsRead = 0;
-                int fractionEnd = Math.Min(sourceIndex + JsonConstants.DateTimeParseNumFractionDigits, source.Length);
+                int fractionEnd = Math.Min(sourceIndex + JsonSharedConstant.DateTimeParseNumFractionDigits, source.Length);
 
                 while (sourceIndex < fractionEnd && IsDigit(curChar = source[sourceIndex]))
                 {
-                    if (numDigitsRead < JsonConstants.DateTimeNumFractionDigits)
+                    if (numDigitsRead < JsonSharedConstant.DateTimeNumFractionDigits)
                     {
                         fraction = (fraction * 10) + (int)(curChar - (uint)'0');
                         numDigitsRead++;
@@ -239,7 +239,7 @@ namespace SpanJson.Internal
 
                 if (fraction != 0)
                 {
-                    while (numDigitsRead < JsonConstants.DateTimeNumFractionDigits)
+                    while (numDigitsRead < JsonSharedConstant.DateTimeNumFractionDigits)
                     {
                         fraction *= 10;
                         numDigitsRead++;
@@ -257,13 +257,13 @@ namespace SpanJson.Internal
 
             curChar = source[sourceIndex];
 
-            if (curChar == JsonConstants.UtcOffsetTokenChar)
+            if (curChar == JsonUtf16Constant.UtcOffsetToken)
             {
                 bytesConsumed++;
-                offsetToken = JsonConstants.UtcOffsetTokenChar;
+                offsetToken = JsonUtf16Constant.UtcOffsetToken;
                 goto FinishedParsing;
             }
-            else if (curChar == JsonConstants.PlusChar || curChar == JsonConstants.HyphenChar)
+            else if (curChar == JsonUtf16Constant.Plus || curChar == JsonUtf16Constant.Hyphen)
             {
                 offsetToken = source[sourceIndex++];
                 goto ParseOffset;
@@ -298,7 +298,7 @@ namespace SpanJson.Internal
             }
 
             // Source should be of format YYYY-MM-DDThh:mm:ss.s+|-hh:mm
-            if (source[sourceIndex] == JsonConstants.ColonChar)
+            if (source[sourceIndex] == JsonUtf16Constant.Colon)
             {
                 sourceIndex++;
 
@@ -319,7 +319,7 @@ namespace SpanJson.Internal
             bytesConsumed = sourceIndex;
 
         FinishedParsing:
-            if ((offsetToken != JsonConstants.UtcOffsetTokenChar) && (offsetToken != JsonConstants.PlusChar) && (offsetToken != JsonConstants.HyphenChar))
+            if ((offsetToken != JsonUtf16Constant.UtcOffsetToken) && (offsetToken != JsonUtf16Constant.Plus) && (offsetToken != JsonUtf16Constant.Hyphen))
             {
                 if (!TryCreateDateTimeOffsetInterpretingDataAsLocalTime(year: year, month: month, day: day, hour: hour, minute: minute, second: second, fraction: fraction, out value))
                 {
@@ -330,7 +330,7 @@ namespace SpanJson.Internal
                 return true;
             }
 
-            if (offsetToken == JsonConstants.UtcOffsetTokenChar)
+            if (offsetToken == JsonUtf16Constant.UtcOffsetToken)
             {
                 // Same as specifying an offset of "+00:00", except that DateTime's Kind gets set to UTC rather than Local
                 if (!TryCreateDateTimeOffset(year: year, month: month, day: day, hour: hour, minute: minute, second: second, fraction: fraction, offsetNegative: false, offsetHours: 0, offsetMinutes: 0, out value))
@@ -342,9 +342,9 @@ namespace SpanJson.Internal
                 return true;
             }
 
-            Debug.Assert(offsetToken == JsonConstants.Plus || offsetToken == JsonConstants.HyphenChar);
+            Debug.Assert(offsetToken == JsonUtf16Constant.Plus || offsetToken == JsonUtf16Constant.Hyphen);
 
-            if (!TryCreateDateTimeOffset(year: year, month: month, day: day, hour: hour, minute: minute, second: second, fraction: fraction, offsetNegative: offsetToken == JsonConstants.HyphenChar, offsetHours: offsetHours, offsetMinutes: offsetMinutes, out value))
+            if (!TryCreateDateTimeOffset(year: year, month: month, day: day, hour: hour, minute: minute, second: second, fraction: fraction, offsetNegative: offsetToken == JsonUtf16Constant.Hyphen, offsetHours: offsetHours, offsetMinutes: offsetMinutes, out value))
             {
                 goto ReturnFalse;
             }

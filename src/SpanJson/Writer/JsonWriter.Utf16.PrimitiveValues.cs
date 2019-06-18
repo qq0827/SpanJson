@@ -143,7 +143,7 @@
             }
             pos += count;
 #else
-            Ensure(pos, JsonConstants.MaximumFormatDoubleLength);
+            Ensure(pos, JsonSharedConstant.MaximumFormatDoubleLength);
             var result = value.TryFormat(Utf16Span, out var written, provider: CultureInfo.InvariantCulture);
             if (result)
             {
@@ -179,7 +179,7 @@
             }
             pos += count;
 #else
-            Ensure(pos, JsonConstants.MaximumFormatDoubleLength);
+            Ensure(pos, JsonSharedConstant.MaximumFormatDoubleLength);
             var result = value.TryFormat(Utf16Span, out var written, provider: CultureInfo.InvariantCulture);
             if (result)
             {
@@ -216,7 +216,7 @@
             Ensure(pos, written);
             utf16Text.AsSpan().CopyTo(Utf16Span);
 #else
-            Ensure(pos, JsonConstants.MaximumFormatDecimalLength);
+            Ensure(pos, JsonSharedConstant.MaximumFormatDecimalLength);
             var result = value.TryFormat(Utf16Span, out var written, provider: CultureInfo.InvariantCulture);
             Debug.Assert(result);
 #endif

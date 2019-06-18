@@ -45,7 +45,7 @@ namespace SpanJson.Internal
         {
             Debug.Assert(textLength > 0);
             Debug.Assert(firstIndexToEscape >= 0 && firstIndexToEscape < textLength);
-            return firstIndexToEscape + JsonConstants.MaxExpansionFactorWhileEscaping * (textLength - firstIndexToEscape);
+            return firstIndexToEscape + JsonSharedConstant.MaxExpansionFactorWhileEscaping * (textLength - firstIndexToEscape);
         }
 
         #endregion
@@ -168,7 +168,7 @@ namespace SpanJson.Internal
                 var length = GetMaxEscapedLength(source.Length, firstEscapeIndex);
                 try
                 {
-                    Span<char> escapedName = (uint)length <= JsonConstants.StackallocThreshold ?
+                    Span<char> escapedName = (uint)length <= JsonSharedConstant.StackallocThreshold ?
                         stackalloc char[length] :
                         (tempArray = ArrayPool<char>.Shared.Rent(length));
                     EscapeString(source, escapedName, escapeHandling, firstEscapeIndex, out int written);
@@ -337,7 +337,7 @@ namespace SpanJson.Internal
                     }
                     else
                     {
-                        Unsafe.Add(ref destSpace, pos++) = JsonConstants.Slash;
+                        Unsafe.Add(ref destSpace, pos++) = JsonUtf8Constant.Solidus;
                     }
                     break;
                 case JsonUtf16Constant.ReverseSolidus:
@@ -460,7 +460,7 @@ namespace SpanJson.Internal
 
             switch (scalar)
             {
-                case JsonConstants.Quote:
+                case JsonUtf8Constant.DoubleQuote:
                     if (escapeHandling == StringEscapeHandling.Default)
                     {
                         WriteSingleChar(ref destSpace, '"', ref written);
@@ -470,41 +470,41 @@ namespace SpanJson.Internal
                         WriteDoubleQuote(ref destSpace, ref written);
                     }
                     break;
-                case JsonConstants.Slash:
+                case JsonUtf8Constant.Slash:
                     if (escapeHandling == StringEscapeHandling.EscapeNonAscii)
                     {
                         WriteSlash(ref destSpace, ref written);
                     }
                     else
                     {
-                        Unsafe.Add(ref destSpace, written++) = JsonConstants.Slash;
+                        Unsafe.Add(ref destSpace, written++) = JsonUtf8Constant.Slash;
                     }
                     break;
 
-                case JsonConstants.LineFeed:
+                case JsonUtf8Constant.LineFeed:
                     WriteSingleChar(ref destSpace, 'n', ref written);
                     break;
-                case JsonConstants.CarriageReturn:
+                case JsonUtf8Constant.CarriageReturn:
                     WriteSingleChar(ref destSpace, 'r', ref written);
                     break;
-                case JsonConstants.Tab:
+                case JsonUtf8Constant.Tab:
                     WriteSingleChar(ref destSpace, 't', ref written);
                     break;
-                case JsonConstants.BackSlash:
+                case JsonUtf8Constant.BackSlash:
                     WriteSingleChar(ref destSpace, JsonUtf16Constant.ReverseSolidus, ref written);
                     break;
-                case JsonConstants.BackSpace:
+                case JsonUtf8Constant.BackSpace:
                     WriteSingleChar(ref destSpace, 'b', ref written);
                     break;
-                case JsonConstants.FormFeed:
+                case JsonUtf8Constant.FormFeed:
                     WriteSingleChar(ref destSpace, 'f', ref written);
                     break;
                 default:
                     IntPtr offset = (IntPtr)written;
-                    Unsafe.AddByteOffset(ref destSpace, offset) = JsonConstants.BackSlash;
+                    Unsafe.AddByteOffset(ref destSpace, offset) = JsonUtf8Constant.BackSlash;
                     Unsafe.AddByteOffset(ref destSpace, offset + 1) = (byte)'u';
                     written += 2;
-                    if (scalar < JsonConstants.UnicodePlane01StartValue)
+                    if (scalar < JsonSharedConstant.UnicodePlane01StartValue)
                     {
                         bool result = Utf8Formatter.TryFormat(scalar, destination.Slice(written), out int bytesWritten, format: s_hexStandardFormat);
                         Debug.Assert(result);
@@ -516,15 +516,15 @@ namespace SpanJson.Internal
                         // Divide by 0x400 to shift right by 10 in order to find the surrogate pairs from the scalar
                         // High surrogate = ((scalar -  0x10000) / 0x400) + D800
                         // Low surrogate = ((scalar -  0x10000) % 0x400) + DC00
-                        int quotient = Math.DivRem(scalar - JsonConstants.UnicodePlane01StartValue, JsonConstants.BitShiftBy10, out int remainder);
-                        int firstChar = quotient + JsonConstants.HighSurrogateStartValue;
-                        int nextChar = remainder + JsonConstants.LowSurrogateStartValue;
+                        int quotient = Math.DivRem(scalar - JsonSharedConstant.UnicodePlane01StartValue, JsonSharedConstant.BitShiftBy10, out int remainder);
+                        int firstChar = quotient + JsonSharedConstant.HighSurrogateStartValue;
+                        int nextChar = remainder + JsonSharedConstant.LowSurrogateStartValue;
                         bool result = Utf8Formatter.TryFormat(firstChar, destination.Slice(written), out int bytesWritten, format: s_hexStandardFormat);
                         Debug.Assert(result);
                         Debug.Assert(bytesWritten == 4);
                         written += bytesWritten;
                         offset = (IntPtr)written;
-                        Unsafe.AddByteOffset(ref destSpace, offset) = JsonConstants.BackSlash;
+                        Unsafe.AddByteOffset(ref destSpace, offset) = JsonUtf8Constant.BackSlash;
                         Unsafe.AddByteOffset(ref destSpace, offset + 1) = (byte)'u';
                         written += 2;
                         result = Utf8Formatter.TryFormat(nextChar, destination.Slice(written), out bytesWritten, format: s_hexStandardFormat);
@@ -877,16 +877,16 @@ namespace SpanJson.Internal
                 default:
                     WriteHexChar(ref destSpace, firstChar, ref written);
                     int nextChar = -1;
-                    if (JsonHelpers.IsInRangeInclusive(firstChar, JsonConstants.HighSurrogateStartValue, JsonConstants.LowSurrogateEndValue))
+                    if (JsonHelpers.IsInRangeInclusive(firstChar, JsonSharedConstant.HighSurrogateStartValue, JsonSharedConstant.LowSurrogateEndValue))
                     {
                         consumed++;
-                        if (srcLength <= (uint)consumed || firstChar >= JsonConstants.LowSurrogateStartValue)
+                        if (srcLength <= (uint)consumed || firstChar >= JsonSharedConstant.LowSurrogateStartValue)
                         {
                             ThrowHelper.ThrowArgumentException_InvalidUTF16(firstChar);
                         }
 
                         nextChar = Unsafe.Add(ref sourceSpace, consumed);
-                        if (!JsonHelpers.IsInRangeInclusive(nextChar, JsonConstants.LowSurrogateStartValue, JsonConstants.LowSurrogateEndValue))
+                        if (!JsonHelpers.IsInRangeInclusive(nextChar, JsonSharedConstant.LowSurrogateStartValue, JsonSharedConstant.LowSurrogateEndValue))
                         {
                             ThrowHelper.ThrowArgumentException_InvalidUTF16(nextChar);
                         }
@@ -920,7 +920,7 @@ namespace SpanJson.Internal
                     }
                     else
                     {
-                        Unsafe.Add(ref destSpace, written++) = JsonConstants.Slash;
+                        Unsafe.Add(ref destSpace, written++) = JsonUtf8Constant.Solidus;
                     }
                     break;
                 case JsonUtf16Constant.ReverseSolidus:
@@ -1026,16 +1026,16 @@ namespace SpanJson.Internal
                 default:
                     WriteHexChar(ref destSpace, firstChar, ref written);
                     int nextChar = -1;
-                    if (JsonHelpers.IsInRangeInclusive(firstChar, JsonConstants.HighSurrogateStartValue, JsonConstants.LowSurrogateEndValue))
+                    if (JsonHelpers.IsInRangeInclusive(firstChar, JsonSharedConstant.HighSurrogateStartValue, JsonSharedConstant.LowSurrogateEndValue))
                     {
                         consumed++;
-                        if (srcLength <= (uint)consumed || firstChar >= JsonConstants.LowSurrogateStartValue)
+                        if (srcLength <= (uint)consumed || firstChar >= JsonSharedConstant.LowSurrogateStartValue)
                         {
                             ThrowHelper.ThrowArgumentException_InvalidUTF16(firstChar);
                         }
 
                         nextChar = Unsafe.Add(ref sourceSpace, consumed);
-                        if (!JsonHelpers.IsInRangeInclusive(nextChar, JsonConstants.LowSurrogateStartValue, JsonConstants.LowSurrogateEndValue))
+                        if (!JsonHelpers.IsInRangeInclusive(nextChar, JsonSharedConstant.LowSurrogateStartValue, JsonSharedConstant.LowSurrogateEndValue))
                         {
                             ThrowHelper.ThrowArgumentException_InvalidUTF16(nextChar);
                         }

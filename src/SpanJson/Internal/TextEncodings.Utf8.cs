@@ -227,7 +227,7 @@ namespace SpanJson.Internal
                             else
                             {
                                 // if (!IsLowSurrogate(ch) && !IsHighSurrogate(ch))
-                                if (!IsInRangeInclusive(ch, HighSurrogateStart, LowSurrogateEnd))
+                                if (!JsonHelpers.IsInRangeInclusive(ch, JsonSharedConstant.HighSurrogateStart, JsonSharedConstant.LowSurrogateEnd))
                                 {
                                     // 3 byte encoding
                                     chd = unchecked((sbyte)0xE0) | (ch >> 12);
@@ -236,7 +236,7 @@ namespace SpanJson.Internal
                                 {
                                     // 4 byte encoding - high surrogate + low surrogate
                                     // if (!IsHighSurrogate(ch))
-                                    if (ch > HighSurrogateEnd)
+                                    if (ch > JsonSharedConstant.HighSurrogateEnd)
                                     {
                                         // low without high -> bad
                                         goto InvalidData;
@@ -245,7 +245,7 @@ namespace SpanJson.Internal
                                     chd = *pSrc;
 
                                     // if (!IsLowSurrogate(chd)) {
-                                    if (!IsInRangeInclusive(chd, LowSurrogateStart, LowSurrogateEnd))
+                                    if (!JsonHelpers.IsInRangeInclusive(chd, JsonSharedConstant.LowSurrogateStart, JsonSharedConstant.LowSurrogateEnd))
                                     {
                                         // high not followed by low -> bad
                                         goto InvalidData;
@@ -255,8 +255,8 @@ namespace SpanJson.Internal
 
                                     ch = chd + (ch << 10) +
                                         (0x10000
-                                        - LowSurrogateStart
-                                        - (HighSurrogateStart << 10));
+                                        - JsonSharedConstant.LowSurrogateStart
+                                        - (JsonSharedConstant.HighSurrogateStart << 10));
 
                                     *pTarget = (byte)(unchecked((sbyte)0xF0) | (ch >> 18));
                                     // pStop - this byte is compensated by the second surrogate character
@@ -316,7 +316,7 @@ namespace SpanJson.Internal
                         else
                         {
                             // if (!IsLowSurrogate(ch) && !IsHighSurrogate(ch))
-                            if (!IsInRangeInclusive(ch, HighSurrogateStart, LowSurrogateEnd))
+                            if (!JsonHelpers.IsInRangeInclusive(ch, JsonSharedConstant.HighSurrogateStart, JsonSharedConstant.LowSurrogateEnd))
                             {
                                 if (pAllocatedBufferEnd - pTarget <= 2)
                                     goto DestinationFull;
@@ -331,7 +331,7 @@ namespace SpanJson.Internal
 
                                 // 4 byte encoding - high surrogate + low surrogate
                                 // if (!IsHighSurrogate(ch))
-                                if (ch > HighSurrogateEnd)
+                                if (ch > JsonSharedConstant.HighSurrogateEnd)
                                 {
                                     // low without high -> bad
                                     goto InvalidData;
@@ -343,7 +343,7 @@ namespace SpanJson.Internal
                                 chd = *pSrc;
 
                                 // if (!IsLowSurrogate(chd)) {
-                                if (!IsInRangeInclusive(chd, LowSurrogateStart, LowSurrogateEnd))
+                                if (!JsonHelpers.IsInRangeInclusive(chd, JsonSharedConstant.LowSurrogateStart, JsonSharedConstant.LowSurrogateEnd))
                                 {
                                     // high not followed by low -> bad
                                     goto InvalidData;
@@ -353,8 +353,8 @@ namespace SpanJson.Internal
 
                                 ch = chd + (ch << 10) +
                                     (0x10000
-                                    - LowSurrogateStart
-                                    - (HighSurrogateStart << 10));
+                                    - JsonSharedConstant.LowSurrogateStart
+                                    - (JsonSharedConstant.HighSurrogateStart << 10));
 
                                 *pTarget = (byte)(unchecked((sbyte)0xF0) | (ch >> 18));
                                 pTarget++;
@@ -613,7 +613,7 @@ namespace SpanJson.Internal
 
                                     // Bit 4 should be zero + the surrogate should be in the range 0x000000 - 0x10FFFF
                                     // and the trailing byte should be 10vvvvvv
-                                    if (!IsInRangeInclusive(chc >> 4, 0x01, 0x10) || (ch & unchecked((sbyte)0xC0)) != 0x80)
+                                    if (!JsonHelpers.IsInRangeInclusive(chc >> 4, 0x01, 0x10) || (ch & unchecked((sbyte)0xC0)) != 0x80)
                                         goto InvalidData;
 
                                     // Merge 3rd byte then read the last byte
@@ -627,10 +627,10 @@ namespace SpanJson.Internal
                                     pSrc += 2;
                                     ch = (chc << 6) | (ch & 0x3F);
 
-                                    *pDst = (char)(((ch >> 10) & 0x7FF) + unchecked((short)(HighSurrogateStart - (0x10000 >> 10))));
+                                    *pDst = (char)(((ch >> 10) & 0x7FF) + unchecked((short)(JsonSharedConstant.HighSurrogateStart - (0x10000 >> 10))));
                                     pDst++;
 
-                                    ch = (ch & 0x3FF) + unchecked((short)(LowSurrogateStart));
+                                    ch = (ch & 0x3FF) + unchecked((short)(JsonSharedConstant.LowSurrogateStart));
                                 }
                                 else
                                 {
@@ -715,7 +715,7 @@ namespace SpanJson.Internal
 
                                 // Bit 4 should be zero + the surrogate should be in the range 0x000000 - 0x10FFFF
                                 // and the trailing byte should be 10vvvvvv
-                                if (!IsInRangeInclusive(chd >> 4, 0x01, 0x10) || (ch & unchecked((sbyte)0xC0)) != 0x80)
+                                if (!JsonHelpers.IsInRangeInclusive(chd >> 4, 0x01, 0x10) || (ch & unchecked((sbyte)0xC0)) != 0x80)
                                     goto InvalidData;
 
                                 // Merge 3rd byte then read the last byte
@@ -733,10 +733,10 @@ namespace SpanJson.Internal
                                 pSrc += 2;
                                 ch = (chd << 6) | (ch & 0x3F);
 
-                                *pDst = (char)(((ch >> 10) & 0x7FF) + unchecked((short)(HighSurrogateStart - (0x10000 >> 10))));
+                                *pDst = (char)(((ch >> 10) & 0x7FF) + unchecked((short)(JsonSharedConstant.HighSurrogateStart - (0x10000 >> 10))));
                                 pDst++;
 
-                                ch = (ch & 0x3FF) + unchecked((short)(LowSurrogateStart));
+                                ch = (ch & 0x3FF) + unchecked((short)(JsonSharedConstant.LowSurrogateStart));
                             }
                             else
                             {
@@ -789,6 +789,19 @@ namespace SpanJson.Internal
                     bytesWritten = PtrDiff((byte*)pDst, pUtf16);
                     return OperationStatus.InvalidData;
                 }
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private unsafe static int PtrDiff(char* a, char* b)
+            {
+                return (int)(((uint)((byte*)a - (byte*)b)) >> 1);
+            }
+
+            // byte* flavor just for parity
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private unsafe static int PtrDiff(byte* a, byte* b)
+            {
+                return (int)(a - b);
             }
 
             public static string ToString(ReadOnlySpan<byte> utf8Bytes)

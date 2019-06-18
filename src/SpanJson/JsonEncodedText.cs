@@ -139,14 +139,14 @@ namespace SpanJson
 
         private static byte[] GetEscapedString(ReadOnlySpan<byte> utf8Value, StringEscapeHandling escapeHandling, int firstEscapeIndexVal)
         {
-            Debug.Assert(int.MaxValue / JsonConstants.MaxExpansionFactorWhileEscaping >= utf8Value.Length);
+            Debug.Assert(int.MaxValue / JsonSharedConstant.MaxExpansionFactorWhileEscaping >= utf8Value.Length);
             Debug.Assert(firstEscapeIndexVal >= 0 && firstEscapeIndexVal < utf8Value.Length);
 
             byte[] valueArray = null;
 
             int length = EscapingHelper.GetMaxEscapedLength(utf8Value.Length, firstEscapeIndexVal);
 
-            Span<byte> escapedValue = (uint)length <= JsonConstants.StackallocThreshold ?
+            Span<byte> escapedValue = (uint)length <= JsonSharedConstant.StackallocThreshold ?
                 stackalloc byte[length] :
                 (valueArray = ArrayPool<byte>.Shared.Rent(length));
 

@@ -17,7 +17,7 @@ namespace SpanJson.Internal
         {
             byte[] unescapedArray = null;
 
-            Span<byte> utf8Unescaped = utf8Source.Length <= JsonConstants.StackallocThreshold ?
+            Span<byte> utf8Unescaped = utf8Source.Length <= JsonSharedConstant.StackallocThreshold ?
                 stackalloc byte[utf8Source.Length] :
                 (unescapedArray = ArrayPool<byte>.Shared.Rent(utf8Source.Length));
 
@@ -45,7 +45,7 @@ namespace SpanJson.Internal
         public static string GetUnescapedString(in ReadOnlySpan<byte> utf8Source, int idx)
         {
             byte[] unescapedArray = null;
-            Span<byte> utf8Unescaped = utf8Source.Length <= JsonConstants.StackallocThreshold ?
+            Span<byte> utf8Unescaped = utf8Source.Length <= JsonSharedConstant.StackallocThreshold ?
                 stackalloc byte[utf8Source.Length] :
                 (unescapedArray = ArrayPool<byte>.Shared.Rent(utf8Source.Length));
             try
@@ -70,11 +70,11 @@ namespace SpanJson.Internal
 
         public static bool UnescapeAndCompare(in ReadOnlySpan<byte> utf8Source, ReadOnlySpan<byte> other)
         {
-            Debug.Assert(utf8Source.Length >= other.Length && utf8Source.Length / JsonConstants.MaxExpansionFactorWhileEscaping <= other.Length);
+            Debug.Assert(utf8Source.Length >= other.Length && utf8Source.Length / JsonSharedConstant.MaxExpansionFactorWhileEscaping <= other.Length);
 
             byte[] unescapedArray = null;
 
-            Span<byte> utf8Unescaped = utf8Source.Length <= JsonConstants.StackallocThreshold ?
+            Span<byte> utf8Unescaped = utf8Source.Length <= JsonSharedConstant.StackallocThreshold ?
                 stackalloc byte[utf8Source.Length] :
                 (unescapedArray = ArrayPool<byte>.Shared.Rent(utf8Source.Length));
 
@@ -98,18 +98,18 @@ namespace SpanJson.Internal
         public static bool UnescapeAndCompare(in ReadOnlySequence<byte> utf8Source, ReadOnlySpan<byte> other)
         {
             Debug.Assert(!utf8Source.IsSingleSegment);
-            Debug.Assert(utf8Source.Length >= other.Length && utf8Source.Length / JsonConstants.MaxExpansionFactorWhileEscaping <= other.Length);
+            Debug.Assert(utf8Source.Length >= other.Length && utf8Source.Length / JsonSharedConstant.MaxExpansionFactorWhileEscaping <= other.Length);
 
             byte[] escapedArray = null;
             byte[] unescapedArray = null;
 
             int length = checked((int)utf8Source.Length);
 
-            Span<byte> utf8Unescaped = length <= JsonConstants.StackallocThreshold ?
+            Span<byte> utf8Unescaped = length <= JsonSharedConstant.StackallocThreshold ?
                 stackalloc byte[length] :
                 (unescapedArray = ArrayPool<byte>.Shared.Rent(length));
 
-            Span<byte> utf8Escaped = length <= JsonConstants.StackallocThreshold ?
+            Span<byte> utf8Escaped = length <= JsonSharedConstant.StackallocThreshold ?
                 stackalloc byte[length] :
                 (escapedArray = ArrayPool<byte>.Shared.Rent(length));
 
@@ -152,7 +152,7 @@ namespace SpanJson.Internal
         {
             byte[] pooledArray = null;
 
-            Span<byte> byteSpan = utf8Unescaped.Length <= JsonConstants.StackallocThreshold ?
+            Span<byte> byteSpan = utf8Unescaped.Length <= JsonSharedConstant.StackallocThreshold ?
                 stackalloc byte[utf8Unescaped.Length] :
                 (pooledArray = ArrayPool<byte>.Shared.Rent(utf8Unescaped.Length));
 
@@ -217,19 +217,19 @@ namespace SpanJson.Internal
                             unescaped = JsonUtf8Constant.Solidus;
                             break;
                         case 'b':
-                            unescaped = (byte)'\b';
+                            unescaped = JsonUtf8Constant.BackSpace;
                             break;
                         case 'f':
-                            unescaped = (byte)'\f';
+                            unescaped = JsonUtf8Constant.FormFeed;
                             break;
                         case 'n':
-                            unescaped = (byte)'\n';
+                            unescaped = JsonUtf8Constant.LineFeed;
                             break;
                         case 'r':
-                            unescaped = (byte)'\r';
+                            unescaped = JsonUtf8Constant.CarriageReturn;
                             break;
                         case 't':
-                            unescaped = (byte)'\t';
+                            unescaped = JsonUtf8Constant.Tab;
                             break;
                         case (byte)'u':
                             // The source is known to be valid JSON, and hence if we see a \u, it is guaranteed to have 4 hex digits following it
@@ -244,21 +244,21 @@ namespace SpanJson.Internal
                             Debug.Assert(bytesConsumed == 4);
                             index += bytesConsumed;
 
-                            if (IsInRangeInclusive((uint)scalar, JsonConstants.HighSurrogateStartValue, JsonConstants.LowSurrogateEndValue))
+                            if (IsInRangeInclusive((uint)scalar, JsonSharedConstant.HighSurrogateStartValue, JsonSharedConstant.LowSurrogateEndValue))
                             {
                                 // The first hex value cannot be a low surrogate.
-                                if (scalar >= JsonConstants.LowSurrogateStartValue)
+                                if (scalar >= JsonSharedConstant.LowSurrogateStartValue)
                                 {
                                     ThrowHelper.ThrowInvalidOperationException_ReadInvalidUTF16(scalar);
                                 }
 
-                                Debug.Assert(IsInRangeInclusive((uint)scalar, JsonConstants.HighSurrogateStartValue, JsonConstants.HighSurrogateEndValue));
+                                Debug.Assert(IsInRangeInclusive((uint)scalar, JsonSharedConstant.HighSurrogateStartValue, JsonSharedConstant.HighSurrogateEndValue));
 
                                 index += 2; // Skip the next \u
 
                                 // We must have a low surrogate following a high surrogate.
                                 if (nSrcLen < ((uint)index + 4u) ||
-                                    Unsafe.AddByteOffset(ref sourceSpace, offset + 6) != '\\' ||
+                                    Unsafe.AddByteOffset(ref sourceSpace, offset + 6) != JsonUtf8Constant.ReverseSolidus ||
                                     Unsafe.AddByteOffset(ref sourceSpace, offset + 7) != 'u')
                                 {
                                     ThrowHelper.ThrowInvalidOperationException_ReadInvalidUTF16();
@@ -274,7 +274,7 @@ namespace SpanJson.Internal
                                 Debug.Assert(bytesConsumed == 4);
 
                                 // If the first hex value is a high surrogate, the next one must be a low surrogate.
-                                if (!IsInRangeInclusive((uint)lowSurrogate, JsonConstants.LowSurrogateStartValue, JsonConstants.LowSurrogateEndValue))
+                                if (!IsInRangeInclusive((uint)lowSurrogate, JsonSharedConstant.LowSurrogateStartValue, JsonSharedConstant.LowSurrogateEndValue))
                                 {
                                     ThrowHelper.ThrowInvalidOperationException_ReadInvalidUTF16(lowSurrogate);
                                 }
@@ -283,9 +283,9 @@ namespace SpanJson.Internal
 
                                 // To find the unicode scalar:
                                 // (0x400 * (High surrogate - 0xD800)) + Low surrogate - 0xDC00 + 0x10000
-                                scalar = (JsonConstants.BitShiftBy10 * (scalar - JsonConstants.HighSurrogateStartValue))
-                                    + (lowSurrogate - JsonConstants.LowSurrogateStartValue)
-                                    + JsonConstants.UnicodePlane01StartValue;
+                                scalar = (JsonSharedConstant.BitShiftBy10 * (scalar - JsonSharedConstant.HighSurrogateStartValue))
+                                    + (lowSurrogate - JsonSharedConstant.LowSurrogateStartValue)
+                                    + JsonSharedConstant.UnicodePlane01StartValue;
 
                                 offset += 12;
                             }
@@ -320,45 +320,6 @@ namespace SpanJson.Internal
                 var remaining = utf8Source.Slice(from);
                 remaining.CopyTo(destination.Slice(written));
                 written += remaining.Length;
-            }
-        }
-
-        /// <summary>Copies the UTF-8 code unit representation of this scalar to an output buffer.
-        /// The buffer must be large enough to hold the required number of <see cref="byte"/>s.</summary>
-        private static void EncodeToUtf8Bytes(uint scalar, Span<byte> utf8Destination, out int bytesWritten)
-        {
-            Debug.Assert(JsonHelpers.IsValidUnicodeScalar(scalar));
-            Debug.Assert(utf8Destination.Length >= 4);
-
-            if (scalar < 0x80U)
-            {
-                // Single UTF-8 code unit
-                utf8Destination[0] = (byte)scalar;
-                bytesWritten = 1;
-            }
-            else if (scalar < 0x800U)
-            {
-                // Two UTF-8 code units
-                utf8Destination[0] = (byte)(0xC0U | (scalar >> 6));
-                utf8Destination[1] = (byte)(0x80U | (scalar & 0x3FU));
-                bytesWritten = 2;
-            }
-            else if (scalar < 0x10000U)
-            {
-                // Three UTF-8 code units
-                utf8Destination[0] = (byte)(0xE0U | (scalar >> 12));
-                utf8Destination[1] = (byte)(0x80U | ((scalar >> 6) & 0x3FU));
-                utf8Destination[2] = (byte)(0x80U | (scalar & 0x3FU));
-                bytesWritten = 3;
-            }
-            else
-            {
-                // Four UTF-8 code units
-                utf8Destination[0] = (byte)(0xF0U | (scalar >> 18));
-                utf8Destination[1] = (byte)(0x80U | ((scalar >> 12) & 0x3FU));
-                utf8Destination[2] = (byte)(0x80U | ((scalar >> 6) & 0x3FU));
-                utf8Destination[3] = (byte)(0x80U | (scalar & 0x3FU));
-                bytesWritten = 4;
             }
         }
 

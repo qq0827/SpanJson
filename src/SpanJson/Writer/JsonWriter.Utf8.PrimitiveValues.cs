@@ -159,7 +159,7 @@
         public void WriteUtf8Decimal(decimal value)
         {
             ref var pos = ref _pos;
-            Ensure(pos, JsonConstants.MaximumFormatDecimalLength);
+            Ensure(pos, JsonSharedConstant.MaximumFormatDecimalLength);
             var result = Utf8Formatter.TryFormat(value, Utf8Span, out int bytesWritten);
             Debug.Assert(result);
             pos += bytesWritten;

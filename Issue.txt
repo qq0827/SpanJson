@@ -1,11 +1,11 @@
 ﻿☆标志 - 未解决
 ★标志 - 已解决
 
-Issue.000 ☆ UnescapeUtf16/UnescapeUtf8/UnescapeUtf8Bytes 需参照 System.Text.Json 优化
+Issue.000 ★ UnescapeUtf16/UnescapeUtf8/UnescapeUtf8Bytes 需参照 System.Text.Json 优化
 
 Issue.001 ★ TryFindEndOfUtf16(8)Number/TryFindEndOfUtf16(8)String 优化
 
-Issue.002 ☆ 字符串编解码缓存(k/v)
+Issue.002 ★ 字符串编解码缓存(k/v)
 
 Issue.003 ☆ DynamicObjectResolverInterfaceTest / DynamicObjectResolverDerivedAttributeInheritanceTest
 
