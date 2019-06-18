@@ -1,8 +1,6 @@
-﻿
-namespace SpanJson.Internal
+﻿namespace SpanJson.Internal
 {
     using System;
-    using System.Runtime.CompilerServices;
     using System.Text;
 
     public static partial class TextEncodings
@@ -10,7 +8,7 @@ namespace SpanJson.Internal
         // Reject any invalid UTF-8 data rather than silently replacing.
         public static readonly Encoding UTF8NoBOM = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
 
-        internal static int GetUtf8ByteCount(ReadOnlySpan<char> text)
+        public static int GetUtf8ByteCount(ReadOnlySpan<char> text)
         {
             try
             {
@@ -39,7 +37,7 @@ namespace SpanJson.Internal
             }
         }
 
-        internal static int GetUtf8FromText(ReadOnlySpan<char> text, Span<byte> dest)
+        public static int GetUtf8FromText(ReadOnlySpan<char> text, Span<byte> dest)
         {
             try
             {
@@ -69,7 +67,7 @@ namespace SpanJson.Internal
             }
         }
 
-        internal static string GetTextFromUtf8(ReadOnlySpan<byte> utf8Text)
+        public static string GetTextFromUtf8(ReadOnlySpan<byte> utf8Text)
         {
 #if NET451
             return Utf8.ToString(utf8Text);

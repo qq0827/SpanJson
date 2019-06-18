@@ -113,7 +113,7 @@ namespace SpanJson.Formatters
                     // Everything above a length of 32 is not optimized
                     // 这儿不应直接采用字符串长度来判断
                     //if ((uint)formattedMemberInfoName.Length > 32u)
-                    var utf8Bytes = BinaryUtil.GetEncodedStringBytes(formattedMemberInfoName);
+                    var utf8Bytes = TextEncodings.Utf8.GetBytesWithCache(formattedMemberInfoName);
                     if ((uint)utf8Bytes.Length > 32u)
                     {
                         writeNameExpressions = new[] { Expression.Constant(utf8Bytes) };
@@ -466,23 +466,11 @@ namespace SpanJson.Formatters
             string key = null;
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
-                key = TextEncodings.Utf8.GetString(nameSpan);
+                key = TextEncodings.Utf8.GetStringWithCache(nameSpan);
             }
             else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
             {
-#if NET451
-                key = Encoding.Unicode.GetString(nameSpan.ToArray());
-#elif NETSTANDARD2_0 || NET471
-                unsafe
-                {
-                    fixed (byte* bytesPtr = &MemoryMarshal.GetReference(nameSpan))
-                    {
-                        key = Encoding.Unicode.GetString(bytesPtr, nameSpan.Length);
-                    }
-                }
-#else
-                key = Encoding.Unicode.GetString(nameSpan);
-#endif
+                key = TextEncodings.Utf16.GetStringWithCache(nameSpan);
             }
             else
             {

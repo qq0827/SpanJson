@@ -1,12 +1,11 @@
-﻿
-namespace SpanJson.Internal
+﻿namespace SpanJson.Internal
 {
     using System;
     using System.Buffers;
+    using System.Collections.Concurrent;
     using System.Diagnostics;
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
-    using System.Text;
 
     public static partial class TextEncodings
     {
@@ -30,7 +29,7 @@ namespace SpanJson.Internal
             /// <param name="source">A span containing a sequence of UTF-16 bytes.</param>
             /// <param name="bytesNeeded">On exit, contains the number of bytes required for encoding from the <paramref name="source"/>.</param>
             /// <returns>A <see cref="OperationStatus"/> value representing the expected state of the conversion.</returns>
-            public static OperationStatus ToUtf8Length(ReadOnlySpan<byte> source, out int bytesNeeded)
+            public static OperationStatus ToUtf8Length(in ReadOnlySpan<byte> source, out int bytesNeeded)
             {
                 bytesNeeded = 0;
 
@@ -402,7 +401,7 @@ namespace SpanJson.Internal
             /// <param name="utf8Bytes">A span containing a sequence of UTF-8 bytes.</param>
             /// <param name="bytesNeeded">On exit, contains the number of bytes required for encoding from the <paramref name="utf8Bytes"/>.</param>
             /// <returns>A <see cref="OperationStatus"/> value representing the expected state of the conversion.</returns>
-            public static OperationStatus ToUtf16Length(ReadOnlySpan<byte> utf8Bytes, out int bytesNeeded)
+            public static OperationStatus ToUtf16Length(in ReadOnlySpan<byte> utf8Bytes, out int bytesNeeded)
             {
                 if (Utf8Util.GetIndexOfFirstInvalidUtf8Sequence(utf8Bytes, out int scalarCount, out int surrogatePairCount) < 0)
                 {
@@ -441,7 +440,7 @@ namespace SpanJson.Internal
             /// <param name="bytesConsumed">On exit, contains the number of bytes that were consumed from the <paramref name="utf8Source"/>.</param>
             /// <param name="bytesWritten">On exit, contains the number of bytes written to <paramref name="utf16Destination"/></param>
             /// <returns>A <see cref="OperationStatus"/> value representing the state of the conversion.</returns>
-            public unsafe static OperationStatus ToUtf16(ReadOnlySpan<byte> utf8Source, Span<byte> utf16Destination, out int bytesConsumed, out int bytesWritten)
+            public unsafe static OperationStatus ToUtf16(in ReadOnlySpan<byte> utf8Source, Span<byte> utf16Destination, out int bytesConsumed, out int bytesWritten)
             {
                 fixed (byte* pUtf8 = &MemoryMarshal.GetReference(utf8Source))
                 fixed (byte* pUtf16 = &MemoryMarshal.GetReference(utf16Destination))
@@ -804,7 +803,7 @@ namespace SpanJson.Internal
                 return (int)(a - b);
             }
 
-            public static string ToString(ReadOnlySpan<byte> utf8Bytes)
+            public static string ToString(in ReadOnlySpan<byte> utf8Bytes)
             {
                 if (utf8Bytes.IsEmpty) { return string.Empty; }
 
@@ -827,7 +826,7 @@ namespace SpanJson.Internal
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static int GetCharCount(ReadOnlySpan<byte> bytes)
+            public static int GetCharCount(in ReadOnlySpan<byte> bytes)
             {
 #if NETCOREAPP || NETSTANDARD_2_0_GREATER
                 return UTF8NoBOM.GetCharCount(bytes);
@@ -847,7 +846,7 @@ namespace SpanJson.Internal
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static int GetChars(ReadOnlySpan<byte> bytes, Span<char> chars)
+            public static int GetChars(in ReadOnlySpan<byte> bytes, Span<char> chars)
             {
 #if NETCOREAPP || NETSTANDARD_2_0_GREATER
                 return UTF8NoBOM.GetChars(bytes, chars);
@@ -867,7 +866,7 @@ namespace SpanJson.Internal
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static string GetString(ReadOnlySpan<byte> utf8Text)
+            public static string GetString(in ReadOnlySpan<byte> utf8Text)
             {
 #if NETCOREAPP || NETSTANDARD_2_0_GREATER
                 return UTF8NoBOM.GetString(utf8Text);
@@ -877,7 +876,7 @@ namespace SpanJson.Internal
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static int GetBytes(ReadOnlySpan<char> chars, Span<byte> bytes)
+            public static int GetBytes(in ReadOnlySpan<char> chars, Span<byte> bytes)
             {
 #if NETCOREAPP_2_X_GREATER || NETSTANDARD_2_0_GREATER
                 return UTF8NoBOM.GetBytes(chars, bytes);
@@ -892,7 +891,7 @@ namespace SpanJson.Internal
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static int GetByteCount(ReadOnlySpan<char> text)
+            public static int GetByteCount(in ReadOnlySpan<char> text)
             {
 #if NETCOREAPP || NETSTANDARD_2_0_GREATER
                 return UTF8NoBOM.GetByteCount(text);
@@ -909,6 +908,42 @@ namespace SpanJson.Internal
                     }
                 }
 #endif
+            }
+
+            private static readonly ConcurrentDictionary<string, byte[]> s_cachedUtf8Bytes = new ConcurrentDictionary<string, byte[]>(StringComparer.Ordinal);
+            /// <summary>For short strings use only.</summary>
+            public static byte[] GetBytesWithCache(string formattedName)
+            {
+                return s_cachedUtf8Bytes.GetOrAdd(formattedName, _ => UTF8NoBOM.GetBytes(_));
+            }
+
+            static readonly AsymmetricKeyHashTable<string> s_stringCache = new AsymmetricKeyHashTable<string>(StringReadOnlySpanByteAscymmetricEqualityComparer.Instance);
+            /// <summary>For short strings use only.</summary>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static string GetStringWithCache(in ReadOnlySpan<byte> utf8Source)
+            {
+                if (utf8Source.IsEmpty) { return string.Empty; }
+                if (!s_stringCache.TryGetValue(utf8Source, out var value))
+                {
+                    GetStringWithCacheSlow(utf8Source, out value);
+                }
+                return value;
+            }
+
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            private static void GetStringWithCacheSlow(in ReadOnlySpan<byte> utf8Source, out string value)
+            {
+                if (utf8Source.IsEmpty)
+                {
+                    value = string.Empty;
+                    s_stringCache.TryAdd(JsonHelpers.Empty<byte>(), value);
+                }
+                else
+                {
+                    var buffer = utf8Source.ToArray();
+                    value = UTF8NoBOM.GetString(buffer);
+                    s_stringCache.TryAdd(buffer, value);
+                }
             }
         }
     }

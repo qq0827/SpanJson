@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
+using SpanJson.Internal;
 
 namespace SpanJson.Formatters.Dynamic
 {
@@ -38,12 +39,20 @@ namespace SpanJson.Formatters.Dynamic
 
                     if (destinationType.IsEnum || (destinationType = Nullable.GetUnderlyingType(destinationType)) != null)
                     {
-                        var data = reader.ReadString();
+                        string data;
+                        if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+                        {
+                            data = TextEncodings.Utf8.GetStringWithCache(reader.ReadUtf8StringSpan());
+                        }
+                        else
+                        {
+                            data = reader.ReadString();
+                        }
 #if NETSTANDARD2_0 || NET471 || NET451
                         value = Enum.Parse(destinationType, data, false);
                         return true;
 #else
-                        if (Enum.TryParse(destinationType, data, out var enumValue))
+                            if (Enum.TryParse(destinationType, data, out var enumValue))
                         {
                             value = enumValue;
                             return true;
