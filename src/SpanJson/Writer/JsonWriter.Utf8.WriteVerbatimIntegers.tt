@@ -4,6 +4,7 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".cs" #>
+using System;
 using System.Runtime.CompilerServices;
 
 namespace SpanJson
@@ -53,16 +54,20 @@ namespace SpanJson
             Ensure(pos, <#=i#>);
 
             ref var bStart = ref Utf8PinnableAddress;
+            IntPtr offset = (IntPtr)pos;
 <#
+            var byteOffset = 0;
             for(int k = 0;k<sizes.Count;k++)
             {
             var currentArgument = (char) (k + 'a');
+            var offsetStr = (k == 0) ? "offset" : "offset + " + byteOffset;
 #>
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), <#=currentArgument#>);
-            pos += <#=sizes[k] #>;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, <#=offsetStr#>), <#=currentArgument#>);
 <#
+            byteOffset += sizes[k];
             }
 #>
+            pos += <#=byteOffset#>;
         }
 
 <#

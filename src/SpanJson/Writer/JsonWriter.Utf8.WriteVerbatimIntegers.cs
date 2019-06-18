@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace SpanJson
 {
@@ -11,7 +12,8 @@ namespace SpanJson
             Ensure(pos, 4);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
             pos += 4;
         }
 
@@ -22,10 +24,10 @@ namespace SpanJson
             Ensure(pos, 5);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 4;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 1;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 4), b);
+            pos += 5;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -35,10 +37,10 @@ namespace SpanJson
             Ensure(pos, 6);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 4;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 2;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 4), b);
+            pos += 6;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -48,12 +50,11 @@ namespace SpanJson
             Ensure(pos, 7);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 4;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 2;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), c);
-            pos += 1;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 4), b);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 6), c);
+            pos += 7;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -63,7 +64,8 @@ namespace SpanJson
             Ensure(pos, 8);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
             pos += 8;
         }
 
@@ -74,10 +76,10 @@ namespace SpanJson
             Ensure(pos, 9);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 1;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 8), b);
+            pos += 9;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -87,10 +89,10 @@ namespace SpanJson
             Ensure(pos, 10);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 2;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 8), b);
+            pos += 10;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -100,12 +102,11 @@ namespace SpanJson
             Ensure(pos, 11);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 2;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), c);
-            pos += 1;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 8), b);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 10), c);
+            pos += 11;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -115,10 +116,10 @@ namespace SpanJson
             Ensure(pos, 12);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 4;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 8), b);
+            pos += 12;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -128,12 +129,11 @@ namespace SpanJson
             Ensure(pos, 13);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 4;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), c);
-            pos += 1;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 8), b);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 12), c);
+            pos += 13;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -143,12 +143,11 @@ namespace SpanJson
             Ensure(pos, 14);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 4;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), c);
-            pos += 2;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 8), b);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 12), c);
+            pos += 14;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -158,14 +157,12 @@ namespace SpanJson
             Ensure(pos, 15);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 4;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), c);
-            pos += 2;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), d);
-            pos += 1;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 8), b);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 12), c);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 14), d);
+            pos += 15;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -175,10 +172,10 @@ namespace SpanJson
             Ensure(pos, 16);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 8;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 8), b);
+            pos += 16;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -188,12 +185,11 @@ namespace SpanJson
             Ensure(pos, 17);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), c);
-            pos += 1;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 8), b);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 16), c);
+            pos += 17;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -203,12 +199,11 @@ namespace SpanJson
             Ensure(pos, 18);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), c);
-            pos += 2;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 8), b);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 16), c);
+            pos += 18;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -218,14 +213,12 @@ namespace SpanJson
             Ensure(pos, 19);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), c);
-            pos += 2;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), d);
-            pos += 1;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 8), b);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 16), c);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 18), d);
+            pos += 19;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -235,12 +228,11 @@ namespace SpanJson
             Ensure(pos, 20);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), c);
-            pos += 4;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 8), b);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 16), c);
+            pos += 20;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -250,14 +242,12 @@ namespace SpanJson
             Ensure(pos, 21);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), c);
-            pos += 4;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), d);
-            pos += 1;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 8), b);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 16), c);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 20), d);
+            pos += 21;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -267,14 +257,12 @@ namespace SpanJson
             Ensure(pos, 22);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), c);
-            pos += 4;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), d);
-            pos += 2;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 8), b);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 16), c);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 20), d);
+            pos += 22;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -284,16 +272,13 @@ namespace SpanJson
             Ensure(pos, 23);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), c);
-            pos += 4;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), d);
-            pos += 2;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), e);
-            pos += 1;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 8), b);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 16), c);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 20), d);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 22), e);
+            pos += 23;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -303,12 +288,11 @@ namespace SpanJson
             Ensure(pos, 24);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), c);
-            pos += 8;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 8), b);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 16), c);
+            pos += 24;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -318,14 +302,12 @@ namespace SpanJson
             Ensure(pos, 25);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), c);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), d);
-            pos += 1;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 8), b);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 16), c);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 24), d);
+            pos += 25;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -335,14 +317,12 @@ namespace SpanJson
             Ensure(pos, 26);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), c);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), d);
-            pos += 2;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 8), b);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 16), c);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 24), d);
+            pos += 26;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -352,16 +332,13 @@ namespace SpanJson
             Ensure(pos, 27);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), c);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), d);
-            pos += 2;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), e);
-            pos += 1;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 8), b);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 16), c);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 24), d);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 26), e);
+            pos += 27;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -371,14 +348,12 @@ namespace SpanJson
             Ensure(pos, 28);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), c);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), d);
-            pos += 4;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 8), b);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 16), c);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 24), d);
+            pos += 28;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -388,16 +363,13 @@ namespace SpanJson
             Ensure(pos, 29);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), c);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), d);
-            pos += 4;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), e);
-            pos += 1;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 8), b);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 16), c);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 24), d);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 28), e);
+            pos += 29;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -407,16 +379,13 @@ namespace SpanJson
             Ensure(pos, 30);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), c);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), d);
-            pos += 4;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), e);
-            pos += 2;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 8), b);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 16), c);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 24), d);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 28), e);
+            pos += 30;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -426,18 +395,14 @@ namespace SpanJson
             Ensure(pos, 31);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), c);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), d);
-            pos += 4;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), e);
-            pos += 2;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), f);
-            pos += 1;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 8), b);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 16), c);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 24), d);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 28), e);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 30), f);
+            pos += 31;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -447,14 +412,12 @@ namespace SpanJson
             Ensure(pos, 32);
 
             ref var bStart = ref Utf8PinnableAddress;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), a);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), b);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), c);
-            pos += 8;
-            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), d);
-            pos += 8;
+            IntPtr offset = (IntPtr)pos;
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset), a);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 8), b);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 16), c);
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref bStart, offset + 24), d);
+            pos += 32;
         }
 
     }
