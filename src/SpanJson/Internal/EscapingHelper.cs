@@ -19,6 +19,49 @@ namespace SpanJson.Internal
         private const string HexFormatString = "x4";
         private static readonly StandardFormat s_hexStandardFormat = new StandardFormat('x', 4);
 
+        #region -- GetUnescapedTextFromUtf8WithCache --
+
+        static readonly AsymmetricKeyHashTable<string> s_stringCache = new AsymmetricKeyHashTable<string>(StringReadOnlySpanByteAscymmetricEqualityComparer.Instance);
+
+        /// <summary>
+        /// <see cref="JsonReader{TSymbol}.ReadUtf8VerbatimNameSpan(out int)"/> or <see cref="JsonReader{TSymbol}.ReadUtf8VerbatimStringSpan(out int)"/>
+        /// </summary>
+        public static string GetUnescapedTextFromUtf8WithCache(in ReadOnlySpan<byte> utf8Source, int idx)
+        {
+            if ((uint)idx > JsonSharedConstant.TooBigOrNegative)
+            {
+                return TextEncodings.Utf8.GetStringWithCache(utf8Source);
+            }
+            else
+            {
+                if (utf8Source.IsEmpty) { return string.Empty; }
+                if (!s_stringCache.TryGetValue(utf8Source, out var value))
+                {
+                    GetUnescapedTextFromUtf8Slow(utf8Source, idx, out value);
+                }
+                return value;
+
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void GetUnescapedTextFromUtf8Slow(in ReadOnlySpan<byte> utf8Source, int idx, out string value)
+        {
+            if (utf8Source.IsEmpty)
+            {
+                value = string.Empty;
+                s_stringCache.TryAdd(JsonHelpers.Empty<byte>(), value);
+            }
+            else
+            {
+                var buffer = utf8Source.ToArray();
+                value = JsonHelpers.GetUnescapedString(utf8Source, idx);
+                s_stringCache.TryAdd(buffer, value);
+            }
+        }
+
+        #endregion
+
         #region -- GetEncodedText --
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -188,7 +231,7 @@ namespace SpanJson.Internal
 
         public static string EscapeString(ReadOnlySpan<char> input, StringEscapeHandling escapeHandling = StringEscapeHandling.Default)
         {
-            if (input.IsEmpty) { return string.Empty ; }
+            if (input.IsEmpty) { return string.Empty; }
 
             var firstEscapeIndex = NeedsEscaping(input, escapeHandling);
             if ((uint)firstEscapeIndex > JsonSharedConstant.TooBigOrNegative) // -1

@@ -451,10 +451,16 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySpan<byte> ReadUtf8VerbatimNameSpan()
         {
+            return ReadUtf8VerbatimNameSpan(out _);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<byte> ReadUtf8VerbatimNameSpan(out int backslashIdx)
+        {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
             SkipWhitespaceUtf8(ref bStart, ref pos, _length);
-            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out _);
+            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out backslashIdx);
             var currentByte = SkipWhitespaceUtf8(ref bStart, ref pos, _length);
             pos++;
             if (currentByte != JsonUtf8Constant.NameSeparator)
@@ -488,7 +494,7 @@ namespace SpanJson
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
             if (ReadUtf8IsNullInternal(ref bStart, ref pos, _length))
             {
-                return JsonUtf8Constant.NullTerminator;
+                return default/*JsonUtf8Constant.NullTerminator*/;
             }
 
             var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out var backslashIdx);
@@ -498,14 +504,21 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySpan<byte> ReadUtf8VerbatimStringSpan()
         {
+            return ReadUtf8VerbatimStringSpan(out _);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<byte> ReadUtf8VerbatimStringSpan(out int backslashIdx)
+        {
             ref var pos = ref _pos;
             ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
             if (ReadUtf8IsNullInternal(ref bStart, ref pos, _length))
             {
-                return JsonUtf8Constant.NullTerminator;
+                backslashIdx = -1;
+                return default/*JsonUtf8Constant.NullTerminator*/;
             }
 
-            return ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out _);
+            return ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out backslashIdx);
         }
 
         private static ReadOnlySpan<byte> UnescapeUtf8Bytes(in ReadOnlySpan<byte> span, int backslashIdx)
