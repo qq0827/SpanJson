@@ -131,7 +131,7 @@ namespace SpanJson
                     }
                     case JsonToken.String:
                     {
-                        var span = reader.ReadVerbatimStringSpan();
+                        var span = reader.ReadVerbatimStringSpanUnsafe();
                         writer.WriteDoubleQuote();
                         writer.WriteVerbatim(span);
                         writer.WriteDoubleQuote();
@@ -270,7 +270,7 @@ namespace SpanJson
                         }
                     case JsonToken.String:
                         {
-                            var span = reader.ReadVerbatimStringSpan();
+                            var span = reader.ReadVerbatimStringSpanUnsafe();
                             writer.WriteDoubleQuote();
                             writer.WriteVerbatim(span);
                             writer.WriteDoubleQuote();

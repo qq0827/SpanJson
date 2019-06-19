@@ -265,7 +265,7 @@ namespace SpanJson
         /// </summary>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ReadOnlySpan<TSymbol> ReadVerbatimStringSpan()
+        public ReadOnlySpan<TSymbol> ReadVerbatimStringSpanUnsafe()
         {
             ref var pos = ref _pos;
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
