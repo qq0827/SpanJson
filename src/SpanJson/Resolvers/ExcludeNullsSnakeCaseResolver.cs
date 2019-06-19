@@ -5,8 +5,9 @@
         public ExcludeNullsSnakeCaseResolver() : base(new SpanJsonOptions
         {
             NullOption = NullOptions.ExcludeNulls,
-            NamingConvention = NamingConventions.SnakeCase,
-            EnumOption = EnumOptions.String
+            EnumOption = EnumOptions.String,
+            ExtensionDataNamingPolicy = JsonNamingPolicy.SnakeCase,
+            PropertyNamingPolicy = JsonNamingPolicy.SnakeCase,
         })
         {
         }

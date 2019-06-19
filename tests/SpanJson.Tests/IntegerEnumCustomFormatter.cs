@@ -8,8 +8,9 @@ namespace SpanJson.Tests
         public ExcludeNullCamelCaseIntegerEnumResolver() : base(new SpanJsonOptions
         {
             NullOption = NullOptions.ExcludeNulls,
-            NamingConvention = NamingConventions.CamelCase,
-            EnumOption = EnumOptions.Integer
+            EnumOption = EnumOptions.Integer,
+            ExtensionDataNamingPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         })
         {
         }

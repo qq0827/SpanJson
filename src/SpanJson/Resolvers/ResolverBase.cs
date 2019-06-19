@@ -70,6 +70,11 @@ namespace SpanJson.Resolvers
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
     {
         private readonly SpanJsonOptions _spanJsonOptions;
+        private readonly JsonNamingPolicy _dictionayKeyPolicy;
+        private readonly JsonNamingPolicy _extensionDataPolicy;
+        private readonly JsonNamingPolicy _jsonPropertyNamingPolicy;
+
+        private readonly StringEscapeHandling _stringEscapeHandling;
 
         // ReSharper disable StaticMemberInGenericType
         private static readonly ConcurrentDictionary<Type, IJsonFormatter> Formatters =
@@ -80,11 +85,15 @@ namespace SpanJson.Resolvers
         protected ResolverBase(SpanJsonOptions spanJsonOptions)
         {
             _spanJsonOptions = spanJsonOptions;
+            _stringEscapeHandling = spanJsonOptions.StringEscapeHandling;
+            _dictionayKeyPolicy = spanJsonOptions.DictionaryKeyPolicy;
+            _extensionDataPolicy = spanJsonOptions.ExtensionDataNamingPolicy;
+            _jsonPropertyNamingPolicy = spanJsonOptions.PropertyNamingPolicy;
         }
 
         public SpanJsonOptions JsonOptions => _spanJsonOptions;
 
-        public StringEscapeHandling StringEscapeHandling => _spanJsonOptions.StringEscapeHandling;
+        public StringEscapeHandling StringEscapeHandling => _stringEscapeHandling;
 
         public virtual IJsonFormatter GetFormatter(Type type)
         {
@@ -135,22 +144,8 @@ namespace SpanJson.Resolvers
             var result = new List<JsonMemberInfo>();
             foreach (var memberInfoName in members)
             {
-                string name;
-                switch (_spanJsonOptions.NamingConvention)
-                {
-                    case NamingConventions.CamelCase:
-                        name = StringMutator.ToCamelCase(memberInfoName);
-                        break;
-                    case NamingConventions.SnakeCase:
-                        name = StringMutator.ToSnakeCase(memberInfoName);
-                        break;
-                    case NamingConventions.OriginalCase:
-                    default:
-                        name = memberInfoName;
-                        break;
-                }
-                var escapedName = EscapingHelper.GetEncodedText(name, _spanJsonOptions.StringEscapeHandling);
-
+                string name = ResolvePropertyName(memberInfoName);
+                var escapedName = GetEncodedPropertyName(memberInfoName);
                 result.Add(new JsonMemberInfo(memberInfoName, typeof(object), null, name, escapedName,
                     _spanJsonOptions.NullOption == NullOptions.ExcludeNulls, true, true, null, null));
             }
@@ -168,16 +163,6 @@ namespace SpanJson.Resolvers
             return BuildMembers(typeof(T)); // no need to cache that
         }
 
-        public static string MakeCamelCase(string name)
-        {
-            if (char.IsLower(name[0]))
-            {
-                return name;
-            }
-
-            return string.Concat(char.ToLowerInvariant(name[0]), name.Substring(1));
-        }
-
         protected virtual JsonObjectDescription BuildMembers(Type type)
         {
             var publicMembers = type.SerializableMembers();
@@ -188,17 +173,8 @@ namespace SpanJson.Resolvers
             {
                 var memberType = memberInfo is FieldInfo fi ? fi.FieldType :
                     memberInfo is PropertyInfo pi ? pi.PropertyType : null;
-                var name = GetAttributeName(memberInfo) ?? memberInfo.Name;
-                switch (_spanJsonOptions.NamingConvention)
-                {
-                    case NamingConventions.CamelCase:
-                        name = StringMutator.ToCamelCase(name);
-                        break;
-                    case NamingConventions.SnakeCase:
-                        name = StringMutator.ToSnakeCase(name);
-                        break;
-                }
-                var escapedName = EscapingHelper.GetEncodedText(name, _spanJsonOptions.StringEscapeHandling);
+                var name = ResolvePropertyName(GetAttributeName(memberInfo) ?? memberInfo.Name);
+                var escapedName = GetEncodedPropertyName(name);
 
                 var canRead = true;
                 var canWrite = true;
@@ -210,7 +186,7 @@ namespace SpanJson.Resolvers
 
                 if (memberInfo.GetCustomAttribute<JsonExtensionDataAttribute>() != null && typeof(IDictionary<string, object>).IsAssignableFrom(memberType) && canRead && canWrite)
                 {
-                    extensionMemberInfo = new JsonExtensionMemberInfo(memberInfo.Name, memberType, _spanJsonOptions.NamingConvention, excludeNulls);
+                    extensionMemberInfo = new JsonExtensionMemberInfo(memberInfo.Name, memberType, excludeNulls);
                 }
                 else if (!IsIgnored(memberInfo))
                 {
@@ -294,8 +270,6 @@ namespace SpanJson.Resolvers
                     default:
                         throw new NotSupportedException("Only One- and Two-dimensional arrrays are supported.");
                 }
-
-
             }
 
             if (type.IsEnum)
@@ -550,6 +524,61 @@ namespace SpanJson.Resolvers
             }
 
             return false;
+        }
+
+        /// <summary>Resolves the key of the dictionary.</summary>
+        /// <param name="dictionaryKey">Key of the dictionary.</param>
+        /// <returns>Resolved key of the dictionary.</returns>
+        public string ResolveDictionaryKey(string dictionaryKey)
+        {
+            if (_dictionayKeyPolicy != null)
+            {
+                return _dictionayKeyPolicy.ConvertName(dictionaryKey);
+            }
+
+            return ResolvePropertyName(dictionaryKey);
+        }
+
+        /// <summary>Resolves the name of the extension data.</summary>
+        /// <param name="extensionDataName">Name of the extension data.</param>
+        /// <returns>Resolved name of the extension data.</returns>
+        public string ResolveExtensionDataName(string extensionDataName)
+        {
+            if (_extensionDataPolicy != null)
+            {
+                return _extensionDataPolicy.ConvertName(extensionDataName);
+            }
+
+            return extensionDataName;
+        }
+
+        /// <summary>Resolves the name of the property.</summary>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <returns>Resolved name of the property.</returns>
+        public string ResolvePropertyName(string propertyName)
+        {
+            if (_jsonPropertyNamingPolicy != null)
+            {
+                return _jsonPropertyNamingPolicy.ConvertName(propertyName);
+            }
+
+            return propertyName;
+        }
+
+        public JsonEncodedText GetEncodedDictionaryKey(string dictionaryKey)
+        {
+            //return JsonEncodedText.Encode(ResolveDictionaryKey(dictionaryKey), StringEscapeHandling.EscapeNonAscii);
+            return EscapingHelper.GetEncodedText(ResolveDictionaryKey(dictionaryKey), _stringEscapeHandling);
+        }
+
+        public JsonEncodedText GetEncodedExtensionDataName(string extensionDataName)
+        {
+            return EscapingHelper.GetEncodedText(ResolveExtensionDataName(extensionDataName), _stringEscapeHandling);
+        }
+
+        public JsonEncodedText GetEncodedPropertyName(string propertyName)
+        {
+            return EscapingHelper.GetEncodedText(ResolvePropertyName(propertyName), _stringEscapeHandling);
         }
     }
 }

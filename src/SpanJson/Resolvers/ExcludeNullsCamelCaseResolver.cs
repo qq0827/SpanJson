@@ -5,8 +5,9 @@
         public ExcludeNullsCamelCaseResolver() : base(new SpanJsonOptions
         {
             NullOption = NullOptions.ExcludeNulls,
-            NamingConvention = NamingConventions.CamelCase,
-            EnumOption = EnumOptions.String
+            EnumOption = EnumOptions.String,
+            ExtensionDataNamingPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         })
         {
         }

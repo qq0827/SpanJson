@@ -5,7 +5,6 @@
         public ExcludeNullsOriginalCaseResolver() : base(new SpanJsonOptions
         {
             NullOption = NullOptions.ExcludeNulls,
-            NamingConvention = NamingConventions.OriginalCase,
             EnumOption = EnumOptions.String
         })
         {

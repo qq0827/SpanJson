@@ -7,8 +7,9 @@ namespace SpanJson.AspNetCore.Formatter
         public AspNetCoreDefaultResolver() : base(new SpanJsonOptions
         {
             NullOption = NullOptions.IncludeNulls,
-            NamingConvention = NamingConventions.CamelCase,
-            EnumOption = EnumOptions.Integer
+            EnumOption = EnumOptions.Integer,
+            ExtensionDataNamingPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         })
         {
         }

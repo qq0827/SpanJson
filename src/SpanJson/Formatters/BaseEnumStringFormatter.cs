@@ -37,6 +37,7 @@ namespace SpanJson.Formatters
             foreach (var name in Enum.GetNames(typeof(T)))
             {
                 Expression valueConstant = null;
+                // TODO Enum (NamingPolicy、StringEscapeHandling)
                 var formattedValue = escapeFunctor(GetFormattedValue(name));
                 if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
                 {
@@ -97,8 +98,8 @@ namespace SpanJson.Formatters
             foreach (var name in Enum.GetNames(typeof(T)))
             {
                 var formattedValue = GetFormattedValue(name);
-                // TODO Enum
-                var escapedName = EscapingHelper.GetEncodedText(name, StringEscapeHandling.Default);
+                // TODO Enum (NamingPolicy、StringEscapeHandling)
+                var escapedName = EscapingHelper.Default.GetEncodedText(name);
                 memberInfos.Add(new JsonMemberInfo(name, typeof(T), null, formattedValue, escapedName, false, true, false, null, null));
                 var value = Enum.Parse(typeof(T), name);
                 dict.Add(name, (TReturn) Convert.ChangeType(value, typeof(TReturn)));

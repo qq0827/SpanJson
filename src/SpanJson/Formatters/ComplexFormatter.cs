@@ -212,8 +212,7 @@ namespace SpanJson.Formatters
                     typeof(IDictionary<string, object>));
                 expressions.Add(Expression.IfThen(Expression.ReferenceNotEqual(valueExpression, Expression.Constant(null)), Expression.Call(null,
                     closedMemberInfo, writerParameter, resolverParameter, valueExpression, writeSeparator, Expression.Constant(objectDescription.ExtensionMemberInfo.ExcludeNulls),
-                    Expression.Constant(knownNames),
-                    Expression.Constant(objectDescription.ExtensionMemberInfo.NamingConvention))));
+                    Expression.Constant(knownNames))));
             }
 
             expressions.Add(Expression.Call(writerParameter, writeEndObjectMethodInfo));
@@ -482,7 +481,7 @@ namespace SpanJson.Formatters
 
         private static void SerializeExtension<TSymbol, TResolver>(ref JsonWriter<TSymbol> writer,
             IJsonFormatterResolver<TSymbol> resolver, IDictionary<string, object> value, bool writeSeparator,
-            bool excludeNulls, HashSet<string> knownNames, NamingConventions namingConvention)
+            bool excludeNulls, HashSet<string> knownNames)
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
             var valueLength = value.Count;
@@ -501,19 +500,7 @@ namespace SpanJson.Formatters
                     }
 
                     var name = kvp.Key;
-                    switch (namingConvention)
-                    {
-                        case NamingConventions.CamelCase:
-                            writer.WriteName(EscapingHelper.GetEncodedText(StringMutator.ToCamelCase(name), resolver.StringEscapeHandling));
-                            break;
-                        case NamingConventions.SnakeCase:
-                            writer.WriteName(EscapingHelper.GetEncodedText(StringMutator.ToSnakeCase(name), resolver.StringEscapeHandling));
-                            break;
-                        case NamingConventions.OriginalCase:
-                        default:
-                            writer.WriteName(EscapingHelper.GetEncodedText(name, resolver.StringEscapeHandling));
-                            break;
-                    }
+                    writer.WriteName(resolver.GetEncodedExtensionDataName(name));
 
                     if (knownNames.Contains(name))
                     {

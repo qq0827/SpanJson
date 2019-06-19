@@ -35,6 +35,7 @@ namespace SpanJson.Internal
             private static readonly ConcurrentDictionary<string, JsonEncodedText> s_encodedTextCache =
                 new ConcurrentDictionary<string, JsonEncodedText>(StringComparer.Ordinal);
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static JsonEncodedText GetEncodedText(string text)
             {
                 return s_encodedTextCache.GetOrAdd(text, s => JsonEncodedText.Encode(s, StringEscapeHandling.Default));

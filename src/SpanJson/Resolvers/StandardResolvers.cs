@@ -1,10 +1,11 @@
-﻿using System;
-using System.Dynamic;
-using System.Runtime.CompilerServices;
-using System.Threading;
-
-namespace SpanJson.Resolvers
+﻿namespace SpanJson.Resolvers
 {
+    using System;
+    using System.Dynamic;
+    using System.Runtime.CompilerServices;
+    using System.Threading;
+    using SpanJson.Internal;
+
     public static class StandardResolvers
     {
         public static IJsonFormatterResolver<TSymbol, TResolver> GetResolver<TSymbol, TResolver>()
@@ -51,6 +52,9 @@ namespace SpanJson.Resolvers
             private static readonly TResolver s_innerResolver;
 
             private readonly StringEscapeHandling _stringEscapeHandling;
+            private readonly JsonNamingPolicy _dictionayKeyPolicy;
+            private readonly JsonNamingPolicy _extensionDataPolicy;
+            private readonly JsonNamingPolicy _jsonPropertyNamingPolicy;
 
             static StandardResolver()
             {
@@ -61,6 +65,9 @@ namespace SpanJson.Resolvers
             private StandardResolver()
             {
                 _stringEscapeHandling = s_innerResolver.StringEscapeHandling;
+                _dictionayKeyPolicy = s_innerResolver.JsonOptions.DictionaryKeyPolicy;
+                _extensionDataPolicy = s_innerResolver.JsonOptions.ExtensionDataNamingPolicy;
+                _jsonPropertyNamingPolicy = s_innerResolver.JsonOptions.PropertyNamingPolicy;
             }
 
             public SpanJsonOptions JsonOptions => s_innerResolver.JsonOptions;
@@ -100,6 +107,61 @@ namespace SpanJson.Resolvers
             public JsonObjectDescription GetObjectDescription<T>()
             {
                 return ObjectDescriptionCache<T>.Instance;
+            }
+
+            /// <summary>Resolves the key of the dictionary.</summary>
+            /// <param name="dictionaryKey">Key of the dictionary.</param>
+            /// <returns>Resolved key of the dictionary.</returns>
+            public string ResolveDictionaryKey(string dictionaryKey)
+            {
+                if (_dictionayKeyPolicy != null)
+                {
+                    return _dictionayKeyPolicy.ConvertName(dictionaryKey);
+                }
+
+                return ResolvePropertyName(dictionaryKey);
+            }
+
+            /// <summary>Resolves the name of the extension data.</summary>
+            /// <param name="extensionDataName">Name of the extension data.</param>
+            /// <returns>Resolved name of the extension data.</returns>
+            public string ResolveExtensionDataName(string extensionDataName)
+            {
+                if (_extensionDataPolicy != null)
+                {
+                    return _extensionDataPolicy.ConvertName(extensionDataName);
+                }
+
+                return extensionDataName;
+            }
+
+            /// <summary>Resolves the name of the property.</summary>
+            /// <param name="propertyName">Name of the property.</param>
+            /// <returns>Resolved name of the property.</returns>
+            public string ResolvePropertyName(string propertyName)
+            {
+                if (_jsonPropertyNamingPolicy != null)
+                {
+                    return _jsonPropertyNamingPolicy.ConvertName(propertyName);
+                }
+
+                return propertyName;
+            }
+
+            public JsonEncodedText GetEncodedDictionaryKey(string dictionaryKey)
+            {
+                //return JsonEncodedText.Encode(ResolveDictionaryKey(dictionaryKey), StringEscapeHandling.EscapeNonAscii);
+                return EscapingHelper.GetEncodedText(ResolveDictionaryKey(dictionaryKey), _stringEscapeHandling);
+            }
+
+            public JsonEncodedText GetEncodedExtensionDataName(string extensionDataName)
+            {
+                return EscapingHelper.GetEncodedText(ResolveExtensionDataName(extensionDataName), _stringEscapeHandling);
+            }
+
+            public JsonEncodedText GetEncodedPropertyName(string propertyName)
+            {
+                return EscapingHelper.GetEncodedText(ResolvePropertyName(propertyName), _stringEscapeHandling);
             }
 
             internal static class FormatterCache<T>

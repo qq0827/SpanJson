@@ -23,6 +23,31 @@ namespace SpanJson
 
         Func<T> GetCreateFunctor<T>();
         Func<T, TConverted> GetEnumerableConvertFunctor<T, TConverted>();
+
+        /// <summary>Resolves the key of the dictionary.</summary>
+        /// <param name="dictionaryKey">Key of the dictionary.</param>
+        /// <returns>Resolved key of the dictionary.</returns>
+        string ResolveDictionaryKey(string dictionaryKey);
+
+        /// <summary>Resolves the name of the extension data.</summary>
+        /// <param name="extensionDataName">Name of the extension data.</param>
+        /// <returns>Resolved name of the extension data.</returns>
+        string ResolveExtensionDataName(string extensionDataName);
+
+        /// <summary>Resolves the name of the property.</summary>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <returns>Resolved name of the property.</returns>
+        string ResolvePropertyName(string propertyName);
+
+        /// <summary>TBD</summary>
+        /// <param name="dictionaryKey">TBD</param>
+        /// <remarks>Note:
+        /// The dictionary data is very small
+        /// The dictionary key is known
+        /// </remarks>
+        JsonEncodedText GetEncodedDictionaryKey(string dictionaryKey);
+        JsonEncodedText GetEncodedExtensionDataName(string extensionDataName);
+        JsonEncodedText GetEncodedPropertyName(string propertyName);
     }
 
     public interface IJsonFormatterResolver<TSymbol, in TResolver> : IJsonFormatterResolver<TSymbol>

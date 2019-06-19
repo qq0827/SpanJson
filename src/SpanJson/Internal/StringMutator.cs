@@ -20,16 +20,18 @@ namespace SpanJson.Internal
 
         /// <summary>MyProperty -> myProperty</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string ToCamelCaseWithCache(string s)
+        {
+            if (string.IsNullOrEmpty(s) || !char.IsUpper(s[0])) { return s; }
+
+            return s_camelCaseCache.GetOrAdd(s, _ => ToCamelCase(_));
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static string ToCamelCase(string s)
         {
             if (string.IsNullOrEmpty(s) || !char.IsUpper(s[0])) { return s; }
 
-            return s_camelCaseCache.GetOrAdd(s, _ => ToCamelCaseImpl(_));
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static string ToCamelCaseImpl(string s)
-        {
             char[] chars = s.ToCharArray();
 
             for (int i = 0; i < chars.Length; i++)
@@ -71,16 +73,18 @@ namespace SpanJson.Internal
 
         /// <summary>MyProperty -> my_property</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string ToSnakeCaseWithCache(string s)
+        {
+            if (string.IsNullOrEmpty(s)) { return s; }
+
+            return s_snakeCaseCache.GetOrAdd(s, _ => ToSnakeCase(_));
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static string ToSnakeCase(string s)
         {
             if (string.IsNullOrEmpty(s)) { return s; }
 
-            return s_snakeCaseCache.GetOrAdd(s, _ => ToSnakeCaseImpl(_));
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static string ToSnakeCaseImpl(string s)
-        {
             var sb = StringBuilderCache.Acquire();
             var state = SnakeCaseState.Start;
 
