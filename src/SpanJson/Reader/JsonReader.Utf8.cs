@@ -481,16 +481,6 @@ namespace SpanJson
                 : JsonHelpers.GetUnescapedString(span, backslashIdx);
         }
 
-        private static ReadOnlySpan<byte> UnescapeUtf8Bytes(in ReadOnlySpan<byte> span, int backslashIdx)
-        {
-            // not necessarily correct, just needs to be a good upper bound
-            // this gets slightly too high, as the normal escapes are two bytes, and the \u1234 escapes are 6 bytes, but we only need 4
-            var unescapedLength = span.Length;
-            Span<byte> result = new byte[unescapedLength];
-            JsonHelpers.Unescape(span, result, backslashIdx, out var written);
-            return result.Slice(0, written);
-        }
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySpan<byte> ReadUtf8StringSpan()
         {
@@ -503,6 +493,29 @@ namespace SpanJson
 
             var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out var backslashIdx);
             return (uint)backslashIdx > JsonSharedConstant.TooBigOrNegative ? span : UnescapeUtf8Bytes(span, backslashIdx);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<byte> ReadUtf8VerbatimStringSpan()
+        {
+            ref var pos = ref _pos;
+            ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
+            if (ReadUtf8IsNullInternal(ref bStart, ref pos, _length))
+            {
+                return JsonUtf8Constant.NullTerminator;
+            }
+
+            return ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out _);
+        }
+
+        private static ReadOnlySpan<byte> UnescapeUtf8Bytes(in ReadOnlySpan<byte> span, int backslashIdx)
+        {
+            // not necessarily correct, just needs to be a good upper bound
+            // this gets slightly too high, as the normal escapes are two bytes, and the \u1234 escapes are 6 bytes, but we only need 4
+            var unescapedLength = span.Length;
+            Span<byte> result = new byte[unescapedLength];
+            JsonHelpers.Unescape(span, result, backslashIdx, out var written);
+            return result.Slice(0, written);
         }
 
         private static ReadOnlySpan<byte> ReadUtf8StringSpanInternal(ref byte bStart, ref int pos, uint length, out int backslashIdx)

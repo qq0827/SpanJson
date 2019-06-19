@@ -156,7 +156,11 @@ namespace SpanJson.Internal
         {
             if (string.IsNullOrEmpty(input)) { return input; }
 
+#if NETSTANDARD2_0 || NET471 || NET451
             ReadOnlySpan<char> source = input.AsSpan();
+#else
+            ReadOnlySpan<char> source = input;
+#endif
             var firstEscapeIndex = NeedsEscaping(source, escapeHandling);
             if ((uint)firstEscapeIndex > JsonSharedConstant.TooBigOrNegative) // -1
             {

@@ -260,10 +260,23 @@ namespace SpanJson
             throw ThrowHelper.GetNotSupportedException();
         }
 
-        /// <summary>
-        /// Doesn't skip whitespace, just for copying around in a token loop
-        /// </summary>
-        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<TSymbol> ReadVerbatimStringSpan()
+        {
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+            {
+                return MemoryMarshal.Cast<byte, TSymbol>(ReadUtf8VerbatimStringSpan());
+            }
+
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                return MemoryMarshal.Cast<char, TSymbol>(ReadUtf16VerbatimStringSpan());
+            }
+
+            throw ThrowHelper.GetNotSupportedException();
+        }
+
+        /// <summary>Doesn't skip whitespace, just for copying around in a token loop</summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySpan<TSymbol> ReadVerbatimStringSpanUnsafe()
         {

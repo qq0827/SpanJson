@@ -506,6 +506,37 @@ namespace SpanJson
             return escapedCharSize == 0 ? span.ToString() : UnescapeUtf16(span, escapedCharSize);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<char> ReadUtf16StringSpan()
+        {
+            ref var pos = ref _pos;
+            ref var cStart = ref MemoryMarshal.GetReference(_chars);
+            if (ReadUtf16IsNullInternal(ref cStart, ref pos, _length))
+            {
+                return JsonUtf16Constant.NullTerminator;
+            }
+
+            var span = ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out var escapedCharSize);
+#if NETSTANDARD2_0 || NET471 || NET451
+            return escapedCharSize == 0 ? span : UnescapeUtf16(span, escapedCharSize).AsSpan();
+#else
+            return escapedCharSize == 0 ? span : UnescapeUtf16(span, escapedCharSize);
+#endif
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<char> ReadUtf16VerbatimStringSpan()
+        {
+            ref var pos = ref _pos;
+            ref var cStart = ref MemoryMarshal.GetReference(_chars);
+            if (ReadUtf16IsNullInternal(ref cStart, ref pos, _length))
+            {
+                return JsonUtf16Constant.NullTerminator;
+            }
+
+            return ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out var escapedCharSize);
+        }
+
         private static
 #if NETSTANDARD2_0 || NET471 || NET451
             unsafe
@@ -609,24 +640,6 @@ namespace SpanJson
             }
 
             result = result.Slice(0, charOffset);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ReadOnlySpan<char> ReadUtf16StringSpan()
-        {
-            ref var pos = ref _pos;
-            ref var cStart = ref MemoryMarshal.GetReference(_chars);
-            if (ReadUtf16IsNullInternal(ref cStart, ref pos, _length))
-            {
-                return JsonUtf16Constant.NullTerminator;
-            }
-
-            var span = ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out var escapedCharSize);
-#if NETSTANDARD2_0 || NET471 || NET451
-            return escapedCharSize == 0 ? span : UnescapeUtf16(span, escapedCharSize).AsSpan();
-#else
-            return escapedCharSize == 0 ? span : UnescapeUtf16(span, escapedCharSize);
-#endif
         }
 
         private static ReadOnlySpan<char> ReadUtf16StringSpanInternal(ref char cStart, ref int pos, uint length, out int escapedCharsSize)
