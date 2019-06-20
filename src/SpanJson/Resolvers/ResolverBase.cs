@@ -102,11 +102,9 @@ namespace SpanJson.Resolvers
             // ReSharper restore ConvertClosureToMethodGroup
         }
 
-        /// <summary>
-        /// Override a formatter on global scale, additionally we might need to register array versions etc
-        /// Only register primitive types here, no arrays etc. this creates weird problems.
-        /// </summary>
-        protected void RegisterGlobalCustomFormatter<T, TFormatter>() where TFormatter : ICustomJsonFormatter<T>
+        /// <summary>Override a formatter on global scale, additionally we might need to register array versions etc
+        /// Only register primitive types here, no arrays etc. this creates weird problems.</summary>
+        public static void RegisterGlobalCustomFormatter<T, TFormatter>() where TFormatter : ICustomJsonFormatter<T>
         {
             var type = typeof(T);
             var formatterType = typeof(TFormatter);

@@ -105,6 +105,7 @@ namespace SpanJson
         public const byte Asterisk = (byte)'*';
         public const byte Colon = (byte)':';
         public const byte Period = (byte)'.';
+        public const byte Minus = (byte)'-';
 
         public static ReadOnlySpan<byte> NewLine => new[] { (byte)'\r', (byte)'\n' };
         public static ReadOnlySpan<byte> NullTerminator => new byte[] { 0 };
@@ -141,6 +142,7 @@ namespace SpanJson
         public const char Asterisk = '*';
         public const char Colon = ':';
         public const char Period = '.';
+        public const char Minus = '-';
 
         public static ReadOnlySpan<char> NewLine => new[] { '\r', '\n' };
         public static ReadOnlySpan<char> NullTerminator => new[] { '\0' };

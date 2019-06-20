@@ -222,13 +222,13 @@ namespace SpanJson.Tests
         }
 
         [Theory]
-        [InlineData("2017-06-12T05:30:45.7680000", 2017, 6, 12, 5, 30, 45, 7680000,
+        [InlineData("2017-06-12T05:30:45.768", 2017, 6, 12, 5, 30, 45, 7680000,
             DateTimeKind.Unspecified)]
-        [InlineData("2017-06-12T05:30:45.7680000Z", 2017, 6, 12, 5, 30, 45, 7680000, DateTimeKind.Utc)]
+        [InlineData("2017-06-12T05:30:45.768Z", 2017, 6, 12, 5, 30, 45, 7680000, DateTimeKind.Utc)]
         [InlineData("2017-06-12T05:30:45", 2017, 6, 12, 5, 30, 45, 0, DateTimeKind.Unspecified)]
         [InlineData("2017-06-12T05:30:45Z", 2017, 6, 12, 5, 30, 45, 0, DateTimeKind.Utc)]
-        [InlineData("2017-06-12T05:30:45.0010000", 2017, 6, 12, 5, 30, 45, 10000, DateTimeKind.Unspecified)]
-        [InlineData("2017-06-12T05:30:45.0010000Z", 2017, 6, 12, 5, 30, 45, 10000, DateTimeKind.Utc)]
+        [InlineData("2017-06-12T05:30:45.001", 2017, 6, 12, 5, 30, 45, 10000, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45.001Z", 2017, 6, 12, 5, 30, 45, 10000, DateTimeKind.Utc)]
         [InlineData("2017-06-12T05:30:45.7607389", 2017, 6, 12, 5, 30, 45, 7607389, DateTimeKind.Unspecified)]
         [InlineData("2017-06-12T05:30:45.7607389Z", 2017, 6, 12, 5, 30, 45, 7607389, DateTimeKind.Utc)]
         [InlineData("2017-06-12T05:30:45.0000001Z", 2017, 6, 12, 5, 30, 45, 0000001, DateTimeKind.Utc)]
@@ -237,13 +237,15 @@ namespace SpanJson.Tests
             int second, int fraction, DateTimeKind kind)
         {
             var value = new DateTime(year, month, day, hour, minute, second, kind).AddTicks(fraction);
-            Span<char> charSpan = stackalloc char[35];
+            Span<char> charSpan = stackalloc char[33];
             Assert.True(DateTimeFormatter.TryFormat(value, charSpan, out var symbolsWritten));
+            DateTimeFormatter.TrimDateTimeOffset(charSpan.Slice(0, symbolsWritten), out symbolsWritten);
             Assert.Equal(comparison, charSpan.Slice(0, symbolsWritten).ToString());
 
 
-            Span<byte> byteSpan = stackalloc byte[35];
+            Span<byte> byteSpan = stackalloc byte[33];
             Assert.True(DateTimeFormatter.TryFormat(value, byteSpan, out symbolsWritten));
+            DateTimeFormatter.TrimDateTimeOffset(byteSpan.Slice(0, symbolsWritten), out symbolsWritten);
 #if NETCOREAPP_2_0_GREATER
             Assert.Equal(comparison, Encoding.UTF8.GetString(byteSpan.Slice(0, symbolsWritten)));
 #else
@@ -252,18 +254,18 @@ namespace SpanJson.Tests
         }
 
         [Theory]
-        [InlineData("2017-06-12T05:30:45.7680000-07:30", 2017, 6, 12, 5, 30, 45, 7680000, true, 7, 30,
+        [InlineData("2017-06-12T05:30:45.768-07:30", 2017, 6, 12, 5, 30, 45, 7680000, true, 7, 30,
             DateTimeKind.Unspecified)]
-        [InlineData("2017-06-12T05:30:45.7680000Z", 2017, 6, 12, 5, 30, 45, 7680000, false, 0, 0, DateTimeKind.Utc)]
-        [InlineData("2017-06-12T05:30:45.7680000Z", 2017, 6, 12, 5, 30, 45, 7680000, false, 0, 0,
+        [InlineData("2017-06-12T05:30:45.768Z", 2017, 6, 12, 5, 30, 45, 7680000, false, 0, 0, DateTimeKind.Utc)]
+        [InlineData("2017-06-12T05:30:45.768Z", 2017, 6, 12, 5, 30, 45, 7680000, false, 0, 0,
             DateTimeKind.Unspecified)]
-        [InlineData("2017-06-12T05:30:45.7680000+08:00", 2017, 6, 12, 5, 30, 45, 7680000, false, 8, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45.768+08:00", 2017, 6, 12, 5, 30, 45, 7680000, false, 8, 0, DateTimeKind.Unspecified)]
         [InlineData("2017-06-12T05:30:45+01:00", 2017, 6, 12, 5, 30, 45, 0, false, 1, 0, DateTimeKind.Unspecified)]
         [InlineData("2017-06-12T05:30:45Z", 2017, 6, 12, 5, 30, 45, 0, false, 0, 0, DateTimeKind.Utc)]
         [InlineData("2017-06-12T05:30:45Z", 2017, 6, 12, 5, 30, 45, 0, false, 0, 0, DateTimeKind.Unspecified)]
-        [InlineData("2017-06-12T05:30:45.0010000+01:00", 2017, 6, 12, 5, 30, 45, 10000, false, 1, 0, DateTimeKind.Unspecified)]
-        [InlineData("2017-06-12T05:30:45.0010000Z", 2017, 6, 12, 5, 30, 45, 10000, false, 0, 0, DateTimeKind.Utc)]
-        [InlineData("2017-06-12T05:30:45.0010000Z", 2017, 6, 12, 5, 30, 45, 10000, false, 0, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45.001+01:00", 2017, 6, 12, 5, 30, 45, 10000, false, 1, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45.001Z", 2017, 6, 12, 5, 30, 45, 10000, false, 0, 0, DateTimeKind.Utc)]
+        [InlineData("2017-06-12T05:30:45.001Z", 2017, 6, 12, 5, 30, 45, 10000, false, 0, 0, DateTimeKind.Unspecified)]
         [InlineData("2017-06-12T05:30:45.7607389+01:00", 2017, 6, 12, 5, 30, 45, 7607389, false, 1, 0, DateTimeKind.Unspecified)]
         [InlineData("2017-06-12T05:30:45.7607389Z", 2017, 6, 12, 5, 30, 45, 7607389, false, 0, 0, DateTimeKind.Utc)]
         [InlineData("2017-06-12T05:30:45.7607389Z", 2017, 6, 12, 5, 30, 45, 7607389, false, 0, 0, DateTimeKind.Unspecified)]
@@ -282,12 +284,14 @@ namespace SpanJson.Tests
             var value = new DateTimeOffset(dt, offset);
 #endif
 
-            Span<char> charSpan = stackalloc char[35];
+            Span<char> charSpan = stackalloc char[33];
             Assert.True(DateTimeFormatter.TryFormat(value, charSpan, out var symbolsWritten));
+            DateTimeFormatter.TrimDateTimeOffset(charSpan.Slice(0, symbolsWritten), out symbolsWritten);
             Assert.Equal(comparison, charSpan.Slice(0, symbolsWritten).ToString());
 
-            Span<byte> byteSpan = stackalloc byte[35];
+            Span<byte> byteSpan = stackalloc byte[33];
             Assert.True(DateTimeFormatter.TryFormat(value, byteSpan, out symbolsWritten));
+            DateTimeFormatter.TrimDateTimeOffset(byteSpan.Slice(0, symbolsWritten), out symbolsWritten);
 #if NETCOREAPP_2_0_GREATER
             Assert.Equal(comparison, Encoding.UTF8.GetString(byteSpan.Slice(0, symbolsWritten)));
 #else
@@ -304,12 +308,14 @@ namespace SpanJson.Tests
             var output = value.ToString("yyyy-MM-ddTHH:mm:ss");
             var sign = offset.Hours < 0 ? '-' : '+';
             output = output + sign + $"{offset.Hours:D2}:{offset.Minutes:D2}";
-            Span<char> charSpan = stackalloc char[35];
+            Span<char> charSpan = stackalloc char[33];
             Assert.True(DateTimeFormatter.TryFormat(value, charSpan, out var symbolsWritten));
+            DateTimeFormatter.TrimDateTimeOffset(charSpan.Slice(0, symbolsWritten), out symbolsWritten);
             Assert.Equal(output, charSpan.Slice(0, symbolsWritten).ToString());
 
-            Span<byte> byteSpan = stackalloc byte[35];
+            Span<byte> byteSpan = stackalloc byte[33];
             Assert.True(DateTimeFormatter.TryFormat(value, byteSpan, out symbolsWritten));
+            DateTimeFormatter.TrimDateTimeOffset(byteSpan.Slice(0, symbolsWritten), out symbolsWritten);
 #if NETCOREAPP_2_0_GREATER
             Assert.Equal(output, Encoding.UTF8.GetString(byteSpan.Slice(0, symbolsWritten)));
 #else

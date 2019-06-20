@@ -220,8 +220,15 @@
             ref byte pinnableAddr = ref Utf8PinnableAddress;
 
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
-            DateTimeFormatter.TryFormat(value, Utf8Span, out var bytesWritten);
+
+            Span<byte> tempSpan = stackalloc byte[JsonSharedConstant.MaximumFormatDateTimeOffsetLength];
+            bool result = DateTimeFormatter.TryFormat(value, tempSpan, out int bytesWritten);
+            Debug.Assert(result);
+            DateTimeFormatter.TrimDateTimeOffset(tempSpan.Slice(0, bytesWritten), out bytesWritten);
+
+            tempSpan.Slice(0, bytesWritten).CopyTo(Utf8Span);
             pos += bytesWritten;
+
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
         }
 
@@ -238,8 +245,15 @@
             ref byte pinnableAddr = ref Utf8PinnableAddress;
 
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
-            DateTimeFormatter.TryFormat(value, Utf8Span, out var bytesWritten);
+
+            Span<byte> tempSpan = stackalloc byte[JsonSharedConstant.MaximumFormatDateTimeOffsetLength];
+            bool result = DateTimeFormatter.TryFormat(value, tempSpan, out int bytesWritten);
+            Debug.Assert(result);
+            DateTimeFormatter.TrimDateTimeOffset(tempSpan.Slice(0, bytesWritten), out bytesWritten);
+
+            tempSpan.Slice(0, bytesWritten).CopyTo(Utf8Span);
             pos += bytesWritten;
+
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
         }
 
