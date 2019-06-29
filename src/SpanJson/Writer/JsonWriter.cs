@@ -603,5 +603,22 @@
                 ThrowHelper.ThrowNotSupportedException();
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteCombGuid(CuteAnt.CombGuid value)
+        {
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+            {
+                WriteUtf8CombGuid(value);
+            }
+            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                WriteUtf16CombGuid(value);
+            }
+            else
+            {
+                ThrowHelper.ThrowNotSupportedException();
+            }
+        }
     }
 }

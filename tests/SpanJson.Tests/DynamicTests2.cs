@@ -1,7 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using System.Text;
+using CuteAnt;
 using SpanJson.Resolvers;
+using SpanJson.Formatters.Dynamic;
 using Xunit;
 
 namespace SpanJson.Tests
@@ -60,6 +64,87 @@ namespace SpanJson.Tests
             Assert.Equal("Hello Universe", (string)deserialized.dynamic_value);
         }
 
+        [Fact]
+        public void JsonObjectTypeDeserializerTest()
+        {
+            var dict = new Dictionary<string, object>
+            {
+                { "KeyA", 101 },
+                { "KeyB", Guid.NewGuid() },
+                { "KeyC", CombGuid.NewComb() },
+            };
+
+            var json = JsonSerializer.Generic.Utf16.Serialize(dict);
+            var newDict = JsonSerializer.Generic.Utf16.Deserialize<Dictionary<string, object>>(json);
+
+            Assert.NotNull(newDict);
+            Assert.Equal(3, newDict.Count);
+            var utf16Num = newDict["KeyA"] as SpanJsonDynamicUtf16Number;
+            Assert.NotNull(utf16Num);
+            Assert.Equal(dict["KeyA"], (int)utf16Num);
+            SpanJsonDynamicUtf16Number.DynamicConverter.TryConvertTo(typeof(int), utf16Num.Symbols, out object result);
+            Assert.Equal(dict["KeyA"], result);
+
+            var utf16Str = newDict["KeyB"] as SpanJsonDynamicUtf16String;
+            Assert.NotNull(utf16Str);
+            Assert.Equal(dict["KeyB"], (Guid)utf16Str);
+            SpanJsonDynamicUtf16String.DynamicConverter.TryConvertTo(typeof(Guid), utf16Str.Symbols, out result);
+            Assert.Equal(dict["KeyB"], result);
+
+            utf16Str = newDict["KeyC"] as SpanJsonDynamicUtf16String;
+            Assert.NotNull(utf16Str);
+            Assert.Equal(dict["KeyC"], (CombGuid)utf16Str);
+            SpanJsonDynamicUtf16String.DynamicConverter.TryConvertTo(typeof(CombGuid), utf16Str.Symbols, out result);
+            Assert.Equal(dict["KeyC"], result);
+        }
+
+        [Fact]
+        public void SerializeDeserializeDynamicChildUtf16_CombGuid()
+        {
+            var parent = new NonDynamicParent2();
+            var child1 = new NonDynamicParent2.DynamicChild { Fixed = CombGuid.NewComb() };
+            child1.Add("Id", CombGuid.NewComb());
+            parent.Children.Add(child1);
+            var child2 = new NonDynamicParent2.DynamicChild { Fixed = CombGuid.NewComb() };
+            child2.Add("Name", "Hello World");
+            parent.Children.Add(child2);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(parent);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<NonDynamicParent2>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(parent.Children[0].Fixed, deserialized.Children[0].Fixed);
+            Assert.Equal(parent.Children[1].Fixed, deserialized.Children[1].Fixed);
+            dynamic dynamicChild1 = parent.Children[0];
+            dynamic dynamicChild2 = parent.Children[1];
+            dynamic deserializedDynamic = deserialized;
+            Assert.Equal(dynamicChild1.Id, (CombGuid)deserializedDynamic.Children[0].Id);
+            Assert.Equal(dynamicChild2.Name, (string)deserializedDynamic.Children[1].Name);
+        }
+
+
+        [Fact]
+        public void SerializeDeserializeDynamicChildUtf8_CombGuid()
+        {
+            var parent = new NonDynamicParent2();
+            var child1 = new NonDynamicParent2.DynamicChild { Fixed = CombGuid.NewComb() };
+            child1.Add("Id", CombGuid.NewComb());
+            parent.Children.Add(child1);
+            var child2 = new NonDynamicParent2.DynamicChild { Fixed = CombGuid.NewComb() };
+            child2.Add("Name", "Hello World");
+            parent.Children.Add(child2);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(parent);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<NonDynamicParent2>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(parent.Children[0].Fixed, deserialized.Children[0].Fixed);
+            Assert.Equal(parent.Children[1].Fixed, deserialized.Children[1].Fixed);
+            dynamic dynamicChild1 = parent.Children[0];
+            dynamic dynamicChild2 = parent.Children[1];
+            dynamic deserializedDynamic = deserialized;
+            Assert.Equal(dynamicChild1.Id, (CombGuid)deserializedDynamic.Children[0].Id);
+            Assert.Equal(dynamicChild2.Name, (string)deserializedDynamic.Children[1].Name);
+        }
+
         public class DynamicObjectWithKnownMembers2 : DynamicObject
         {
             private readonly Dictionary<string, object> _dictionary = new Dictionary<string, object>();
@@ -92,6 +177,51 @@ namespace SpanJson.Tests
             public IList<string> JsonSupported { get; set; }
 
             public AbstractMember NotSupported { get; set; }
+        }
+
+        public class NonDynamicParent2
+        {
+            public class DynamicChild : DynamicObject
+            {
+                public CombGuid Fixed { get; set; }
+                public string Name { get; } = "Hello World";
+                private static readonly string[] extraFields = new string[] { nameof(Fixed), nameof(Name) };
+                private readonly Dictionary<string, object> _extra = new Dictionary<string, object>();
+
+                public override IEnumerable<string> GetDynamicMemberNames()
+                {
+                    return _extra.Keys.Concat(extraFields);
+                }
+
+                public override bool TryGetMember(GetMemberBinder binder, out object result)
+                {
+                    return _extra.TryGetValue(binder.Name, out result);
+                }
+
+                public override bool TrySetMember(SetMemberBinder binder, object value)
+                {
+#if DESKTOPCLR
+                    if (_extra.ContainsKey(binder.Name))
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        _extra[binder.Name] = value;
+                        return true;
+                    }
+#else
+                    return _extra.TryAdd(binder.Name, value);
+#endif
+                }
+
+                public void Add(string key, object value)
+                {
+                    _extra.Add(key, value);
+                }
+            }
+
+            public List<DynamicChild> Children { get; set; } = new List<DynamicChild>();
         }
     }
 }

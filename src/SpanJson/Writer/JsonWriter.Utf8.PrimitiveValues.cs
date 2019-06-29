@@ -4,6 +4,8 @@
     using System.Buffers.Text;
     using System.Diagnostics;
     using System.Runtime.CompilerServices;
+    using System.Runtime.InteropServices;
+    using CuteAnt;
     using SpanJson.Helpers;
     using SpanJson.Internal;
     using SpanJson.Internal.DoubleConversion;
@@ -289,6 +291,32 @@
 
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
             new GuidBits(ref value).Write(ref pinnableAddr, ref pos); // len = 36
+            WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
+        }
+
+        #endregion
+
+        #region -- CombGuid --
+
+        public void WriteUtf8CombGuid(CombGuid value)
+        {
+            ref var pos = ref _pos;
+            const int guidSize = JsonSharedConstant.MaxGuidLength; // Format D + two JsonUtf8Constant.DoubleQuote;
+            EnsureUnsafe(pos, guidSize);
+
+            ref byte pinnableAddr = ref Utf8PinnableAddress;
+
+            WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
+#if NETCOREAPP || NETSTANDARD_2_0_GREATER
+            value.TryFormat(Utf8Span, CombGuidFormatStringType.Comb, out int bytesWritten);
+            pos += bytesWritten;
+#else
+            Span<byte> tempSpan = stackalloc byte[36];
+            var bytesWritten = TextEncodings.Utf8.GetBytes(value.ToString(CombGuidFormatStringType.Comb).AsSpan(), tempSpan);
+            Debug.Assert(bytesWritten == tempSpan.Length);
+            UnsafeMemory.WriteRawBytes(ref pinnableAddr, ref MemoryMarshal.GetReference(tempSpan), bytesWritten, ref pos);
+#endif
+            //new GuidBits(ref value).Write(ref pinnableAddr, ref pos); // len = 36
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
         }
 

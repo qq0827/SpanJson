@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
+using CuteAnt;
 using SpanJson.Internal;
 
 namespace SpanJson.Formatters.Dynamic
 {
     public abstract partial class SpanJsonDynamicString<TSymbol> : SpanJsonDynamic<TSymbol> where TSymbol : struct
     {
-        private static readonly DynamicTypeConverter DynamicConverter = new DynamicTypeConverter();
+        public static readonly DynamicTypeConverter DynamicConverter = new DynamicTypeConverter();
 
         protected SpanJsonDynamicString(in ReadOnlySpan<TSymbol> span) : base(span)
         {
@@ -92,6 +93,7 @@ namespace SpanJson.Formatters.Dynamic
                     typeof(DateTimeOffset),
                     typeof(TimeSpan),
                     typeof(Guid),
+                    typeof(CombGuid),
                     typeof(string),
                     typeof(Version),
                     typeof(Uri)
@@ -100,6 +102,23 @@ namespace SpanJson.Formatters.Dynamic
             }
         }
 
+        public static explicit operator CombGuid(SpanJsonDynamicString<TSymbol> input)
+        {
+            if (DynamicConverter.TryConvertTo(typeof(CombGuid), input.Symbols, out var value))
+            {
+                return (CombGuid)value;
+            }
+            throw ThrowHelper.GetInvalidCastException();
+        }
+
+        public static explicit operator CombGuid?(SpanJsonDynamicString<TSymbol> input)
+        {
+            if (DynamicConverter.TryConvertTo(typeof(CombGuid?), input.Symbols, out var value))
+            {
+                return (CombGuid?)value;
+            }
+            throw ThrowHelper.GetInvalidCastException();
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override string ToString()

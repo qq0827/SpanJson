@@ -24,6 +24,8 @@ namespace SpanJson.Shared.Fixture
             _valueFixtures.Add(intFixture.Type, intFixture);
             var guidFixture = new GuidValueFixture();
             _valueFixtures.Add(guidFixture.Type, guidFixture);
+            var combGuidFixture = new CombGuidValueFixture();
+            _valueFixtures.Add(combGuidFixture.Type, combGuidFixture);
             var dtoFixture = new DateTimeOffsetValueFixture();
             _valueFixtures.Add(dtoFixture.Type, dtoFixture);
             var dtFixture = new DateTimeValueFixture();

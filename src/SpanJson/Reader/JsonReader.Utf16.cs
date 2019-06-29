@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using CuteAnt;
 using SpanJson.Formatters.Dynamic;
 using SpanJson.Helpers;
 using SpanJson.Internal;
@@ -265,23 +266,22 @@ namespace SpanJson
             ref var cStart = ref MemoryMarshal.GetReference(_chars);
             SkipWhitespaceUtf16(ref cStart, ref pos, _length);
             var span = ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out var escapedCharsSize);
-            return 0u >= (uint)escapedCharsSize ? ParseUtf16DateTime(span) : ParseUtf16DateTimeAllocating(span);
+            return 0u >= (uint)escapedCharsSize ? ParseUtf16DateTime(span, pos) : ParseUtf16DateTimeAllocating(span, pos);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private DateTime ParseUtf16DateTime(in ReadOnlySpan<char> span)
+        private static DateTime ParseUtf16DateTime(in ReadOnlySpan<char> span, int pos)
         {
             if (JsonHelpers.TryParseAsISO(span, out DateTime value, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return value;
             }
 
-            throw ThrowHelper.GetJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.DateTime, _pos);
+            throw ThrowHelper.GetJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.DateTime, pos);
         }
 
-
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private DateTime ParseUtf16DateTimeAllocating(in ReadOnlySpan<char> input)
+        private static DateTime ParseUtf16DateTimeAllocating(in ReadOnlySpan<char> input, int pos)
         {
             char[] unescapedArray = null;
             Span<char> utf16Unescaped = (uint)input.Length <= JsonSharedConstant.StackallocThreshold ?
@@ -295,7 +295,7 @@ namespace SpanJson
                     return value;
                 }
 
-                throw ThrowHelper.GetJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.DateTime, _pos);
+                throw ThrowHelper.GetJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.DateTime, pos);
             }
             finally
             {
@@ -309,23 +309,22 @@ namespace SpanJson
             ref var cStart = ref MemoryMarshal.GetReference(_chars);
             SkipWhitespaceUtf16(ref cStart, ref pos, _length);
             var span = ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out var escapedCharsSize);
-            return 0u >= (uint)escapedCharsSize ? ParseUtf16DateTimeOffset(span) : ParseUtf16DateTimeOffsetAllocating(span);
+            return 0u >= (uint)escapedCharsSize ? ParseUtf16DateTimeOffset(span, pos) : ParseUtf16DateTimeOffsetAllocating(span, pos);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private DateTimeOffset ParseUtf16DateTimeOffset(in ReadOnlySpan<char> span)
+        private static DateTimeOffset ParseUtf16DateTimeOffset(in ReadOnlySpan<char> span, int pos)
         {
             if (JsonHelpers.TryParseAsISO(span, out DateTimeOffset value, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return value;
             }
 
-            throw ThrowHelper.GetJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.DateTimeOffset, _pos);
+            throw ThrowHelper.GetJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.DateTimeOffset, pos);
         }
 
-
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private DateTimeOffset ParseUtf16DateTimeOffsetAllocating(in ReadOnlySpan<char> input)
+        private static DateTimeOffset ParseUtf16DateTimeOffsetAllocating(in ReadOnlySpan<char> input, int pos)
         {
             char[] unescapedArray = null;
             Span<char> utf16Unescaped = (uint)input.Length <= JsonSharedConstant.StackallocThreshold ?
@@ -339,7 +338,7 @@ namespace SpanJson
                     return value;
                 }
 
-                throw ThrowHelper.GetJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.DateTimeOffset, _pos);
+                throw ThrowHelper.GetJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.DateTimeOffset, pos);
             }
             finally
             {
@@ -353,11 +352,11 @@ namespace SpanJson
             ref var cStart = ref MemoryMarshal.GetReference(_chars);
             SkipWhitespaceUtf16(ref cStart, ref pos, _length);
             var span = ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out var escapedCharsSize);
-            return 0u >= (uint)escapedCharsSize ? ConvertTimeSpanViaUtf8(span, _pos) : ParseUtf16TimeSpanAllocating(span);
+            return 0u >= (uint)escapedCharsSize ? ConvertTimeSpanViaUtf8(span, _pos) : ParseUtf16TimeSpanAllocating(span, pos);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private TimeSpan ParseUtf16TimeSpanAllocating(in ReadOnlySpan<char> input)
+        private static TimeSpan ParseUtf16TimeSpanAllocating(in ReadOnlySpan<char> input, int pos)
         {
             char[] unescapedArray = null;
             Span<char> utf16Unescaped = (uint)input.Length <= JsonSharedConstant.StackallocThreshold ?
@@ -366,34 +365,7 @@ namespace SpanJson
             try
             {
                 UnescapeUtf16Chars(input, ref utf16Unescaped);
-                return ConvertTimeSpanViaUtf8(utf16Unescaped, _pos);
-            }
-            finally
-            {
-                if (unescapedArray != null) { ArrayPool<char>.Shared.Return(unescapedArray); }
-            }
-        }
-
-        public Guid ReadUtf16Guid()
-        {
-            ref var pos = ref _pos;
-            ref var cStart = ref MemoryMarshal.GetReference(_chars);
-            SkipWhitespaceUtf16(ref cStart, ref pos, _length);
-            var span = ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out var escapedCharsSize);
-            return 0u >= (uint)escapedCharsSize ? ConvertGuidViaUtf8(span, _pos) : ParseUtf16GuidAllocating(span);
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private Guid ParseUtf16GuidAllocating(in ReadOnlySpan<char> input)
-        {
-            char[] unescapedArray = null;
-            Span<char> utf16Unescaped = (uint)input.Length <= JsonSharedConstant.StackallocThreshold ?
-                stackalloc char[input.Length] :
-                (unescapedArray = ArrayPool<char>.Shared.Rent(input.Length));
-            try
-            {
-                UnescapeUtf16Chars(input, ref utf16Unescaped);
-                return ConvertGuidViaUtf8(utf16Unescaped, _pos);
+                return ConvertTimeSpanViaUtf8(utf16Unescaped, pos);
             }
             finally
             {
@@ -419,6 +391,33 @@ namespace SpanJson
             throw ThrowHelper.GetJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.TimeSpan, position);
         }
 
+        public Guid ReadUtf16Guid()
+        {
+            ref var pos = ref _pos;
+            ref var cStart = ref MemoryMarshal.GetReference(_chars);
+            SkipWhitespaceUtf16(ref cStart, ref pos, _length);
+            var span = ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out var escapedCharsSize);
+            return 0u >= (uint)escapedCharsSize ? ConvertGuidViaUtf8(span, _pos) : ParseUtf16GuidAllocating(span, pos);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static Guid ParseUtf16GuidAllocating(in ReadOnlySpan<char> input, int pos)
+        {
+            char[] unescapedArray = null;
+            Span<char> utf16Unescaped = (uint)input.Length <= JsonSharedConstant.StackallocThreshold ?
+                stackalloc char[input.Length] :
+                (unescapedArray = ArrayPool<char>.Shared.Rent(input.Length));
+            try
+            {
+                UnescapeUtf16Chars(input, ref utf16Unescaped);
+                return ConvertGuidViaUtf8(utf16Unescaped, pos);
+            }
+            finally
+            {
+                if (unescapedArray != null) { ArrayPool<char>.Shared.Return(unescapedArray); }
+            }
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Guid ConvertGuidViaUtf8(in ReadOnlySpan<char> span, int position)
         {
@@ -435,6 +434,57 @@ namespace SpanJson
             }
 
             throw ThrowHelper.GetJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.Guid, position);
+        }
+
+        public CombGuid ReadUtf16CombGuid()
+        {
+            ref var pos = ref _pos;
+            ref var cStart = ref MemoryMarshal.GetReference(_chars);
+            SkipWhitespaceUtf16(ref cStart, ref pos, _length);
+            var span = ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out var escapedCharsSize);
+            return 0u >= (uint)escapedCharsSize ? ParseUtf16CombGuid(span, _pos) : ParseUtf16CombGuidAllocating(span, pos);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static CombGuid ParseUtf16CombGuid(in ReadOnlySpan<char> span, int pos)
+        {
+            if (CombGuid.TryParse(span
+#if NETSTANDARD2_0 || NET471 || NET451
+                .ToString()
+#endif
+                , CombGuidSequentialSegmentType.Comb, out CombGuid value))
+            {
+                return value;
+            }
+
+            throw ThrowHelper.GetJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.CombGuid, pos);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static CombGuid ParseUtf16CombGuidAllocating(in ReadOnlySpan<char> input, int pos)
+        {
+            char[] unescapedArray = null;
+            Span<char> utf16Unescaped = (uint)input.Length <= JsonSharedConstant.StackallocThreshold ?
+                stackalloc char[input.Length] :
+                (unescapedArray = ArrayPool<char>.Shared.Rent(input.Length));
+            try
+            {
+                UnescapeUtf16Chars(input, ref utf16Unescaped);
+                if (CombGuid.TryParse(utf16Unescaped
+#if NETSTANDARD2_0 || NET471 || NET451
+                    .ToString()
+#endif
+                    , CombGuidSequentialSegmentType.Comb, out CombGuid value))
+                {
+                    return value;
+                }
+
+                throw ThrowHelper.GetJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.CombGuid, pos);
+            }
+            finally
+            {
+                if (unescapedArray != null) { ArrayPool<char>.Shared.Return(unescapedArray); }
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -26,6 +26,7 @@ namespace SpanJson
             DateTimeOffset,
             TimeSpan,
             Guid,
+            CombGuid,
         }
 
         public JsonParserException(ParserError error, int position) : base($"Error Reading JSON data: '{error}' at position: '{position}'.")

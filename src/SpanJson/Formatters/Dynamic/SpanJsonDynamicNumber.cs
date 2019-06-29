@@ -5,7 +5,7 @@ namespace SpanJson.Formatters.Dynamic
 {
     public abstract partial class SpanJsonDynamicNumber<TSymbol> : SpanJsonDynamic<TSymbol> where TSymbol : struct
     {
-        private static readonly DynamicTypeConverter DynamicConverter = new DynamicTypeConverter();
+        public static readonly DynamicTypeConverter DynamicConverter = new DynamicTypeConverter();
 
         protected SpanJsonDynamicNumber(in ReadOnlySpan<TSymbol> span) : base(span)
         {

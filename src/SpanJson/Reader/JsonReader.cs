@@ -361,5 +361,21 @@ namespace SpanJson
                 ThrowHelper.ThrowNotSupportedException();
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public CuteAnt.CombGuid ReadCombGuid()
+        {
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+            {
+                return ReadUtf8CombGuid();
+            }
+
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                return ReadUtf16CombGuid();
+            }
+
+            throw ThrowHelper.GetNotSupportedException();
+        }
     }
 }

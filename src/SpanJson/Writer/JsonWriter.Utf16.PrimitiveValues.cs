@@ -8,6 +8,7 @@
     using SpanJson.Internal;
     using System.Buffers.Text;
     using System.Runtime.InteropServices;
+    using CuteAnt;
     using SpanJson.Helpers;
 #if NETSTANDARD2_0 || NET471 || NET451
     using SpanJson.Internal.DoubleConversion;
@@ -339,6 +340,29 @@
 
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
             new GuidBits(ref value).Write(ref pinnableAddr, ref pos); // len = 36
+            WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
+        }
+
+        #endregion
+
+        #region -- CombGuid --
+
+        public void WriteUtf16CombGuid(CombGuid value)
+        {
+            ref var pos = ref _pos;
+            const int guidSize = JsonSharedConstant.MaxGuidLength; // Format D + two JsonUtf16Constant.DoubleQuote;
+            EnsureUnsafe(pos, guidSize);
+            ref char pinnableAddr = ref Utf16PinnableAddress;
+
+            WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
+#if NETCOREAPP || NETSTANDARD_2_0_GREATER
+            value.TryFormat(Utf16Span, CombGuidFormatStringType.Comb, out int charsWritten);
+            Debug.Assert(charsWritten == 36);
+            pos += charsWritten;
+#else
+            value.ToString(CombGuidFormatStringType.Comb).AsSpan().CopyTo(Utf16Span);
+            pos += 36;
+#endif
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
         }
 
