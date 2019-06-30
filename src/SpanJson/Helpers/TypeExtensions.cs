@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace SpanJson.Helpers
 {
@@ -48,6 +49,7 @@ namespace SpanJson.Helpers
             argumentTypes = default;
             return false;
         }
+
         // https://stackoverflow.com/questions/358835/getproperties-to-return-all-properties-for-an-interface-inheritance-hierarchy
         public static PropertyInfo[] GetPublicProperties(this Type type)
         {
@@ -90,16 +92,35 @@ namespace SpanJson.Helpers
 
         public static IEnumerable<MemberInfo> SerializableMembers(this Type type)
         {
-#if NETSTANDARD2_0 || NET471 || NET451
             var publicMembers = type.GetFields(BindingFlags.Public | BindingFlags.Instance)
-                .Where(a => !a.IsLiteral).Cast<MemberInfo>().Concat(
-                    type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(a => !a.GetIndexParameters().Any()));
-#else
-            var publicMembers = type.GetFields(BindingFlags.Public | BindingFlags.Instance)
-                .Where(a => !a.IsLiteral && !a.FieldType.IsByRefLike).Cast<MemberInfo>().Concat(
-                    type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(a => !a.PropertyType.IsByRefLike && !a.GetIndexParameters().Any()));
-#endif
+                .Where(a => !a.IsLiteral && !a.FieldType.IsByRefLike()).Cast<MemberInfo>().Concat(
+                    type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(a => !a.PropertyType.IsByRefLike() && 0u >= (uint)a.GetIndexParameters().Length));
             return publicMembers;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsByRefLike(this Type type)
+        {
+#if NETSTANDARD2_0 || NET471 || NET451
+            if (!type.IsValueType)
+            {
+                return false;
+            }
+
+            // IsByRefLike flag on type is not available in netstandard2.0
+            Attribute[] attributes = type.GetCustomAttributes(false).Cast<Attribute>().ToArray();
+            for (int i = 0; i < attributes.Length; i++)
+            {
+                if (string.Equals(attributes[i].GetType().FullName, "System.Runtime.CompilerServices.IsByRefLikeAttribute", StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+#else
+            return type.IsByRefLike;
+#endif
         }
 
         public static bool IsInteger(this Type type)
