@@ -14,7 +14,6 @@
   <PropertyGroup>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>$(SourceRoot)/build/SpanJson.snk</AssemblyOriginatorKeyFile>
-    <OutputPath>$(SourceRoot)/$(Configuration)/$(Platform)</OutputPath>
   </PropertyGroup>
 
   <!-- Common compile parameters -->
