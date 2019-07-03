@@ -596,6 +596,19 @@ namespace SpanJson.Resolvers
         private static int s_isFreezed = Unlocked;
         private static List<ICustomJsonFormatterResolver> s_resolvers = new List<ICustomJsonFormatterResolver>();
 
+        public bool IsSupportedType(Type type)
+        {
+            if (Formatters.ContainsKey(type)) { return true; }
+
+            var resolvers = Volatile.Read(ref s_resolvers);
+            foreach (var item in resolvers)
+            {
+                if (item.IsSupportedType(type)) { return true; }
+            }
+
+            return false;
+        }
+
         public static void RegisterGlobalCustomrResolver(params ICustomJsonFormatterResolver[] resolvers)
         {
             if (null == resolvers || 0u >= (uint)resolvers.Length) { return; }

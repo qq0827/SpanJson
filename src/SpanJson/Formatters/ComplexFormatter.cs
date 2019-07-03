@@ -240,10 +240,9 @@ namespace SpanJson.Formatters
                 var memberType = memberInfo.MemberType;
                 if (memberType.IsAbstract)
                 {
-                    if (memberType.TryGetTypeOfGenericInterface(typeof(IEnumerable<>), out _))
-                    {
-                        continue;
-                    }
+                    if (resolver.IsSupportedType(memberType)) { continue; }
+
+                    if (memberType.TryGetTypeOfGenericInterface(typeof(IEnumerable<>), out _)) { continue; }
 
                     return Expression
                         .Lambda<DeserializeDelegate<T, TSymbol>>(Expression.Block(

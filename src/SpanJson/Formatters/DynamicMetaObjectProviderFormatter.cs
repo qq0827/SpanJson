@@ -189,7 +189,7 @@ namespace SpanJson.Formatters
                 }
 
                 // can't deserialize abstract and only support interfaces based on IEnumerable<T> (this includes, IList, IReadOnlyList, IDictionary et al.)
-                if (memberInfo.MemberType.IsAbstract && !memberInfo.MemberType.TryGetTypeOfGenericInterface(typeof(IEnumerable<>), out _))
+                if (memberInfo.MemberType.IsAbstract && !resolver.IsSupportedType(memberInfo.MemberType) && !memberInfo.MemberType.TryGetTypeOfGenericInterface(typeof(IEnumerable<>), out _))
                 {
                     var throwExpression = Expression.Lambda<DeserializeDelegate>(Expression.Block(
                             Expression.Throw(Expression.Constant(new NotSupportedException($"{typeof(T).Name} contains abstract members."))),

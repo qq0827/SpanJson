@@ -1,6 +1,7 @@
 ﻿namespace SpanJson.Resolvers
 {
     using System;
+    using System.ComponentModel;
     using System.Dynamic;
     using System.Runtime.CompilerServices;
     using System.Threading;
@@ -73,6 +74,12 @@
             public SpanJsonOptions JsonOptions => s_innerResolver.JsonOptions;
 
             public StringEscapeHandling StringEscapeHandling => _stringEscapeHandling;
+
+            [EditorBrowsable(EditorBrowsableState.Never)]
+            public bool IsSupportedType(Type type)
+            {
+                return s_innerResolver.IsSupportedType(type);
+            }
 
             public Func<T> GetCreateFunctor<T>()
             {

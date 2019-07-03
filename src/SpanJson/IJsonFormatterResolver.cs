@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Dynamic;
 using SpanJson.Resolvers;
 
@@ -17,6 +18,12 @@ namespace SpanJson
         SpanJsonOptions JsonOptions { get; }
 
         StringEscapeHandling StringEscapeHandling { get; }
+
+        /// <summary>Only support for custom formatters.</summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        bool IsSupportedType(Type type);
 
         IJsonFormatter<T, TSymbol> GetFormatter<T>();
         JsonObjectDescription GetObjectDescription<T>();
@@ -58,6 +65,8 @@ namespace SpanJson
 
     public interface ICustomJsonFormatterResolver
     {
+        bool IsSupportedType(Type type);
+
         ICustomJsonFormatter GetFormatter(Type type);
         //ICustomJsonFormatter<T> GetFormatter<T>();
     }
