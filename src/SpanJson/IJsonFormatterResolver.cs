@@ -55,4 +55,10 @@ namespace SpanJson
         where TSymbol : struct
     {
     }
+
+    public interface ICustomJsonFormatterResolver
+    {
+        ICustomJsonFormatter GetFormatter(Type type);
+        //ICustomJsonFormatter<T> GetFormatter<T>();
+    }
 }

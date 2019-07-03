@@ -4,7 +4,7 @@
     {
     }
 
-    public interface ICustomJsonFormatter
+    public interface ICustomJsonFormatter : IJsonFormatter
     {
         object Arguments { get; set; }
     }

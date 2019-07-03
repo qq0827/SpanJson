@@ -194,6 +194,16 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static void ThrowInvalidOperationException_Register_Resolver_Err()
+        {
+            throw GetException();
+            static InvalidOperationException GetException()
+            {
+                return new InvalidOperationException("Register must call on startup(before use GetFormatter<T>).");
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
         internal static void ThrowInvalidOperationException_NotSupport_Value(float value)
         {
             throw GetException();

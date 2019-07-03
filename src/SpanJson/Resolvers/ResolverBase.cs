@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using System.Threading;
 using SpanJson.Formatters;
 using SpanJson.Helpers;
 using SpanJson.Internal;
@@ -247,6 +248,15 @@ namespace SpanJson.Resolvers
                     csf.Arguments = attr.Arguments;
                 }
                 return formatter;
+            }
+
+            // from custom json formatter resolver
+            Interlocked.CompareExchange(ref s_isFreezed, Locked, Unlocked);
+            var resolvers = Volatile.Read(ref s_resolvers);
+            foreach (var item in resolvers)
+            {
+                var f = item.GetFormatter(type);
+                if (f != null) { return f; }
             }
 
             if (type == typeof(object))
@@ -577,6 +587,38 @@ namespace SpanJson.Resolvers
         public JsonEncodedText GetEncodedPropertyName(string propertyName)
         {
             return EscapingHelper.GetEncodedText(ResolvePropertyName(propertyName), _stringEscapeHandling);
+        }
+
+        // CustomJsonFormatterResolver
+
+        private const int Locked = 1;
+        private const int Unlocked = 0;
+        private static int s_isFreezed = Unlocked;
+        private static List<ICustomJsonFormatterResolver> s_resolvers = new List<ICustomJsonFormatterResolver>();
+
+        public static void RegisterGlobalCustomrResolver(params ICustomJsonFormatterResolver[] resolvers)
+        {
+            if (null == resolvers || 0u >= (uint)resolvers.Length) { return; }
+
+            if (TryRegisterGlobalCustomrResolver(resolvers)) { return; }
+            ThrowHelper.ThrowInvalidOperationException_Register_Resolver_Err();
+        }
+
+        public static bool TryRegisterGlobalCustomrResolver(params ICustomJsonFormatterResolver[] resolvers)
+        {
+            if (null == resolvers || 0u >= (uint)resolvers.Length) { return false; }
+            if (Locked == Volatile.Read(ref s_isFreezed)) { return false; }
+
+            List<ICustomJsonFormatterResolver> snapshot, newCache;
+            do
+            {
+                snapshot = Volatile.Read(ref s_resolvers);
+                newCache = new List<ICustomJsonFormatterResolver>();
+                newCache.AddRange(resolvers);
+                if ((uint)snapshot.Count > 0u) { newCache.AddRange(snapshot); }
+            } while (!ReferenceEquals(
+                Interlocked.CompareExchange(ref s_resolvers, newCache, snapshot), snapshot));
+            return true;
         }
     }
 }
