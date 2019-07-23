@@ -253,7 +253,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static DateTime ParseUtf8DateTime(in ReadOnlySpan<byte> span, int pos)
         {
-            if (JsonHelpers.TryParseAsISO(span, out DateTime value, out var bytesConsumed) && span.Length == bytesConsumed)
+            if (JsonHelpers.TryParseAsISO(span, out DateTime value))
             {
                 return value;
             }
@@ -271,7 +271,7 @@ namespace SpanJson
             try
             {
                 JsonHelpers.Unescape(input, utf8Unescaped, backslashIdx, out var written);
-                if (JsonHelpers.TryParseAsISO(utf8Unescaped.Slice(0, written), out DateTime value, out var bytesConsumed) && written == bytesConsumed)
+                if (JsonHelpers.TryParseAsISO(utf8Unescaped.Slice(0, written), out DateTime value))
                 {
                     return value;
                 }
@@ -296,7 +296,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static DateTimeOffset ParseUtf8DateTimeOffset(in ReadOnlySpan<byte> span, int pos)
         {
-            if (JsonHelpers.TryParseAsISO(span, out DateTimeOffset value, out var bytesConsumed) && span.Length == bytesConsumed)
+            if (JsonHelpers.TryParseAsISO(span, out DateTimeOffset value))
             {
                 return value;
             }
@@ -314,7 +314,7 @@ namespace SpanJson
             try
             {
                 JsonHelpers.Unescape(input, utf8Unescaped, backslashIdx, out var written);
-                if (JsonHelpers.TryParseAsISO(utf8Unescaped.Slice(0, written), out DateTimeOffset value, out var bytesConsumed) && written == bytesConsumed)
+                if (JsonHelpers.TryParseAsISO(utf8Unescaped.Slice(0, written), out DateTimeOffset value))
                 {
                     return value;
                 }

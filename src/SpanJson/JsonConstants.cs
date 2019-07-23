@@ -21,6 +21,10 @@ namespace SpanJson
         public const uint ByteSize = sizeof(byte);
         public const uint CharSize = sizeof(char);
 
+        // \u2028 and \u2029 are considered respectively line and paragraph separators
+        // UTF-8 representation for them is E2, 80, A8/A9
+        public const byte StartingByteOfNonStandardSeparator = 0xE2;
+
         public const int SpacesPerIndent = 2;
         public const int MaxWriterDepth = 1_000;
         public const int RemoveFlagsBitMask = 0x7FFFFFFF;

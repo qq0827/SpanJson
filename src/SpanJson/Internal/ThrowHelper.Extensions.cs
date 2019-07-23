@@ -129,11 +129,11 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void ThrowArgumentException_InvalidUTF8(ReadOnlySpan<byte> value, int consumed)
+        public static void ThrowArgumentException_InvalidUTF8(ReadOnlySpan<byte> value, int bytesWritten)
         {
             var builder = new StringBuilder();
 
-            value = value.Slice(consumed);
+            value = value.Slice(bytesWritten);
             int printFirst10 = Math.Min(value.Length, 10);
 
             for (int i = 0; i < printFirst10; i++)

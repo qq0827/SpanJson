@@ -17,14 +17,14 @@ namespace SpanJson.Internal
         public static class Default
         {
             // Only allow ASCII characters between ' ' (0x20) and '~' (0x7E), inclusively,
-            // exclude characters that need to be escaped by adding a backslash: '\n', '\r', '\t', '\\', '/', '\b', '\f', '"'
+            // exclude characters that need to be escaped by adding a backslash: '\n', '\r', '\t', '\\', '\b', '\f', '"'
             //
             // non-zero = allowed, 0 = disallowed
-            private static ReadOnlySpan<byte> AllowList => new byte[sbyte.MaxValue + 1]
+            private static ReadOnlySpan<byte> AllowList => new byte[LastAsciiCharacter + 1]
             {
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+                1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1,
@@ -44,15 +44,13 @@ namespace SpanJson.Internal
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static bool NeedsEscaping(byte utf8Value)
             {
-                return utf8Value < (uint)AllowList.Length && 0u >= AllowList[utf8Value] ? true : false;
+                return (uint)utf8Value <= nLastAsciiCharacter && 0u >= AllowList[utf8Value] ? true : false;
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static bool NeedsEscaping(char value)
             {
-                const uint MaxAsciiChar = 127u;
-
-                if (value > MaxAsciiChar) { return IsUnicodeLinefeeds(value); }
+                if (value > nLastAsciiCharacter) { return IsUnicodeLinefeeds(value); }
 
                 return 0u >= AllowList[value] ? true : false;
             }
@@ -114,8 +112,7 @@ namespace SpanJson.Internal
                     }
                     else
                     {
-                        destination[written] = val;
-                        written++;
+                        Unsafe.Add(ref destSpace, written++) = val;
                         consumed++;
                     }
                 }

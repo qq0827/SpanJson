@@ -128,5 +128,23 @@ namespace SpanJson.Internal
         /// Otherwise, returns <see langword="false"/>.
         /// </summary>
         public static bool IsDigit(char value) => (uint)(value - '0') <= '9' - '0';
+
+        /// <summary>
+        /// Emulates Dictionary.TryAdd on netstandard.
+        /// </summary>
+        internal static bool TryAdd<TKey, TValue>(Dictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        {
+#if DESKTOPCLR || NETSTANDARD
+            if (!dictionary.ContainsKey(key))
+            {
+                dictionary[key] = value;
+                return true;
+            }
+
+            return false;
+#else
+            return dictionary.TryAdd(key, value);
+#endif
+        }
     }
 }

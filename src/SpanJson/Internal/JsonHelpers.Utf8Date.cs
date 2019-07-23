@@ -12,216 +12,269 @@ namespace SpanJson.Internal
 {
     internal static partial class JsonHelpers
     {
-        public static bool TryParseAsISO(ReadOnlySpan<byte> source, out DateTime value, out int bytesConsumed)
+        private struct Utf8DateTimeParseData
         {
-            if (!TryParseDateTimeOffset(source, out DateTimeOffset dateTimeOffset, out bytesConsumed, out DateTimeKind kind))
+            public int Year;
+            public int Month;
+            public int Day;
+            public int Hour;
+            public int Minute;
+            public int Second;
+            public int Fraction; // This value should never be greater than 9_999_999.
+            public int OffsetHours;
+            public int OffsetMinutes;
+            public bool OffsetNegative => OffsetToken == JsonUtf8Constant.Hyphen;
+            public byte OffsetToken;
+        }
+
+        /// <summary>Parse the given UTF-8 <paramref name="source"/> as extended ISO 8601 format.</summary>
+        /// <param name="source">UTF-8 source to parse.</param>
+        /// <param name="value">The parsed <see cref="DateTime"/> if successful.</param>
+        /// <returns>"true" if successfully parsed.</returns>
+        public static bool TryParseAsISO(ReadOnlySpan<byte> source, out DateTime value)
+        {
+            if (!TryParseDateTimeOffset(source, out Utf8DateTimeParseData parseData))
             {
                 value = default;
-                bytesConsumed = 0;
                 return false;
             }
 
-            switch (kind)
+            if (parseData.OffsetToken == JsonUtf8Constant.UtcOffsetToken)
             {
-                case DateTimeKind.Local:
-                    value = dateTimeOffset.LocalDateTime;
-                    break;
-                case DateTimeKind.Utc:
-                    value = dateTimeOffset.UtcDateTime;
-                    break;
-                default:
-                    Debug.Assert(kind == DateTimeKind.Unspecified);
-                    value = dateTimeOffset.DateTime;
-                    break;
+                return TryCreateDateTime(parseData, DateTimeKind.Utc, out value);
+            }
+            else if (parseData.OffsetToken == JsonUtf8Constant.Plus || parseData.OffsetToken == JsonUtf8Constant.Hyphen)
+            {
+                if (!TryCreateDateTimeOffset(ref parseData, out DateTimeOffset dateTimeOffset))
+                {
+                    value = default;
+                    return false;
+                }
+
+                value = dateTimeOffset.LocalDateTime;
+                return true;
             }
 
-            return true;
+            return TryCreateDateTime(parseData, DateTimeKind.Unspecified, out value);
         }
 
-        public static bool TryParseAsISO(ReadOnlySpan<byte> source, out DateTimeOffset value, out int bytesConsumed)
+        /// <summary>Parse the given UTF-8 <paramref name="source"/> as extended ISO 8601 format.</summary>
+        /// <param name="source">UTF-8 source to parse.</param>
+        /// <param name="value">The parsed <see cref="DateTimeOffset"/> if successful.</param>
+        /// <returns>"true" if successfully parsed.</returns>
+        public static bool TryParseAsISO(ReadOnlySpan<byte> source, out DateTimeOffset value)
         {
-            return TryParseDateTimeOffset(source, out value, out bytesConsumed, out _);
+            if (!TryParseDateTimeOffset(source, out Utf8DateTimeParseData parseData))
+            {
+                value = default;
+                return false;
+            }
+
+            if (parseData.OffsetToken == JsonUtf8Constant.UtcOffsetToken || // Same as specifying an offset of "+00:00", except that DateTime's Kind gets set to UTC rather than Local
+                parseData.OffsetToken == JsonUtf8Constant.Plus || parseData.OffsetToken == JsonUtf8Constant.Hyphen)
+            {
+                return TryCreateDateTimeOffset(ref parseData, out value);
+            }
+
+            // No offset, attempt to read as local time.
+            return TryCreateDateTimeOffsetInterpretingDataAsLocalTime(parseData, out value);
         }
 
-        //
-        // Flexible ISO 8601 format. One of
-        //
-        // ---------------------------------
-        // YYYY-MM-DD (eg 1997-07-16)
-        // YYYY-MM-DDThh:mm (eg 1997-07-16T19:20)
-        // YYYY-MM-DDThh:mm:ss (eg 1997-07-16T19:20:30)
-        // YYYY-MM-DDThh:mm:ss.s (eg 1997-07-16T19:20:30.45)
-        // YYYY-MM-DDThh:mmTZD (eg 1997-07-16T19:20+01:00)
-        // YYYY-MM-DDThh:mm:ssTZD (eg 1997-07-16T19:20:30+01:00)
-        // YYYY-MM-DDThh:mm:ss.sTZD (eg 1997-07-16T19:20:30.45Z)
-        // YYYY-MM-DDThh:mm:ss.sTZD (eg 1997-07-16T19:20:30.45+01:00)
-        // YYYY-MM-DDThh:mm:ss.sTZD (eg 1997-07-16T19:20:30.45-01:00)
-        // YYYY-MM-DDThh:mm:ss.sTZD (eg 1997-07-16T19:20:30.45+0100)
-        // YYYY-MM-DDThh:mm:ss.sTZD (eg 1997-07-16T19:20:30.45-0100)
-        // YYYY-MM-DDThh:mm:ss.sTZD (eg 1997-07-16T19:20:30.45+01)
-        // YYYY-MM-DDThh:mm:ss.sTZD (eg 1997-07-16T19:20:30.45-01)
-        private static bool TryParseDateTimeOffset(ReadOnlySpan<byte> source, out DateTimeOffset value, out int bytesConsumed, out DateTimeKind kind)
+        /// <summary>ISO 8601 date time parser (ISO 8601-1:2019).</summary>
+        /// <param name="source">The date/time to parse in UTF-8 format.</param>
+        /// <param name="parseData">The parsed <see cref="Utf8DateTimeParseData"/> for the given <paramref name="source"/>.</param>
+        /// <remarks>
+        /// Supports extended calendar date (5.2.2.1) and complete (5.4.2.1) calendar date/time of day
+        /// representations with optional specification of seconds and fractional seconds.
+        /// 
+        /// Times can be explicitly specified as UTC ("Z" - 5.3.3) or offsets from UTC ("+/-hh:mm" 5.3.4.2).
+        /// If unspecified they are considered to be local per spec. 
+        /// 
+        /// Examples: (TZD is either "Z" or hh:mm offset from UTC)
+        /// 
+        ///  YYYY-MM-DD               (eg 1997-07-16)
+        ///  YYYY-MM-DDThh:mm         (eg 1997-07-16T19:20)
+        ///  YYYY-MM-DDThh:mm:ss      (eg 1997-07-16T19:20:30)
+        ///  YYYY-MM-DDThh:mm:ss.s    (eg 1997-07-16T19:20:30.45)
+        ///  YYYY-MM-DDThh:mmTZD      (eg 1997-07-16T19:20+01:00)
+        ///  YYYY-MM-DDThh:mm:ssTZD   (eg 1997-07-16T19:20:3001:00)
+        ///  YYYY-MM-DDThh:mm:ss.sTZD (eg 1997-07-16T19:20:30.45Z)
+        /// 
+        /// Generally speaking we always require the "extended" option when one exists (3.1.3.5).
+        /// The extended variants have separator characters between components ('-', ':', '.', etc.).
+        /// Spaces are not permitted.
+        /// </remarks>
+        /// <returns>"true" if successfully parsed.</returns>
+        private static bool TryParseDateTimeOffset(ReadOnlySpan<byte> source, out Utf8DateTimeParseData parseData)
         {
+            uint srcLen = (uint)source.Length;
             // Source does not have enough characters for YYYY-MM-DD
-            if ((uint)source.Length < 10u)
+            if (srcLen < 10u)
             {
-                goto ReturnFalse;
+                parseData = default;
+                return false;
             }
 
-            int year;
+            // Parse the calendar date
+            // -----------------------
+            // ISO 8601-1:2019 5.2.2.1b "Calendar date complete extended format"
+            //  [dateX] = [year][“-”][month][“-”][day]
+            //  [year]  = [YYYY] [0000 - 9999] (4.3.2)
+            //  [month] = [MM] [01 - 12] (4.3.3)
+            //  [day]   = [DD] [01 - 28, 29, 30, 31] (4.3.4)
+            //
+            // Note: 5.2.2.2 "Representations with reduced precision" allows for
+            // just [year][“-”][month] (a) and just [year] (b), but we currently
+            // don't permit it.
+
+            parseData = new Utf8DateTimeParseData();
+
             {
                 uint digit1 = source[0] - (uint)'0';
                 uint digit2 = source[1] - (uint)'0';
                 uint digit3 = source[2] - (uint)'0';
                 uint digit4 = source[3] - (uint)'0';
 
-                if (digit1 > 9u || digit2 > 9u || digit3 > 9u || digit4 > 9u)
+                if (digit1 > 9 || digit2 > 9 || digit3 > 9 || digit4 > 9)
                 {
-                    goto ReturnFalse;
+                    return false;
                 }
 
-                year = (int)(digit1 * 1000u + digit2 * 100u + digit3 * 10u + digit4);
+                parseData.Year = (int)(digit1 * 1000 + digit2 * 100 + digit3 * 10 + digit4);
             }
 
-            if (source[4] != JsonUtf8Constant.Hyphen)
+            if (source[4] != JsonUtf8Constant.Hyphen
+                || !TryGetNextTwoDigits(source.Slice(start: 5, length: 2), ref parseData.Month)
+                || source[7] != JsonUtf8Constant.Hyphen
+                || !TryGetNextTwoDigits(source.Slice(start: 8, length: 2), ref parseData.Day))
             {
-                goto ReturnFalse;
+                return false;
             }
 
-            int month;
-            if (!TryGetNextTwoDigits(source.Slice(start: 5, length: 2), out month))
+            // We now have YYYY-MM-DD [dateX]
+
+            Debug.Assert(srcLen >= 10u);
+            if (srcLen == 10u)
             {
-                goto ReturnFalse;
+                // Just a calendar date
+                return true;
             }
 
-            if (source[7] != JsonUtf8Constant.Hyphen)
+            // Parse the time of day
+            // ---------------------
+            //
+            // ISO 8601-1:2019 5.3.1.2b "Local time of day complete extended format"
+            //  [timeX]   = [“T”][hour][“:”][min][“:”][sec]
+            //  [hour]    = [hh] [00 - 23] (4.3.8a)
+            //  [minute]  = [mm] [00 - 59] (4.3.9a)
+            //  [sec]     = [ss] [00 - 59, 60 with a leap second] (4.3.10a)
+            //
+            // ISO 8601-1:2019 5.3.3 "UTC of day"
+            //  [timeX][“Z”]
+            //
+            // ISO 8601-1:2019 5.3.4.2 "Local time of day with the time shift between
+            // local time scale and UTC" (Extended format)
+            //
+            //  [shiftX] = [“+”|“-”][hour][“:”][min]
+            //
+            // Notes:
+            //
+            // "T" is optional per spec, but _only_ when times are used alone. In our
+            // case, we're reading out a complete date & time and as such require "T".
+            // (5.4.2.1b).
+            //
+            // For [timeX] We allow seconds to be omitted per 5.3.1.3a "Representations
+            // with reduced precision". 5.3.1.3b allows just specifying the hour, but
+            // we currently don't permit this.
+            //
+            // Decimal fractions are allowed for hours, minutes and seconds (5.3.14).
+            // We only allow fractions for seconds currently. Lower order components
+            // can't follow, i.e. you can have T23.3, but not T23.3:04. There must be
+            // one digit, but the max number of digits is implemenation defined. We
+            // currently allow up to 16 digits of fractional seconds only. While we
+            // support 16 fractional digits we only parse the first seven, anything
+            // past that is considered a zero. This is to stay compatible with the
+            // DateTime implementation which is limited to this resolution.
+
+            if (srcLen < 16u)
             {
-                goto ReturnFalse;
+                // Source does not have enough characters for YYYY-MM-DDThh:mm
+                return false;
             }
 
-            int day;
-            if (!TryGetNextTwoDigits(source.Slice(start: 8, length: 2), out day))
+            // Parse THH:MM (e.g. "T10:32")
+            if (source[10] != JsonUtf8Constant.TimePrefix || source[13] != JsonUtf8Constant.Colon
+                || !TryGetNextTwoDigits(source.Slice(start: 11, length: 2), ref parseData.Hour)
+                || !TryGetNextTwoDigits(source.Slice(start: 14, length: 2), ref parseData.Minute))
             {
-                goto ReturnFalse;
-            }
-
-            // We now have YYYY-MM-DD
-            bytesConsumed = 10;
-
-            int hour = 0;
-            int minute = 0;
-            int second = 0;
-            int fraction = 0; // This value should never be greater than 9_999_999.
-            int offsetHours = 0;
-            int offsetMinutes = 0;
-            byte offsetToken = default;
-
-            if ((uint)source.Length < 11u)
-            {
-                goto FinishedParsing;
-            }
-
-            byte curByte = source[10];
-
-            if (curByte == JsonUtf8Constant.UtcOffsetToken || curByte == JsonUtf8Constant.Plus || curByte == JsonUtf8Constant.Hyphen)
-            {
-                goto ReturnFalse;
-            }
-            else if (curByte != JsonUtf8Constant.TimePrefix)
-            {
-                goto FinishedParsing;
-            }
-
-            // Source does not have enough characters for YYYY-MM-DDThh:mm
-            if ((uint)source.Length < 16u)
-            {
-                goto ReturnFalse;
-            }
-
-            if (!TryGetNextTwoDigits(source.Slice(start: 11, length: 2), out hour))
-            {
-                goto ReturnFalse;
-            }
-
-            if (source[13] != JsonUtf8Constant.Colon)
-            {
-                goto ReturnFalse;
-            }
-
-            if (!TryGetNextTwoDigits(source.Slice(start: 14, length: 2), out minute))
-            {
-                goto ReturnFalse;
+                return false;
             }
 
             // We now have YYYY-MM-DDThh:mm
-            bytesConsumed = 16;
-
-            if ((uint)source.Length < 17u)
+            Debug.Assert(srcLen >= 16u);
+            if (srcLen == 16u)
             {
-                goto FinishedParsing;
+                return true;
             }
 
-            curByte = source[16];
+            byte curByte = source[16];
+            int sourceIndex = 17;
 
-            int sourceIndex = 16;
-
-            if (curByte == JsonUtf8Constant.UtcOffsetToken)
+            // Either a TZD ['Z'|'+'|'-'] or a seconds separator [':'] is valid at this point
+            switch (curByte)
             {
-                bytesConsumed++;
-                offsetToken = JsonUtf8Constant.UtcOffsetToken;
-                goto FinishedParsing;
-            }
-            else if (curByte == JsonUtf8Constant.Plus || curByte == JsonUtf8Constant.Hyphen)
-            {
-                offsetToken = curByte;
-                sourceIndex++;
-                goto ParseOffset;
-            }
-            else if (curByte != JsonUtf8Constant.Colon)
-            {
-                goto FinishedParsing;
+                case JsonUtf8Constant.UtcOffsetToken:
+                    parseData.OffsetToken = JsonUtf8Constant.UtcOffsetToken;
+                    return (uint)sourceIndex == srcLen ? true : false;
+                case JsonUtf8Constant.Plus:
+                case JsonUtf8Constant.Hyphen:
+                    parseData.OffsetToken = curByte;
+                    return ParseOffset(ref parseData, source.Slice(sourceIndex));
+                case JsonUtf8Constant.Colon:
+                    break;
+                default:
+                    return false;
             }
 
-            if (!TryGetNextTwoDigits(source.Slice(start: 17, length: 2), out second))
+            // Try reading the seconds
+            if (srcLen < 19u
+                || !TryGetNextTwoDigits(source.Slice(start: 17, length: 2), ref parseData.Second))
             {
-                goto ReturnFalse;
+                return false;
             }
 
             // We now have YYYY-MM-DDThh:mm:ss
-            bytesConsumed = 19;
-
-            if ((uint)source.Length < 20u)
+            Debug.Assert(srcLen >= 19u);
+            if (srcLen == 19u)
             {
-                goto FinishedParsing;
+                return true;
             }
 
             curByte = source[19];
-            sourceIndex = 19;
-
-            if (curByte == JsonUtf8Constant.UtcOffsetToken)
-            {
-                bytesConsumed++;
-                offsetToken = JsonUtf8Constant.UtcOffsetToken;
-                goto FinishedParsing;
-            }
-            else if (curByte == JsonUtf8Constant.Plus || curByte == JsonUtf8Constant.Hyphen)
-            {
-                offsetToken = curByte;
-                sourceIndex++;
-                goto ParseOffset;
-            }
-            else if (curByte != JsonUtf8Constant.Period)
-            {
-                goto FinishedParsing;
-            }
-
-            // Source does not have enough characters for YYYY-MM-DDThh:mm:ss.s
-            if ((uint)source.Length < 21u)
-            {
-                goto ReturnFalse;
-            }
-
             sourceIndex = 20;
+
+            // Either a TZD ['Z'|'+'|'-'] or a seconds decimal fraction separator ['.'] is valid at this point
+            switch (curByte)
+            {
+                case JsonUtf8Constant.UtcOffsetToken:
+                    parseData.OffsetToken = JsonUtf8Constant.UtcOffsetToken;
+                    return (uint)sourceIndex == srcLen ? true : false;
+                case JsonUtf8Constant.Plus:
+                case JsonUtf8Constant.Hyphen:
+                    parseData.OffsetToken = curByte;
+                    return ParseOffset(ref parseData, source.Slice(sourceIndex));
+                case JsonUtf8Constant.Period:
+                    break;
+                default:
+                    return false;
+            }
+
+            // Source does not have enough characters for second fractions (i.e. ".s")
+            // YYYY-MM-DDThh:mm:ss.s
+            if (srcLen < 21u)
+            {
+                return false;
+            }
 
             // Parse fraction. This value should never be greater than 9_999_999
             {
@@ -232,137 +285,79 @@ namespace SpanJson.Internal
                 {
                     if (numDigitsRead < JsonSharedConstant.DateTimeNumFractionDigits)
                     {
-                        fraction = (fraction * 10) + (int)(curByte - (uint)'0');
+                        parseData.Fraction = (parseData.Fraction * 10) + (int)(curByte - (uint)'0');
                         numDigitsRead++;
                     }
 
                     sourceIndex++;
                 }
 
-                if (fraction != 0)
+                if (parseData.Fraction != 0)
                 {
                     while (numDigitsRead < JsonSharedConstant.DateTimeNumFractionDigits)
                     {
-                        fraction *= 10;
+                        parseData.Fraction *= 10;
                         numDigitsRead++;
                     }
                 }
             }
 
             // We now have YYYY-MM-DDThh:mm:ss.s
-            bytesConsumed = sourceIndex;
-
-            if (sourceIndex == source.Length)
+            Debug.Assert((uint)sourceIndex <= srcLen);
+            if ((uint)sourceIndex == srcLen)
             {
-                goto FinishedParsing;
-            }
-
-            curByte = source[sourceIndex];
-
-            if (curByte == JsonUtf8Constant.UtcOffsetToken)
-            {
-                bytesConsumed++;
-                offsetToken = JsonUtf8Constant.UtcOffsetToken;
-                goto FinishedParsing;
-            }
-            else if (curByte == JsonUtf8Constant.Plus || curByte == JsonUtf8Constant.Hyphen)
-            {
-                offsetToken = source[sourceIndex++];
-                goto ParseOffset;
-            }
-            else if (IsDigit(curByte))
-            {
-                goto ReturnFalse;
-            }
-
-            goto FinishedParsing;
-
-        ParseOffset:
-            // Source does not have enough characters for YYYY-MM-DDThh:mm:ss.s+|-hh
-            if (source.Length - sourceIndex < 2)
-            {
-                goto ReturnFalse;
-            }
-
-            if (!TryGetNextTwoDigits(source.Slice(start: sourceIndex, length: 2), out offsetHours))
-            {
-                goto ReturnFalse;
-            }
-            sourceIndex += 2;
-
-            // We now have YYYY-MM-DDThh:mm:ss.s+|-hh
-            bytesConsumed = sourceIndex;
-
-            // Source does not have enough characters for YYYY-MM-DDThh:mm:ss.s+|-hhmm
-            if (source.Length - sourceIndex < 2)
-            {
-                goto FinishedParsing;
-            }
-
-            // Source should be of format YYYY-MM-DDThh:mm:ss.s+|-hh:mm
-            if (source[sourceIndex] == JsonUtf8Constant.Colon)
-            {
-                sourceIndex++;
-
-                // Source does not have enough characters for YYYY-MM-DDThh:mm:ss.s+|-hh:mm
-                if (source.Length - sourceIndex < 2)
-                {
-                    goto ReturnFalse;
-                }
-            }
-
-            if (!TryGetNextTwoDigits(source.Slice(start: sourceIndex, length: 2), out offsetMinutes))
-            {
-                goto ReturnFalse;
-            }
-            sourceIndex += 2;
-
-            // We now have YYYY-MM-DDThh:mm:ss.s+|-hh[:]mm
-            bytesConsumed = sourceIndex;
-
-        FinishedParsing:
-            if ((offsetToken != JsonUtf8Constant.UtcOffsetToken) && (offsetToken != JsonUtf8Constant.Plus) && (offsetToken != JsonUtf8Constant.Hyphen))
-            {
-                if (!TryCreateDateTimeOffsetInterpretingDataAsLocalTime(year: year, month: month, day: day, hour: hour, minute: minute, second: second, fraction: fraction, out value))
-                {
-                    goto ReturnFalse;
-                }
-
-                kind = DateTimeKind.Unspecified;
                 return true;
             }
 
-            if (offsetToken == JsonUtf8Constant.UtcOffsetToken)
+            curByte = source[sourceIndex++];
+
+            // TZD ['Z'|'+'|'-'] is valid at this point
+            switch (curByte)
             {
-                // Same as specifying an offset of "+00:00", except that DateTime's Kind gets set to UTC rather than Local
-                if (!TryCreateDateTimeOffset(year: year, month: month, day: day, hour: hour, minute: minute, second: second, fraction: fraction, offsetNegative: false, offsetHours: 0, offsetMinutes: 0, out value))
+                case JsonUtf8Constant.UtcOffsetToken:
+                    parseData.OffsetToken = JsonUtf8Constant.UtcOffsetToken;
+                    return (uint)sourceIndex == srcLen ? true : false;
+                case JsonUtf8Constant.Plus:
+                case JsonUtf8Constant.Hyphen:
+                    parseData.OffsetToken = curByte;
+                    return ParseOffset(ref parseData, source.Slice(sourceIndex))
+                        && true;
+                default:
+                    return false;
+            }
+
+            static bool ParseOffset(ref Utf8DateTimeParseData parseData, ReadOnlySpan<byte> offsetData)
+            {
+                uint offsetDataLen = (uint)offsetData.Length;
+                // Parse the hours for the offset
+                if (offsetDataLen < 2u
+                    || !TryGetNextTwoDigits(offsetData.Slice(0, 2), ref parseData.OffsetHours))
                 {
-                    goto ReturnFalse;
+                    return false;
                 }
 
-                kind = DateTimeKind.Utc;
+                // We now have YYYY-MM-DDThh:mm:ss.s+|-hh
+
+                if (offsetDataLen == 2u)
+                {
+                    // Just hours offset specified
+                    return true;
+                }
+
+                // Ensure we have enough for ":mm"
+                if (offsetDataLen != 5u
+                    || offsetData[2] != JsonUtf8Constant.Colon
+                    || !TryGetNextTwoDigits(offsetData.Slice(3), ref parseData.OffsetMinutes))
+                {
+                    return false;
+                }
+
                 return true;
             }
-
-            Debug.Assert(offsetToken == JsonUtf8Constant.Plus || offsetToken == JsonUtf8Constant.Hyphen);
-
-            if (!TryCreateDateTimeOffset(year: year, month: month, day: day, hour: hour, minute: minute, second: second, fraction: fraction, offsetNegative: offsetToken == JsonUtf8Constant.Hyphen, offsetHours: offsetHours, offsetMinutes: offsetMinutes, out value))
-            {
-                goto ReturnFalse;
-            }
-
-            kind = DateTimeKind.Local;
-            return true;
-
-        ReturnFalse:
-            value = default;
-            bytesConsumed = 0;
-            kind = default;
-            return false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool TryGetNextTwoDigits(ReadOnlySpan<byte> source, out int value)
+        private static bool TryGetNextTwoDigits(ReadOnlySpan<byte> source, ref int value)
         {
             Debug.Assert(source.Length == 2);
 
@@ -375,37 +370,35 @@ namespace SpanJson.Internal
                 return false;
             }
 
-            value = (int)(digit1 * 10u + digit2);
+            value = (int)(digit1 * 10 + digit2);
             return true;
         }
 
         // The following methods are borrowed verbatim from src/Common/src/CoreLib/System/Buffers/Text/Utf8Parser/Utf8Parser.Date.Helpers.cs
 
-        /// <summary>
-        /// Overflow-safe DateTimeOffset factory.
-        /// </summary>
-        private static bool TryCreateDateTimeOffset(DateTime dateTime, bool offsetNegative, int offsetHours, int offsetMinutes, out DateTimeOffset value)
+        /// <summary>Overflow-safe DateTimeOffset factory.</summary>
+        private static bool TryCreateDateTimeOffset(DateTime dateTime, ref Utf8DateTimeParseData parseData, out DateTimeOffset value)
         {
-            if (((uint)offsetHours) > JsonSharedConstant.MaxDateTimeUtcOffsetHours)
+            if (((uint)parseData.OffsetHours) > JsonSharedConstant.MaxDateTimeUtcOffsetHours)
             {
                 value = default;
                 return false;
             }
 
-            if (((uint)offsetMinutes) > 59u)
+            if (((uint)parseData.OffsetMinutes) > 59u)
             {
                 value = default;
                 return false;
             }
 
-            if (offsetHours == JsonSharedConstant.MaxDateTimeUtcOffsetHours && offsetMinutes != 0)
+            if (parseData.OffsetHours == JsonSharedConstant.MaxDateTimeUtcOffsetHours && parseData.OffsetMinutes != 0)
             {
                 value = default;
                 return false;
             }
 
-            long offsetTicks = (((long)offsetHours) * 3600L + ((long)offsetMinutes) * 60L) * TimeSpan.TicksPerSecond;
-            if (offsetNegative)
+            long offsetTicks = (((long)parseData.OffsetHours) * 3600 + ((long)parseData.OffsetMinutes) * 60) * TimeSpan.TicksPerSecond;
+            if (parseData.OffsetNegative)
             {
                 offsetTicks = -offsetTicks;
             }
@@ -425,18 +418,16 @@ namespace SpanJson.Internal
             return true;
         }
 
-        /// <summary>
-        /// Overflow-safe DateTimeOffset factory.
-        /// </summary>
-        private static bool TryCreateDateTimeOffset(int year, int month, int day, int hour, int minute, int second, int fraction, bool offsetNegative, int offsetHours, int offsetMinutes, out DateTimeOffset value)
+        /// <summary>Overflow-safe DateTimeOffset factory.</summary>
+        private static bool TryCreateDateTimeOffset(ref Utf8DateTimeParseData parseData, out DateTimeOffset value)
         {
-            if (!TryCreateDateTime(year: year, month: month, day: day, hour: hour, minute: minute, second: second, fraction: fraction, kind: DateTimeKind.Unspecified, out DateTime dateTime))
+            if (!TryCreateDateTime(parseData, kind: DateTimeKind.Unspecified, out DateTime dateTime))
             {
                 value = default;
                 return false;
             }
 
-            if (!TryCreateDateTimeOffset(dateTime: dateTime, offsetNegative: offsetNegative, offsetHours: offsetHours, offsetMinutes: offsetMinutes, out value))
+            if (!TryCreateDateTimeOffset(dateTime: dateTime, ref parseData, out value))
             {
                 value = default;
                 return false;
@@ -445,12 +436,10 @@ namespace SpanJson.Internal
             return true;
         }
 
-        /// <summary>
-        /// Overflow-safe DateTimeOffset/Local time conversion factory.
-        /// </summary>
-        private static bool TryCreateDateTimeOffsetInterpretingDataAsLocalTime(int year, int month, int day, int hour, int minute, int second, int fraction, out DateTimeOffset value)
+        /// <summary>Overflow-safe DateTimeOffset/Local time conversion factory.</summary>
+        private static bool TryCreateDateTimeOffsetInterpretingDataAsLocalTime(Utf8DateTimeParseData parseData, out DateTimeOffset value)
         {
-            if (!TryCreateDateTime(year: year, month: month, day: day, hour: hour, minute: minute, second: second, fraction: fraction, DateTimeKind.Local, out DateTime dateTime))
+            if (!TryCreateDateTime(parseData, DateTimeKind.Local, out DateTime dateTime))
             {
                 value = default;
                 return false;
@@ -471,59 +460,59 @@ namespace SpanJson.Internal
             return true;
         }
 
-        /// <summary>
-        /// Overflow-safe DateTime factory.
-        /// </summary>
-        private static bool TryCreateDateTime(int year, int month, int day, int hour, int minute, int second, int fraction, DateTimeKind kind, out DateTime value)
+        /// <summary>Overflow-safe DateTime factory.</summary>
+        private static bool TryCreateDateTime(Utf8DateTimeParseData parseData, DateTimeKind kind, out DateTime value)
         {
-            if (0u >= (uint)year)
+            if (parseData.Year == 0)
             {
                 value = default;
                 return false;
             }
 
-            Debug.Assert(year <= 9999); // All of our callers to date parse the year from fixed 4-digit fields so this value is trusted.
+            Debug.Assert(parseData.Year <= 9999); // All of our callers to date parse the year from fixed 4-digit fields so this value is trusted.
 
-            if ((((uint)month) - 1u) >= 12u)
+            if ((((uint)parseData.Month) - 1) >= 12u)
             {
                 value = default;
                 return false;
             }
 
-            uint dayMinusOne = ((uint)day) - 1u;
-            if (dayMinusOne >= 28u && dayMinusOne >= (uint)DateTime.DaysInMonth(year, month))
+            uint dayMinusOne = ((uint)parseData.Day) - 1u;
+            if (dayMinusOne >= 28 && dayMinusOne >= DateTime.DaysInMonth(parseData.Year, parseData.Month))
             {
                 value = default;
                 return false;
             }
 
-            if (((uint)hour) > 23u)
+            if (((uint)parseData.Hour) > 23u)
             {
                 value = default;
                 return false;
             }
 
-            if (((uint)minute) > 59u)
+            if (((uint)parseData.Minute) > 59u)
             {
                 value = default;
                 return false;
             }
 
-            if (((uint)second) > 59u)
+            // This needs to allow leap seconds when appropriate.
+            // See https://github.com/dotnet/corefx/issues/39185.
+            if (((uint)parseData.Second) > 59u)
             {
                 value = default;
                 return false;
             }
 
-            Debug.Assert(fraction >= 0 && fraction <= JsonSharedConstant.MaxDateTimeFraction); // All of our callers to date parse the fraction from fixed 7-digit fields so this value is trusted.
+            Debug.Assert(parseData.Fraction >= 0 && parseData.Fraction <= JsonSharedConstant.MaxDateTimeFraction); // All of our callers to date parse the fraction from fixed 7-digit fields so this value is trusted.
 
-            int[] days = DateTime.IsLeapYear(year) ? s_daysToMonth366 : s_daysToMonth365;
-            int yearMinusOne = year - 1;
-            int totalDays = (yearMinusOne * 365) + (yearMinusOne / 4) - (yearMinusOne / 100) + (yearMinusOne / 400) + days[month - 1] + day - 1;
+            int[] days = DateTime.IsLeapYear(parseData.Year) ? s_daysToMonth366 : s_daysToMonth365;
+            int yearMinusOne = parseData.Year - 1;
+            int totalDays = (yearMinusOne * 365) + (yearMinusOne / 4) - (yearMinusOne / 100) + (yearMinusOne / 400) + days[parseData.Month - 1] + parseData.Day - 1;
             long ticks = totalDays * TimeSpan.TicksPerDay;
-            int totalSeconds = (hour * 3600) + (minute * 60) + second;
+            int totalSeconds = (parseData.Hour * 3600) + (parseData.Minute * 60) + parseData.Second;
             ticks += totalSeconds * TimeSpan.TicksPerSecond;
-            ticks += fraction;
+            ticks += parseData.Fraction;
             value = new DateTime(ticks: ticks, kind: kind);
             return true;
         }
