@@ -397,7 +397,7 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteUtf16Uri(Uri value)
         {
-            WriteUtf16String(value.ToString()); // Uri does not implement ISpanFormattable
+            WriteUtf16String(value.OriginalString); // Uri does not implement ISpanFormattable
         }
 
         #endregion

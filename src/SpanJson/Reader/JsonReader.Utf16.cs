@@ -990,7 +990,11 @@ namespace SpanJson
                 return default;
             }
 
-            return new Uri(stringValue);
+            if (Uri.TryCreate(stringValue, UriKind.RelativeOrAbsolute, out Uri value))
+            {
+                return value;
+            }
+            throw ThrowHelper.GetJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.Uri, _pos);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
