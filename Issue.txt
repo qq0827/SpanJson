@@ -9,11 +9,11 @@ Issue.002 ★ 字符串编解码缓存(k/v)
 
 Issue.003 ☆ DynamicObjectResolverInterfaceTest / DynamicObjectResolverDerivedAttributeInheritanceTest
 
-Issue.004 ☆ 
+Issue.004 ☆ JsonObject
 
-Issue.005 v 
+Issue.005 v 未指定构造函数
 
-Issue.006 ☆ 
+Issue.006 ☆ SpanJsonDynamicString 实现扩展基元类型的转换
 
 Issue.007 ☆ 
 

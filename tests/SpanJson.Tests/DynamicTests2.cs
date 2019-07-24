@@ -13,6 +13,30 @@ namespace SpanJson.Tests
     partial class DynamicTests
     {
         [Fact]
+        public void ObjectToJsonValueUtf8_2()
+        {
+            var input = new { Key = "1", Value = 5 };
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(input);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<dynamic>(serialized);
+            Assert.IsType<SpanJsonDynamicObject>(deserialized);
+            Assert.Equal("1", (string)deserialized["Key"]);
+            Assert.Equal(5, (int)deserialized["Value"]);
+            Assert.Equal("{\"Key\":\"1\",\"Value\":5}", deserialized.ToString());
+        }
+
+        [Fact]
+        public void ObjectToJsonValueUtf16_2()
+        {
+            var input = new { Key = "1", Value = 5 };
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(input);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
+            Assert.IsType<SpanJsonDynamicObject>(deserialized);
+            Assert.Equal("1", (string)deserialized["Key"]);
+            Assert.Equal(5, (int)deserialized["Value"]);
+            Assert.Equal("{\"Key\":\"1\",\"Value\":5}", deserialized.ToString());
+        }
+
+        [Fact]
         public void DynamicObjectWithKnownMembersUtf16SnakeCase()
         {
             var list = new List<string> { "Hello", "World" };
@@ -21,13 +45,21 @@ namespace SpanJson.Tests
             dynamicObject.GoodText = "Hello World";
             dynamicObject.JsonSupported = list;
             dynamicObject.DynamicValue = "Hello Universe";
-
+            var dtNow = DateTime.Now.Date;
+            dynamicObject.DynamicDateTime = dtNow;
+            var guid = Guid.NewGuid();
+            dynamicObject.DynamicGuid = guid;
+            var comb = CombGuid.NewComb();
+            dynamicObject.DynamicComb = comb;
             var serialized = JsonSerializer.Generic.Utf16.Serialize<DynamicObjectWithKnownMembers2, ExcludeNullsSnakeCaseResolver<char>>(dynamicObject);
             Assert.NotNull(serialized);
             Assert.Contains("\"good_text\":", serialized);
             Assert.Contains("\"num_value\":", serialized);
             Assert.Contains("\"json_supported\":", serialized);
             Assert.Contains("\"dynamic_value\":", serialized);
+            Assert.Contains("\"dynamic_date_time\":", serialized);
+            Assert.Contains("\"dynamic_guid\":", serialized);
+            Assert.Contains("\"dynamic_comb\":", serialized);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<DynamicObjectWithKnownMembers2, ExcludeNullsSnakeCaseResolver<char>>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(5, (int)deserialized.NumValue);
@@ -36,6 +68,9 @@ namespace SpanJson.Tests
             Assert.Equal(list, supported);
             Assert.Equal("Hello World", (string)deserialized.good_text);
             Assert.Equal("Hello Universe", (string)deserialized.dynamic_value);
+            Assert.Equal(dtNow, (DateTime)deserialized.dynamic_date_time);
+            Assert.Equal(guid, (Guid)deserialized.dynamic_guid);
+            Assert.Equal(comb, (CombGuid)deserialized.dynamic_comb);
         }
 
         [Fact]
@@ -47,6 +82,12 @@ namespace SpanJson.Tests
             dynamicObject.GoodText = "Hello World";
             dynamicObject.JsonSupported = list;
             dynamicObject.DynamicValue = "Hello Universe";
+            var dtNow = DateTime.Now.Date;
+            dynamicObject.DynamicDateTime = dtNow;
+            var guid = Guid.NewGuid();
+            dynamicObject.DynamicGuid = guid;
+            var comb = CombGuid.NewComb();
+            dynamicObject.DynamicComb = comb;
             var serialized = JsonSerializer.Generic.Utf8.Serialize<DynamicObjectWithKnownMembers2, ExcludeNullsSnakeCaseResolver<byte>>(dynamicObject);
             Assert.NotNull(serialized);
             var serializedText = Encoding.UTF8.GetString(serialized);
@@ -54,6 +95,9 @@ namespace SpanJson.Tests
             Assert.Contains("\"num_value\":", serializedText);
             Assert.Contains("\"json_supported\":", serializedText);
             Assert.Contains("\"dynamic_value\":", serializedText);
+            Assert.Contains("\"dynamic_date_time\":", serializedText);
+            Assert.Contains("\"dynamic_guid\":", serializedText);
+            Assert.Contains("\"dynamic_comb\":", serializedText);
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<DynamicObjectWithKnownMembers2, ExcludeNullsSnakeCaseResolver<byte>>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(5, (int)deserialized.NumValue);
@@ -62,6 +106,9 @@ namespace SpanJson.Tests
             Assert.Equal(list, supported);
             Assert.Equal("Hello World", (string)deserialized.good_text);
             Assert.Equal("Hello Universe", (string)deserialized.dynamic_value);
+            Assert.Equal(dtNow, (DateTime)deserialized.dynamic_date_time);
+            Assert.Equal(guid, (Guid)deserialized.dynamic_guid);
+            Assert.Equal(comb, (CombGuid)deserialized.dynamic_comb);
         }
 
         [Fact]

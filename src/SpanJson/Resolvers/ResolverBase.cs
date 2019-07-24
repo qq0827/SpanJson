@@ -596,6 +596,7 @@ namespace SpanJson.Resolvers
         private static int s_isFreezed = Unlocked;
         private static List<ICustomJsonFormatterResolver> s_resolvers = new List<ICustomJsonFormatterResolver>();
 
+        /// <summary>Only support for custom formatters.</summary>
         public bool IsSupportedType(Type type)
         {
             if (Formatters.ContainsKey(type)) { return true; }

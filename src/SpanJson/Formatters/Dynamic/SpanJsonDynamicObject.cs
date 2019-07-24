@@ -13,6 +13,24 @@ namespace SpanJson.Formatters.Dynamic
             _dictionary = dictionary;
         }
 
+        /// <summary>Gets or sets the <see cref="object"/> with the specified name.</summary>
+        /// <value>The <see cref="object"/>.</value>
+        /// <param name="name">The name.</param>
+        /// <returns>Value from the property.</returns>
+        public object this[string name]
+        {
+            get
+            {
+                if (_dictionary.TryGetValue(name, out object result))
+                {
+                    return result;
+                }
+
+                return null;
+            }
+        }
+
+
         public override string ToString()
         {
             return $"{{{string.Join(",", _dictionary.Select(a => $"\"{a.Key}\":{a.Value.ToJsonValue()}"))}}}";
