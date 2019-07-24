@@ -7,10 +7,10 @@
         protected JsonNamingPolicy() { }
 
         /// <summary>Returns the naming policy for camel-casing.</summary>
-        public static JsonNamingPolicy CamelCase { get; } = new JsonCamelCaseNamePolicy();
+        public static JsonNamingPolicy CamelCase { get; } = new JsonCamelCaseNamingPolicy();
 
         /// <summary>Returns the naming policy for snake-casing.</summary>
-        public static JsonNamingPolicy SnakeCase { get; } = new JsonSnakeCaseNamePolicy();
+        public static JsonNamingPolicy SnakeCase { get; } = new JsonSnakeCaseNamingPolicy();
 
         /// <summary>When overridden in a derived class, converts the specified name according to the policy.</summary>
         /// <param name="name">The name to convert.</param>
