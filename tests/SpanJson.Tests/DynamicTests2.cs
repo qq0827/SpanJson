@@ -21,6 +21,8 @@ namespace SpanJson.Tests
             Assert.IsType<SpanJsonDynamicObject>(deserialized);
             Assert.Equal("1", (string)deserialized["Key"]);
             Assert.Equal(5, (int)deserialized["Value"]);
+            Assert.Equal("1", (string)deserialized.key);
+            Assert.Equal(5, (int)deserialized.value);
             Assert.Equal("{\"Key\":\"1\",\"Value\":5}", deserialized.ToString());
         }
 
@@ -33,6 +35,8 @@ namespace SpanJson.Tests
             Assert.IsType<SpanJsonDynamicObject>(deserialized);
             Assert.Equal("1", (string)deserialized["Key"]);
             Assert.Equal(5, (int)deserialized["Value"]);
+            Assert.Equal("1", (string)deserialized.key);
+            Assert.Equal(5, (int)deserialized.value);
             Assert.Equal("{\"Key\":\"1\",\"Value\":5}", deserialized.ToString());
         }
 

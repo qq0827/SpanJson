@@ -1270,7 +1270,7 @@ namespace SpanJson
                     {
                         pos++;
                         var count = 0;
-                        var dictionary = new Dictionary<string, object>(StringComparer.Ordinal);
+                        var dictionary = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
                         while (!TryReadUtf16IsEndObjectOrValueSeparator(ref count))
                         {
                             var name = ReadUtf16EscapedName();
