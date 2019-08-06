@@ -19,10 +19,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CuteAnt.Core.Abstractions" Version="$(CuteAntCoreAbstractionsPackageVersion)" />
+    <PackageReference Include="CuteAnt.Core" Version="$(CuteAntCorePackageVersion)" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="$(SystemRuntimeCompilerServicesUnsafePackageVersion)" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' != 'net451' ">
     <PackageReference Include="System.Text.Encodings.Web" Version="$(SystemTextEncodingsWebPackageVersion)" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' != 'netcoreapp2.2' ">
@@ -43,11 +41,11 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BclFormatter.cs</LastGenOutput>
     </None>
-    <None Update="Formatters\Dynamic\SpanJsonDynamicString.Operators.tt">
+    <None Update="Dynamic\SpanJsonDynamicString.Operators.tt">
       <LastGenOutput>SpanJsonDynamicString.Operators.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
     </None>
-    <None Update="Formatters\Dynamic\SpanJsonDynamicNumber.Operators.tt">
+    <None Update="Dynamic\SpanJsonDynamicNumber.Operators.tt">
       <LastGenOutput>SpanJsonDynamicNumber.Operators.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
     </None>
@@ -68,15 +66,20 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Formatters\Dynamic\SpanJsonDynamicString.Operators.cs">
+    <Compile Update="Dynamic\SpanJsonDynamicString.Operators.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>SpanJsonDynamicString.Operators.tt</DependentUpon>
     </Compile>
-    <Compile Update="Formatters\Dynamic\SpanJsonDynamicNumber.Operators.cs">
+    <Compile Update="Dynamic\SpanJsonDynamicNumber.Operators.cs">
       <DependentUpon>SpanJsonDynamicNumber.Operators.tt</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Internal\Strings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
     <Compile Update="Reader\JsonReader.PrimitiveWrappers.cs">
       <DesignTime>True</DesignTime>
@@ -111,11 +114,9 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Update="Internal\Strings.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Strings.resx</DependentUpon>
-    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Update="Internal\Strings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>

@@ -51,7 +51,7 @@ namespace SpanJson.Helpers
                 foreach (var memberInfo in publicMembers)
                 {
                     var memberType = memberInfo is PropertyInfo pi ? pi.PropertyType : memberInfo is FieldInfo fi ? fi.FieldType : null;
-                    if (memberType == null || memberInfo.GetCustomAttribute<IgnoreDataMemberAttribute>() != null)
+                    if (memberType == null || memberInfo.FirstAttribute<IgnoreDataMemberAttribute>() != null)
                     {
                         continue;
                     }

@@ -16,9 +16,9 @@
         private Span<byte> _utf8Span;
         internal char[] _utf16Buffer;
         private Span<char> _utf16Span;
-        private int _capacity;
+        internal int _capacity;
 
-        private int _pos;
+        internal int _pos;
         private int _depth;
 
         /// <summary>TBD</summary>
@@ -47,13 +47,29 @@
             get => _capacity - _pos;
         }
 
-        public Span<char> Utf16Span
+        /// <summary>Unsafe</summary>
+        public ReadOnlySpan<char> Utf16WrittenSpan
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _utf16Span.Slice(0, _pos);
+        }
+
+        /// <summary>Unsafe</summary>
+        public Span<char> Utf16FreeSpan
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => _utf16Span.Slice(_pos);
         }
 
-        public Span<byte> Utf8Span
+        /// <summary>Unsafe</summary>
+        public ReadOnlySpan<byte> Utf8WrittenSpan
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _utf8Span.Slice(0, _pos);
+        }
+
+        /// <summary>Unsafe</summary>
+        public Span<byte> Utf8FreeSpan
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => _utf8Span.Slice(_pos);
@@ -225,6 +241,7 @@
             }
         }
 
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteEndArray()
         {
@@ -331,7 +348,7 @@
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteChar(char value, StringEscapeHandling escapeHandling)
+        public void WriteChar(char value, JsonEscapeHandling escapeHandling)
         {
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
@@ -400,7 +417,7 @@
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteName(string name, StringEscapeHandling escapeHandling)
+        public void WriteName(string name, JsonEscapeHandling escapeHandling)
         {
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
@@ -417,7 +434,7 @@
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteName(in ReadOnlySpan<char> name, StringEscapeHandling escapeHandling)
+        public void WriteName(in ReadOnlySpan<char> name, JsonEscapeHandling escapeHandling)
         {
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
@@ -451,7 +468,7 @@
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteString(string value, StringEscapeHandling escapeHandling)
+        public void WriteString(string value, JsonEscapeHandling escapeHandling)
         {
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
@@ -485,7 +502,7 @@
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteString(in ReadOnlySpan<char> value, StringEscapeHandling escapeHandling)
+        public void WriteString(in ReadOnlySpan<char> value, JsonEscapeHandling escapeHandling)
         {
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
@@ -614,6 +631,23 @@
             else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
             {
                 WriteUtf16CombGuid(value);
+            }
+            else
+            {
+                ThrowHelper.ThrowNotSupportedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteBase64String(in ReadOnlySpan<byte> bytes)
+        {
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+            {
+                WriteUtf8Base64String(bytes);
+            }
+            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                WriteUtf16Base64String(bytes);
             }
             else
             {

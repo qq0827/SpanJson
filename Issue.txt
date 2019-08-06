@@ -9,17 +9,17 @@ Issue.002 ★ 字符串编解码缓存(k/v)
 
 Issue.003 ☆ DynamicObjectResolverInterfaceTest / DynamicObjectResolverDerivedAttributeInheritanceTest
 
-Issue.004 ☆ JsonObject
+Issue.004 ★ JsonObject
 
-Issue.005 v 未指定构造函数
+Issue.005 ★ 未指定构造函数(配合动态特性实现JsonConstructorAttribute)
 
-Issue.006 ☆ SpanJsonDynamicString 实现扩展基元类型的转换
+Issue.006 ★ SpanJsonDynamicString 实现扩展基元类型的转换（通过JValue来实现）
 
-Issue.007 ☆ 
+Issue.007 ★ TypeNameHandling(自定义Formatter和动态特性JsonCustomSerializerAttribute相配合)
 
-Issue.008 ☆ 
+Issue.008 ★ byte[] => base64
 
-Issue.009 ☆ 
+Issue.009 ☆ SpanJson.AspNetCore.Formatter
 
 Issue.010 ☆ 
 

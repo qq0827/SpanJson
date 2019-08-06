@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Dynamic;
 using System.Linq;
 using System.Text;
-using SpanJson.Formatters.Dynamic;
+using SpanJson.Dynamic;
 using SpanJson.Resolvers;
 using SpanJson.Shared;
 using SpanJson.Shared.Fixture;

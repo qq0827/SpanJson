@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Dynamic;
+using System.Text.Encodings.Web;
 using SpanJson.Resolvers;
 
 namespace SpanJson
@@ -17,7 +18,9 @@ namespace SpanJson
     {
         SpanJsonOptions JsonOptions { get; }
 
-        StringEscapeHandling StringEscapeHandling { get; }
+        JsonEscapeHandling EscapeHandling { get; }
+        /// <summary>The encoder to use when escaping strings, or <see langword="null" /> to use the default encoder.</summary>
+        JavaScriptEncoder Encoder { get; }
 
         /// <summary>Only support for custom formatters.</summary>
         /// <param name="type"></param>
@@ -25,6 +28,7 @@ namespace SpanJson
         [EditorBrowsable(EditorBrowsableState.Never)]
         bool IsSupportedType(Type type);
 
+        IJsonFormatter<object, TSymbol> GetRuntimeFormatter();
         IJsonFormatter<T, TSymbol> GetFormatter<T>();
         JsonObjectDescription GetObjectDescription<T>();
 

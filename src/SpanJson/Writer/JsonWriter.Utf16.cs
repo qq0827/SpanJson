@@ -2,6 +2,7 @@
 {
     using System;
     using System.Runtime.CompilerServices;
+    using SpanJson.Internal;
 
     partial struct JsonWriter<TSymbol>
     {
@@ -10,6 +11,20 @@
             var s = new ReadOnlySpan<char>(_utf16Buffer, 0, _pos).ToString();
             Dispose();
             return s;
+        }
+
+        public char[] ToCharArray()
+        {
+            ref var alreadyWritten = ref _pos;
+            if (0u >= (uint)alreadyWritten) { return JsonHelpers.Empty<char>(); }
+
+            var borrowedBuffer = _utf16Buffer;
+            if (null == borrowedBuffer) { return JsonHelpers.Empty<char>(); }
+
+            var destination = new char[alreadyWritten];
+            Utf16WrittenSpan.CopyTo(destination);
+            Dispose();
+            return destination;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -39,7 +39,7 @@ namespace SpanJson.Internal
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static JsonEncodedText GetEncodedText(string text)
             {
-                return s_encodedTextCache.GetOrAdd(text, s => JsonEncodedText.Encode(s, StringEscapeHandling.EscapeHtml));
+                return s_encodedTextCache.GetOrAdd(text, s => JsonEncodedText.Encode(s, JsonEscapeHandling.EscapeHtml));
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -106,7 +106,7 @@ namespace SpanJson.Internal
                     byte val = Unsafe.Add(ref sourceSpace, consumed);
                     if (NeedsEscaping(val))
                     {
-                        if (!EscapeNextBytes(StringEscapeHandling.EscapeHtml, ref sourceSpace, ref consumed, nlen - (uint)consumed, destination, ref destSpace, ref written))
+                        if (!EscapeNextBytes(JsonEscapeHandling.EscapeHtml, ref sourceSpace, ref consumed, nlen - (uint)consumed, destination, ref destSpace, ref written))
                         {
                             ThrowHelper.ThrowArgumentException_InvalidUTF8(utf8Source, consumed);
                         }
@@ -135,7 +135,7 @@ namespace SpanJson.Internal
                     char val = Unsafe.Add(ref sourceSpace, consumed);
                     if (NeedsEscaping(val))
                     {
-                        EscapeNextChars(StringEscapeHandling.EscapeHtml, ref sourceSpace, nlen, val, ref destSpace, ref consumed, ref written);
+                        EscapeNextChars(JsonEscapeHandling.EscapeHtml, ref sourceSpace, nlen, val, ref destSpace, ref consumed, ref written);
                     }
                     else
                     {

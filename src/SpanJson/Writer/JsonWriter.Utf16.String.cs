@@ -15,7 +15,7 @@
 
             ref char pinnableAddr = ref Utf16PinnableAddress;
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
-            utf16Text.AsSpan().CopyTo(Utf16Span);
+            utf16Text.AsSpan().CopyTo(Utf16FreeSpan);
             pos += utf16Text.Length;
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
         }
@@ -31,24 +31,24 @@
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteUtf16String(string value, StringEscapeHandling escapeHandling)
+        public void WriteUtf16String(string value, JsonEscapeHandling escapeHandling)
         {
             WriteUtf16String(value.AsSpan(), escapeHandling);
         }
 
-        public void WriteUtf16String(in ReadOnlySpan<char> value, StringEscapeHandling escapeHandling)
+        public void WriteUtf16String(in ReadOnlySpan<char> value, JsonEscapeHandling escapeHandling)
         {
             switch (escapeHandling)
             {
-                case StringEscapeHandling.EscapeNonAscii:
+                case JsonEscapeHandling.EscapeNonAscii:
                     WriteUtf16StringEscapeNonAsciiValue(value, false);
                     break;
 
-                case StringEscapeHandling.EscapeHtml:
+                case JsonEscapeHandling.EscapeHtml:
                     WriteUtf16StringEscapeHtmlValue(value, false);
                     break;
 
-                case StringEscapeHandling.Default:
+                case JsonEscapeHandling.Default:
                 default:
                     WriteUtf16StringEscapeValue(value, false);
                     break;
@@ -74,7 +74,7 @@
                 char val = Unsafe.Add(ref utf16Source, consumed);
                 if (EscapingHelper.Default.NeedsEscaping(val))
                 {
-                    EscapingHelper.EscapeNextChars(StringEscapeHandling.Default, ref utf16Source, nValueLength, val, ref pinnableAddr, ref consumed, ref pos);
+                    EscapingHelper.EscapeNextChars(JsonEscapeHandling.Default, ref utf16Source, nValueLength, val, ref pinnableAddr, ref consumed, ref pos);
                     var remaining = 10 + valueLength - consumed; // make sure that all characters and an extra 5 for a full escape still fit
                     if ((uint)remaining >= (uint)(_capacity - pos))
                     {
@@ -113,7 +113,7 @@
                 char val = Unsafe.Add(ref utf16Source, consumed);
                 if (EscapingHelper.Html.NeedsEscaping(val))
                 {
-                    EscapingHelper.EscapeNextChars(StringEscapeHandling.EscapeHtml, ref utf16Source, nValueLength, val, ref pinnableAddr, ref consumed, ref pos);
+                    EscapingHelper.EscapeNextChars(JsonEscapeHandling.EscapeHtml, ref utf16Source, nValueLength, val, ref pinnableAddr, ref consumed, ref pos);
                     var remaining = 10 + valueLength - consumed; // make sure that all characters and an extra 5 for a full escape still fit
                     if ((uint)remaining >= (uint)(_capacity - pos))
                     {
@@ -152,7 +152,7 @@
                 char val = Unsafe.Add(ref utf16Source, consumed);
                 if (EscapingHelper.NonAscii.NeedsEscaping(val))
                 {
-                    EscapingHelper.EscapeNextChars(StringEscapeHandling.EscapeNonAscii, ref utf16Source, nValueLength, val, ref pinnableAddr, ref consumed, ref pos);
+                    EscapingHelper.EscapeNextChars(JsonEscapeHandling.EscapeNonAscii, ref utf16Source, nValueLength, val, ref pinnableAddr, ref consumed, ref pos);
                     var remaining = 10 + valueLength - consumed; // make sure that all characters and an extra 5 for a full escape still fit
                     if ((uint)remaining >= (uint)(_capacity - pos))
                     {

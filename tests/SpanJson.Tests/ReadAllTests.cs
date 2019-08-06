@@ -25,8 +25,8 @@ namespace SpanJson.Tests
         public void ReadAllUtf8(byte[] input)
         {
             var reader = new JsonReader<byte>(input);
-            JsonToken token;
-            while ((token = reader.ReadUtf8NextToken()) != JsonToken.None)
+            JsonTokenType token;
+            while ((token = reader.ReadUtf8NextToken()) != JsonTokenType.None)
             {
                 reader.SkipNextUtf8Value(token);
             }
@@ -37,8 +37,8 @@ namespace SpanJson.Tests
         public void ReadAllUtf16(string input)
         {
             var reader = new JsonReader<char>(input.AsSpan());
-            JsonToken token;
-            while ((token = reader.ReadUtf16NextToken()) != JsonToken.None)
+            JsonTokenType token;
+            while ((token = reader.ReadUtf16NextToken()) != JsonTokenType.None)
             {
                 reader.SkipNextUtf16Value(token);
             }

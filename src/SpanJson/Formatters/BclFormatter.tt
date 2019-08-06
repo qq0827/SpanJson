@@ -176,10 +176,10 @@ namespace SpanJson.Formatters
                 writer.Write<#= utfName #>Null();
                 return;
             }
-            writer.Write<#= utfName #><#= t.Name #>(value, resolver.StringEscapeHandling);
+            writer.Write<#= utfName #><#= t.Name #>(value, resolver.EscapeHandling);
 <# } #>
 <# else if(t == typeof(char)) { #>
-            writer.Write<#= utfName #><#= t.Name #>(value, resolver.StringEscapeHandling);
+            writer.Write<#= utfName #><#= t.Name #>(value, resolver.EscapeHandling);
 <# } #>
 <# else if(!t.IsValueType) { #>
             if(value == null)

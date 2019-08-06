@@ -24,7 +24,7 @@
         public void WriteUtf8BeginObject()
         {
             ref var pos = ref _pos;
-            Ensure(1);
+            EnsureUnsafe(pos, 1);
 
             Unsafe.AddByteOffset(ref Utf8PinnableAddress, (IntPtr)pos++) = JsonUtf8Constant.BeginObject;
         }
@@ -33,7 +33,7 @@
         public void WriteUtf8EndObject()
         {
             ref var pos = ref _pos;
-            Ensure(1);
+            EnsureUnsafe(pos, 1);
 
             Unsafe.AddByteOffset(ref Utf8PinnableAddress, (IntPtr)pos++) = JsonUtf8Constant.EndObject;
         }
@@ -42,7 +42,7 @@
         public void WriteUtf8BeginArray()
         {
             ref var pos = ref _pos;
-            Ensure(1);
+            EnsureUnsafe(pos, 1);
 
             Unsafe.AddByteOffset(ref Utf8PinnableAddress, (IntPtr)pos++) = JsonUtf8Constant.BeginArray;
         }
@@ -51,7 +51,7 @@
         public void WriteUtf8EndArray()
         {
             ref var pos = ref _pos;
-            Ensure(1);
+            EnsureUnsafe(pos, 1);
 
             Unsafe.AddByteOffset(ref Utf8PinnableAddress, (IntPtr)pos++) = JsonUtf8Constant.EndArray;
         }
@@ -60,7 +60,7 @@
         public void WriteUtf8ValueSeparator()
         {
             ref var pos = ref _pos;
-            Ensure(1);
+            EnsureUnsafe(pos, 1);
 
             Unsafe.AddByteOffset(ref Utf8PinnableAddress, (IntPtr)pos++) = JsonUtf8Constant.ValueSeparator;
         }

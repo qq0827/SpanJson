@@ -145,7 +145,7 @@
             pos += count;
 #else
             EnsureUnsafe(pos, JsonSharedConstant.MaximumFormatDoubleLength);
-            var result = value.TryFormat(Utf16Span, out var written, provider: CultureInfo.InvariantCulture);
+            var result = value.TryFormat(Utf16FreeSpan, out var written, provider: CultureInfo.InvariantCulture);
             if (result)
             {
                 pos += written;
@@ -181,7 +181,7 @@
             pos += count;
 #else
             EnsureUnsafe(pos, JsonSharedConstant.MaximumFormatDoubleLength);
-            var result = value.TryFormat(Utf16Span, out var written, provider: CultureInfo.InvariantCulture);
+            var result = value.TryFormat(Utf16FreeSpan, out var written, provider: CultureInfo.InvariantCulture);
             if (result)
             {
                 pos += written;
@@ -200,7 +200,7 @@
 
             int length = utf16Text.Length;
             writer.EnsureUnsafe(pos, length);
-            utf16Text.AsSpan().CopyTo(writer.Utf16Span);
+            utf16Text.AsSpan().CopyTo(writer.Utf16FreeSpan);
             pos += length;
         }
 
@@ -215,10 +215,10 @@
             var utf16Text = value.ToString("G", CultureInfo.InvariantCulture);
             var written = utf16Text.Length;
             EnsureUnsafe(pos, written);
-            utf16Text.AsSpan().CopyTo(Utf16Span);
+            utf16Text.AsSpan().CopyTo(Utf16FreeSpan);
 #else
             EnsureUnsafe(pos, JsonSharedConstant.MaximumFormatDecimalLength);
-            var result = value.TryFormat(Utf16Span, out var written, provider: CultureInfo.InvariantCulture);
+            var result = value.TryFormat(Utf16FreeSpan, out var written, provider: CultureInfo.InvariantCulture);
             Debug.Assert(result);
 #endif
             pos += written;
@@ -231,10 +231,10 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteUtf16Char(char value)
         {
-            WriteUtf16Char(value, StringEscapeHandling.Default);
+            WriteUtf16Char(value, JsonEscapeHandling.Default);
         }
 
-        public void WriteUtf16Char(char value, StringEscapeHandling escapeHandling)
+        public void WriteUtf16Char(char value, JsonEscapeHandling escapeHandling)
         {
             ref var pos = ref _pos;
             const int size = 8; // 1-6 chars + two JsonUtf16Constant.DoubleQuote
@@ -271,7 +271,7 @@
             Debug.Assert(result);
             DateTimeFormatter.TrimDateTimeOffset(tempSpan.Slice(0, charsWritten), out charsWritten);
 
-            tempSpan.Slice(0, charsWritten).CopyTo(Utf16Span);
+            tempSpan.Slice(0, charsWritten).CopyTo(Utf16FreeSpan);
             pos += charsWritten;
 
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
@@ -295,7 +295,7 @@
             Debug.Assert(result);
             DateTimeFormatter.TrimDateTimeOffset(tempSpan.Slice(0, charsWritten), out charsWritten);
 
-            tempSpan.Slice(0, charsWritten).CopyTo(Utf16Span);
+            tempSpan.Slice(0, charsWritten).CopyTo(Utf16FreeSpan);
             pos += charsWritten;
 
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
@@ -356,11 +356,11 @@
 
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
 #if NETCOREAPP || NETSTANDARD_2_0_GREATER
-            value.TryFormat(Utf16Span, CombGuidFormatStringType.Comb, out int charsWritten);
+            value.TryFormat(Utf16FreeSpan, CombGuidFormatStringType.Comb, out int charsWritten);
             Debug.Assert(charsWritten == 36);
             pos += charsWritten;
 #else
-            value.ToString(CombGuidFormatStringType.Comb).AsSpan().CopyTo(Utf16Span);
+            value.ToString(CombGuidFormatStringType.Comb).AsSpan().CopyTo(Utf16FreeSpan);
             pos += 36;
 #endif
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
@@ -381,10 +381,10 @@
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
 #if NETSTANDARD2_0 || NET471 || NET451
             var utf16Text = value.ToString();
-            utf16Text.AsSpan().CopyTo(Utf16Span);
+            utf16Text.AsSpan().CopyTo(Utf16FreeSpan);
             pos += utf16Text.Length;
 #else
-            value.TryFormat(Utf16Span, out var written);
+            value.TryFormat(Utf16FreeSpan, out var written);
             pos += written;
 #endif
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);

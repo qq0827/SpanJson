@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.Text;
-using SpanJson.Formatters.Dynamic;
+using SpanJson.Dynamic;
 using Xunit;
 
 namespace SpanJson.Tests

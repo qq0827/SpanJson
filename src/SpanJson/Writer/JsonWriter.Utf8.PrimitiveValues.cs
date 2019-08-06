@@ -162,7 +162,7 @@
         {
             ref var pos = ref _pos;
             EnsureUnsafe(pos, JsonSharedConstant.MaximumFormatDecimalLength);
-            var result = Utf8Formatter.TryFormat(value, Utf8Span, out int bytesWritten);
+            var result = Utf8Formatter.TryFormat(value, Utf8FreeSpan, out int bytesWritten);
             Debug.Assert(result);
             pos += bytesWritten;
         }
@@ -174,10 +174,10 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteUtf8Char(char value)
         {
-            WriteUtf8Char(value, StringEscapeHandling.Default);
+            WriteUtf8Char(value, JsonEscapeHandling.Default);
         }
 
-        public void WriteUtf8Char(char value, StringEscapeHandling escapeHandling)
+        public void WriteUtf8Char(char value, JsonEscapeHandling escapeHandling)
         {
             ref var pos = ref _pos;
             const int size = 8; // 1-6 chars + two JsonUtf8Constant.DoubleQuote
@@ -228,7 +228,7 @@
             Debug.Assert(result);
             DateTimeFormatter.TrimDateTimeOffset(tempSpan.Slice(0, bytesWritten), out bytesWritten);
 
-            tempSpan.Slice(0, bytesWritten).CopyTo(Utf8Span);
+            tempSpan.Slice(0, bytesWritten).CopyTo(Utf8FreeSpan);
             pos += bytesWritten;
 
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
@@ -253,7 +253,7 @@
             Debug.Assert(result);
             DateTimeFormatter.TrimDateTimeOffset(tempSpan.Slice(0, bytesWritten), out bytesWritten);
 
-            tempSpan.Slice(0, bytesWritten).CopyTo(Utf8Span);
+            tempSpan.Slice(0, bytesWritten).CopyTo(Utf8FreeSpan);
             pos += bytesWritten;
 
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
@@ -272,7 +272,7 @@
             ref byte pinnableAddr = ref Utf8PinnableAddress;
 
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
-            Utf8Formatter.TryFormat(value, Utf8Span, out var bytesWritten);
+            Utf8Formatter.TryFormat(value, Utf8FreeSpan, out var bytesWritten);
             pos += bytesWritten;
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
         }
@@ -308,7 +308,7 @@
 
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
 #if NETCOREAPP || NETSTANDARD_2_0_GREATER
-            value.TryFormat(Utf8Span, CombGuidFormatStringType.Comb, out int bytesWritten);
+            value.TryFormat(Utf8FreeSpan, CombGuidFormatStringType.Comb, out int bytesWritten);
             pos += bytesWritten;
 #else
             Span<byte> tempSpan = stackalloc byte[36];
@@ -331,7 +331,7 @@
             WriteUtf8String(value.ToString());
 #else
             ref var pos = ref _pos;
-            Ensure(JsonSharedConstant.MaxVersionLength);
+            EnsureUnsafe(pos, JsonSharedConstant.MaxVersionLength);
 
             ref byte pinnableAddr = ref Utf8PinnableAddress;
 
@@ -339,7 +339,7 @@
             Span<char> tempSpan = TinyMemoryPool<char>.GetBuffer();
             var result = value.TryFormat(tempSpan, out var charsWritten);
             Debug.Assert(result);
-            pos += TextEncodings.UTF8NoBOM.GetBytes(tempSpan.Slice(0, charsWritten), Utf8Span);
+            pos += TextEncodings.UTF8NoBOM.GetBytes(tempSpan.Slice(0, charsWritten), Utf8FreeSpan);
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
 #endif
         }

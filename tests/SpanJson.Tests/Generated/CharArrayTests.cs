@@ -23,6 +23,18 @@ namespace SpanJson.Tests.Generated
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<char[]>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(chars, deserialized);
+            deserialized = JsonSerializer.Generic.Utf16.Deserialize<char[]>(new ArraySegment<char>(serialized.ToCharArray()));
+            Assert.NotNull(deserialized);
+            Assert.Equal(chars, deserialized);
+            deserialized = JsonSerializer.Generic.Utf16.Deserialize<char[]>(serialized.ToCharArray());
+            Assert.NotNull(deserialized);
+            Assert.Equal(chars, deserialized);
+            deserialized = JsonSerializer.Generic.Utf16.Deserialize<char[]>(serialized.AsMemory());
+            Assert.NotNull(deserialized);
+            Assert.Equal(chars, deserialized);
+            deserialized = JsonSerializer.Generic.Utf16.Deserialize<char[]>(serialized.AsSpan());
+            Assert.NotNull(deserialized);
+            Assert.Equal(chars, deserialized);
         }
 
         [Fact]
@@ -42,6 +54,15 @@ namespace SpanJson.Tests.Generated
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<char[]>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(chars, deserialized);
+            deserialized = JsonSerializer.Generic.Utf8.Deserialize<char[]>(new ArraySegment<byte>(serialized));
+            Assert.NotNull(deserialized);
+            Assert.Equal(chars, deserialized);
+            deserialized = JsonSerializer.Generic.Utf8.Deserialize<char[]>(serialized.AsMemory());
+            Assert.NotNull(deserialized);
+            Assert.Equal(chars, deserialized);
+            deserialized = JsonSerializer.Generic.Utf8.Deserialize<char[]>(serialized.AsSpan());
+            Assert.NotNull(deserialized);
+            Assert.Equal(chars, deserialized);
         }
 
         [Fact]
@@ -53,6 +74,15 @@ namespace SpanJson.Tests.Generated
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<char[]>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(chars, deserialized);
+            deserialized = JsonSerializer.Generic.Utf8.Deserialize<char[]>(new ArraySegment<byte>(serialized));
+            Assert.NotNull(deserialized);
+            Assert.Equal(chars, deserialized);
+            deserialized = JsonSerializer.Generic.Utf8.Deserialize<char[]>(serialized.AsSpan());
+            Assert.NotNull(deserialized);
+            Assert.Equal(chars, deserialized);
+            deserialized = JsonSerializer.Generic.Utf8.Deserialize<char[]>(serialized.AsMemory());
+            Assert.NotNull(deserialized);
+            Assert.Equal(chars, deserialized);
         }
 
         [Fact]
@@ -62,6 +92,18 @@ namespace SpanJson.Tests.Generated
             var serialized = JsonSerializer.Generic.Utf16.Serialize(chars);
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<char[]>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(chars, deserialized);
+            deserialized = JsonSerializer.Generic.Utf16.Deserialize<char[]>(new ArraySegment<char>(serialized.ToCharArray()));
+            Assert.NotNull(deserialized);
+            Assert.Equal(chars, deserialized);
+            deserialized = JsonSerializer.Generic.Utf16.Deserialize<char[]>(serialized.ToCharArray());
+            Assert.NotNull(deserialized);
+            Assert.Equal(chars, deserialized);
+            deserialized = JsonSerializer.Generic.Utf16.Deserialize<char[]>(serialized.AsMemory());
+            Assert.NotNull(deserialized);
+            Assert.Equal(chars, deserialized);
+            deserialized = JsonSerializer.Generic.Utf16.Deserialize<char[]>(serialized.AsSpan());
             Assert.NotNull(deserialized);
             Assert.Equal(chars, deserialized);
         }

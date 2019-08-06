@@ -5,14 +5,12 @@
 // Largely based on https://github.com/dotnet/corefx/blob/8135319caa7e457ed61053ca1418313b88057b51/src/System.Text.Json/src/System/Text/Json/Writer/JsonWriterHelper.Transcoding.cs#L12
 
 using System;
+using System.Buffers;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-#if !NET451
-using System.Buffers;
 using System.Text.Encodings.Web;
-#endif
 
 namespace SpanJson.Internal
 {
@@ -46,17 +44,17 @@ namespace SpanJson.Internal
             {
                 if (null == encoder)
                 {
-                    return s_encodedTextCache.GetOrAdd(text, s => JsonEncodedText.Encode(s, StringEscapeHandling.EscapeNonAscii));
+                    return s_encodedTextCache.GetOrAdd(text, s => JsonEncodedText.Encode(s, JsonEscapeHandling.EscapeNonAscii));
                 }
                 else
                 {
-                    return JsonEncodedText.Encode(text, StringEscapeHandling.EscapeNonAscii, encoder);
+                    return JsonEncodedText.Encode(text, JsonEscapeHandling.EscapeNonAscii, encoder);
                 }
             }
 #else
             public static JsonEncodedText GetEncodedText(string text)
             {
-                return s_encodedTextCache.GetOrAdd(text, s => JsonEncodedText.Encode(s, StringEscapeHandling.EscapeNonAscii));
+                return s_encodedTextCache.GetOrAdd(text, s => JsonEncodedText.Encode(s, JsonEscapeHandling.EscapeNonAscii));
             }
 #endif
 
@@ -79,11 +77,7 @@ namespace SpanJson.Internal
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static bool NeedsEscaping(char value) => (uint)value > nLastAsciiCharacter || 0u >= AllowList[value] ? true : false;
 
-            public static int NeedsEscaping(in ReadOnlySpan<byte> utf8Source
-#if !NET451
-                , JavaScriptEncoder encoder = null
-#endif
-                )
+            public static int NeedsEscaping(in ReadOnlySpan<byte> utf8Source, JavaScriptEncoder encoder = null)
             {
 #if !NET451
                 if (encoder != null)
@@ -107,11 +101,7 @@ namespace SpanJson.Internal
                 return idx;
             }
 
-            public static int NeedsEscaping(in ReadOnlySpan<char> utf16Source
-#if !NET451
-                , JavaScriptEncoder encoder = null
-#endif
-                )
+            public static int NeedsEscaping(in ReadOnlySpan<char> utf16Source, JavaScriptEncoder encoder = null)
             {
 #if !NET451
                 if (encoder != null)
@@ -166,7 +156,7 @@ namespace SpanJson.Internal
                         {
                             if (NeedsEscapingNoBoundsCheck(val))
                             {
-                                EscapeNextBytes(StringEscapeHandling.EscapeNonAscii, val, destination, ref destSpace, ref written);
+                                EscapeNextBytes(JsonEscapeHandling.EscapeNonAscii, val, destination, ref destSpace, ref written);
                                 consumed++;
                             }
                             else
@@ -234,7 +224,7 @@ namespace SpanJson.Internal
                         {
                             if (NeedsEscapingNoBoundsCheck(val))
                             {
-                                EscapeNextChars(StringEscapeHandling.EscapeNonAscii, val, ref destSpace, ref written);
+                                EscapeNextChars(JsonEscapeHandling.EscapeNonAscii, val, ref destSpace, ref written);
                                 consumed++;
                             }
                             else
@@ -274,8 +264,8 @@ namespace SpanJson.Internal
                 {
                     unsafe
                     {
-                        byte* ptr = stackalloc byte[JsonSharedConstant.StackAllocByteMaxLength];
-                        utf8Destination = new Span<byte>(ptr, JsonSharedConstant.StackAllocByteMaxLength);
+                        byte* ptr = stackalloc byte[JsonSharedConstant.StackallocMaxLength];
+                        utf8Destination = new Span<byte>(ptr, JsonSharedConstant.StackallocMaxLength);
                     }
                 }
 
@@ -306,7 +296,7 @@ namespace SpanJson.Internal
                 byte[] utf8ConvertedDestinationArray = null;
                 Span<byte> utf8ConvertedDestination;
                 length = checked(bytesWritten * JsonSharedConstant.MaxExpansionFactorWhileEscaping);
-                if (length > JsonSharedConstant.StackallocThreshold)
+                if ((uint)length > JsonSharedConstant.StackallocThreshold)
                 {
                     utf8ConvertedDestinationArray = ArrayPool<byte>.Shared.Rent(length);
                     utf8ConvertedDestination = utf8ConvertedDestinationArray;
@@ -315,8 +305,8 @@ namespace SpanJson.Internal
                 {
                     unsafe
                     {
-                        byte* ptr = stackalloc byte[JsonSharedConstant.StackAllocByteMaxLength];
-                        utf8ConvertedDestination = new Span<byte>(ptr, JsonSharedConstant.StackAllocByteMaxLength);
+                        byte* ptr = stackalloc byte[JsonSharedConstant.StackallocMaxLength];
+                        utf8ConvertedDestination = new Span<byte>(ptr, JsonSharedConstant.StackallocMaxLength);
                     }
                 }
 
@@ -334,7 +324,7 @@ namespace SpanJson.Internal
                 Debug.Assert(toUtf16Status == OperationStatus.Done);
                 Debug.Assert(bytesRead == convertedBytesWritten);
 #else
-                string utf16 = TextEncodings.Utf8.GetString(utf8ConvertedDestination.Slice(0, convertedBytesWritten));
+                string utf16 = JsonReaderHelper.GetTextFromUtf8(utf8ConvertedDestination.Slice(0, convertedBytesWritten));
                 utf16.AsSpan().CopyTo(destination);
                 int charsWritten = utf16.Length;
 #endif

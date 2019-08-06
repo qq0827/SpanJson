@@ -16,7 +16,7 @@
             ref var pos = ref _pos;
             EnsureUnsafe(pos, value.Length);
 
-            value.CopyTo(Utf16Span);
+            value.CopyTo(Utf16FreeSpan);
             pos += value.Length;
         }
     }

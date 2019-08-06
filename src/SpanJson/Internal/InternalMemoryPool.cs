@@ -3,7 +3,7 @@
     using System;
     using System.Runtime.CompilerServices;
 
-    public static class InternalMemoryPool<TSymbol> where TSymbol : struct
+    internal static class InternalMemoryPool<TSymbol> where TSymbol : struct
     {
         internal static readonly int InitialCapacity;
 
@@ -22,7 +22,7 @@
         }
     }
 
-    public static class TinyMemoryPool<TSymbol> where TSymbol : struct
+    internal static class TinyMemoryPool<TSymbol> where TSymbol : struct
     {
         [ThreadStatic]
         static TSymbol[] s_buffer = null;

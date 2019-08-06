@@ -4,14 +4,10 @@ namespace SpanJson
 {
     public static partial class JsonSerializer
     {
-        /// <summary>
-        ///     Very primitive JSON pretty printer
-        /// </summary>
+        /// <summary>Very primitive JSON pretty printer</summary>
         public static class PrettyPrinter
         {
-            /// <summary>
-            ///     Pretty prints a json input with 2 space indentation.
-            /// </summary>
+            /// <summary>Pretty prints a json input with 2 space indentation.</summary>
             /// <param name="input">Input</param>
             /// <returns>String</returns>
             public static string Print(string input)
@@ -19,9 +15,7 @@ namespace SpanJson
                 return Print(input.AsSpan());
             }
 
-            /// <summary>
-            ///     Pretty prints a json input with 2 space indentation.
-            /// </summary>
+            /// <summary>Pretty prints a json input with 2 space indentation.</summary>
             /// <param name="input">Input</param>
             /// <returns>String</returns>
             public static string Print(in ReadOnlySpan<char> input)
@@ -32,13 +26,11 @@ namespace SpanJson
 #else
                 var writer = new JsonWriter<char>(true);
 #endif
-                Print(ref reader, ref writer, 0);
+                Print(ref reader, ref writer);
                 return writer.ToString();
             }
 
-            /// <summary>
-            ///     Pretty prints a json input with 2 space indentation.
-            /// </summary>
+            /// <summary>Pretty prints a json input with 2 space indentation.</summary>
             /// <param name="input">Input</param>
             /// <returns>Byte array</returns>
             public static byte[] Print(byte[] input)
@@ -49,13 +41,11 @@ namespace SpanJson
 #else
                 var writer = new JsonWriter<byte>(true);
 #endif
-                Print(ref reader, ref writer, 0);
+                Print(ref reader, ref writer);
                 return writer.ToByteArray();
             }
 
-            /// <summary>
-            ///     Pretty prints a json input with 2 space indentation.
-            /// </summary>
+            /// <summary>Pretty prints a json input with 2 space indentation.</summary>
             /// <param name="input">Input</param>
             /// <returns>Byte array</returns>
             public static byte[] Print(in ReadOnlySpan<byte> input)
@@ -66,8 +56,29 @@ namespace SpanJson
 #else
                 var writer = new JsonWriter<byte>(true);
 #endif
-                Print(ref reader, ref writer, 0);
+                Print(ref reader, ref writer);
                 return writer.ToByteArray();
+            }
+
+            private static void Print<TSymbol>(ref JsonReader<TSymbol> reader, ref JsonWriter<TSymbol> writer) where TSymbol : struct
+            {
+                var token = reader.ReadNextToken();
+                if (token == JsonTokenType.String)
+                {
+                    var span = reader.ReadVerbatimStringSpanUnsafe();
+                    writer.WriteDoubleQuote();
+                    writer.WriteVerbatim(span);
+                    writer.WriteDoubleQuote();
+
+                    var nextToken = reader.ReadNextToken();
+                    if (nextToken == JsonTokenType.NameSeparator)
+                    {
+                        reader.SkipNextValue(nextToken);
+                        writer.WriteNameSeparator();
+                        writer.WriteIndentation(1);
+                    }
+                }
+                Print(ref reader, ref writer, 0);
             }
 
             private static void Print<TSymbol>(ref JsonReader<TSymbol> reader, ref JsonWriter<TSymbol> writer, int indent) where TSymbol : struct
@@ -75,93 +86,101 @@ namespace SpanJson
                 var token = reader.ReadNextToken();
                 switch (token)
                 {
-                    case JsonToken.BeginObject:
-                    {
-                        reader.ReadBeginObjectOrThrow();
-                        writer.WriteBeginObject();
-                        writer.WriteNewLine();
-                        var c = 0;
-                        while (!reader.TryReadIsEndObjectOrValueSeparator(ref c))
+                    case JsonTokenType.BeginObject:
                         {
-                            if (c != 1)
+                            reader.ReadBeginObjectOrThrow();
+                            writer.WriteBeginObject();
+                            writer.WriteNewLine();
+                            var c = 0;
+                            while (!reader.TryReadIsEndObjectOrValueSeparator(ref c))
                             {
-                                writer.WriteValueSeparator();
-                                writer.WriteNewLine();
+                                if (c != 1)
+                                {
+                                    writer.WriteValueSeparator();
+                                    writer.WriteNewLine();
+                                }
+
+                                writer.WriteIndentation(indent + 2);
+                                writer.WriteVerbatimNameSpan(reader.ReadVerbatimNameSpan());
+                                writer.WriteIndentation(1);
+                                Print(ref reader, ref writer, indent + 2);
                             }
-
-                            writer.WriteIndentation(indent + 2);
-                            writer.WriteVerbatimNameSpan(reader.ReadVerbatimNameSpan());
-                            writer.WriteIndentation(1);
-                            Print(ref reader, ref writer, indent + 2);
+                            if (c > 0)
+                            {
+                                writer.WriteNewLine();
+                                writer.WriteIndentation(indent);
+                            }
+                            else
+                            {
+                                writer._pos -= 2;
+                            }
+                            writer.WriteEndObject();
+                            break;
                         }
-
-                        writer.WriteNewLine();
-                        writer.WriteIndentation(indent);
-                        writer.WriteEndObject();
-                        break;
-                    }
-                    case JsonToken.BeginArray:
-                    {
-                        reader.ReadBeginArrayOrThrow();
-                        writer.WriteBeginArray();
-                        writer.WriteNewLine();
-                        var c = 0;
-                        while (!reader.TryReadIsEndArrayOrValueSeparator(ref c))
+                    case JsonTokenType.BeginArray:
                         {
-                            if (c != 1)
+                            reader.ReadBeginArrayOrThrow();
+                            writer.WriteBeginArray();
+                            writer.WriteNewLine();
+                            var c = 0;
+                            while (!reader.TryReadIsEndArrayOrValueSeparator(ref c))
                             {
-                                writer.WriteValueSeparator();
-                                writer.WriteNewLine();
+                                if (c != 1)
+                                {
+                                    writer.WriteValueSeparator();
+                                    writer.WriteNewLine();
+                                }
+
+                                writer.WriteIndentation(indent + 2);
+                                Print(ref reader, ref writer, indent + 2);
                             }
-
-                            writer.WriteIndentation(indent + 2);
-                            Print(ref reader, ref writer, indent + 2);
+                            if (c > 0)
+                            {
+                                writer.WriteNewLine();
+                                writer.WriteIndentation(indent);
+                            }
+                            else
+                            {
+                                writer._pos -= 2;
+                            }
+                            writer.WriteEndArray();
+                            break;
                         }
-
-                        writer.WriteNewLine();
-                        writer.WriteIndentation(indent);
-                        writer.WriteEndArray();
-                        break;
-                    }
-                    case JsonToken.Number:
-                    {
-                        var span = reader.ReadNumberSpan();
-                        writer.WriteVerbatim(span);
-                        break;
-                    }
-                    case JsonToken.String:
-                    {
-                        var span = reader.ReadVerbatimStringSpanUnsafe();
-                        writer.WriteDoubleQuote();
-                        writer.WriteVerbatim(span);
-                        writer.WriteDoubleQuote();
-                        break;
-                    }
-                    case JsonToken.True:
-                    case JsonToken.False:
-                    {
-                        var value = reader.ReadBoolean();
-                        writer.WriteBoolean(value);
-                        break;
-                    }
-                    case JsonToken.Null:
-                    {
-                        reader.ReadIsNull();
-                        writer.WriteNull();
-                        break;
-                    }
+                    case JsonTokenType.Number:
+                        {
+                            var span = reader.ReadNumberSpan();
+                            writer.WriteVerbatim(span);
+                            break;
+                        }
+                    case JsonTokenType.String:
+                        {
+                            var span = reader.ReadVerbatimStringSpanUnsafe();
+                            writer.WriteDoubleQuote();
+                            writer.WriteVerbatim(span);
+                            writer.WriteDoubleQuote();
+                            break;
+                        }
+                    case JsonTokenType.True:
+                    case JsonTokenType.False:
+                        {
+                            var value = reader.ReadBoolean();
+                            writer.WriteBoolean(value);
+                            break;
+                        }
+                    case JsonTokenType.Null:
+                        {
+                            reader.ReadIsNull();
+                            writer.WriteNull();
+                            break;
+                        }
                 }
             }
         }
 
-        /// <summary>
-        /// Minifies JSON
-        /// </summary>
+        /// <summary>Minifies JSON</summary>
         public static class Minifier
         {
-            /// <summary>
-            ///     Minifies the input
-            /// </summary>
+            /// <summary>Minifies the input</summary>
             /// <param name="input">Input</param>
             /// <returns>String</returns>
             public static string Minify(string input)
@@ -169,9 +188,7 @@ namespace SpanJson
                 return Minify(input.AsSpan());
             }
 
-            /// <summary>
-            ///     Minifies the input
-            /// </summary>
+            /// <summary>Minifies the input</summary>
             /// <param name="input">Input</param>
             /// <returns>String</returns>
             public static string Minify(in ReadOnlySpan<char> input)
@@ -186,9 +203,7 @@ namespace SpanJson
                 return writer.ToString();
             }
 
-            /// <summary>
-            ///     Minifies the input
-            /// </summary>
+            /// <summary>Minifies the input</summary>
             /// <param name="input">Input</param>
             /// <returns>Byte array</returns>
             public static byte[] Minify(byte[] input)
@@ -203,9 +218,7 @@ namespace SpanJson
                 return writer.ToByteArray();
             }
 
-            /// <summary>
-            ///     Minifies the input
-            /// </summary>
+            /// <summary>Minifies the input</summary>
             /// <param name="input">Input</param>
             /// <returns>Byte array</returns>
             public static byte[] Minify(in ReadOnlySpan<byte> input)
@@ -225,7 +238,7 @@ namespace SpanJson
                 var token = reader.ReadNextToken();
                 switch (token)
                 {
-                    case JsonToken.BeginObject:
+                    case JsonTokenType.BeginObject:
                         {
                             reader.ReadBeginObjectOrThrow();
                             writer.WriteBeginObject();
@@ -244,7 +257,7 @@ namespace SpanJson
                             writer.WriteEndObject();
                             break;
                         }
-                    case JsonToken.BeginArray:
+                    case JsonTokenType.BeginArray:
                         {
                             reader.ReadBeginArrayOrThrow();
                             writer.WriteBeginArray();
@@ -262,13 +275,13 @@ namespace SpanJson
                             writer.WriteEndArray();
                             break;
                         }
-                    case JsonToken.Number:
+                    case JsonTokenType.Number:
                         {
                             var span = reader.ReadNumberSpan();
                             writer.WriteVerbatim(span);
                             break;
                         }
-                    case JsonToken.String:
+                    case JsonTokenType.String:
                         {
                             var span = reader.ReadVerbatimStringSpanUnsafe();
                             writer.WriteDoubleQuote();
@@ -276,14 +289,14 @@ namespace SpanJson
                             writer.WriteDoubleQuote();
                             break;
                         }
-                    case JsonToken.True:
-                    case JsonToken.False:
+                    case JsonTokenType.True:
+                    case JsonTokenType.False:
                         {
                             var value = reader.ReadBoolean();
                             writer.WriteBoolean(value);
                             break;
                         }
-                    case JsonToken.Null:
+                    case JsonTokenType.Null:
                         {
                             reader.ReadIsNull();
                             writer.WriteNull();

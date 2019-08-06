@@ -8,7 +8,9 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using System.Text.Encodings.Web;
 using System.Threading;
+using CuteAnt.Reflection;
 using SpanJson.Formatters;
 using SpanJson.Helpers;
 using SpanJson.Internal;
@@ -63,7 +65,7 @@ namespace SpanJson.Resolvers
         public static IJsonFormatter GetDefaultOrCreate(Type type)
         {
             return (IJsonFormatter)(type.GetField("Default", BindingFlags.Public | BindingFlags.Static)
-                                        ?.GetValue(null) ?? Activator.CreateInstance(type)); // leave the createinstance here, this helps with recursive types
+                                        ?.GetValue(null) ?? ActivatorUtils.FastCreateInstance(type)); // leave the createinstance here, this helps with recursive types
         }
     }
 
@@ -75,7 +77,8 @@ namespace SpanJson.Resolvers
         private readonly JsonNamingPolicy _extensionDataPolicy;
         private readonly JsonNamingPolicy _jsonPropertyNamingPolicy;
 
-        private readonly StringEscapeHandling _stringEscapeHandling;
+        private readonly JsonEscapeHandling _escapeHandling;
+        private readonly JavaScriptEncoder _encoder;
 
         // ReSharper disable StaticMemberInGenericType
         private static readonly ConcurrentDictionary<Type, IJsonFormatter> Formatters =
@@ -86,7 +89,8 @@ namespace SpanJson.Resolvers
         protected ResolverBase(SpanJsonOptions spanJsonOptions)
         {
             _spanJsonOptions = spanJsonOptions;
-            _stringEscapeHandling = spanJsonOptions.StringEscapeHandling;
+            _escapeHandling = spanJsonOptions.EscapeHandling;
+            _encoder = spanJsonOptions.Encoder;
             _dictionayKeyPolicy = spanJsonOptions.DictionaryKeyPolicy;
             _extensionDataPolicy = spanJsonOptions.ExtensionDataNamingPolicy;
             _jsonPropertyNamingPolicy = spanJsonOptions.PropertyNamingPolicy;
@@ -94,7 +98,8 @@ namespace SpanJson.Resolvers
 
         public SpanJsonOptions JsonOptions => _spanJsonOptions;
 
-        public StringEscapeHandling StringEscapeHandling => _stringEscapeHandling;
+        public JsonEscapeHandling EscapeHandling => _escapeHandling;
+        public JavaScriptEncoder Encoder => _encoder;
 
         public virtual IJsonFormatter GetFormatter(Type type)
         {
@@ -152,6 +157,7 @@ namespace SpanJson.Resolvers
             return new JsonObjectDescription(null, null, result.ToArray(), null);
         }
 
+        public IJsonFormatter<object, TSymbol> GetRuntimeFormatter() => RuntimeFormatter<TSymbol, TResolver>.Default;
         public virtual IJsonFormatter<T, TSymbol> GetFormatter<T>()
         {
             return (IJsonFormatter<T, TSymbol>)GetFormatter(typeof(T));
@@ -183,13 +189,13 @@ namespace SpanJson.Resolvers
                     canWrite = propertyInfo.CanWrite;
                 }
 
-                if (memberInfo.GetCustomAttribute<JsonExtensionDataAttribute>() != null && typeof(IDictionary<string, object>).IsAssignableFrom(memberType) && canRead && canWrite)
+                if (memberInfo.FirstAttribute<JsonExtensionDataAttribute>() != null && typeof(IDictionary<string, object>).IsAssignableFrom(memberType) && canRead && canWrite)
                 {
                     extensionMemberInfo = new JsonExtensionMemberInfo(memberInfo.Name, memberType, excludeNulls);
                 }
                 else if (!IsIgnored(memberInfo))
                 {
-                    var customSerializerAttr = memberInfo.GetCustomAttribute<JsonCustomSerializerAttribute>();
+                    var customSerializerAttr = memberInfo.FirstAttribute<JsonCustomSerializerAttribute>();
                     var shouldSerialize = type.GetMethod($"ShouldSerialize{memberInfo.Name}");
                     result.Add(new JsonMemberInfo(memberInfo.Name, memberType, shouldSerialize, name, escapedName, excludeNulls, canRead, canWrite, customSerializerAttr?.Type, customSerializerAttr?.Arguments));
                 }
@@ -202,10 +208,10 @@ namespace SpanJson.Resolvers
         protected virtual void TryGetAnnotatedAttributeConstructor(Type type, out ConstructorInfo constructor, out JsonConstructorAttribute attribute)
         {
             constructor = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance)
-                .FirstOrDefault(a => a.GetCustomAttribute<JsonConstructorAttribute>() != null);
+                .FirstOrDefault(a => a.FirstAttribute<JsonConstructorAttribute>() != null);
             if (constructor != null)
             {
-                attribute = constructor.GetCustomAttribute<JsonConstructorAttribute>();
+                attribute = constructor.FirstAttribute<JsonConstructorAttribute>();
                 return;
             }
 
@@ -223,12 +229,12 @@ namespace SpanJson.Resolvers
 
         private static bool IsIgnored(MemberInfo memberInfo)
         {
-            return memberInfo.GetCustomAttribute<IgnoreDataMemberAttribute>() != null;
+            return memberInfo.FirstAttribute<IgnoreDataMemberAttribute>() != null;
         }
 
         private static string GetAttributeName(MemberInfo memberInfo)
         {
-            return memberInfo.GetCustomAttribute<DataMemberAttribute>()?.Name;
+            return memberInfo.FirstAttribute<DataMemberAttribute>()?.Name;
         }
 
         private IJsonFormatter BuildFormatter(Type type)
@@ -240,7 +246,7 @@ namespace SpanJson.Resolvers
             }
 
             JsonCustomSerializerAttribute attr;
-            if ((attr = type.GetCustomAttribute<JsonCustomSerializerAttribute>()) != null)
+            if ((attr = type.FirstAttribute<JsonCustomSerializerAttribute>()) != null)
             {
                 var formatter = GetDefaultOrCreate(attr.Type);
                 if (formatter is ICustomJsonFormatter csf && attr.Arguments != null)
@@ -286,7 +292,7 @@ namespace SpanJson.Resolvers
                 {
                     case EnumOptions.String:
                         {
-                            if (type.GetCustomAttribute<FlagsAttribute>() != null)
+                            if (type.FirstAttribute<FlagsAttribute>() != null)
                             {
                                 var enumBaseType = Enum.GetUnderlyingType(type);
                                 return GetDefaultOrCreate(typeof(EnumStringFlagsFormatter<,,,>).MakeGenericType(type, enumBaseType, typeof(TSymbol), typeof(TResolver)));
@@ -575,18 +581,18 @@ namespace SpanJson.Resolvers
 
         public JsonEncodedText GetEncodedDictionaryKey(string dictionaryKey)
         {
-            //return JsonEncodedText.Encode(ResolveDictionaryKey(dictionaryKey), StringEscapeHandling.EscapeNonAscii);
-            return EscapingHelper.GetEncodedText(ResolveDictionaryKey(dictionaryKey), _stringEscapeHandling);
+            //return JsonEncodedText.Encode(ResolveDictionaryKey(dictionaryKey), JsonEscapeHandling.EscapeNonAscii);
+            return EscapingHelper.GetEncodedText(ResolveDictionaryKey(dictionaryKey), _escapeHandling);
         }
 
         public JsonEncodedText GetEncodedExtensionDataName(string extensionDataName)
         {
-            return EscapingHelper.GetEncodedText(ResolveExtensionDataName(extensionDataName), _stringEscapeHandling);
+            return EscapingHelper.GetEncodedText(ResolveExtensionDataName(extensionDataName), _escapeHandling);
         }
 
         public JsonEncodedText GetEncodedPropertyName(string propertyName)
         {
-            return EscapingHelper.GetEncodedText(ResolvePropertyName(propertyName), _stringEscapeHandling);
+            return EscapingHelper.GetEncodedText(ResolvePropertyName(propertyName), _escapeHandling);
         }
 
         // CustomJsonFormatterResolver

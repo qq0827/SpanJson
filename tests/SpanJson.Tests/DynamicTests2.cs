@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using CuteAnt;
 using SpanJson.Resolvers;
-using SpanJson.Formatters.Dynamic;
+using SpanJson.Dynamic;
 using Xunit;
 
 namespace SpanJson.Tests
@@ -21,8 +21,21 @@ namespace SpanJson.Tests
             Assert.IsType<SpanJsonDynamicObject>(deserialized);
             Assert.Equal("1", (string)deserialized["Key"]);
             Assert.Equal(5, (int)deserialized["Value"]);
-            Assert.Equal("1", (string)deserialized.key);
-            Assert.Equal(5, (int)deserialized.value);
+            Assert.Equal("{\"Key\":\"1\",\"Value\":5}", deserialized.ToString());
+            deserialized = JsonSerializer.Generic.Utf8.Deserialize<dynamic>(new ArraySegment<byte>(serialized));
+            Assert.IsType<SpanJsonDynamicObject>(deserialized);
+            Assert.Equal("1", (string)deserialized["Key"]);
+            Assert.Equal(5, (int)deserialized["Value"]);
+            Assert.Equal("{\"Key\":\"1\",\"Value\":5}", deserialized.ToString());
+            deserialized = JsonSerializer.Generic.Utf8.Deserialize<dynamic>(serialized.AsMemory());
+            Assert.IsType<SpanJsonDynamicObject>(deserialized);
+            Assert.Equal("1", (string)deserialized["Key"]);
+            Assert.Equal(5, (int)deserialized["Value"]);
+            Assert.Equal("{\"Key\":\"1\",\"Value\":5}", deserialized.ToString());
+            deserialized = JsonSerializer.Generic.Utf8.Deserialize<dynamic>(serialized.AsSpan());
+            Assert.IsType<SpanJsonDynamicObject>(deserialized);
+            Assert.Equal("1", (string)deserialized["Key"]);
+            Assert.Equal(5, (int)deserialized["Value"]);
             Assert.Equal("{\"Key\":\"1\",\"Value\":5}", deserialized.ToString());
         }
 
@@ -35,8 +48,26 @@ namespace SpanJson.Tests
             Assert.IsType<SpanJsonDynamicObject>(deserialized);
             Assert.Equal("1", (string)deserialized["Key"]);
             Assert.Equal(5, (int)deserialized["Value"]);
-            Assert.Equal("1", (string)deserialized.key);
-            Assert.Equal(5, (int)deserialized.value);
+            Assert.Equal("{\"Key\":\"1\",\"Value\":5}", deserialized.ToString());
+            deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized.ToCharArray());
+            Assert.IsType<SpanJsonDynamicObject>(deserialized);
+            Assert.Equal("1", (string)deserialized["Key"]);
+            Assert.Equal(5, (int)deserialized["Value"]);
+            Assert.Equal("{\"Key\":\"1\",\"Value\":5}", deserialized.ToString());
+            deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(new ArraySegment<char>(serialized.ToCharArray()));
+            Assert.IsType<SpanJsonDynamicObject>(deserialized);
+            Assert.Equal("1", (string)deserialized["Key"]);
+            Assert.Equal(5, (int)deserialized["Value"]);
+            Assert.Equal("{\"Key\":\"1\",\"Value\":5}", deserialized.ToString());
+            deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized.AsMemory());
+            Assert.IsType<SpanJsonDynamicObject>(deserialized);
+            Assert.Equal("1", (string)deserialized["Key"]);
+            Assert.Equal(5, (int)deserialized["Value"]);
+            Assert.Equal("{\"Key\":\"1\",\"Value\":5}", deserialized.ToString());
+            deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized.AsSpan());
+            Assert.IsType<SpanJsonDynamicObject>(deserialized);
+            Assert.Equal("1", (string)deserialized["Key"]);
+            Assert.Equal(5, (int)deserialized["Value"]);
             Assert.Equal("{\"Key\":\"1\",\"Value\":5}", deserialized.ToString());
         }
 
@@ -133,19 +164,19 @@ namespace SpanJson.Tests
             var utf16Num = newDict["KeyA"] as SpanJsonDynamicUtf16Number;
             Assert.NotNull(utf16Num);
             Assert.Equal(dict["KeyA"], (int)utf16Num);
-            SpanJsonDynamicUtf16Number.DynamicConverter.TryConvertTo(typeof(int), utf16Num.Symbols, out object result);
+            utf16Num.TryConvert(typeof(int), out object result);
             Assert.Equal(dict["KeyA"], result);
 
             var utf16Str = newDict["KeyB"] as SpanJsonDynamicUtf16String;
             Assert.NotNull(utf16Str);
             Assert.Equal(dict["KeyB"], (Guid)utf16Str);
-            SpanJsonDynamicUtf16String.DynamicConverter.TryConvertTo(typeof(Guid), utf16Str.Symbols, out result);
+            utf16Str.TryConvert(typeof(Guid), out result);
             Assert.Equal(dict["KeyB"], result);
 
             utf16Str = newDict["KeyC"] as SpanJsonDynamicUtf16String;
             Assert.NotNull(utf16Str);
             Assert.Equal(dict["KeyC"], (CombGuid)utf16Str);
-            SpanJsonDynamicUtf16String.DynamicConverter.TryConvertTo(typeof(CombGuid), utf16Str.Symbols, out result);
+            utf16Str.TryConvert(typeof(CombGuid), out result);
             Assert.Equal(dict["KeyC"], result);
         }
 

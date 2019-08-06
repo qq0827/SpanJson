@@ -4,7 +4,9 @@
     using System.ComponentModel;
     using System.Dynamic;
     using System.Runtime.CompilerServices;
+    using System.Text.Encodings.Web;
     using System.Threading;
+    using SpanJson.Formatters;
     using SpanJson.Internal;
 
     public static class StandardResolvers
@@ -52,7 +54,8 @@
 
             private static readonly TResolver s_innerResolver;
 
-            private readonly StringEscapeHandling _stringEscapeHandling;
+            private readonly JsonEscapeHandling _escapeHandling;
+            private readonly JavaScriptEncoder _encoder;
             private readonly JsonNamingPolicy _dictionayKeyPolicy;
             private readonly JsonNamingPolicy _extensionDataPolicy;
             private readonly JsonNamingPolicy _jsonPropertyNamingPolicy;
@@ -65,7 +68,8 @@
 
             private StandardResolver()
             {
-                _stringEscapeHandling = s_innerResolver.StringEscapeHandling;
+                _escapeHandling = s_innerResolver.EscapeHandling;
+                _encoder = s_innerResolver.Encoder;
                 _dictionayKeyPolicy = s_innerResolver.JsonOptions.DictionaryKeyPolicy;
                 _extensionDataPolicy = s_innerResolver.JsonOptions.ExtensionDataNamingPolicy;
                 _jsonPropertyNamingPolicy = s_innerResolver.JsonOptions.PropertyNamingPolicy;
@@ -73,7 +77,8 @@
 
             public SpanJsonOptions JsonOptions => s_innerResolver.JsonOptions;
 
-            public StringEscapeHandling StringEscapeHandling => _stringEscapeHandling;
+            public JsonEscapeHandling EscapeHandling => _escapeHandling;
+            public JavaScriptEncoder Encoder => _encoder;
 
             [EditorBrowsable(EditorBrowsableState.Never)]
             public bool IsSupportedType(Type type)
@@ -95,6 +100,8 @@
             {
                 return EnumerableConvertFunctorCache<T, TConverted>.Instance;
             }
+
+            public IJsonFormatter<object, TSymbol> GetRuntimeFormatter() => RuntimeFormatter<TSymbol, TResolver>.Default;
 
             public IJsonFormatter<T, TSymbol> GetFormatter<T>()
             {
@@ -157,18 +164,18 @@
 
             public JsonEncodedText GetEncodedDictionaryKey(string dictionaryKey)
             {
-                //return JsonEncodedText.Encode(ResolveDictionaryKey(dictionaryKey), StringEscapeHandling.EscapeNonAscii);
-                return EscapingHelper.GetEncodedText(ResolveDictionaryKey(dictionaryKey), _stringEscapeHandling);
+                //return JsonEncodedText.Encode(ResolveDictionaryKey(dictionaryKey), JsonEscapeHandling.EscapeNonAscii);
+                return EscapingHelper.GetEncodedText(ResolveDictionaryKey(dictionaryKey), _escapeHandling);
             }
 
             public JsonEncodedText GetEncodedExtensionDataName(string extensionDataName)
             {
-                return EscapingHelper.GetEncodedText(ResolveExtensionDataName(extensionDataName), _stringEscapeHandling);
+                return EscapingHelper.GetEncodedText(ResolveExtensionDataName(extensionDataName), _escapeHandling);
             }
 
             public JsonEncodedText GetEncodedPropertyName(string propertyName)
             {
-                return EscapingHelper.GetEncodedText(ResolvePropertyName(propertyName), _stringEscapeHandling);
+                return EscapingHelper.GetEncodedText(ResolvePropertyName(propertyName), _escapeHandling);
             }
 
             internal static class FormatterCache<T>

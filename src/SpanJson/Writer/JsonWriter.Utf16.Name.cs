@@ -14,7 +14,7 @@
 
             ref char pinnableAddr = ref Utf16PinnableAddress;
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
-            utf16Text.AsSpan().CopyTo(Utf16Span);
+            utf16Text.AsSpan().CopyTo(Utf16FreeSpan);
             pos += utf16Text.Length;
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
 
@@ -32,24 +32,24 @@
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteUtf16Name(string value, StringEscapeHandling escapeHandling)
+        public void WriteUtf16Name(string value, JsonEscapeHandling escapeHandling)
         {
             WriteUtf16Name(value.AsSpan(), escapeHandling);
         }
 
-        public void WriteUtf16Name(in ReadOnlySpan<char> value, StringEscapeHandling escapeHandling)
+        public void WriteUtf16Name(in ReadOnlySpan<char> value, JsonEscapeHandling escapeHandling)
         {
             switch (escapeHandling)
             {
-                case StringEscapeHandling.EscapeNonAscii:
+                case JsonEscapeHandling.EscapeNonAscii:
                     WriteUtf16StringEscapeNonAsciiValue(value, true);
                     break;
 
-                case StringEscapeHandling.EscapeHtml:
+                case JsonEscapeHandling.EscapeHtml:
                     WriteUtf16StringEscapeHtmlValue(value, true);
                     break;
 
-                case StringEscapeHandling.Default:
+                case JsonEscapeHandling.Default:
                 default:
                     WriteUtf16StringEscapeValue(value, true);
                     break;
@@ -64,7 +64,7 @@
 
             ref char pinnableAddr = ref Utf16PinnableAddress;
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
-            value.CopyTo(Utf16Span);
+            value.CopyTo(Utf16FreeSpan);
             pos += value.Length;
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
 

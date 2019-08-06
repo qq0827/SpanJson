@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using SpanJson.Internal;
 
 namespace SpanJson
 {
     public ref partial struct JsonReader<TSymbol> where TSymbol : struct
     {
-        private readonly ReadOnlySpan<char> _chars;
-        private readonly ReadOnlySpan<byte> _bytes;
-        private readonly uint _length;
+        internal readonly ArraySegment<char> _utf16Json;
+        internal readonly ArraySegment<byte> _utf8Json;
+        internal readonly ReadOnlySpan<char> _utf16Span;
+        internal readonly ReadOnlySpan<byte> _utf8Span;
+        internal readonly uint _length;
 
-        private int _pos;
+        internal int _pos;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public JsonReader(TSymbol[] input)
@@ -22,13 +25,75 @@ namespace SpanJson
 
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
-                _bytes = new ReadOnlySpan<byte>((byte[])(object)input);
-                _chars = null;
+                var utf8Json = Unsafe.As<TSymbol[], byte[]>(ref input);
+                _utf8Span = new ReadOnlySpan<byte>(utf8Json);
+                _utf8Json = new ArraySegment<byte>(utf8Json);
+                _utf16Span = null;
+                _utf16Json = default;
             }
             else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
             {
-                _chars = new ReadOnlySpan<char>((char[])(object)input);
-                _bytes = null;
+                var utf16Json = Unsafe.As<TSymbol[], char[]>(ref input);
+                _utf16Span = new ReadOnlySpan<char>(utf16Json);
+                _utf16Json = new ArraySegment<char>(utf16Json);
+                _utf8Json = default;
+                _utf8Span = null;
+            }
+            else
+            {
+                throw ThrowHelper.GetNotSupportedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public JsonReader(ArraySegment<TSymbol> input)
+        {
+            _length = (uint)input.Count;
+            _pos = 0;
+
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+            {
+                var utf8Json = Unsafe.As<ArraySegment<TSymbol>, ArraySegment<byte>>(ref input);
+                _utf8Span = new ReadOnlySpan<byte>(utf8Json.Array, utf8Json.Offset, utf8Json.Count);
+                _utf8Json = utf8Json;
+                _utf16Span = null;
+                _utf16Json = default;
+            }
+            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                var utf16Json = Unsafe.As<ArraySegment<TSymbol>, ArraySegment<char>>(ref input);
+                _utf16Span = new ReadOnlySpan<char>(utf16Json.Array, utf16Json.Offset, utf16Json.Count);
+                _utf16Json = utf16Json;
+                _utf8Json = default;
+                _utf8Span = null;
+            }
+            else
+            {
+                throw ThrowHelper.GetNotSupportedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public JsonReader(in ReadOnlyMemory<TSymbol> input)
+        {
+            _length = (uint)input.Length;
+            _pos = 0;
+
+            MemoryMarshal.TryGetArray(input, out ArraySegment<TSymbol> tmp);
+
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+            {
+                _utf8Json = Unsafe.As<ArraySegment<TSymbol>, ArraySegment<byte>>(ref tmp);
+                _utf8Span = MemoryMarshal.Cast<TSymbol, byte>(input.Span);
+                _utf16Json = default;
+                _utf16Span = null;
+            }
+            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                _utf16Json = Unsafe.As<ArraySegment<TSymbol>, ArraySegment<char>>(ref tmp);
+                _utf16Span = MemoryMarshal.Cast<TSymbol, char>(input.Span);
+                _utf8Json = default;
+                _utf8Span = null;
             }
             else
             {
@@ -41,16 +106,18 @@ namespace SpanJson
         {
             _length = (uint)input.Length;
             _pos = 0;
+            _utf16Json = default;
+            _utf8Json = default;
 
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
-                _bytes = MemoryMarshal.Cast<TSymbol, byte>(input);
-                _chars = null;
+                _utf8Span = MemoryMarshal.Cast<TSymbol, byte>(input);
+                _utf16Span = null;
             }
             else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
             {
-                _chars = MemoryMarshal.Cast<TSymbol, char>(input);
-                _bytes = null;
+                _utf16Span = MemoryMarshal.Cast<TSymbol, char>(input);
+                _utf8Span = null;
             }
             else
             {
@@ -283,13 +350,13 @@ namespace SpanJson
             ref var pos = ref _pos;
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
-                ref byte bStart = ref MemoryMarshal.GetReference(_bytes);
+                ref byte bStart = ref MemoryMarshal.GetReference(_utf8Span);
                 return MemoryMarshal.Cast<byte, TSymbol>(ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out _));
             }
 
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
             {
-                ref var cStart = ref MemoryMarshal.GetReference(_chars);
+                ref var cStart = ref MemoryMarshal.GetReference(_utf16Span);
                 return MemoryMarshal.Cast<char, TSymbol>(ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out _));
             }
 
@@ -314,7 +381,24 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public JsonToken ReadNextToken()
+        public void SkipNextValue(JsonTokenType tokenType)
+        {
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+            {
+                SkipNextUtf8Value(tokenType);
+            }
+            else if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                SkipNextUtf16Value(tokenType);
+            }
+            else
+            {
+                ThrowHelper.ThrowNotSupportedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public JsonTokenType ReadNextToken()
         {
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
@@ -334,12 +418,12 @@ namespace SpanJson
         {
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
             {
-                return MemoryMarshal.Cast<byte, TSymbol>(ReadUtf8NumberInternal());
+                return MemoryMarshal.Cast<byte, TSymbol>(ReadUtf8NumberSpan());
             }
 
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
             {
-                return MemoryMarshal.Cast<char, TSymbol>(ReadUtf16NumberInternal());
+                return MemoryMarshal.Cast<char, TSymbol>(ReadUtf16NumberSpan());
             }
 
             throw ThrowHelper.GetNotSupportedException();
@@ -373,6 +457,22 @@ namespace SpanJson
             if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
             {
                 return ReadUtf16CombGuid();
+            }
+
+            throw ThrowHelper.GetNotSupportedException();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public byte[] ReadBytesFromBase64()
+        {
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
+            {
+                return ReadUtf8BytesFromBase64();
+            }
+
+            if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.CharSize)
+            {
+                return ReadUtf16BytesFromBase64();
             }
 
             throw ThrowHelper.GetNotSupportedException();

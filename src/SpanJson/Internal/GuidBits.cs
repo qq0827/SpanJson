@@ -45,14 +45,6 @@ namespace SpanJson.Internal
         [FieldOffset(15)]
         public readonly byte Byte15;
 
-        // string.Join(", ", Enumerable.Range(0, 256).Select(x => (int)BitConverter.ToString(new byte[] { (byte)x }).ToLower()[0]))
-        static byte[] byteToHexStringHigh = new byte[256] { 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 98, 98, 98, 98, 98, 98, 98, 98, 98, 98, 98, 98, 98, 98, 98, 98, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 101, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102 };
-        static char[] charToHexStringHigh = new char[256] { '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '2', '3', '3', '3', '3', '3', '3', '3', '3', '3', '3', '3', '3', '3', '3', '3', '3', '4', '4', '4', '4', '4', '4', '4', '4', '4', '4', '4', '4', '4', '4', '4', '4', '5', '5', '5', '5', '5', '5', '5', '5', '5', '5', '5', '5', '5', '5', '5', '5', '6', '6', '6', '6', '6', '6', '6', '6', '6', '6', '6', '6', '6', '6', '6', '6', '7', '7', '7', '7', '7', '7', '7', '7', '7', '7', '7', '7', '7', '7', '7', '7', '8', '8', '8', '8', '8', '8', '8', '8', '8', '8', '8', '8', '8', '8', '8', '8', '9', '9', '9', '9', '9', '9', '9', '9', '9', '9', '9', '9', '9', '9', '9', '9', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'b', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'c', 'd', 'd', 'd', 'd', 'd', 'd', 'd', 'd', 'd', 'd', 'd', 'd', 'd', 'd', 'd', 'd', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f', 'f' };
-
-        // string.Join(", ", Enumerable.Range(0, 256).Select(x => (int)BitConverter.ToString(new byte[] { (byte)x }).ToLower()[1]))
-        static byte[] byteToHexStringLow = new byte[256] { 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 97, 98, 99, 100, 101, 102 };
-        static char[] charToHexStringLow = new char[256] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-
         public GuidBits(ref Guid value)
         {
             this = default(GuidBits);
@@ -297,78 +289,78 @@ namespace SpanJson.Internal
             if (BitConverter.IsLittleEndian)
             {
                 // int(_a)
-                Unsafe.AddByteOffset(ref destination, offset + 6) = byteToHexStringHigh[Byte0];
-                Unsafe.AddByteOffset(ref destination, offset + 7) = byteToHexStringLow[Byte0];
-                Unsafe.AddByteOffset(ref destination, offset + 4) = byteToHexStringHigh[Byte1];
-                Unsafe.AddByteOffset(ref destination, offset + 5) = byteToHexStringLow[Byte1];
-                Unsafe.AddByteOffset(ref destination, offset + 2) = byteToHexStringHigh[Byte2];
-                Unsafe.AddByteOffset(ref destination, offset + 3) = byteToHexStringLow[Byte2];
-                Unsafe.AddByteOffset(ref destination, offset) = byteToHexStringHigh[Byte3];
-                Unsafe.AddByteOffset(ref destination, offset + 1) = byteToHexStringLow[Byte3];
+                Unsafe.AddByteOffset(ref destination, offset + 6) = JsonHelpers.ByteToHexStringHigh[Byte0];
+                Unsafe.AddByteOffset(ref destination, offset + 7) = JsonHelpers.ByteToHexStringLow[Byte0];
+                Unsafe.AddByteOffset(ref destination, offset + 4) = JsonHelpers.ByteToHexStringHigh[Byte1];
+                Unsafe.AddByteOffset(ref destination, offset + 5) = JsonHelpers.ByteToHexStringLow[Byte1];
+                Unsafe.AddByteOffset(ref destination, offset + 2) = JsonHelpers.ByteToHexStringHigh[Byte2];
+                Unsafe.AddByteOffset(ref destination, offset + 3) = JsonHelpers.ByteToHexStringLow[Byte2];
+                Unsafe.AddByteOffset(ref destination, offset) = JsonHelpers.ByteToHexStringHigh[Byte3];
+                Unsafe.AddByteOffset(ref destination, offset + 1) = JsonHelpers.ByteToHexStringLow[Byte3];
 
                 Unsafe.AddByteOffset(ref destination, offset + 8) = (byte)'-';
 
                 // short(_b)
-                Unsafe.AddByteOffset(ref destination, offset + 11) = byteToHexStringHigh[Byte4];
-                Unsafe.AddByteOffset(ref destination, offset + 12) = byteToHexStringLow[Byte4];
-                Unsafe.AddByteOffset(ref destination, offset + 9) = byteToHexStringHigh[Byte5];
-                Unsafe.AddByteOffset(ref destination, offset + 10) = byteToHexStringLow[Byte5];
+                Unsafe.AddByteOffset(ref destination, offset + 11) = JsonHelpers.ByteToHexStringHigh[Byte4];
+                Unsafe.AddByteOffset(ref destination, offset + 12) = JsonHelpers.ByteToHexStringLow[Byte4];
+                Unsafe.AddByteOffset(ref destination, offset + 9) = JsonHelpers.ByteToHexStringHigh[Byte5];
+                Unsafe.AddByteOffset(ref destination, offset + 10) = JsonHelpers.ByteToHexStringLow[Byte5];
 
                 Unsafe.AddByteOffset(ref destination, offset + 13) = (byte)'-';
 
                 // short(_c)
-                Unsafe.AddByteOffset(ref destination, offset + 16) = byteToHexStringHigh[Byte6];
-                Unsafe.AddByteOffset(ref destination, offset + 17) = byteToHexStringLow[Byte6];
-                Unsafe.AddByteOffset(ref destination, offset + 14) = byteToHexStringHigh[Byte7];
-                Unsafe.AddByteOffset(ref destination, offset + 15) = byteToHexStringLow[Byte7];
+                Unsafe.AddByteOffset(ref destination, offset + 16) = JsonHelpers.ByteToHexStringHigh[Byte6];
+                Unsafe.AddByteOffset(ref destination, offset + 17) = JsonHelpers.ByteToHexStringLow[Byte6];
+                Unsafe.AddByteOffset(ref destination, offset + 14) = JsonHelpers.ByteToHexStringHigh[Byte7];
+                Unsafe.AddByteOffset(ref destination, offset + 15) = JsonHelpers.ByteToHexStringLow[Byte7];
             }
             else
             {
-                Unsafe.AddByteOffset(ref destination, offset) = byteToHexStringHigh[Byte0];
-                Unsafe.AddByteOffset(ref destination, offset + 1) = byteToHexStringLow[Byte0];
-                Unsafe.AddByteOffset(ref destination, offset + 2) = byteToHexStringHigh[Byte1];
-                Unsafe.AddByteOffset(ref destination, offset + 3) = byteToHexStringLow[Byte1];
-                Unsafe.AddByteOffset(ref destination, offset + 4) = byteToHexStringHigh[Byte2];
-                Unsafe.AddByteOffset(ref destination, offset + 5) = byteToHexStringLow[Byte2];
-                Unsafe.AddByteOffset(ref destination, offset + 6) = byteToHexStringHigh[Byte3];
-                Unsafe.AddByteOffset(ref destination, offset + 7) = byteToHexStringLow[Byte3];
+                Unsafe.AddByteOffset(ref destination, offset) = JsonHelpers.ByteToHexStringHigh[Byte0];
+                Unsafe.AddByteOffset(ref destination, offset + 1) = JsonHelpers.ByteToHexStringLow[Byte0];
+                Unsafe.AddByteOffset(ref destination, offset + 2) = JsonHelpers.ByteToHexStringHigh[Byte1];
+                Unsafe.AddByteOffset(ref destination, offset + 3) = JsonHelpers.ByteToHexStringLow[Byte1];
+                Unsafe.AddByteOffset(ref destination, offset + 4) = JsonHelpers.ByteToHexStringHigh[Byte2];
+                Unsafe.AddByteOffset(ref destination, offset + 5) = JsonHelpers.ByteToHexStringLow[Byte2];
+                Unsafe.AddByteOffset(ref destination, offset + 6) = JsonHelpers.ByteToHexStringHigh[Byte3];
+                Unsafe.AddByteOffset(ref destination, offset + 7) = JsonHelpers.ByteToHexStringLow[Byte3];
 
                 Unsafe.AddByteOffset(ref destination, offset + 8) = (byte)'-';
 
-                Unsafe.AddByteOffset(ref destination, offset + 9) = byteToHexStringHigh[Byte4];
-                Unsafe.AddByteOffset(ref destination, offset + 10) = byteToHexStringLow[Byte4];
-                Unsafe.AddByteOffset(ref destination, offset + 11) = byteToHexStringHigh[Byte5];
-                Unsafe.AddByteOffset(ref destination, offset + 12) = byteToHexStringLow[Byte5];
+                Unsafe.AddByteOffset(ref destination, offset + 9) = JsonHelpers.ByteToHexStringHigh[Byte4];
+                Unsafe.AddByteOffset(ref destination, offset + 10) = JsonHelpers.ByteToHexStringLow[Byte4];
+                Unsafe.AddByteOffset(ref destination, offset + 11) = JsonHelpers.ByteToHexStringHigh[Byte5];
+                Unsafe.AddByteOffset(ref destination, offset + 12) = JsonHelpers.ByteToHexStringLow[Byte5];
 
                 Unsafe.AddByteOffset(ref destination, offset + 13) = (byte)'-';
 
-                Unsafe.AddByteOffset(ref destination, offset + 14) = byteToHexStringHigh[Byte6];
-                Unsafe.AddByteOffset(ref destination, offset + 15) = byteToHexStringLow[Byte6];
-                Unsafe.AddByteOffset(ref destination, offset + 16) = byteToHexStringHigh[Byte7];
-                Unsafe.AddByteOffset(ref destination, offset + 17) = byteToHexStringLow[Byte7];
+                Unsafe.AddByteOffset(ref destination, offset + 14) = JsonHelpers.ByteToHexStringHigh[Byte6];
+                Unsafe.AddByteOffset(ref destination, offset + 15) = JsonHelpers.ByteToHexStringLow[Byte6];
+                Unsafe.AddByteOffset(ref destination, offset + 16) = JsonHelpers.ByteToHexStringHigh[Byte7];
+                Unsafe.AddByteOffset(ref destination, offset + 17) = JsonHelpers.ByteToHexStringLow[Byte7];
             }
 
             Unsafe.AddByteOffset(ref destination, offset + 18) = (byte)'-';
 
-            Unsafe.AddByteOffset(ref destination, offset + 19) = byteToHexStringHigh[Byte8];
-            Unsafe.AddByteOffset(ref destination, offset + 20) = byteToHexStringLow[Byte8];
-            Unsafe.AddByteOffset(ref destination, offset + 21) = byteToHexStringHigh[Byte9];
-            Unsafe.AddByteOffset(ref destination, offset + 22) = byteToHexStringLow[Byte9];
+            Unsafe.AddByteOffset(ref destination, offset + 19) = JsonHelpers.ByteToHexStringHigh[Byte8];
+            Unsafe.AddByteOffset(ref destination, offset + 20) = JsonHelpers.ByteToHexStringLow[Byte8];
+            Unsafe.AddByteOffset(ref destination, offset + 21) = JsonHelpers.ByteToHexStringHigh[Byte9];
+            Unsafe.AddByteOffset(ref destination, offset + 22) = JsonHelpers.ByteToHexStringLow[Byte9];
 
             Unsafe.AddByteOffset(ref destination, offset + 23) = (byte)'-';
 
-            Unsafe.AddByteOffset(ref destination, offset + 24) = byteToHexStringHigh[Byte10];
-            Unsafe.AddByteOffset(ref destination, offset + 25) = byteToHexStringLow[Byte10];
-            Unsafe.AddByteOffset(ref destination, offset + 26) = byteToHexStringHigh[Byte11];
-            Unsafe.AddByteOffset(ref destination, offset + 27) = byteToHexStringLow[Byte11];
-            Unsafe.AddByteOffset(ref destination, offset + 28) = byteToHexStringHigh[Byte12];
-            Unsafe.AddByteOffset(ref destination, offset + 29) = byteToHexStringLow[Byte12];
-            Unsafe.AddByteOffset(ref destination, offset + 30) = byteToHexStringHigh[Byte13];
-            Unsafe.AddByteOffset(ref destination, offset + 31) = byteToHexStringLow[Byte13];
-            Unsafe.AddByteOffset(ref destination, offset + 32) = byteToHexStringHigh[Byte14];
-            Unsafe.AddByteOffset(ref destination, offset + 33) = byteToHexStringLow[Byte14];
-            Unsafe.AddByteOffset(ref destination, offset + 34) = byteToHexStringHigh[Byte15];
-            Unsafe.AddByteOffset(ref destination, offset + 35) = byteToHexStringLow[Byte15];
+            Unsafe.AddByteOffset(ref destination, offset + 24) = JsonHelpers.ByteToHexStringHigh[Byte10];
+            Unsafe.AddByteOffset(ref destination, offset + 25) = JsonHelpers.ByteToHexStringLow[Byte10];
+            Unsafe.AddByteOffset(ref destination, offset + 26) = JsonHelpers.ByteToHexStringHigh[Byte11];
+            Unsafe.AddByteOffset(ref destination, offset + 27) = JsonHelpers.ByteToHexStringLow[Byte11];
+            Unsafe.AddByteOffset(ref destination, offset + 28) = JsonHelpers.ByteToHexStringHigh[Byte12];
+            Unsafe.AddByteOffset(ref destination, offset + 29) = JsonHelpers.ByteToHexStringLow[Byte12];
+            Unsafe.AddByteOffset(ref destination, offset + 30) = JsonHelpers.ByteToHexStringHigh[Byte13];
+            Unsafe.AddByteOffset(ref destination, offset + 31) = JsonHelpers.ByteToHexStringLow[Byte13];
+            Unsafe.AddByteOffset(ref destination, offset + 32) = JsonHelpers.ByteToHexStringHigh[Byte14];
+            Unsafe.AddByteOffset(ref destination, offset + 33) = JsonHelpers.ByteToHexStringLow[Byte14];
+            Unsafe.AddByteOffset(ref destination, offset + 34) = JsonHelpers.ByteToHexStringHigh[Byte15];
+            Unsafe.AddByteOffset(ref destination, offset + 35) = JsonHelpers.ByteToHexStringLow[Byte15];
 
             pos += 36;
         }
@@ -378,78 +370,78 @@ namespace SpanJson.Internal
             if (BitConverter.IsLittleEndian)
             {
                 // int(_a)
-                Unsafe.Add(ref destination, offset + 6) = charToHexStringHigh[Byte0];
-                Unsafe.Add(ref destination, offset + 7) = charToHexStringLow[Byte0];
-                Unsafe.Add(ref destination, offset + 4) = charToHexStringHigh[Byte1];
-                Unsafe.Add(ref destination, offset + 5) = charToHexStringLow[Byte1];
-                Unsafe.Add(ref destination, offset + 2) = charToHexStringHigh[Byte2];
-                Unsafe.Add(ref destination, offset + 3) = charToHexStringLow[Byte2];
-                Unsafe.Add(ref destination, offset) = charToHexStringHigh[Byte3];
-                Unsafe.Add(ref destination, offset + 1) = charToHexStringLow[Byte3];
+                Unsafe.Add(ref destination, offset + 6) = JsonHelpers.CharToHexStringHigh[Byte0];
+                Unsafe.Add(ref destination, offset + 7) = JsonHelpers.CharToHexStringLow[Byte0];
+                Unsafe.Add(ref destination, offset + 4) = JsonHelpers.CharToHexStringHigh[Byte1];
+                Unsafe.Add(ref destination, offset + 5) = JsonHelpers.CharToHexStringLow[Byte1];
+                Unsafe.Add(ref destination, offset + 2) = JsonHelpers.CharToHexStringHigh[Byte2];
+                Unsafe.Add(ref destination, offset + 3) = JsonHelpers.CharToHexStringLow[Byte2];
+                Unsafe.Add(ref destination, offset) = JsonHelpers.CharToHexStringHigh[Byte3];
+                Unsafe.Add(ref destination, offset + 1) = JsonHelpers.CharToHexStringLow[Byte3];
 
                 Unsafe.Add(ref destination, offset + 8) = '-';
 
                 // short(_b)
-                Unsafe.Add(ref destination, offset + 11) = charToHexStringHigh[Byte4];
-                Unsafe.Add(ref destination, offset + 12) = charToHexStringLow[Byte4];
-                Unsafe.Add(ref destination, offset + 9) = charToHexStringHigh[Byte5];
-                Unsafe.Add(ref destination, offset + 10) = charToHexStringLow[Byte5];
+                Unsafe.Add(ref destination, offset + 11) = JsonHelpers.CharToHexStringHigh[Byte4];
+                Unsafe.Add(ref destination, offset + 12) = JsonHelpers.CharToHexStringLow[Byte4];
+                Unsafe.Add(ref destination, offset + 9) = JsonHelpers.CharToHexStringHigh[Byte5];
+                Unsafe.Add(ref destination, offset + 10) = JsonHelpers.CharToHexStringLow[Byte5];
 
                 Unsafe.Add(ref destination, offset + 13) = '-';
 
                 // short(_c)
-                Unsafe.Add(ref destination, offset + 16) = charToHexStringHigh[Byte6];
-                Unsafe.Add(ref destination, offset + 17) = charToHexStringLow[Byte6];
-                Unsafe.Add(ref destination, offset + 14) = charToHexStringHigh[Byte7];
-                Unsafe.Add(ref destination, offset + 15) = charToHexStringLow[Byte7];
+                Unsafe.Add(ref destination, offset + 16) = JsonHelpers.CharToHexStringHigh[Byte6];
+                Unsafe.Add(ref destination, offset + 17) = JsonHelpers.CharToHexStringLow[Byte6];
+                Unsafe.Add(ref destination, offset + 14) = JsonHelpers.CharToHexStringHigh[Byte7];
+                Unsafe.Add(ref destination, offset + 15) = JsonHelpers.CharToHexStringLow[Byte7];
             }
             else
             {
-                Unsafe.Add(ref destination, offset) = charToHexStringHigh[Byte0];
-                Unsafe.Add(ref destination, offset + 1) = charToHexStringLow[Byte0];
-                Unsafe.Add(ref destination, offset + 2) = charToHexStringHigh[Byte1];
-                Unsafe.Add(ref destination, offset + 3) = charToHexStringLow[Byte1];
-                Unsafe.Add(ref destination, offset + 4) = charToHexStringHigh[Byte2];
-                Unsafe.Add(ref destination, offset + 5) = charToHexStringLow[Byte2];
-                Unsafe.Add(ref destination, offset + 6) = charToHexStringHigh[Byte3];
-                Unsafe.Add(ref destination, offset + 7) = charToHexStringLow[Byte3];
+                Unsafe.Add(ref destination, offset) = JsonHelpers.CharToHexStringHigh[Byte0];
+                Unsafe.Add(ref destination, offset + 1) = JsonHelpers.CharToHexStringLow[Byte0];
+                Unsafe.Add(ref destination, offset + 2) = JsonHelpers.CharToHexStringHigh[Byte1];
+                Unsafe.Add(ref destination, offset + 3) = JsonHelpers.CharToHexStringLow[Byte1];
+                Unsafe.Add(ref destination, offset + 4) = JsonHelpers.CharToHexStringHigh[Byte2];
+                Unsafe.Add(ref destination, offset + 5) = JsonHelpers.CharToHexStringLow[Byte2];
+                Unsafe.Add(ref destination, offset + 6) = JsonHelpers.CharToHexStringHigh[Byte3];
+                Unsafe.Add(ref destination, offset + 7) = JsonHelpers.CharToHexStringLow[Byte3];
 
                 Unsafe.Add(ref destination, offset + 8) = '-';
 
-                Unsafe.Add(ref destination, offset + 9) = charToHexStringHigh[Byte4];
-                Unsafe.Add(ref destination, offset + 10) = charToHexStringLow[Byte4];
-                Unsafe.Add(ref destination, offset + 11) = charToHexStringHigh[Byte5];
-                Unsafe.Add(ref destination, offset + 12) = charToHexStringLow[Byte5];
+                Unsafe.Add(ref destination, offset + 9) = JsonHelpers.CharToHexStringHigh[Byte4];
+                Unsafe.Add(ref destination, offset + 10) = JsonHelpers.CharToHexStringLow[Byte4];
+                Unsafe.Add(ref destination, offset + 11) = JsonHelpers.CharToHexStringHigh[Byte5];
+                Unsafe.Add(ref destination, offset + 12) = JsonHelpers.CharToHexStringLow[Byte5];
 
                 Unsafe.Add(ref destination, offset + 13) = '-';
 
-                Unsafe.Add(ref destination, offset + 14) = charToHexStringHigh[Byte6];
-                Unsafe.Add(ref destination, offset + 15) = charToHexStringLow[Byte6];
-                Unsafe.Add(ref destination, offset + 16) = charToHexStringHigh[Byte7];
-                Unsafe.Add(ref destination, offset + 17) = charToHexStringLow[Byte7];
+                Unsafe.Add(ref destination, offset + 14) = JsonHelpers.CharToHexStringHigh[Byte6];
+                Unsafe.Add(ref destination, offset + 15) = JsonHelpers.CharToHexStringLow[Byte6];
+                Unsafe.Add(ref destination, offset + 16) = JsonHelpers.CharToHexStringHigh[Byte7];
+                Unsafe.Add(ref destination, offset + 17) = JsonHelpers.CharToHexStringLow[Byte7];
             }
 
             Unsafe.Add(ref destination, offset + 18) = '-';
 
-            Unsafe.Add(ref destination, offset + 19) = charToHexStringHigh[Byte8];
-            Unsafe.Add(ref destination, offset + 20) = charToHexStringLow[Byte8];
-            Unsafe.Add(ref destination, offset + 21) = charToHexStringHigh[Byte9];
-            Unsafe.Add(ref destination, offset + 22) = charToHexStringLow[Byte9];
+            Unsafe.Add(ref destination, offset + 19) = JsonHelpers.CharToHexStringHigh[Byte8];
+            Unsafe.Add(ref destination, offset + 20) = JsonHelpers.CharToHexStringLow[Byte8];
+            Unsafe.Add(ref destination, offset + 21) = JsonHelpers.CharToHexStringHigh[Byte9];
+            Unsafe.Add(ref destination, offset + 22) = JsonHelpers.CharToHexStringLow[Byte9];
 
             Unsafe.Add(ref destination, offset + 23) = '-';
 
-            Unsafe.Add(ref destination, offset + 24) = charToHexStringHigh[Byte10];
-            Unsafe.Add(ref destination, offset + 25) = charToHexStringLow[Byte10];
-            Unsafe.Add(ref destination, offset + 26) = charToHexStringHigh[Byte11];
-            Unsafe.Add(ref destination, offset + 27) = charToHexStringLow[Byte11];
-            Unsafe.Add(ref destination, offset + 28) = charToHexStringHigh[Byte12];
-            Unsafe.Add(ref destination, offset + 29) = charToHexStringLow[Byte12];
-            Unsafe.Add(ref destination, offset + 30) = charToHexStringHigh[Byte13];
-            Unsafe.Add(ref destination, offset + 31) = charToHexStringLow[Byte13];
-            Unsafe.Add(ref destination, offset + 32) = charToHexStringHigh[Byte14];
-            Unsafe.Add(ref destination, offset + 33) = charToHexStringLow[Byte14];
-            Unsafe.Add(ref destination, offset + 34) = charToHexStringHigh[Byte15];
-            Unsafe.Add(ref destination, offset + 35) = charToHexStringLow[Byte15];
+            Unsafe.Add(ref destination, offset + 24) = JsonHelpers.CharToHexStringHigh[Byte10];
+            Unsafe.Add(ref destination, offset + 25) = JsonHelpers.CharToHexStringLow[Byte10];
+            Unsafe.Add(ref destination, offset + 26) = JsonHelpers.CharToHexStringHigh[Byte11];
+            Unsafe.Add(ref destination, offset + 27) = JsonHelpers.CharToHexStringLow[Byte11];
+            Unsafe.Add(ref destination, offset + 28) = JsonHelpers.CharToHexStringHigh[Byte12];
+            Unsafe.Add(ref destination, offset + 29) = JsonHelpers.CharToHexStringLow[Byte12];
+            Unsafe.Add(ref destination, offset + 30) = JsonHelpers.CharToHexStringHigh[Byte13];
+            Unsafe.Add(ref destination, offset + 31) = JsonHelpers.CharToHexStringLow[Byte13];
+            Unsafe.Add(ref destination, offset + 32) = JsonHelpers.CharToHexStringHigh[Byte14];
+            Unsafe.Add(ref destination, offset + 33) = JsonHelpers.CharToHexStringLow[Byte14];
+            Unsafe.Add(ref destination, offset + 34) = JsonHelpers.CharToHexStringHigh[Byte15];
+            Unsafe.Add(ref destination, offset + 35) = JsonHelpers.CharToHexStringLow[Byte15];
 
             offset += 36;
         }

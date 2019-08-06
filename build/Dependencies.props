@@ -2,13 +2,12 @@
   <!-- Shared Package Versions -->
   <PropertyGroup>
     <CuteAntCoreAbstractionsPackageVersion>2.2.0-rtm-190618-01</CuteAntCoreAbstractionsPackageVersion>
-    <CuteAntCorePackageVersion>2.2.0-rtm-190429-01</CuteAntCorePackageVersion>
-    <CuteAntRuntimePackageVersion>2.2.0-rtm-190429-01</CuteAntRuntimePackageVersion>
+    <CuteAntCorePackageVersion>2.2.0-rtm-190618-01</CuteAntCorePackageVersion>
 
     <HyperionPackageVersion>0.9.8</HyperionPackageVersion>
     <HyperionUnofficialPackageVersion>0.9.8-rtm-190310-01</HyperionUnofficialPackageVersion>
     <ProtobufNetPackageVersion>2.4.0</ProtobufNetPackageVersion>
-    <NewtonsoftJsonPackageVersion>12.0.1</NewtonsoftJsonPackageVersion>
+    <NewtonsoftJsonPackageVersion>12.0.2</NewtonsoftJsonPackageVersion>
     <JilPackageVersion>2.17.0</JilPackageVersion>
     <Utf8JsonPackageVersion>1.3.7</Utf8JsonPackageVersion>
     <CuteAntJsonExtensionsPackageVersion>2.2.0-rtm-190618-01</CuteAntJsonExtensionsPackageVersion>
@@ -26,8 +25,9 @@
     <SystemThreadingTasksExtensionsPackageVersion>4.5.3</SystemThreadingTasksExtensionsPackageVersion>
     <SystemValueTuplePackageVersion>4.5.0</SystemValueTuplePackageVersion>
 
-    <SystemRuntimeCompilerServicesUnsafePackageVersion>4.6.0-preview8.19371.1</SystemRuntimeCompilerServicesUnsafePackageVersion>
-    <SystemTextEncodingsWebPackageVersion>4.6.0-preview8.19371.1</SystemTextEncodingsWebPackageVersion>
+    <SystemRuntimeCompilerServicesUnsafePackageVersion>4.6.0-preview8.19372.8</SystemRuntimeCompilerServicesUnsafePackageVersion>
+    <SystemRuntimeInteropServicesRuntimeInformationPackageVersion>4.3.0</SystemRuntimeInteropServicesRuntimeInformationPackageVersion>
+    <SystemTextEncodingsWebPackageVersion>4.6.0-preview8.19372.8</SystemTextEncodingsWebPackageVersion>
 
     <SystemReflectionDispatchProxyPackageVersion>4.5.1</SystemReflectionDispatchProxyPackageVersion>
     <SystemReflectionEmitPackageVersion>4.3.0</SystemReflectionEmitPackageVersion>

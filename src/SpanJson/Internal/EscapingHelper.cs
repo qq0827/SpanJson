@@ -10,9 +10,7 @@ using System.Buffers.Text;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-#if !NET451
 using System.Text.Encodings.Web;
-#endif
 
 namespace SpanJson.Internal
 {
@@ -65,7 +63,7 @@ namespace SpanJson.Internal
             else
             {
                 var buffer = utf8Source.ToArray();
-                value = JsonHelpers.GetUnescapedString(utf8Source, idx);
+                value = JsonReaderHelper.GetUnescapedString(utf8Source, idx);
                 s_stringCache.TryAdd(buffer, value);
             }
         }
@@ -75,23 +73,19 @@ namespace SpanJson.Internal
         #region -- GetEncodedText --
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static JsonEncodedText GetEncodedText(string text, StringEscapeHandling escapeHandling
-#if !NET451
-            , JavaScriptEncoder encoder = null
-#endif
-            )
+        public static JsonEncodedText GetEncodedText(string text, JsonEscapeHandling escapeHandling, JavaScriptEncoder encoder = null)
         {
             switch (escapeHandling)
             {
-                case StringEscapeHandling.EscapeNonAscii:
+                case JsonEscapeHandling.EscapeNonAscii:
 #if !NET451
                     return NonAscii.GetEncodedText(text, encoder);
 #else
                     return NonAscii.GetEncodedText(text);
 #endif
-                case StringEscapeHandling.EscapeHtml:
+                case JsonEscapeHandling.EscapeHtml:
                     return Html.GetEncodedText(text);
-                case StringEscapeHandling.Default:
+                case JsonEscapeHandling.Default:
                 default:
                     return Default.GetEncodedText(text);
             }
@@ -114,76 +108,60 @@ namespace SpanJson.Internal
         #region -- NeedsEscaping --
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool NeedsEscaping(byte utf8Value, StringEscapeHandling escapeHandling)
+        public static bool NeedsEscaping(byte utf8Value, JsonEscapeHandling escapeHandling)
         {
             switch (escapeHandling)
             {
-                case StringEscapeHandling.EscapeNonAscii:
+                case JsonEscapeHandling.EscapeNonAscii:
                     return NonAscii.NeedsEscaping(utf8Value);
-                case StringEscapeHandling.EscapeHtml:
+                case JsonEscapeHandling.EscapeHtml:
                     return Html.NeedsEscaping(utf8Value);
-                case StringEscapeHandling.Default:
+                case JsonEscapeHandling.Default:
                 default:
                     return Default.NeedsEscaping(utf8Value);
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool NeedsEscaping(char value, StringEscapeHandling escapeHandling)
+        public static bool NeedsEscaping(char value, JsonEscapeHandling escapeHandling)
         {
             switch (escapeHandling)
             {
-                case StringEscapeHandling.EscapeNonAscii:
+                case JsonEscapeHandling.EscapeNonAscii:
                     return NonAscii.NeedsEscaping(value);
-                case StringEscapeHandling.EscapeHtml:
+                case JsonEscapeHandling.EscapeHtml:
                     return Html.NeedsEscaping(value);
-                case StringEscapeHandling.Default:
+                case JsonEscapeHandling.Default:
                 default:
                     return Default.NeedsEscaping(value);
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int NeedsEscaping(in ReadOnlySpan<byte> utf8Source, StringEscapeHandling escapeHandling
-#if !NET451
-            , JavaScriptEncoder encoder = null
-#endif
-            )
+        public static int NeedsEscaping(in ReadOnlySpan<byte> utf8Source, JsonEscapeHandling escapeHandling, JavaScriptEncoder encoder = null)
         {
             switch (escapeHandling)
             {
-                case StringEscapeHandling.EscapeNonAscii:
-#if !NET451
+                case JsonEscapeHandling.EscapeNonAscii:
                     return NonAscii.NeedsEscaping(utf8Source, encoder);
-#else
-                    return NonAscii.NeedsEscaping(utf8Source);
-#endif
-                case StringEscapeHandling.EscapeHtml:
+                case JsonEscapeHandling.EscapeHtml:
                     return Html.NeedsEscaping(utf8Source);
-                case StringEscapeHandling.Default:
+                case JsonEscapeHandling.Default:
                 default:
                     return Default.NeedsEscaping(utf8Source);
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int NeedsEscaping(in ReadOnlySpan<char> utf16Source, StringEscapeHandling escapeHandling
-#if !NET451
-            , JavaScriptEncoder encoder = null
-#endif
-            )
+        public static int NeedsEscaping(in ReadOnlySpan<char> utf16Source, JsonEscapeHandling escapeHandling, JavaScriptEncoder encoder = null)
         {
             switch (escapeHandling)
             {
-                case StringEscapeHandling.EscapeNonAscii:
-#if !NET451
+                case JsonEscapeHandling.EscapeNonAscii:
                     return NonAscii.NeedsEscaping(utf16Source, encoder);
-#else
-                    return NonAscii.NeedsEscaping(utf16Source);
-#endif
-                case StringEscapeHandling.EscapeHtml:
+                case JsonEscapeHandling.EscapeHtml:
                     return Html.NeedsEscaping(utf16Source);
-                case StringEscapeHandling.Default:
+                case JsonEscapeHandling.Default:
                 default:
                     return Default.NeedsEscaping(utf16Source);
             }
@@ -194,21 +172,21 @@ namespace SpanJson.Internal
         #region -- EscapeString --
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void EscapeString(in ReadOnlySpan<byte> utf8Source, Span<byte> destination, StringEscapeHandling escapeHandling, int indexOfFirstByteToEscape, out int written)
+        public static void EscapeString(in ReadOnlySpan<byte> utf8Source, Span<byte> destination, JsonEscapeHandling escapeHandling, int indexOfFirstByteToEscape, JavaScriptEncoder encoder, out int written)
         {
             switch (escapeHandling)
             {
-                case StringEscapeHandling.EscapeNonAscii:
+                case JsonEscapeHandling.EscapeNonAscii:
 #if !NET451
-                    NonAscii.EscapeString(utf8Source, destination, indexOfFirstByteToEscape, null, out written);
+                    NonAscii.EscapeString(utf8Source, destination, indexOfFirstByteToEscape, encoder, out written);
 #else
                     NonAscii.EscapeString(utf8Source, destination, indexOfFirstByteToEscape, out written);
 #endif
                     break;
-                case StringEscapeHandling.EscapeHtml:
+                case JsonEscapeHandling.EscapeHtml:
                     Html.EscapeString(utf8Source, destination, indexOfFirstByteToEscape, out written);
                     break;
-                case StringEscapeHandling.Default:
+                case JsonEscapeHandling.Default:
                 default:
                     Default.EscapeString(utf8Source, destination, indexOfFirstByteToEscape, out written);
                     break;
@@ -216,70 +194,28 @@ namespace SpanJson.Internal
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void EscapeString(in ReadOnlySpan<char> utf16Source, Span<char> destination, StringEscapeHandling escapeHandling, int indexOfFirstByteToEscape, out int written)
+        public static void EscapeString(in ReadOnlySpan<char> utf16Source, Span<char> destination, JsonEscapeHandling escapeHandling, int indexOfFirstByteToEscape, JavaScriptEncoder encoder, out int written)
         {
             switch (escapeHandling)
             {
-                case StringEscapeHandling.EscapeNonAscii:
+                case JsonEscapeHandling.EscapeNonAscii:
 #if !NET451
-                    NonAscii.EscapeString(utf16Source, destination, indexOfFirstByteToEscape, null, out written);
+                    NonAscii.EscapeString(utf16Source, destination, indexOfFirstByteToEscape, encoder, out written);
 #else
                     NonAscii.EscapeString(utf16Source, destination, indexOfFirstByteToEscape, out written);
 #endif
                     break;
-                case StringEscapeHandling.EscapeHtml:
+                case JsonEscapeHandling.EscapeHtml:
                     Html.EscapeString(utf16Source, destination, indexOfFirstByteToEscape, out written);
                     break;
-                case StringEscapeHandling.Default:
+                case JsonEscapeHandling.Default:
                 default:
                     Default.EscapeString(utf16Source, destination, indexOfFirstByteToEscape, out written);
                     break;
             }
         }
 
-#if !NET451
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void EscapeString(in ReadOnlySpan<byte> utf8Source, Span<byte> destination, StringEscapeHandling escapeHandling, int indexOfFirstByteToEscape, JavaScriptEncoder encoder, out int written)
-        {
-            switch (escapeHandling)
-            {
-                case StringEscapeHandling.EscapeNonAscii:
-                    NonAscii.EscapeString(utf8Source, destination, indexOfFirstByteToEscape, encoder, out written);
-                    break;
-                case StringEscapeHandling.EscapeHtml:
-                    Html.EscapeString(utf8Source, destination, indexOfFirstByteToEscape, out written);
-                    break;
-                case StringEscapeHandling.Default:
-                default:
-                    Default.EscapeString(utf8Source, destination, indexOfFirstByteToEscape, out written);
-                    break;
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void EscapeString(in ReadOnlySpan<char> utf16Source, Span<char> destination, StringEscapeHandling escapeHandling, int indexOfFirstByteToEscape, JavaScriptEncoder encoder, out int written)
-        {
-            switch (escapeHandling)
-            {
-                case StringEscapeHandling.EscapeNonAscii:
-                    NonAscii.EscapeString(utf16Source, destination, indexOfFirstByteToEscape, encoder, out written);
-                    break;
-                case StringEscapeHandling.EscapeHtml:
-                    Html.EscapeString(utf16Source, destination, indexOfFirstByteToEscape, out written);
-                    break;
-                case StringEscapeHandling.Default:
-                default:
-                    Default.EscapeString(utf16Source, destination, indexOfFirstByteToEscape, out written);
-                    break;
-            }
-        }
-#endif
-
-        public static string EscapeString(string input, StringEscapeHandling escapeHandling = StringEscapeHandling.Default
-#if !NET451
-            , JavaScriptEncoder encoder = null
-#endif
-            )
+        public static string EscapeString(string input, JsonEscapeHandling escapeHandling = JsonEscapeHandling.Default, JavaScriptEncoder encoder = null)
         {
             if (string.IsNullOrEmpty(input)) { return input; }
 
@@ -302,11 +238,7 @@ namespace SpanJson.Internal
                     Span<char> escapedName = (uint)length <= JsonSharedConstant.StackallocThreshold ?
                         stackalloc char[length] :
                         (tempArray = ArrayPool<char>.Shared.Rent(length));
-#if !NET451
                     EscapeString(source, escapedName, escapeHandling, firstEscapeIndex, encoder, out int written);
-#else
-                    EscapeString(source, escapedName, escapeHandling, firstEscapeIndex, out int written);
-#endif
 
                     return escapedName.Slice(0, written).ToString();
                 }
@@ -317,11 +249,7 @@ namespace SpanJson.Internal
             }
         }
 
-        public static string EscapeString(ReadOnlySpan<char> input, StringEscapeHandling escapeHandling = StringEscapeHandling.Default
-#if !NET451
-            , JavaScriptEncoder encoder = null
-#endif
-            )
+        public static string EscapeString(ReadOnlySpan<char> input, JsonEscapeHandling escapeHandling = JsonEscapeHandling.Default, JavaScriptEncoder encoder = null)
         {
             if (input.IsEmpty) { return string.Empty; }
 
@@ -339,11 +267,7 @@ namespace SpanJson.Internal
                     Span<char> escapedName = (uint)length <= JsonSharedConstant.StackallocThreshold ?
                         stackalloc char[length] :
                         (tempArray = ArrayPool<char>.Shared.Rent(length));
-#if !NET451
                     EscapeString(input, escapedName, escapeHandling, firstEscapeIndex, encoder, out int written);
-#else
-                    EscapeString(input, escapedName, escapeHandling, firstEscapeIndex, out int written);
-#endif
 
                     return escapedName.Slice(0, written).ToString();
                 }
@@ -358,12 +282,12 @@ namespace SpanJson.Internal
 
         #region == EscapeChar ==
 
-        internal static void EscapeChar(StringEscapeHandling escapeHandling, ref char destSpace, char value, ref int pos)
+        internal static void EscapeChar(JsonEscapeHandling escapeHandling, ref char destSpace, char value, ref int pos)
         {
             switch (value)
             {
                 case JsonUtf16Constant.DoubleQuote:
-                    if (escapeHandling == StringEscapeHandling.Default)
+                    if (escapeHandling == JsonEscapeHandling.Default)
                     {
                         WriteSingleChar(ref destSpace, JsonUtf16Constant.DoubleQuote, ref pos);
                     }
@@ -478,12 +402,12 @@ namespace SpanJson.Internal
             }
         }
 
-        internal static void EscapeChar(StringEscapeHandling escapeHandling, ref byte destSpace, char value, ref int pos)
+        internal static void EscapeChar(JsonEscapeHandling escapeHandling, ref byte destSpace, char value, ref int pos)
         {
             switch (value)
             {
                 case JsonUtf16Constant.DoubleQuote:
-                    if (escapeHandling == StringEscapeHandling.Default)
+                    if (escapeHandling == JsonEscapeHandling.Default)
                     {
                         WriteSingleChar(ref destSpace, JsonUtf16Constant.DoubleQuote, ref pos);
                     }
@@ -602,12 +526,12 @@ namespace SpanJson.Internal
 
         #region == EscapeNextBytes ==
 
-        private static void EscapeNextBytes(StringEscapeHandling escapeHandling, byte value, Span<byte> destination, ref byte destSpace, ref int written)
+        private static void EscapeNextBytes(JsonEscapeHandling escapeHandling, byte value, Span<byte> destination, ref byte destSpace, ref int written)
         {
             switch ((uint)value)
             {
                 case JsonUtf8Constant.DoubleQuote:
-                    if (escapeHandling == StringEscapeHandling.Default)
+                    if (escapeHandling == JsonEscapeHandling.Default)
                     {
                         WriteSingleChar(ref destSpace, '"', ref written);
                     }
@@ -729,7 +653,7 @@ namespace SpanJson.Internal
             }
         }
 
-        private static bool EscapeNextBytes(StringEscapeHandling escapeHandling, ref byte sourceSpace, ref int consumed, uint remaining,
+        private static bool EscapeNextBytes(JsonEscapeHandling escapeHandling, ref byte sourceSpace, ref int consumed, uint remaining,
             Span<byte> destination, ref byte destSpace, ref int written)
         {
             SequenceValidity status = PeekFirstSequence(ref sourceSpace, consumed, remaining, out int numBytesConsumed, out int scalar);
@@ -740,7 +664,7 @@ namespace SpanJson.Internal
             switch (scalar)
             {
                 case JsonUtf8Constant.DoubleQuote:
-                    if (escapeHandling == StringEscapeHandling.Default)
+                    if (escapeHandling == JsonEscapeHandling.Default)
                     {
                         WriteSingleChar(ref destSpace, '"', ref written);
                     }
@@ -1097,14 +1021,14 @@ namespace SpanJson.Internal
 
         #region == EscapeNextChars ==
 
-        private static void EscapeNextChars(StringEscapeHandling escapeHandling, char value, ref char destSpace, ref int written)
+        private static void EscapeNextChars(JsonEscapeHandling escapeHandling, char value, ref char destSpace, ref int written)
         {
             Debug.Assert(IsAsciiValue(value));
 
             switch (value)
             {
                 case JsonUtf16Constant.DoubleQuote:
-                    if (escapeHandling == StringEscapeHandling.Default)
+                    if (escapeHandling == JsonEscapeHandling.Default)
                     {
                         WriteSingleChar(ref destSpace, JsonUtf16Constant.DoubleQuote, ref written);
                     }
@@ -1227,12 +1151,12 @@ namespace SpanJson.Internal
             }
         }
 
-        internal static void EscapeNextChars(StringEscapeHandling escapeHandling, ref char sourceSpace, uint srcLength, int firstChar, ref char destSpace, ref int consumed, ref int written)
+        internal static void EscapeNextChars(JsonEscapeHandling escapeHandling, ref char sourceSpace, uint srcLength, int firstChar, ref char destSpace, ref int consumed, ref int written)
         {
             switch (firstChar)
             {
                 case JsonUtf16Constant.DoubleQuote:
-                    if (escapeHandling == StringEscapeHandling.Default)
+                    if (escapeHandling == JsonEscapeHandling.Default)
                     {
                         WriteSingleChar(ref destSpace, JsonUtf16Constant.DoubleQuote, ref written);
                     }
@@ -1366,12 +1290,12 @@ namespace SpanJson.Internal
             }
         }
 
-        internal static void EscapeNextChars(StringEscapeHandling escapeHandling, ref char sourceSpace, uint srcLength, int firstChar, ref byte destSpace, ref int consumed, ref int written)
+        internal static void EscapeNextChars(JsonEscapeHandling escapeHandling, ref char sourceSpace, uint srcLength, int firstChar, ref byte destSpace, ref int consumed, ref int written)
         {
             switch (firstChar)
             {
                 case JsonUtf16Constant.DoubleQuote:
-                    if (escapeHandling == StringEscapeHandling.Default)
+                    if (escapeHandling == JsonEscapeHandling.Default)
                     {
                         WriteSingleChar(ref destSpace, JsonUtf16Constant.DoubleQuote, ref written);
                     }

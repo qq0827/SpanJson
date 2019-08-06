@@ -34,24 +34,24 @@
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteUtf8Name(string value, StringEscapeHandling escapeHandling)
+        public void WriteUtf8Name(string value, JsonEscapeHandling escapeHandling)
         {
             WriteUtf8Name(value.AsSpan(), escapeHandling);
         }
 
-        public void WriteUtf8Name(in ReadOnlySpan<char> value, StringEscapeHandling escapeHandling)
+        public void WriteUtf8Name(in ReadOnlySpan<char> value, JsonEscapeHandling escapeHandling)
         {
             switch (escapeHandling)
             {
-                case StringEscapeHandling.EscapeNonAscii:
+                case JsonEscapeHandling.EscapeNonAscii:
                     WriteUtf8StringEscapeNonAsciiValue(value, true);
                     break;
 
-                case StringEscapeHandling.EscapeHtml:
+                case JsonEscapeHandling.EscapeHtml:
                     WriteUtf8StringEscapeHtmlValue(value, true);
                     break;
 
-                case StringEscapeHandling.Default:
+                case JsonEscapeHandling.Default:
                 default:
                     WriteUtf8StringEscapeValue(value, true);
                     break;

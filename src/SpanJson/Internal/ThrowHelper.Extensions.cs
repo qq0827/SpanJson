@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Reflection;
 using System.Text;
+using SpanJson.Internal;
 
 namespace SpanJson
 {
@@ -10,11 +11,48 @@ namespace SpanJson
     /// <summary>The convention for this enum is using the argument name as the enum name</summary>
     internal enum ExceptionArgument
     {
+        o,
+        s,
+        t,
+        doc,
+        key,
+        json,
+        type,
+        name,
+        array,
         count,
+        index,
         input,
+        token,
         value,
+        other,
+        reader,
+        length,
+        format,
+        offset,
+        method,
         source,
+        initial,
+        inArray,
+        element,
         newSize,
+        utf8Json,
+        offsetIn,
+        outArray,
+        jsonData,
+        property,
+        utf16Json,
+        offsetOut,
+        container,
+        fieldInfo,
+        annotation,
+        enumerable,
+        expression,
+        initialValue,
+        propertyInfo,
+        propertyName,
+        jsonSerializer,
+        genericInterfaceDefinition,
     }
 
     #endregion
@@ -24,6 +62,46 @@ namespace SpanJson
     /// <summary>The convention for this enum is using the resource name as the enum name</summary>
     internal enum ExceptionResource
     {
+        ArrayDepthTooLarge,
+        EndOfCommentNotFound,
+        EndOfStringNotFound,
+        RequiredDigitNotFoundAfterDecimal,
+        RequiredDigitNotFoundAfterSign,
+        RequiredDigitNotFoundEndOfData,
+        ExpectedEndAfterSingleJson,
+        ExpectedEndOfDigitNotFound,
+        ExpectedFalse,
+        ExpectedNextDigitEValueNotFound,
+        ExpectedNull,
+        ExpectedSeparatorAfterPropertyNameNotFound,
+        ExpectedStartOfPropertyNotFound,
+        ExpectedStartOfPropertyOrValueNotFound,
+        ExpectedStartOfPropertyOrValueAfterComment,
+        ExpectedStartOfValueNotFound,
+        ExpectedTrue,
+        ExpectedValueAfterPropertyNameNotFound,
+        FoundInvalidCharacter,
+        InvalidCharacterWithinString,
+        InvalidCharacterAfterEscapeWithinString,
+        InvalidHexCharacterWithinString,
+        InvalidEndOfJsonNonPrimitive,
+        MismatchedObjectArray,
+        ObjectDepthTooLarge,
+        ZeroDepthAtEnd,
+        DepthTooLarge,
+        CannotStartObjectArrayWithoutProperty,
+        CannotStartObjectArrayAfterPrimitiveOrClose,
+        CannotWriteValueWithinObject,
+        CannotWriteValueAfterPrimitiveOrClose,
+        CannotWritePropertyWithinArray,
+        ExpectedJsonTokens,
+        TrailingCommaNotAllowedBeforeArrayEnd,
+        TrailingCommaNotAllowedBeforeObjectEnd,
+        InvalidCharacterAtStartOfComment,
+        UnexpectedEndOfDataWhileReadingComment,
+        UnexpectedEndOfLineSeparator,
+        ExpectedOneCompleteToken,
+        NotEnoughData,
     }
 
     #endregion
@@ -109,6 +187,16 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static void ThrowArgumentException_EnumIllegalVal(Base64FormattingOptions options)
+        {
+            throw GetException();
+            ArgumentException GetException()
+            {
+                return new ArgumentException($"Illegal enum value: {options}.", nameof(options));
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
         internal static void ThrowArgumentException_IsNotAnInterface(Type interfaceType)
         {
             throw GetException();
@@ -169,6 +257,66 @@ namespace SpanJson
         #region -- ArgumentOutOfRangeException --
 
         [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static ArgumentOutOfRangeException GetArgumentOutOfRangeException()
+        {
+            return new ArgumentOutOfRangeException();
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static void ThrowArgumentOutOfRange_IndexException()
+        {
+            throw GetException();
+            ArgumentOutOfRangeException GetException()
+            {
+                return new ArgumentOutOfRangeException("index", "Index was out of range. Must be non-negative and less than the size of the collection.");
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static void ThrowArgumentOutOfRangeException_Index(ExceptionArgument argument)
+        {
+            throw GetException();
+            ArgumentOutOfRangeException GetException()
+            {
+                var argumentName = GetArgumentName(argument);
+                return new ArgumentOutOfRangeException(argumentName, "Index was out of range. Must be non-negative and less than the size of the collection.");
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static void ThrowArgumentOutOfRangeException_GenericPositive(ExceptionArgument argument)
+        {
+            throw GetException();
+            ArgumentOutOfRangeException GetException()
+            {
+                var argumentName = GetArgumentName(argument);
+                return new ArgumentOutOfRangeException(argumentName, "Value must be positive.");
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static void ThrowArgumentOutOfRangeException_OffsetLength(ExceptionArgument argument)
+        {
+            throw GetException();
+            ArgumentOutOfRangeException GetException()
+            {
+                var argumentName = GetArgumentName(argument);
+                return new ArgumentOutOfRangeException(argumentName, "Offset and length must refer to a position in the string.");
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static void ThrowArgumentOutOfRangeException_OffsetOut(ExceptionArgument argument)
+        {
+            throw GetException();
+            ArgumentOutOfRangeException GetException()
+            {
+                var argumentName = GetArgumentName(argument);
+                return new ArgumentOutOfRangeException(argumentName, "Either offset did not refer to a position in the string, or there is an insufficient length of destination character array.");
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
         internal static void ThrowArgumentOutOfRangeException_Nonnegative(ExceptionArgument argument)
         {
             throw GetException();
@@ -176,6 +324,26 @@ namespace SpanJson
             {
                 var argumentName = GetArgumentName(argument);
                 return new ArgumentOutOfRangeException(argumentName, $"{argumentName} should be non negative.");
+            }
+        }
+
+        public static void ThrowArgumentOutOfRangeException_CommentEnumMustBeInRange(ExceptionArgument argument)
+        {
+            throw GetException();
+            ArgumentOutOfRangeException GetException()
+            {
+                var argumentName = GetArgumentName(argument);
+                return new ArgumentOutOfRangeException(argumentName, SR.CommentHandlingMustBeValid);
+            }
+        }
+
+        public static void ThrowArgumentOutOfRangeException_MaxDepthMustBePositive(ExceptionArgument argument)
+        {
+            throw GetException();
+            ArgumentOutOfRangeException GetException()
+            {
+                var argumentName = GetArgumentName(argument);
+                return new ArgumentOutOfRangeException(argumentName, SR.MaxDepthMustBePositive);
             }
         }
 
@@ -190,6 +358,16 @@ namespace SpanJson
             static InvalidOperationException GetException()
             {
                 return new InvalidOperationException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static void ThrowInvalidOperationException_NullArray()
+        {
+            throw GetException();
+            InvalidOperationException GetException()
+            {
+                return new InvalidOperationException("The underlying array is null.");
             }
         }
 
@@ -301,6 +479,22 @@ namespace SpanJson
 
         #endregion
 
+        #region -- NotImplementedException --
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static NotImplementedException GetNotImplementedException()
+        {
+            return new NotImplementedException();
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static void ThrowNotImplementedException()
+        {
+            throw GetNotImplementedException();
+        }
+
+        #endregion
+
         #region -- InvalidCastException --
 
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -347,6 +541,34 @@ namespace SpanJson
         internal static JsonParserException GetJsonParserException(JsonParserException.ParserError error, int position)
         {
             return new JsonParserException(error, position);
+        }
+
+        #endregion
+
+        #region -- FormatException --
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static void ThrowFormatException_BadBase64Char()
+        {
+            throw GetException();
+            static FormatException GetException()
+            {
+                return new FormatException("The input is not a valid Base-64 string as it contains a non-base 64 character, more than two padding characters, or an illegal character among the padding characters.");
+            }
+        }
+
+        #endregion
+
+        #region -- OutOfMemoryException --
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static void ThrowOutOfMemoryException()
+        {
+            throw GetException();
+            static OutOfMemoryException GetException()
+            {
+                return new OutOfMemoryException();
+            }
         }
 
         #endregion

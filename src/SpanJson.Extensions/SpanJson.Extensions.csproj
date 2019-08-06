@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\nuget.props" />
+  <Import Project="..\version.props" />
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp2.2;netstandard2.0;net471;net451</TargetFrameworks>
+    <RootNamespace>SpanJson</RootNamespace>
+    <AssemblyName>SpanJson.Extensions</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>$(NoWarn);1701;1702;</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Label="NuGet">
+    <PackageId>SpanJson.Extensions</PackageId>
+    <Title>SpanJson.Extensions.</Title>
+    <Description>SpanJson ASP.NET Core Formatter is the ASP.NET Core formatter package for SpanJson for ASP.NET Core 2.1+</Description>
+    <PackageTags>JSON;aspnetcore</PackageTags>
+    <PackageReleaseNotes>Bugfixes and improvements</PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonPackageVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SpanJson\SpanJson.csproj" />
+  </ItemGroup>
+
+</Project>

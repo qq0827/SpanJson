@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Text;
-using SpanJson.Resolvers;
 using Xunit;
+using Utf16CamelCaseSerializer = SpanJson.JsonCamelCaseSerializer.Generic.Utf16;
+using Utf8CamelCaseSerializer = SpanJson.JsonCamelCaseSerializer.Generic.Utf8;
 
 namespace SpanJson.Tests
 {
@@ -11,9 +12,9 @@ namespace SpanJson.Tests
         public void SerializeDeserializeUtf16()
         {
             var input = new TestObject {Text = "Hello World"};
-            var serialized = JsonSerializer.Generic.Utf16.Serialize<TestObject, ExcludeNullsCamelCaseResolver<char>>(input);
+            var serialized = Utf16CamelCaseSerializer.Serialize<TestObject>(input);
             Assert.Contains("\"text\":", serialized);
-            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<TestObject, ExcludeNullsCamelCaseResolver<char>>(serialized);
+            var deserialized = Utf16CamelCaseSerializer.Deserialize<TestObject>(serialized);
             Assert.Equal(input, deserialized);
         }
 
@@ -21,9 +22,9 @@ namespace SpanJson.Tests
         public void SerializeDeserializeUtf8()
         {
             var input = new TestObject {Text = "Hello World"};
-            var serialized = JsonSerializer.Generic.Utf8.Serialize<TestObject, ExcludeNullsCamelCaseResolver<byte>>(input);
+            var serialized = Utf8CamelCaseSerializer.Serialize<TestObject>(input);
             Assert.Contains("\"text\":", Encoding.UTF8.GetString(serialized));
-            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<TestObject, ExcludeNullsCamelCaseResolver<byte>>(serialized);
+            var deserialized = Utf8CamelCaseSerializer.Deserialize<TestObject>(serialized);
             Assert.Equal(input, deserialized);
         }
 

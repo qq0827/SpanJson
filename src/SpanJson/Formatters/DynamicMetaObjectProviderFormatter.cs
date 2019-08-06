@@ -7,9 +7,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.CSharp.RuntimeBinder;
-using SpanJson.Formatters.Dynamic;
+using SpanJson.Dynamic;
 using SpanJson.Helpers;
 using SpanJson.Resolvers;
 using SpanJson.Internal;
@@ -76,39 +77,55 @@ namespace SpanJson.Formatters
             }
             else if (value is ISpanJsonDynamicValue<byte> bValue)
             {
-                var cMaxLength = Encoding.UTF8.GetMaxCharCount(bValue.Symbols.Length);
+                var cMaxLength = Encoding.UTF8.GetMaxCharCount(bValue.Symbols.Count);
                 char[] buffer = null;
                 try
                 {
-                    buffer = ArrayPool<char>.Shared.Rent(cMaxLength); // can't use stackalloc here
-                    var written = TextEncodings.Utf8.GetChars(bValue.Symbols, buffer);
-                    writer.WriteUtf16Verbatim(buffer.AsSpan(0, written));
+                    Span<char> utf16Span = (uint)cMaxLength <= JsonSharedConstant.StackallocThreshold ?
+                        stackalloc char[cMaxLength] :
+                        (buffer = ArrayPool<char>.Shared.Rent(cMaxLength));
+
+                    var written = TextEncodings.Utf8.GetChars(bValue.Symbols, utf16Span);
+
+#if NETSTANDARD2_0 || NET471 || NET451
+                    unsafe
+                    {
+                        writer.WriteUtf16Verbatim(new ReadOnlySpan<char>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(utf16Span)), written));
+                    }
+#else
+                    writer.WriteUtf16Verbatim(MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(utf16Span), written));
+#endif
                 }
                 finally
                 {
-                    if (buffer != null)
-                    {
-                        ArrayPool<char>.Shared.Return(buffer);
-                    }
+                    if (buffer != null) { ArrayPool<char>.Shared.Return(buffer); }
                 }
 
             }
             else if (value is ISpanJsonDynamicValue<char> cValue)
             {
-                var bMaxLength = TextEncodings.Utf8.GetMaxByteCount(cValue.Symbols.Length);
+                var bMaxLength = TextEncodings.Utf8.GetMaxByteCount(cValue.Symbols.Count);
                 byte[] buffer = null;
                 try
                 {
-                    buffer = ArrayPool<byte>.Shared.Rent(bMaxLength); // can't use stackalloc here
-                    var written = TextEncodings.Utf8.GetBytes(cValue.Symbols, buffer);
-                    writer.WriteUtf8Verbatim(buffer.AsSpan(0, written));
+                    Span<byte> utf8Span = (uint)bMaxLength <= JsonSharedConstant.StackallocThreshold ?
+                        stackalloc byte[bMaxLength] :
+                        (buffer = ArrayPool<byte>.Shared.Rent(bMaxLength));
+
+                    var written = TextEncodings.Utf8.GetBytes(cValue.Symbols, utf8Span);
+
+#if NETSTANDARD2_0 || NET471 || NET451
+                    unsafe
+                    {
+                        writer.WriteUtf8Verbatim(new ReadOnlySpan<byte>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(utf8Span)), written));
+                    }
+#else
+                    writer.WriteUtf8Verbatim(MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(utf8Span), written));
+#endif
                 }
                 finally
                 {
-                    if (buffer != null)
-                    {
-                        ArrayPool<byte>.Shared.Return(buffer);
-                    }
+                    if (buffer != null) { ArrayPool<byte>.Shared.Return(buffer); }
                 }
             }
             else if (value is ISpanJsonDynamicArray dynamicArray)
@@ -175,7 +192,7 @@ namespace SpanJson.Formatters
             var inputParameter = Expression.Parameter(typeof(T), "input");
             var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
             var resolverParameter = Expression.Parameter(typeof(IJsonFormatterResolver<TSymbol>), "resolver");
-            var result = new Dictionary<string, DeserializeDelegate>(StringComparer.InvariantCulture);
+            var result = new Dictionary<string, DeserializeDelegate>(StringComparer.Ordinal);
             // can't deserialize abstract or interface
             foreach (var memberInfo in memberInfos)
             {
@@ -226,8 +243,8 @@ namespace SpanJson.Formatters
         {
             return GetMemberCache.GetOrAdd(memberName, s =>
             {
-                var binder = (GetMemberBinder) Binder.GetMember(CSharpBinderFlags.None, s, typeof(T),
-                    new[] {CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null)});
+                var binder = (GetMemberBinder)Binder.GetMember(CSharpBinderFlags.None, s, typeof(T),
+                    new[] { CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null) });
                 var callSite = CallSite<Func<CallSite, object, object>>.Create(binder);
                 return target => callSite.Target(callSite, target);
             });

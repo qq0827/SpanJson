@@ -4,8 +4,6 @@
 
 // Largely based on https://github.com/dotnet/corefx/blob/8135319caa7e457ed61053ca1418313b88057b51/src/System.Text.Json/src/System/Text/Json/Writer/JsonWriterHelper.Transcoding.cs#L12
 
-#if NET451
-
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -33,7 +31,7 @@ namespace SpanJson.Internal
                     byte val = Unsafe.Add(ref sourceSpace, consumed);
                     if (NeedsEscaping(val))
                     {
-                        if (!EscapeNextBytes(StringEscapeHandling.EscapeNonAscii, ref sourceSpace, ref consumed, nlen - (uint)consumed, destination, ref destSpace, ref written))
+                        if (!EscapeNextBytes(JsonEscapeHandling.EscapeNonAscii, ref sourceSpace, ref consumed, nlen - (uint)consumed, destination, ref destSpace, ref written))
                         {
                             ThrowHelper.ThrowArgumentException_InvalidUTF8(utf8Source, consumed);
                         }
@@ -63,7 +61,7 @@ namespace SpanJson.Internal
                     char val = Unsafe.Add(ref sourceSpace, consumed);
                     if (NeedsEscaping(val))
                     {
-                        EscapeNextChars(StringEscapeHandling.EscapeNonAscii, ref sourceSpace, nlen, val, ref destSpace, ref consumed, ref written);
+                        EscapeNextChars(JsonEscapeHandling.EscapeNonAscii, ref sourceSpace, nlen, val, ref destSpace, ref consumed, ref written);
                     }
                     else
                     {
@@ -75,5 +73,3 @@ namespace SpanJson.Internal
         }
     }
 }
-
-#endif

@@ -7,14 +7,14 @@ namespace SpanJson
         public const int MaxNumberBufferSize = 32;
         public const int MaxVersionLength = 45; // 4 * int + 3 . + 2 double quote
         public const uint NestingLimit = 256;
-        public const int StackAllocByteMaxLength = 256;
-        public const int StackAllocCharMaxLength = StackAllocByteMaxLength / sizeof(char);
         public const int MaxDateTimeOffsetLength = 35; // o + 2 double quotes
         public const int MaxDateTimeLength = 35; // o + 2 double quotes
         public const int MaxTimeSpanLength = 27; // c + 2 double quotes
         public const int MaxGuidLength = 42; // d + 2 double quotes
 
         public const uint StackallocThreshold = 256u;
+        public const int StackallocMaxLength = 256;
+        //public const int StackAllocCharMaxLength = StackallocMaxLength / sizeof(char);
 
         public const uint TooBigOrNegative = int.MaxValue;
 
@@ -40,9 +40,10 @@ namespace SpanJson
         // All other UTF-16 characters can be represented by either 1 or 2 UTF-8 bytes.
         public const int MaxExpansionFactorWhileTranscoding = 3;
 
-        public const int MaxTokenSize = 1_000_000_000 / MaxExpansionFactorWhileEscaping;  // 166_666_666 bytes
-        public const int MaxBase46ValueTokenSize = (1_000_000_000 >> 2 * 3) / MaxExpansionFactorWhileEscaping;  // 125_000_000 bytes
-        public const int MaxCharacterTokenSize = 1_000_000_000 / MaxExpansionFactorWhileEscaping; // 166_666_666 characters
+        public const int MaxEscapedTokenSize = 1_000_000_000;   // Max size for already escaped value.
+        public const int MaxUnescapedTokenSize = MaxEscapedTokenSize / MaxExpansionFactorWhileEscaping;  // 166_666_666 bytes
+        public const int MaxBase46ValueTokenSize = (MaxEscapedTokenSize >> 2 * 3) / MaxExpansionFactorWhileEscaping;  // 125_000_000 bytes
+        public const int MaxCharacterTokenSize = MaxEscapedTokenSize / MaxExpansionFactorWhileEscaping; // 166_666_666 characters
 
         public const int MaximumFormatInt64Length = 20;   // 19 + sign (i.e. -9223372036854775808)
         public const int MaximumFormatUInt64Length = 20;  // i.e. 18446744073709551615
@@ -99,9 +100,15 @@ namespace SpanJson
         public const byte UtcOffsetToken = (byte)'Z';
         public const byte TimePrefix = (byte)'T';
 
+        public const byte OpenBrace = (byte)'{';
+        public const byte CloseBrace = (byte)'}';
+        public const byte OpenBracket = (byte)'[';
+        public const byte CloseBracket = (byte)']';
         public const byte CarriageReturn = (byte)'\r';
         public const byte LineFeed = (byte)'\n';
         public const byte Tab = (byte)'\t';
+        public const byte ListSeparator = (byte)',';
+        public const byte KeyValueSeperator = (byte)':';
         public const byte BackSlash = (byte)'\\';
         public const byte Slash = (byte)'/';
         public const byte BackSpace = (byte)'\b';
@@ -113,6 +120,16 @@ namespace SpanJson
 
         public static ReadOnlySpan<byte> NewLine => new[] { (byte)'\r', (byte)'\n' };
         public static ReadOnlySpan<byte> NullTerminator => new byte[] { 0 };
+        public static ReadOnlySpan<byte> Utf8Bom => new byte[] { 0xEF, 0xBB, 0xBF };
+        public static ReadOnlySpan<byte> TrueValue => new byte[] { (byte)'t', (byte)'r', (byte)'u', (byte)'e' };
+        public static ReadOnlySpan<byte> FalseValue => new byte[] { (byte)'f', (byte)'a', (byte)'l', (byte)'s', (byte)'e' };
+        public static ReadOnlySpan<byte> NullValue => new byte[] { (byte)'n', (byte)'u', (byte)'l', (byte)'l' };
+
+        // Used to search for the end of a number
+        public static ReadOnlySpan<byte> Delimiters => new byte[] { ValueSeparator, CloseBrace, CloseBracket, Space, LineFeed, CarriageReturn, Tab, Slash };
+
+        // Explicitly skipping ReverseSolidus since that is handled separately
+        public static ReadOnlySpan<byte> EscapableChars => new byte[] { DoubleQuote, (byte)'n', (byte)'r', (byte)'t', Slash, (byte)'u', (byte)'b', (byte)'f' };
     }
 
     public static class JsonUtf16Constant

@@ -59,5 +59,923 @@ namespace SpanJson.Internal {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   查找类似 The maximum configured depth of {0} has been exceeded. Cannot read next JSON array. 的本地化字符串。
+        /// </summary>
+        internal static string ArrayDepthTooLarge {
+            get {
+                return ResourceManager.GetString("ArrayDepthTooLarge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Cannot advance past the end of the buffer, which has a size of {0}. 的本地化字符串。
+        /// </summary>
+        internal static string BufferWriterAdvancedTooFar {
+            get {
+                return ResourceManager.GetString("BufferWriterAdvancedTooFar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The JSON writer needs to be flushed before getting the current state. There are {0} bytes that have not been committed to the output. 的本地化字符串。
+        /// </summary>
+        internal static string CallFlushToAvoidDataLoss {
+            get {
+                return ResourceManager.GetString("CallFlushToAvoidDataLoss", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Cannot decode JSON text that is not encoded as valid Base64 to bytes. 的本地化字符串。
+        /// </summary>
+        internal static string CannotDecodeInvalidBase64 {
+            get {
+                return ResourceManager.GetString("CannotDecodeInvalidBase64", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Cannot encode invalid UTF-16 text as JSON. Invalid surrogate value: &apos;{0}&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string CannotEncodeInvalidUTF16 {
+            get {
+                return ResourceManager.GetString("CannotEncodeInvalidUTF16", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Cannot encode invalid UTF-8 text as JSON. Invalid input: &apos;{0}&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string CannotEncodeInvalidUTF8 {
+            get {
+                return ResourceManager.GetString("CannotEncodeInvalidUTF8", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Cannot read incomplete UTF-16 JSON text as string with missing low surrogate. 的本地化字符串。
+        /// </summary>
+        internal static string CannotReadIncompleteUTF16 {
+            get {
+                return ResourceManager.GetString("CannotReadIncompleteUTF16", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Cannot read invalid UTF-16 JSON text as string. Invalid surrogate value: &apos;{0}&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string CannotReadInvalidUTF16 {
+            get {
+                return ResourceManager.GetString("CannotReadInvalidUTF16", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Cannot skip tokens on partial JSON. Either get the whole payload and create a Utf8JsonReader instance where isFinalBlock is true or call TrySkip. 的本地化字符串。
+        /// </summary>
+        internal static string CannotSkip {
+            get {
+                return ResourceManager.GetString("CannotSkip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Cannot write the start of an object/array after a single JSON value or outside of an existing closed object/array. Current token type is &apos;{0}&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string CannotStartObjectArrayAfterPrimitiveOrClose {
+            get {
+                return ResourceManager.GetString("CannotStartObjectArrayAfterPrimitiveOrClose", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Cannot write the start of an object or array without a property name. Current token type is &apos;{0}&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string CannotStartObjectArrayWithoutProperty {
+            get {
+                return ResourceManager.GetString("CannotStartObjectArrayWithoutProperty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Cannot transcode invalid UTF-16 string to UTF-8 JSON text. 的本地化字符串。
+        /// </summary>
+        internal static string CannotTranscodeInvalidUtf16 {
+            get {
+                return ResourceManager.GetString("CannotTranscodeInvalidUtf16", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Cannot transcode invalid UTF-8 JSON text to UTF-16 string. 的本地化字符串。
+        /// </summary>
+        internal static string CannotTranscodeInvalidUtf8 {
+            get {
+                return ResourceManager.GetString("CannotTranscodeInvalidUtf8", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Cannot write a comment value which contains the end of comment delimiter. 的本地化字符串。
+        /// </summary>
+        internal static string CannotWriteCommentWithEmbeddedDelimiter {
+            get {
+                return ResourceManager.GetString("CannotWriteCommentWithEmbeddedDelimiter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &apos;{0}&apos; is invalid following a property name. 的本地化字符串。
+        /// </summary>
+        internal static string CannotWriteEndAfterProperty {
+            get {
+                return ResourceManager.GetString("CannotWriteEndAfterProperty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Cannot write a JSON property name following another property name. A JSON value is missing. 的本地化字符串。
+        /// </summary>
+        internal static string CannotWritePropertyAfterProperty {
+            get {
+                return ResourceManager.GetString("CannotWritePropertyAfterProperty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Cannot write a JSON property within an array or as the first JSON token. Current token type is &apos;{0}&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string CannotWritePropertyWithinArray {
+            get {
+                return ResourceManager.GetString("CannotWritePropertyWithinArray", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Cannot write a JSON value after a single JSON value or outside of an existing closed object/array. Current token type is &apos;{0}&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string CannotWriteValueAfterPrimitiveOrClose {
+            get {
+                return ResourceManager.GetString("CannotWriteValueAfterPrimitiveOrClose", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Cannot write a JSON value within an object without a property name. Current token type is &apos;{0}&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string CannotWriteValueWithinObject {
+            get {
+                return ResourceManager.GetString("CannotWriteValueWithinObject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The JsonCommentHandling enum must be set to one of the supported values. 的本地化字符串。
+        /// </summary>
+        internal static string CommentHandlingMustBeValid {
+            get {
+                return ResourceManager.GetString("CommentHandlingMustBeValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 CurrentDepth ({0}) is equal to or larger than the maximum allowed depth of {1}. Cannot write the next JSON object or array. 的本地化字符串。
+        /// </summary>
+        internal static string DepthTooLarge {
+            get {
+                return ResourceManager.GetString("DepthTooLarge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The provided data of length {0} has remaining bytes {1}. 的本地化字符串。
+        /// </summary>
+        internal static string DeserializeDataRemaining {
+            get {
+                return ResourceManager.GetString("DeserializeDataRemaining", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 An item with the same property name &apos;{0}&apos; has already been added. 的本地化字符串。
+        /// </summary>
+        internal static string DeserializeDuplicateKey {
+            get {
+                return ResourceManager.GetString("DeserializeDuplicateKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Deserialization of reference types without parameterless constructor is not supported. Type &apos;{0}&apos; 的本地化字符串。
+        /// </summary>
+        internal static string DeserializeMissingParameterlessConstructor {
+            get {
+                return ResourceManager.GetString("DeserializeMissingParameterlessConstructor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Deserialization of interface types is not supported. Type &apos;{0}&apos; 的本地化字符串。
+        /// </summary>
+        internal static string DeserializePolymorphicInterface {
+            get {
+                return ResourceManager.GetString("DeserializePolymorphicInterface", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The JSON value could not be converted to {0}. 的本地化字符串。
+        /// </summary>
+        internal static string DeserializeUnableToConvertValue {
+            get {
+                return ResourceManager.GetString("DeserializeUnableToConvertValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The specified type {0} must derive from the specific value&apos;s type {1}. 的本地化字符串。
+        /// </summary>
+        internal static string DeserializeWrongType {
+            get {
+                return ResourceManager.GetString("DeserializeWrongType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Writing an empty JSON payload (excluding comments) is invalid. 的本地化字符串。
+        /// </summary>
+        internal static string EmptyJsonIsInvalid {
+            get {
+                return ResourceManager.GetString("EmptyJsonIsInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Expected end of comment, but instead reached end of data. 的本地化字符串。
+        /// </summary>
+        internal static string EndOfCommentNotFound {
+            get {
+                return ResourceManager.GetString("EndOfCommentNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Expected end of string, but instead reached end of data. 的本地化字符串。
+        /// </summary>
+        internal static string EndOfStringNotFound {
+            get {
+                return ResourceManager.GetString("EndOfStringNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &apos;{0}&apos; is invalid after a single JSON value. Expected end of data. 的本地化字符串。
+        /// </summary>
+        internal static string ExpectedEndAfterSingleJson {
+            get {
+                return ResourceManager.GetString("ExpectedEndAfterSingleJson", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &apos;{0}&apos; is an invalid end of a number. Expected a delimiter. 的本地化字符串。
+        /// </summary>
+        internal static string ExpectedEndOfDigitNotFound {
+            get {
+                return ResourceManager.GetString("ExpectedEndOfDigitNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &apos;{0}&apos; is an invalid JSON literal. Expected the literal &apos;false&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string ExpectedFalse {
+            get {
+                return ResourceManager.GetString("ExpectedFalse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The input does not contain any JSON tokens. Expected the input to start with a valid JSON token, when isFinalBlock is true. 的本地化字符串。
+        /// </summary>
+        internal static string ExpectedJsonTokens {
+            get {
+                return ResourceManager.GetString("ExpectedJsonTokens", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &apos;{0}&apos; is an invalid end of a number. Expected &apos;E&apos; or &apos;e&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string ExpectedNextDigitEValueNotFound {
+            get {
+                return ResourceManager.GetString("ExpectedNextDigitEValueNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &apos;{0}&apos; is an invalid JSON literal. Expected the literal &apos;null&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string ExpectedNull {
+            get {
+                return ResourceManager.GetString("ExpectedNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The input does not contain any complete JSON tokens. Expected the input to have at least one valid, complete, JSON token. 的本地化字符串。
+        /// </summary>
+        internal static string ExpectedOneCompleteToken {
+            get {
+                return ResourceManager.GetString("ExpectedOneCompleteToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &apos;{0}&apos; is invalid after a property name. Expected a &apos;:&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string ExpectedSeparatorAfterPropertyNameNotFound {
+            get {
+                return ResourceManager.GetString("ExpectedSeparatorAfterPropertyNameNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &apos;{0}&apos; is an invalid start of a property name. Expected a &apos;&quot;&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string ExpectedStartOfPropertyNotFound {
+            get {
+                return ResourceManager.GetString("ExpectedStartOfPropertyNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &apos;{0}&apos; is an invalid start of a property name or value, after a comment. 的本地化字符串。
+        /// </summary>
+        internal static string ExpectedStartOfPropertyOrValueAfterComment {
+            get {
+                return ResourceManager.GetString("ExpectedStartOfPropertyOrValueAfterComment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Expected start of a property name or value, but instead reached end of data. 的本地化字符串。
+        /// </summary>
+        internal static string ExpectedStartOfPropertyOrValueNotFound {
+            get {
+                return ResourceManager.GetString("ExpectedStartOfPropertyOrValueNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &apos;{0}&apos; is an invalid start of a value. 的本地化字符串。
+        /// </summary>
+        internal static string ExpectedStartOfValueNotFound {
+            get {
+                return ResourceManager.GetString("ExpectedStartOfValueNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &apos;{0}&apos; is an invalid JSON literal. Expected the literal &apos;true&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string ExpectedTrue {
+            get {
+                return ResourceManager.GetString("ExpectedTrue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Expected a value, but instead reached end of data. 的本地化字符串。
+        /// </summary>
+        internal static string ExpectedValueAfterPropertyNameNotFound {
+            get {
+                return ResourceManager.GetString("ExpectedValueAfterPropertyNameNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The &apos;IBufferWriter&apos; could not provide an output buffer that is large enough to continue writing. 的本地化字符串。
+        /// </summary>
+        internal static string FailedToGetLargerSpan {
+            get {
+                return ResourceManager.GetString("FailedToGetLargerSpan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Either the JSON value is not in a supported format, or is out of bounds for an unsigned byte. 的本地化字符串。
+        /// </summary>
+        internal static string FormatByte {
+            get {
+                return ResourceManager.GetString("FormatByte", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The JSON value is not in a supported DateTime format. 的本地化字符串。
+        /// </summary>
+        internal static string FormatDateTime {
+            get {
+                return ResourceManager.GetString("FormatDateTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The JSON value is not in a supported DateTimeOffset format. 的本地化字符串。
+        /// </summary>
+        internal static string FormatDateTimeOffset {
+            get {
+                return ResourceManager.GetString("FormatDateTimeOffset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The JSON value is either too large or too small for a Decimal. 的本地化字符串。
+        /// </summary>
+        internal static string FormatDecimal {
+            get {
+                return ResourceManager.GetString("FormatDecimal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Either the JSON value is not in a supported format, or is out of bounds for a Double. 的本地化字符串。
+        /// </summary>
+        internal static string FormatDouble {
+            get {
+                return ResourceManager.GetString("FormatDouble", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The JSON value is not in a supported Guid format. 的本地化字符串。
+        /// </summary>
+        internal static string FormatGuid {
+            get {
+                return ResourceManager.GetString("FormatGuid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Either the JSON value is not in a supported format, or is out of bounds for an Int16. 的本地化字符串。
+        /// </summary>
+        internal static string FormatInt16 {
+            get {
+                return ResourceManager.GetString("FormatInt16", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Either the JSON value is not in a supported format, or is out of bounds for an Int32. 的本地化字符串。
+        /// </summary>
+        internal static string FormatInt32 {
+            get {
+                return ResourceManager.GetString("FormatInt32", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Either the JSON value is not in a supported format, or is out of bounds for an Int64. 的本地化字符串。
+        /// </summary>
+        internal static string FormatInt64 {
+            get {
+                return ResourceManager.GetString("FormatInt64", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Either the JSON value is not in a supported format, or is out of bounds for a signed byte. 的本地化字符串。
+        /// </summary>
+        internal static string FormatSByte {
+            get {
+                return ResourceManager.GetString("FormatSByte", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Either the JSON value is not in a supported format, or is out of bounds for a Single. 的本地化字符串。
+        /// </summary>
+        internal static string FormatSingle {
+            get {
+                return ResourceManager.GetString("FormatSingle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Either the JSON value is not in a supported format, or is out of bounds for a UInt16. 的本地化字符串。
+        /// </summary>
+        internal static string FormatUInt16 {
+            get {
+                return ResourceManager.GetString("FormatUInt16", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Either the JSON value is not in a supported format, or is out of bounds for a UInt32. 的本地化字符串。
+        /// </summary>
+        internal static string FormatUInt32 {
+            get {
+                return ResourceManager.GetString("FormatUInt32", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Either the JSON value is not in a supported format, or is out of bounds for a UInt64. 的本地化字符串。
+        /// </summary>
+        internal static string FormatUInt64 {
+            get {
+                return ResourceManager.GetString("FormatUInt64", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &apos;{0}&apos; is invalid after a value. Expected either &apos;,&apos;, &apos;}}&apos;, or &apos;]&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string FoundInvalidCharacter {
+            get {
+                return ResourceManager.GetString("FoundInvalidCharacter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Cannot get the value of a token type &apos;{0}&apos; as a {1}. 的本地化字符串。
+        /// </summary>
+        internal static string InvalidCast {
+            get {
+                return ResourceManager.GetString("InvalidCast", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &apos;{0}&apos; is an invalid escapable character within a JSON string. The string should be correctly escaped. 的本地化字符串。
+        /// </summary>
+        internal static string InvalidCharacterAfterEscapeWithinString {
+            get {
+                return ResourceManager.GetString("InvalidCharacterAfterEscapeWithinString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &apos;{0}&apos; is invalid after &apos;/&apos; at the beginning of the comment. Expected either &apos;/&apos; or &apos;*&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string InvalidCharacterAtStartOfComment {
+            get {
+                return ResourceManager.GetString("InvalidCharacterAtStartOfComment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &apos;{0}&apos; is invalid within a JSON string. The string should be correctly escaped. 的本地化字符串。
+        /// </summary>
+        internal static string InvalidCharacterWithinString {
+            get {
+                return ResourceManager.GetString("InvalidCharacterWithinString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Cannot compare the value of a token type &apos;{0}&apos; to text. 的本地化字符串。
+        /// </summary>
+        internal static string InvalidComparison {
+            get {
+                return ResourceManager.GetString("InvalidComparison", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &apos;{0}&apos; is an invalid token type for the end of the JSON payload. Expected either &apos;EndArray&apos; or &apos;EndObject&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string InvalidEndOfJsonNonPrimitive {
+            get {
+                return ResourceManager.GetString("InvalidEndOfJsonNonPrimitive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &apos;{0}&apos; is not a hex digit following &apos;\u&apos; within a JSON string. The string should be correctly escaped. 的本地化字符串。
+        /// </summary>
+        internal static string InvalidHexCharacterWithinString {
+            get {
+                return ResourceManager.GetString("InvalidHexCharacterWithinString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Comments cannot be stored in a JsonDocument, only the Skip and Disallow comment handling modes are supported. 的本地化字符串。
+        /// </summary>
+        internal static string JsonDocumentDoesNotSupportComments {
+            get {
+                return ResourceManager.GetString("JsonDocumentDoesNotSupportComments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The requested operation requires an element of type &apos;{0}&apos;, but the target element has type &apos;{1}&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string JsonElementHasWrongType {
+            get {
+                return ResourceManager.GetString("JsonElementHasWrongType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Comments cannot be stored when deserializing objects, only the Skip and Disallow comment handling modes are supported. 的本地化字符串。
+        /// </summary>
+        internal static string JsonSerializerDoesNotSupportComments {
+            get {
+                return ResourceManager.GetString("JsonSerializerDoesNotSupportComments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Max depth must be positive. 的本地化字符串。
+        /// </summary>
+        internal static string MaxDepthMustBePositive {
+            get {
+                return ResourceManager.GetString("MaxDepthMustBePositive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &apos;{0}&apos; is invalid without a matching open. 的本地化字符串。
+        /// </summary>
+        internal static string MismatchedObjectArray {
+            get {
+                return ResourceManager.GetString("MismatchedObjectArray", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 There is not enough data to read through the entire JSON array or object. 的本地化字符串。
+        /// </summary>
+        internal static string NotEnoughData {
+            get {
+                return ResourceManager.GetString("NotEnoughData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The maximum configured depth of {0} has been exceeded. Cannot read next JSON object. 的本地化字符串。
+        /// </summary>
+        internal static string ObjectDepthTooLarge {
+            get {
+                return ResourceManager.GetString("ObjectDepthTooLarge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The JSON property name of length {0} is too large and not supported. 的本地化字符串。
+        /// </summary>
+        internal static string PropertyNameTooLarge {
+            get {
+                return ResourceManager.GetString("PropertyNameTooLarge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &apos;{0}&apos; is invalid within a number, immediately after a decimal point (&apos;.&apos;). Expected a digit (&apos;0&apos;-&apos;9&apos;). 的本地化字符串。
+        /// </summary>
+        internal static string RequiredDigitNotFoundAfterDecimal {
+            get {
+                return ResourceManager.GetString("RequiredDigitNotFoundAfterDecimal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &apos;{0}&apos; is invalid within a number, immediately after a sign character (&apos;+&apos; or &apos;-&apos;). Expected a digit (&apos;0&apos;-&apos;9&apos;). 的本地化字符串。
+        /// </summary>
+        internal static string RequiredDigitNotFoundAfterSign {
+            get {
+                return ResourceManager.GetString("RequiredDigitNotFoundAfterSign", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Expected a digit (&apos;0&apos;-&apos;9&apos;), but instead reached end of data. 的本地化字符串。
+        /// </summary>
+        internal static string RequiredDigitNotFoundEndOfData {
+            get {
+                return ResourceManager.GetString("RequiredDigitNotFoundEndOfData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The converter &apos;{0}&apos; is not compatible with the type &apos;{1}&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string SerializationConverterNotCompatible {
+            get {
+                return ResourceManager.GetString("SerializationConverterNotCompatible", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The converter specified on &apos;{0}&apos; does not derive from JsonConverter or have a public parameterless constructor. 的本地化字符串。
+        /// </summary>
+        internal static string SerializationConverterOnAttributeInvalid {
+            get {
+                return ResourceManager.GetString("SerializationConverterOnAttributeInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The converter specified on &apos;{0}&apos; is not compatible with the type &apos;{1}&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string SerializationConverterOnAttributeNotCompatible {
+            get {
+                return ResourceManager.GetString("SerializationConverterOnAttributeNotCompatible", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The converter &apos;{0}&apos; read too much or not enough. 的本地化字符串。
+        /// </summary>
+        internal static string SerializationConverterRead {
+            get {
+                return ResourceManager.GetString("SerializationConverterRead", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The converter &apos;{0}&apos; wrote too much or not enough. 的本地化字符串。
+        /// </summary>
+        internal static string SerializationConverterWrite {
+            get {
+                return ResourceManager.GetString("SerializationConverterWrite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The data extension property &apos;{0}.{1}&apos; does not match the required signature of IDictionary&lt;string, JsonElement&gt; or IDictionary&lt;string, object&gt;. 的本地化字符串。
+        /// </summary>
+        internal static string SerializationDataExtensionPropertyInvalid {
+            get {
+                return ResourceManager.GetString("SerializationDataExtensionPropertyInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The attribute &apos;{0}&apos; cannot exist more than once on &apos;{1}&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string SerializationDuplicateAttribute {
+            get {
+                return ResourceManager.GetString("SerializationDuplicateAttribute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The type &apos;{0}&apos; cannot have more than one property that has the attribute &apos;{1}&apos;. 的本地化字符串。
+        /// </summary>
+        internal static string SerializationDuplicateTypeAttribute {
+            get {
+                return ResourceManager.GetString("SerializationDuplicateTypeAttribute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The value must be greater than zero. 的本地化字符串。
+        /// </summary>
+        internal static string SerializationInvalidBufferSize {
+            get {
+                return ResourceManager.GetString("SerializationInvalidBufferSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The collection type &apos;{0}&apos; on &apos;{1}&apos; is not supported. 的本地化字符串。
+        /// </summary>
+        internal static string SerializationNotSupportedCollection {
+            get {
+                return ResourceManager.GetString("SerializationNotSupportedCollection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The collection type &apos;{0}&apos; is not supported. 的本地化字符串。
+        /// </summary>
+        internal static string SerializationNotSupportedCollectionType {
+            get {
+                return ResourceManager.GetString("SerializationNotSupportedCollectionType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The dictionary key policy &apos;{0}&apos; cannot return a null key. 的本地化字符串。
+        /// </summary>
+        internal static string SerializerDictionaryKeyNull {
+            get {
+                return ResourceManager.GetString("SerializerDictionaryKeyNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Serializer options cannot be changed once serialization or deserialization has occurred. 的本地化字符串。
+        /// </summary>
+        internal static string SerializerOptionsImmutable {
+            get {
+                return ResourceManager.GetString("SerializerOptionsImmutable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The JSON property name for &apos;{0}.{1}&apos; collides with another property. 的本地化字符串。
+        /// </summary>
+        internal static string SerializerPropertyNameConflict {
+            get {
+                return ResourceManager.GetString("SerializerPropertyNameConflict", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The JSON property name for &apos;{0}.{1}&apos; cannot be null. 的本地化字符串。
+        /// </summary>
+        internal static string SerializerPropertyNameNull {
+            get {
+                return ResourceManager.GetString("SerializerPropertyNameNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The object or value could not be serialized. Path: {0}. 的本地化字符串。
+        /// </summary>
+        internal static string SerializeUnableToSerialize {
+            get {
+                return ResourceManager.GetString("SerializeUnableToSerialize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 .NET number values such as positive and negative infinity cannot be written as valid JSON. 的本地化字符串。
+        /// </summary>
+        internal static string SpecialNumberValuesNotSupported {
+            get {
+                return ResourceManager.GetString("SpecialNumberValuesNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Stream is not writable. 的本地化字符串。
+        /// </summary>
+        internal static string StreamNotWritable {
+            get {
+                return ResourceManager.GetString("StreamNotWritable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The JSON array contains a trailing comma at the end which is not supported in this mode. Change the reader options. 的本地化字符串。
+        /// </summary>
+        internal static string TrailingCommaNotAllowedBeforeArrayEnd {
+            get {
+                return ResourceManager.GetString("TrailingCommaNotAllowedBeforeArrayEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The JSON object contains a trailing comma at the end which is not supported in this mode. Change the reader options. 的本地化字符串。
+        /// </summary>
+        internal static string TrailingCommaNotAllowedBeforeObjectEnd {
+            get {
+                return ResourceManager.GetString("TrailingCommaNotAllowedBeforeObjectEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Unexpected end of data while reading a comment. 的本地化字符串。
+        /// </summary>
+        internal static string UnexpectedEndOfDataWhileReadingComment {
+            get {
+                return ResourceManager.GetString("UnexpectedEndOfDataWhileReadingComment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Found invalid line or paragraph separator character while reading a comment. 的本地化字符串。
+        /// </summary>
+        internal static string UnexpectedEndOfLineSeparator {
+            get {
+                return ResourceManager.GetString("UnexpectedEndOfLineSeparator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The JSON value of length {0} is too large and not supported. 的本地化字符串。
+        /// </summary>
+        internal static string ValueTooLarge {
+            get {
+                return ResourceManager.GetString("ValueTooLarge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. 的本地化字符串。
+        /// </summary>
+        internal static string ZeroDepthAtEnd {
+            get {
+                return ResourceManager.GetString("ZeroDepthAtEnd", resourceCulture);
+            }
+        }
     }
 }

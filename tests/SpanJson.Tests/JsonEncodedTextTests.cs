@@ -19,8 +19,8 @@ namespace SpanJson.Tests
         {
             for (int i = 0; i <= 127; i++)
             {
-                JsonEncodedText textBuiltin = JsonEncodedText.Encode(((char)i).ToString(), StringEscapeHandling.EscapeNonAscii);
-                JsonEncodedText textEncoder = JsonEncodedText.Encode(((char)i).ToString(), StringEscapeHandling.EscapeNonAscii, JavaScriptEncoder.Default);
+                JsonEncodedText textBuiltin = JsonEncodedText.Encode(((char)i).ToString(), JsonEscapeHandling.EscapeNonAscii);
+                JsonEncodedText textEncoder = JsonEncodedText.Encode(((char)i).ToString(), JsonEscapeHandling.EscapeNonAscii, JavaScriptEncoder.Default);
 
                 Assert.Equal(textEncoder.ToString(), textBuiltin.ToString(), ignoreCase: true);
             }
@@ -44,11 +44,11 @@ namespace SpanJson.Tests
             Assert.True(text.Equals(defaultText));
             Assert.True(defaultText.Equals(text));
 
-            JsonEncodedText textByteEmpty = JsonEncodedText.Encode(JsonHelpers.Empty<byte>(), StringEscapeHandling.EscapeNonAscii);
+            JsonEncodedText textByteEmpty = JsonEncodedText.Encode(JsonHelpers.Empty<byte>(), JsonEscapeHandling.EscapeNonAscii);
             Assert.True(textByteEmpty.EncodedUtf8Bytes.IsEmpty);
             Assert.Equal("", textByteEmpty.ToString());
 
-            JsonEncodedText textCharEmpty = JsonEncodedText.Encode(JsonHelpers.Empty<char>(), StringEscapeHandling.EscapeNonAscii);
+            JsonEncodedText textCharEmpty = JsonEncodedText.Encode(JsonHelpers.Empty<char>(), JsonEscapeHandling.EscapeNonAscii);
             Assert.True(textCharEmpty.EncodedUtf8Bytes.IsEmpty);
             Assert.Equal("", textCharEmpty.ToString());
 
@@ -60,9 +60,9 @@ namespace SpanJson.Tests
         [MemberData(nameof(JsonEncodedTextStrings))]
         public static void NullEncoder(string message, string expectedMessage)
         {
-            JsonEncodedText text = JsonEncodedText.Encode(message, StringEscapeHandling.EscapeNonAscii, null);
-            JsonEncodedText textSpan = JsonEncodedText.Encode(message.AsSpan(), StringEscapeHandling.EscapeNonAscii, null);
-            JsonEncodedText textUtf8Span = JsonEncodedText.Encode(Encoding.UTF8.GetBytes(message), StringEscapeHandling.EscapeNonAscii, null);
+            JsonEncodedText text = JsonEncodedText.Encode(message, JsonEscapeHandling.EscapeNonAscii, null);
+            JsonEncodedText textSpan = JsonEncodedText.Encode(message.AsSpan(), JsonEscapeHandling.EscapeNonAscii, null);
+            JsonEncodedText textUtf8Span = JsonEncodedText.Encode(Encoding.UTF8.GetBytes(message), JsonEscapeHandling.EscapeNonAscii, null);
 
             Assert.Equal(expectedMessage, text.ToString(), ignoreCase: true);
             Assert.Equal(expectedMessage, textSpan.ToString(), ignoreCase: true);
@@ -118,11 +118,11 @@ namespace SpanJson.Tests
         {
             string message = "message";
 
-            JsonEncodedText text = JsonEncodedText.Encode(message, StringEscapeHandling.EscapeNonAscii);
+            JsonEncodedText text = JsonEncodedText.Encode(message, JsonEscapeHandling.EscapeNonAscii);
             JsonEncodedText textCopy = text;
-            JsonEncodedText textDuplicate = JsonEncodedText.Encode(message, StringEscapeHandling.EscapeNonAscii);
+            JsonEncodedText textDuplicate = JsonEncodedText.Encode(message, JsonEscapeHandling.EscapeNonAscii);
             JsonEncodedText textDuplicateDiffStringRef = JsonEncodedText.Encode(string.Concat("mess", "age"));
-            JsonEncodedText differentText = JsonEncodedText.Encode("message1", StringEscapeHandling.EscapeNonAscii);
+            JsonEncodedText differentText = JsonEncodedText.Encode("message1", JsonEscapeHandling.EscapeNonAscii);
 
             Assert.True(text.Equals(text));
 
@@ -144,11 +144,11 @@ namespace SpanJson.Tests
         {
             string message = "message";
 
-            JsonEncodedText text = JsonEncodedText.Encode(message, StringEscapeHandling.EscapeNonAscii);
+            JsonEncodedText text = JsonEncodedText.Encode(message, JsonEscapeHandling.EscapeNonAscii);
             object textCopy = text;
-            object textDuplicate = JsonEncodedText.Encode(message, StringEscapeHandling.EscapeNonAscii);
-            object textDuplicateDiffStringRef = JsonEncodedText.Encode(string.Concat("mess", "age"), StringEscapeHandling.EscapeNonAscii);
-            object differentText = JsonEncodedText.Encode("message1", StringEscapeHandling.EscapeNonAscii);
+            object textDuplicate = JsonEncodedText.Encode(message, JsonEscapeHandling.EscapeNonAscii);
+            object textDuplicateDiffStringRef = JsonEncodedText.Encode(string.Concat("mess", "age"), JsonEscapeHandling.EscapeNonAscii);
+            object differentText = JsonEncodedText.Encode("message1", JsonEscapeHandling.EscapeNonAscii);
 
             Assert.True(text.Equals(text));
 
@@ -172,11 +172,11 @@ namespace SpanJson.Tests
         {
             string message = "message";
 
-            JsonEncodedText text = JsonEncodedText.Encode(message, StringEscapeHandling.EscapeNonAscii);
+            JsonEncodedText text = JsonEncodedText.Encode(message, JsonEscapeHandling.EscapeNonAscii);
             JsonEncodedText textCopy = text;
-            JsonEncodedText textDuplicate = JsonEncodedText.Encode(message, StringEscapeHandling.EscapeNonAscii);
-            JsonEncodedText textDuplicateDiffStringRef = JsonEncodedText.Encode(string.Concat("mess", "age"), StringEscapeHandling.EscapeNonAscii);
-            JsonEncodedText differentText = JsonEncodedText.Encode("message1", StringEscapeHandling.EscapeNonAscii);
+            JsonEncodedText textDuplicate = JsonEncodedText.Encode(message, JsonEscapeHandling.EscapeNonAscii);
+            JsonEncodedText textDuplicateDiffStringRef = JsonEncodedText.Encode(string.Concat("mess", "age"), JsonEscapeHandling.EscapeNonAscii);
+            JsonEncodedText differentText = JsonEncodedText.Encode("message1", JsonEscapeHandling.EscapeNonAscii);
 
             int expectedHashCode = text.GetHashCode();
 
@@ -191,9 +191,9 @@ namespace SpanJson.Tests
         [MemberData(nameof(JsonEncodedTextStrings))]
         public static void ToStringTest(string message, string expectedMessage)
         {
-            JsonEncodedText text = JsonEncodedText.Encode(message, StringEscapeHandling.EscapeNonAscii);
-            JsonEncodedText textSpan = JsonEncodedText.Encode(message.AsSpan(), StringEscapeHandling.EscapeNonAscii);
-            JsonEncodedText textUtf8Span = JsonEncodedText.Encode(Encoding.UTF8.GetBytes(message), StringEscapeHandling.EscapeNonAscii);
+            JsonEncodedText text = JsonEncodedText.Encode(message, JsonEscapeHandling.EscapeNonAscii);
+            JsonEncodedText textSpan = JsonEncodedText.Encode(message.AsSpan(), JsonEscapeHandling.EscapeNonAscii);
+            JsonEncodedText textUtf8Span = JsonEncodedText.Encode(Encoding.UTF8.GetBytes(message), JsonEscapeHandling.EscapeNonAscii);
 
             Assert.Equal(expectedMessage, text.ToString(), ignoreCase: true);
             Assert.Equal(expectedMessage, textSpan.ToString(), ignoreCase: true);
@@ -215,9 +215,9 @@ namespace SpanJson.Tests
                 var message = new string('a', stringLength);
                 var expectedMessage = new string('a', stringLength);
 
-                JsonEncodedText text = JsonEncodedText.Encode(message, StringEscapeHandling.EscapeNonAscii);
-                JsonEncodedText textSpan = JsonEncodedText.Encode(message.AsSpan(), StringEscapeHandling.EscapeNonAscii);
-                JsonEncodedText textUtf8Span = JsonEncodedText.Encode(Encoding.UTF8.GetBytes(message), StringEscapeHandling.EscapeNonAscii);
+                JsonEncodedText text = JsonEncodedText.Encode(message, JsonEscapeHandling.EscapeNonAscii);
+                JsonEncodedText textSpan = JsonEncodedText.Encode(message.AsSpan(), JsonEscapeHandling.EscapeNonAscii);
+                JsonEncodedText textUtf8Span = JsonEncodedText.Encode(Encoding.UTF8.GetBytes(message), JsonEscapeHandling.EscapeNonAscii);
 
                 Assert.Equal(expectedMessage, text.ToString());
                 Assert.Equal(expectedMessage, textSpan.ToString());
@@ -237,9 +237,9 @@ namespace SpanJson.Tests
                 }
                 string expectedMessage = builder.ToString();
 
-                JsonEncodedText text = JsonEncodedText.Encode(message, StringEscapeHandling.EscapeNonAscii);
-                JsonEncodedText textSpan = JsonEncodedText.Encode(message.AsSpan(), StringEscapeHandling.EscapeNonAscii);
-                JsonEncodedText textUtf8Span = JsonEncodedText.Encode(Encoding.UTF8.GetBytes(message), StringEscapeHandling.EscapeNonAscii);
+                JsonEncodedText text = JsonEncodedText.Encode(message, JsonEscapeHandling.EscapeNonAscii);
+                JsonEncodedText textSpan = JsonEncodedText.Encode(message.AsSpan(), JsonEscapeHandling.EscapeNonAscii);
+                JsonEncodedText textUtf8Span = JsonEncodedText.Encode(Encoding.UTF8.GetBytes(message), JsonEscapeHandling.EscapeNonAscii);
 
                 Assert.Equal(expectedMessage, text.ToString());
                 Assert.Equal(expectedMessage, textSpan.ToString());
@@ -258,9 +258,9 @@ namespace SpanJson.Tests
         {
             byte[] expectedBytes = Encoding.UTF8.GetBytes(expectedMessage);
 
-            JsonEncodedText text = JsonEncodedText.Encode(message, StringEscapeHandling.EscapeNonAscii);
-            JsonEncodedText textSpan = JsonEncodedText.Encode(message.AsSpan(), StringEscapeHandling.EscapeNonAscii);
-            JsonEncodedText textUtf8Span = JsonEncodedText.Encode(Encoding.UTF8.GetBytes(message), StringEscapeHandling.EscapeNonAscii);
+            JsonEncodedText text = JsonEncodedText.Encode(message, JsonEscapeHandling.EscapeNonAscii);
+            JsonEncodedText textSpan = JsonEncodedText.Encode(message.AsSpan(), JsonEscapeHandling.EscapeNonAscii);
+            JsonEncodedText textUtf8Span = JsonEncodedText.Encode(Encoding.UTF8.GetBytes(message), JsonEscapeHandling.EscapeNonAscii);
 
             Assert.True(text.EncodedUtf8Bytes.SequenceEqual(expectedBytes));
             Assert.True(textSpan.EncodedUtf8Bytes.SequenceEqual(expectedBytes));
@@ -282,9 +282,9 @@ namespace SpanJson.Tests
                 var message = new string('a', stringLength);
                 byte[] expectedBytes = Encoding.UTF8.GetBytes(message);
 
-                JsonEncodedText text = JsonEncodedText.Encode(message, StringEscapeHandling.EscapeNonAscii);
-                JsonEncodedText textSpan = JsonEncodedText.Encode(message.AsSpan(), StringEscapeHandling.EscapeNonAscii);
-                JsonEncodedText textUtf8Span = JsonEncodedText.Encode(Encoding.UTF8.GetBytes(message), StringEscapeHandling.EscapeNonAscii);
+                JsonEncodedText text = JsonEncodedText.Encode(message, JsonEscapeHandling.EscapeNonAscii);
+                JsonEncodedText textSpan = JsonEncodedText.Encode(message.AsSpan(), JsonEscapeHandling.EscapeNonAscii);
+                JsonEncodedText textUtf8Span = JsonEncodedText.Encode(Encoding.UTF8.GetBytes(message), JsonEscapeHandling.EscapeNonAscii);
 
                 Assert.True(text.EncodedUtf8Bytes.SequenceEqual(expectedBytes));
                 Assert.True(textSpan.EncodedUtf8Bytes.SequenceEqual(expectedBytes));
@@ -304,9 +304,9 @@ namespace SpanJson.Tests
                 }
                 byte[] expectedBytes = Encoding.UTF8.GetBytes(builder.ToString());
 
-                JsonEncodedText text = JsonEncodedText.Encode(message, StringEscapeHandling.EscapeNonAscii);
-                JsonEncodedText textSpan = JsonEncodedText.Encode(message.AsSpan(), StringEscapeHandling.EscapeNonAscii);
-                JsonEncodedText textUtf8Span = JsonEncodedText.Encode(Encoding.UTF8.GetBytes(message), StringEscapeHandling.EscapeNonAscii);
+                JsonEncodedText text = JsonEncodedText.Encode(message, JsonEscapeHandling.EscapeNonAscii);
+                JsonEncodedText textSpan = JsonEncodedText.Encode(message.AsSpan(), JsonEscapeHandling.EscapeNonAscii);
+                JsonEncodedText textUtf8Span = JsonEncodedText.Encode(Encoding.UTF8.GetBytes(message), JsonEscapeHandling.EscapeNonAscii);
 
                 Assert.True(text.EncodedUtf8Bytes.SequenceEqual(expectedBytes));
                 Assert.True(textSpan.EncodedUtf8Bytes.SequenceEqual(expectedBytes));
@@ -323,32 +323,32 @@ namespace SpanJson.Tests
         public static void InvalidUTF16()
         {
             var invalid = new char[5] { 'a', 'b', 'c', (char)0xDC00, 'a' };
-            Assert.Throws<ArgumentException>(() => JsonEncodedText.Encode(invalid, StringEscapeHandling.EscapeNonAscii));
+            Assert.Throws<ArgumentException>(() => JsonEncodedText.Encode(invalid, JsonEscapeHandling.EscapeNonAscii));
 
             invalid = new char[5] { 'a', 'b', 'c', (char)0xD800, 'a' };
-            Assert.Throws<ArgumentException>(() => JsonEncodedText.Encode(invalid, StringEscapeHandling.EscapeNonAscii));
+            Assert.Throws<ArgumentException>(() => JsonEncodedText.Encode(invalid, JsonEscapeHandling.EscapeNonAscii));
 
             invalid = new char[5] { 'a', 'b', 'c', (char)0xDC00, (char)0xD800 };
-            Assert.Throws<ArgumentException>(() => JsonEncodedText.Encode(invalid, StringEscapeHandling.EscapeNonAscii));
+            Assert.Throws<ArgumentException>(() => JsonEncodedText.Encode(invalid, JsonEscapeHandling.EscapeNonAscii));
 
             var valid = new char[5] { 'a', 'b', 'c', (char)0xD800, (char)0xDC00 };
             JsonEncodedText _ = JsonEncodedText.Encode(valid);
 
-            Assert.Throws<ArgumentException>(() => JsonEncodedText.Encode(new string(valid).Substring(0, 4), StringEscapeHandling.EscapeNonAscii));
+            Assert.Throws<ArgumentException>(() => JsonEncodedText.Encode(new string(valid).Substring(0, 4), JsonEscapeHandling.EscapeNonAscii));
         }
 
         [Theory]
         [MemberData(nameof(UTF8ReplacementCharacterStrings))]
         public static void ReplacementCharacterUTF8(byte[] dataUtf8, string expected)
         {
-            JsonEncodedText text = JsonEncodedText.Encode(dataUtf8, StringEscapeHandling.EscapeNonAscii);
+            JsonEncodedText text = JsonEncodedText.Encode(dataUtf8, JsonEscapeHandling.EscapeNonAscii);
             Assert.Equal(expected, text.ToString());
         }
 
         [Fact]
         public static void InvalidEncode()
         {
-            Assert.Throws<ArgumentNullException>(() => JsonEncodedText.Encode((string)null, StringEscapeHandling.EscapeNonAscii));
+            Assert.Throws<ArgumentNullException>(() => JsonEncodedText.Encode((string)null, JsonEscapeHandling.EscapeNonAscii));
         }
 
         //[ConditionalFact(typeof(Environment), nameof(Environment.Is64BitProcess))]
@@ -467,16 +467,16 @@ namespace SpanJson.Tests
             const string expected = "a\\u002B";
             JsonEncodedText text;
 
-            text = JsonEncodedText.Encode(message, StringEscapeHandling.EscapeNonAscii);
+            text = JsonEncodedText.Encode(message, JsonEscapeHandling.EscapeNonAscii);
             Assert.Equal(expected, text.ToString(), ignoreCase: true);
 
-            text = JsonEncodedText.Encode(message, StringEscapeHandling.EscapeNonAscii, null);
+            text = JsonEncodedText.Encode(message, JsonEscapeHandling.EscapeNonAscii, null);
             Assert.Equal(expected, text.ToString(), ignoreCase: true);
 
-            text = JsonEncodedText.Encode(message, StringEscapeHandling.EscapeNonAscii, JavaScriptEncoder.Default);
+            text = JsonEncodedText.Encode(message, JsonEscapeHandling.EscapeNonAscii, JavaScriptEncoder.Default);
             Assert.Equal(expected, text.ToString(), ignoreCase: true);
 
-            text = JsonEncodedText.Encode(message, StringEscapeHandling.EscapeNonAscii, new CustomEncoderAllowingPlusSign());
+            text = JsonEncodedText.Encode(message, JsonEscapeHandling.EscapeNonAscii, new CustomEncoderAllowingPlusSign());
             Assert.Equal("a+", text.ToString(), ignoreCase: true);
         }
     }

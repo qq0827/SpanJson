@@ -159,7 +159,7 @@ namespace SpanJson.Internal.DoubleConversion
         static readonly byte[] infinity_symbol_ = TextEncodings.UTF8NoBOM.GetBytes(double.PositiveInfinity.ToString());
         static readonly byte[] nan_symbol_ = TextEncodings.UTF8NoBOM.GetBytes(double.NaN.ToString());
 
-        static readonly byte[] kWhitespaceTable7 = new byte[] { 32, 13, 10, 9, 11, 12 };
+        static ReadOnlySpan<byte> kWhitespaceTable7 => new byte[] { 32, 13, 10, 9, 11, 12 };
         static readonly int kWhitespaceTable7Length = kWhitespaceTable7.Length;
 
         static readonly UInt16[] kWhitespaceTable16 = new UInt16[]{
