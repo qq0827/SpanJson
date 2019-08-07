@@ -403,7 +403,7 @@
             /// <returns>A <see cref="OperationStatus"/> value representing the expected state of the conversion.</returns>
             public static OperationStatus ToUtf16Length(in ReadOnlySpan<byte> utf8Bytes, out int bytesNeeded)
             {
-                if (Utf8Util.GetIndexOfFirstInvalidUtf8Sequence(utf8Bytes, out int scalarCount, out int surrogatePairCount) < 0)
+                if ((uint)Utf8Util.GetIndexOfFirstInvalidUtf8Sequence(utf8Bytes, out int scalarCount, out int surrogatePairCount) > JsonSharedConstant.TooBigOrNegative)
                 {
                     // Well-formed UTF-8 string.
 

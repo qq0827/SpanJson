@@ -32,7 +32,7 @@ namespace SpanJson.Document
 
             /// <inheritdoc />
             public JsonProperty Current =>
-                _curIdx < 0 ?
+                (uint)_curIdx > JsonSharedConstant.TooBigOrNegative ?
                     default :
                     new JsonProperty(new JsonElement(_target._parent, _curIdx));
 
@@ -85,7 +85,7 @@ namespace SpanJson.Document
                     return false;
                 }
 
-                if (_curIdx < 0)
+                if ((uint)_curIdx > JsonSharedConstant.TooBigOrNegative)
                 {
                     _curIdx = _target._idx + JsonDocument.DbRow.Size;
                 }

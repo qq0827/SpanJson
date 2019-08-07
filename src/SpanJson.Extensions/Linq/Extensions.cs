@@ -33,19 +33,6 @@ namespace SpanJson.Linq
     /// <summary>Contains the LINQ to JSON extension methods.</summary>
     public static class Extensions
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool IsString(this JTokenType tokenType)
-        {
-            switch (tokenType)
-            {
-                case JTokenType.Dynamic:
-                case JTokenType.String:
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
         /// <summary>Returns a collection of tokens that contains the ancestors of every token in the source collection.</summary>
         /// <typeparam name="T">The type of the objects in source, constrained to <see cref="JToken"/>.</typeparam>
         /// <param name="source">An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the source collection.</param>
@@ -304,6 +291,58 @@ namespace SpanJson.Linq
                 default:
                     return new JEnumerable<T>(source);
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static bool IsString(this JTokenType tokenType)
+        {
+            switch (tokenType)
+            {
+                case JTokenType.Dynamic:
+                case JTokenType.String:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static bool IsEqual(this int result)
+        {
+            return 0u >= (uint)result ? true : false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static bool IsNotEqual(this int result)
+        {
+            return 0u >= (uint)result ? false : true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static bool IsLessThan(this int result)
+        {
+            return (uint)result > JsonSharedConstant.TooBigOrNegative ? true : false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static bool IsLessThanOrEqual(this int result)
+        {
+            uint uresult = (uint)result;
+            return uresult > JsonSharedConstant.TooBigOrNegative || 0u >= uresult ? true : false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static bool IsGreaterThan(this int result)
+        {
+            uint uresult = (uint)result;
+            return uresult > JsonSharedConstant.TooBigOrNegative || 0u >= uresult ? false : true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static bool IsGreaterThanOrEqual(this int result)
+        {
+            uint uresult = (uint)result;
+            return uresult > JsonSharedConstant.TooBigOrNegative ? false : true;
         }
     }
 }

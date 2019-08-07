@@ -12,7 +12,7 @@ namespace SpanJson.Linq.JsonPath
 
             if (t is JArray a)
             {
-                if (a.Count <= index)
+                if ((uint)a.Count <= (uint)index)
                 {
                     if (errorWhenNoMatch)
                     {

@@ -95,29 +95,20 @@ namespace SpanJson.Linq
 
             public void Insert(int index, JToken item)
             {
-                if (index == 0)
-                {
-                    _token = item;
-                }
+                if (0u >= (uint)index) { _token = item; }
             }
 
             public void RemoveAt(int index)
             {
-                if (index == 0)
-                {
-                    _token = null;
-                }
+                if (0u >= (uint)index) { _token = null; }
             }
 
             public JToken this[int index]
             {
-                get => (index == 0) ? _token : null;
+                get => (0u >= (uint)index) ? _token : null;
                 set
                 {
-                    if (index == 0)
-                    {
-                        _token = value;
-                    }
+                    if (0u >= (uint)index) { _token = value; }
                 }
             }
         }

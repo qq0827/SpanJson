@@ -204,9 +204,9 @@ namespace SpanJson
 
         public void Advance(int count)
         {
-            if (count < 0) { ThrowHelper.ThrowArgumentOutOfRangeException_Nonnegative(ExceptionArgument.count); }
+            if ((uint)count > JsonSharedConstant.TooBigOrNegative) { ThrowHelper.ThrowArgumentOutOfRangeException_Nonnegative(ExceptionArgument.count); }
 
-            if (_pos > _capacity - count) { ThrowHelper.ThrowInvalidOperationException_AdvancedTooFar(_capacity); }
+            if ((uint)_pos > (uint)(_capacity - count)) { ThrowHelper.ThrowInvalidOperationException_AdvancedTooFar(_capacity); }
 
             _pos += count;
         }
@@ -218,7 +218,7 @@ namespace SpanJson
 
             const int MinimumBufferSize = 256;
 
-            //if (sizeHint < 0) ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.sizeHint);
+            //if ((uint)sizeHint > JsonSharedConstant.TooBigOrNegative) ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.sizeHint);
             //if (sizeHint == 0)
             if (unchecked((uint)(sizeHint - 1)) > JsonSharedConstant.TooBigOrNegative)
             {
@@ -227,7 +227,7 @@ namespace SpanJson
 
             int availableSpace = _capacity - alreadyWritten;
 
-            if (sizeHint > availableSpace)
+            if ((uint)sizeHint > (uint)availableSpace)
             {
                 int growBy = Math.Max(sizeHint, _capacity);
 
@@ -309,7 +309,7 @@ namespace SpanJson
 
 
             ref byte output = ref PinnableAddress;
-            if (_currentDepth < 0)
+            if ((uint)_currentDepth > JsonSharedConstant.TooBigOrNegative)
             {
                 Unsafe.AddByteOffset(ref output, (IntPtr)pos++) = JsonUtf8Constant.ListSeparator;
             }
@@ -374,7 +374,7 @@ namespace SpanJson
 
             ref byte output = ref PinnableAddress;
 
-            if (_currentDepth < 0)
+            if ((uint)_currentDepth > JsonSharedConstant.TooBigOrNegative)
             {
                 Unsafe.Add(ref output, pos++) = JsonUtf8Constant.ListSeparator;
             }

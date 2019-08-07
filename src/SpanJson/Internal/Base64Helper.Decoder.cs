@@ -172,9 +172,9 @@ namespace SpanJson.Internal
         public static byte[] FromBase64CharArray(char[] inArray, int offset, int length)
         {
             if (inArray == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.inArray); }
-            if (length < 0) { ThrowHelper.ThrowArgumentOutOfRangeException_Index(ExceptionArgument.length); }
-            if (offset < 0) { ThrowHelper.ThrowArgumentOutOfRangeException_GenericPositive(ExceptionArgument.offset); }
-            if (offset > inArray.Length - length) { ThrowHelper.ThrowArgumentOutOfRangeException_OffsetLength(ExceptionArgument.offset); }
+            if ((uint)length > JsonSharedConstant.TooBigOrNegative) { ThrowHelper.ThrowArgumentOutOfRangeException_Index(ExceptionArgument.length); }
+            if ((uint)offset > JsonSharedConstant.TooBigOrNegative) { ThrowHelper.ThrowArgumentOutOfRangeException_GenericPositive(ExceptionArgument.offset); }
+            if ((uint)offset > (uint)(inArray.Length - length)) { ThrowHelper.ThrowArgumentOutOfRangeException_OffsetLength(ExceptionArgument.offset); }
 
             if (0u >= (uint)inArray.Length)
             {
@@ -348,7 +348,7 @@ namespace SpanJson.Internal
             while (sourceIndex < maxSrcLength)
             {
                 int result = Decode(ref Unsafe.Add(ref srcChars, sourceIndex), ref decodingMap);
-                if (result < 0) { goto InvalidExit; }
+                if ((uint)result > JsonSharedConstant.TooBigOrNegative) { goto InvalidExit; }
                 WriteThreeLowOrderBytes(ref Unsafe.Add(ref destBytes, destIndex), result);
                 destIndex += 3;
                 sourceIndex += 4;
@@ -384,7 +384,7 @@ namespace SpanJson.Internal
                 i0 |= i3;
                 i0 |= i2;
 
-                if (i0 < 0) { goto InvalidExit; }
+                if ((uint)i0 > JsonSharedConstant.TooBigOrNegative) { goto InvalidExit; }
                 if (destIndex > destLength - 3) { goto InvalidExit; }
                 WriteThreeLowOrderBytes(ref Unsafe.Add(ref destBytes, destIndex), i0);
                 destIndex += 3;
@@ -397,7 +397,7 @@ namespace SpanJson.Internal
 
                 i0 |= i2;
 
-                if (i0 < 0) { goto InvalidExit; }
+                if ((uint)i0 > JsonSharedConstant.TooBigOrNegative) { goto InvalidExit; }
                 if (destIndex > destLength - 2) { goto InvalidExit; }
                 Unsafe.Add(ref destBytes, destIndex) = (byte)(i0 >> 16);
                 Unsafe.Add(ref destBytes, destIndex + 1) = (byte)(i0 >> 8);
@@ -405,7 +405,7 @@ namespace SpanJson.Internal
             }
             else
             {
-                if (i0 < 0) { goto InvalidExit; }
+                if ((uint)i0 > JsonSharedConstant.TooBigOrNegative) { goto InvalidExit; }
                 if (destIndex > destLength - 1) { goto InvalidExit; }
                 Unsafe.Add(ref destBytes, destIndex) = (byte)(i0 >> 16);
                 destIndex += 1;

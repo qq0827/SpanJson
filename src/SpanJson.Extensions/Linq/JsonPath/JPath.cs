@@ -267,7 +267,7 @@ namespace SpanJson.Linq.JsonPath
 
                     if (indexes != null)
                     {
-                        if (length == 0)
+                        if (0u >= (uint)length)
                         {
                             ThrowHelper2.ThrowJsonException_Array_index_expected();
                         }
@@ -307,7 +307,7 @@ namespace SpanJson.Linq.JsonPath
                     }
                     else
                     {
-                        if (length == 0)
+                        if (0u >= (uint)length)
                         {
                             ThrowHelper2.ThrowJsonException_Array_index_expected();
                         }
@@ -326,7 +326,7 @@ namespace SpanJson.Linq.JsonPath
                 {
                     int length = (end ?? _currentIndex) - start;
 
-                    if (length == 0)
+                    if (0u >= (uint)length)
                     {
                         ThrowHelper2.ThrowJsonException_Array_index_expected();
                     }
@@ -376,7 +376,7 @@ namespace SpanJson.Linq.JsonPath
                         int index = int.Parse(indexer);
 #endif
 
-                        if (colonCount == 0)
+                        if (0u >= (uint)colonCount)
                         {
                             startIndex = index;
                         }

@@ -26,13 +26,13 @@ namespace SpanJson.Linq.JsonPath
                     int stopIndex = end ?? ((stepCount > 0) ? a.Count : -1);
 
                     // start from the end of the list if start is negative
-                    if (start < 0)
+                    if (start.HasValue && (uint)start.Value > JsonSharedConstant.TooBigOrNegative)
                     {
                         startIndex = a.Count + startIndex;
                     }
 
                     // end from the start of the list if stop is negative
-                    if (end < 0)
+                    if (end.HasValue && (uint)end.Value > JsonSharedConstant.TooBigOrNegative)
                     {
                         stopIndex = a.Count + stopIndex;
                     }

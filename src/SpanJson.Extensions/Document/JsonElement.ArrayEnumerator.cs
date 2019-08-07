@@ -32,7 +32,7 @@ namespace SpanJson.Document
 
             /// <inheritdoc />
             public JsonElement Current =>
-                _curIdx < 0 ? default : new JsonElement(_target._parent, _curIdx);
+                (uint)_curIdx > JsonSharedConstant.TooBigOrNegative ? default : new JsonElement(_target._parent, _curIdx);
 
             /// <summary>
             ///   Returns an enumerator that iterates through a collection.
@@ -77,7 +77,7 @@ namespace SpanJson.Document
                     return false;
                 }
 
-                if (_curIdx < 0)
+                if ((uint)_curIdx > JsonSharedConstant.TooBigOrNegative)
                 {
                     _curIdx = _target._idx + JsonDocument.DbRow.Size;
                 }

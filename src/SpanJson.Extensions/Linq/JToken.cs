@@ -352,7 +352,7 @@ namespace SpanJson.Linq
                 else
                 {
                     int index = 0;
-                    while (index < annotations.Length && annotations[index] != null)
+                    while ((uint)index < (uint)annotations.Length && annotations[index] != null)
                     {
                         index++;
                     }
@@ -523,7 +523,7 @@ namespace SpanJson.Linq
                 {
                     int index = 0;
                     int keepCount = 0;
-                    while (index < annotations.Length)
+                    while ((uint)index < (uint)annotations.Length)
                     {
                         object obj2 = annotations[index];
                         if (obj2 == null)
@@ -573,7 +573,7 @@ namespace SpanJson.Linq
                 {
                     int index = 0;
                     int keepCount = 0;
-                    while (index < annotations.Length)
+                    while ((uint)index < (uint)annotations.Length)
                     {
                         object o = annotations[index];
                         if (o == null)

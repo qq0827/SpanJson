@@ -162,7 +162,7 @@
 
         public void Advance(int count)
         {
-            if (count < 0) { ThrowHelper.ThrowArgumentOutOfRangeException_Nonnegative(ExceptionArgument.count); }
+            if ((uint)count > JsonSharedConstant.TooBigOrNegative) { ThrowHelper.ThrowArgumentOutOfRangeException_Nonnegative(ExceptionArgument.count); }
 
             if (_pos > _capacity - count) { ThrowHelper.ThrowInvalidOperationException_AdvancedTooFar(_capacity); }
 
@@ -176,7 +176,7 @@
 
             const int MinimumBufferSize = 256;
 
-            //if (sizeHint < 0) ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.sizeHint);
+            //if ((uint)sizeHint > JsonSharedConstant.TooBigOrNegative) ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.sizeHint);
             //if (sizeHint == 0)
             if (unchecked((uint)(sizeHint - 1)) > JsonSharedConstant.TooBigOrNegative)
             {
@@ -185,7 +185,7 @@
 
             int availableSpace = _capacity - alreadyWritten;
 
-            if (sizeHint > availableSpace)
+            if ((uint)sizeHint > (uint)availableSpace)
             {
                 int growBy = Math.Max(sizeHint, _capacity);
 

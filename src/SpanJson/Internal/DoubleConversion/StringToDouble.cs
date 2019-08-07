@@ -256,7 +256,7 @@ namespace SpanJson.Internal.DoubleConversion
                 // two numbers.
                 // This is possible because IEEE guarantees that floating-point operations
                 // return the best possible approximation.
-                if (exponent < 0 && -exponent < kExactPowersOfTenSize)
+                if ((uint)exponent > JsonSharedConstant.TooBigOrNegative && -exponent < kExactPowersOfTenSize)
                 {
                     // 10^-exponent fits into a double.
                     result = unchecked((double)(ReadUint64(trimmed, out read_digits)));

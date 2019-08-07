@@ -148,7 +148,7 @@ namespace SpanJson.Linq.JsonPath
                         break;
 
                     case QueryOperator.LessThan:
-                        if (leftValue.CompareTo(rightValue) < 0) { return true; }
+                        if ((uint)leftValue.CompareTo(rightValue) > JsonSharedConstant.TooBigOrNegative) { return true; }
                         break;
 
                     case QueryOperator.LessThanOrEquals:
@@ -206,7 +206,7 @@ namespace SpanJson.Linq.JsonPath
                 // 如果是纯字符串转换失败，屏蔽
                 //case JTokenType.Dynamic when queryValueType == JTokenType.Integer:
                 //case JTokenType.Dynamic when queryValueType == JTokenType.Float:
-                    return JValue.Compare(valueType, value.Value, queryValue.Value) == 0;
+                    return JValue.Compare(valueType, value.Value, queryValue.Value).IsEqual();
             }
 
             if (!queryValueType.IsString()) { return false; }
@@ -272,7 +272,7 @@ namespace SpanJson.Linq.JsonPath
                 // 如果是纯字符串转换失败，屏蔽
                 //case JTokenType.Dynamic when queryValueType == JTokenType.Integer:
                 //case JTokenType.Dynamic when queryValueType == JTokenType.Float:
-                    return JValue.Compare(valueType, value.Value, queryValue.Value) == 0;
+                    return JValue.Compare(valueType, value.Value, queryValue.Value).IsEqual();
             }
 
             if (valueType.IsString() && queryValueType.IsString())

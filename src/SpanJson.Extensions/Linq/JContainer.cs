@@ -244,7 +244,7 @@ namespace SpanJson.Linq
 
             item = EnsureParentToken(item, skipParentCheck);
 
-            JToken previous = (index == 0) ? null : children[index - 1];
+            JToken previous = (0u >= (uint)index) ? null : children[index - 1];
             // haven't inserted new token yet so next token is still at the inserting index
             JToken next = (index == children.Count) ? null : children[index];
 
@@ -280,8 +280,9 @@ namespace SpanJson.Linq
         {
             IList<JToken> children = ChildrenTokens;
 
-            if (index < 0) { ThrowHelper2.ThrowArgumentOutOfRangeException_Index(); }
-            if (index >= children.Count)
+            var uidx = (uint)index;
+            if (uidx > JsonSharedConstant.TooBigOrNegative) { ThrowHelper2.ThrowArgumentOutOfRangeException_Index(); }
+            if (uidx >= (uint)children.Count)
             {
                 ThrowHelper2.ThrowArgumentOutOfRangeException_Index_is_equal_to_or_greater_than_Count();
             }
@@ -289,7 +290,7 @@ namespace SpanJson.Linq
             CheckReentrancy();
 
             JToken item = children[index];
-            JToken previous = (index == 0) ? null : children[index - 1];
+            JToken previous = (0u >= (uint)index) ? null : children[index - 1];
             JToken next = (index == children.Count - 1) ? null : children[index + 1];
 
             if (previous != null)
@@ -357,7 +358,7 @@ namespace SpanJson.Linq
 
             ValidateToken(item, existing);
 
-            JToken previous = (index == 0) ? null : children[index - 1];
+            JToken previous = (0u >= (uint)index) ? null : children[index - 1];
             JToken next = (index == children.Count - 1) ? null : children[index + 1];
 
             item.Parent = this;
@@ -434,8 +435,8 @@ namespace SpanJson.Linq
         internal virtual void CopyItemsTo(Array array, int arrayIndex)
         {
             if (array == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.array); }
-            if (arrayIndex < 0) { ThrowHelper2.ThrowArgumentOutOfRangeException_ArrayIndex(); }
-            if (arrayIndex >= array.Length && arrayIndex != 0) { ThrowHelper2.ThrowArgumentException_ArrayIndex(); }
+            if ((uint)arrayIndex > JsonSharedConstant.TooBigOrNegative) { ThrowHelper2.ThrowArgumentOutOfRangeException_ArrayIndex(); }
+            if ((uint)arrayIndex >= (uint)array.Length && arrayIndex != 0) { ThrowHelper2.ThrowArgumentException_ArrayIndex(); }
             if ((uint)Count > (uint)(array.Length - arrayIndex)) { ThrowHelper2.ThrowArgumentException_The_number_of_elements(); }
 
             int index = 0;

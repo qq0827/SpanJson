@@ -243,7 +243,7 @@ namespace SpanJson
 
             ref byte output = ref PinnableAddress;
 
-            if (_currentDepth < 0)
+            if ((uint)_currentDepth > JsonSharedConstant.TooBigOrNegative)
             {
                 Unsafe.Add(ref output, pos++) = JsonUtf8Constant.ListSeparator;
             }
@@ -276,7 +276,7 @@ namespace SpanJson
 
             ref byte output = ref PinnableAddress;
 
-            if (_currentDepth < 0)
+            if ((uint)_currentDepth > JsonSharedConstant.TooBigOrNegative)
             {
                 Unsafe.Add(ref output, pos++) = JsonUtf8Constant.ListSeparator;
             }
@@ -313,7 +313,7 @@ namespace SpanJson
 
             ref byte output = ref PinnableAddress;
 
-            if (_currentDepth < 0)
+            if ((uint)_currentDepth > JsonSharedConstant.TooBigOrNegative)
             {
                 Unsafe.Add(ref output, pos++) = JsonUtf8Constant.ListSeparator;
             }
@@ -360,7 +360,7 @@ namespace SpanJson
 
             ref byte output = ref PinnableAddress;
 
-            if (_currentDepth < 0)
+            if ((uint)_currentDepth > JsonSharedConstant.TooBigOrNegative)
             {
                 Unsafe.Add(ref output, pos++) = JsonUtf8Constant.ListSeparator;
             }

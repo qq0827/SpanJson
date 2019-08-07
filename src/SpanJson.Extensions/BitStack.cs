@@ -78,7 +78,7 @@ namespace SpanJson
 
             // Grow the array when setting a bit if it isn't big enough
             // This way the caller doesn't have to check.
-            if (elementIndex >= _array.Length)
+            if ((uint)elementIndex >= (uint)_array.Length)
             {
                 // This multiplication can overflow, so cast to uint first.
                 Debug.Assert(index >= 0 && index > (int)((uint)_array.Length * 32 - 1), $"Only grow when necessary - index: {index}, arrayLength: {_array.Length}");

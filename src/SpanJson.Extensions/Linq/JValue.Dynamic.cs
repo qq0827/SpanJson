@@ -227,27 +227,27 @@ namespace SpanJson.Linq
                 switch (binder.Operation)
                 {
                     case ExpressionType.Equal:
-                        result = (Compare(instance.Type, instance.Value, compareValue) == 0);
+                        result = Compare(instance.Type, instance.Value, compareValue).IsEqual();
                         return true;
 
                     case ExpressionType.NotEqual:
-                        result = (Compare(instance.Type, instance.Value, compareValue) != 0);
+                        result = Compare(instance.Type, instance.Value, compareValue).IsNotEqual();
                         return true;
 
                     case ExpressionType.GreaterThan:
-                        result = (Compare(instance.Type, instance.Value, compareValue) > 0);
+                        result = Compare(instance.Type, instance.Value, compareValue).IsGreaterThan();
                         return true;
 
                     case ExpressionType.GreaterThanOrEqual:
-                        result = (Compare(instance.Type, instance.Value, compareValue) >= 0);
+                        result = Compare(instance.Type, instance.Value, compareValue).IsGreaterThanOrEqual();
                         return true;
 
                     case ExpressionType.LessThan:
-                        result = (Compare(instance.Type, instance.Value, compareValue) < 0);
+                        result = Compare(instance.Type, instance.Value, compareValue).IsLessThan();
                         return true;
 
                     case ExpressionType.LessThanOrEqual:
-                        result = (Compare(instance.Type, instance.Value, compareValue) <= 0);
+                        result = Compare(instance.Type, instance.Value, compareValue).IsLessThanOrEqual();
                         return true;
 
                     case ExpressionType.Add:

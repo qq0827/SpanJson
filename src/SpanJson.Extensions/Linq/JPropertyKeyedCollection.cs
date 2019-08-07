@@ -216,35 +216,20 @@ namespace SpanJson.Linq
 
         public bool Compare(JPropertyKeyedCollection other)
         {
-            if (this == other)
-            {
-                return true;
-            }
+            if (this == other) { return true; }
 
             // dictionaries in JavaScript aren't ordered
             // ignore order when comparing properties
             Dictionary<string, JToken> d1 = _dictionary;
             Dictionary<string, JToken> d2 = other._dictionary;
 
-            if (d1 == null && d2 == null)
-            {
-                return true;
-            }
+            if (d1 == null && d2 == null) { return true; }
 
-            if (d1 == null)
-            {
-                return (d2.Count == 0);
-            }
+            if (d1 == null) { return (0u >= (uint)d2.Count); }
 
-            if (d2 == null)
-            {
-                return (d1.Count == 0);
-            }
+            if (d2 == null) { return (0u >= (uint)d1.Count); }
 
-            if (d1.Count != d2.Count)
-            {
-                return false;
-            }
+            if (d1.Count != d2.Count) { return false; }
 
             foreach (KeyValuePair<string, JToken> keyAndProperty in d1)
             {

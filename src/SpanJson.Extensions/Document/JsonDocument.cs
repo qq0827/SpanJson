@@ -375,7 +375,7 @@ namespace SpanJson.Document
             ReadOnlySpan<byte> data = _utf8Json.Span;
             ReadOnlySpan<byte> segment = data.Slice(row.Location, row.SizeOrLength);
 
-            if (otherUtf8Text.Length > segment.Length)
+            if ((uint)otherUtf8Text.Length > (uint)segment.Length)
             {
                 return false;
             }

@@ -280,7 +280,7 @@ namespace SpanJson.Utilities
             if (fraction != 0)
             {
                 int digits = 7;
-                while ((fraction % 10) == 0)
+                while (0u >= (uint)(fraction % 10))
                 {
                     digits--;
                     fraction /= 10;

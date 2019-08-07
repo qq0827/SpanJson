@@ -225,7 +225,7 @@ namespace SpanJson
             _tokenType = state._tokenType;
             _previousTokenType = state._previousTokenType;
             _readerOptions = state._readerOptions;
-            if (_readerOptions.MaxDepth == 0)
+            if (0u >= (uint)_readerOptions.MaxDepth)
             {
                 _readerOptions.MaxDepth = JsonReaderOptions.DefaultMaxDepth;  // If max depth is not set, revert to the default depth.
             }
@@ -1157,7 +1157,7 @@ namespace SpanJson
 
             for (int i = 1; i < literal.Length; i++)
             {
-                if (span.Length > i)
+                if ((uint)span.Length > (uint)i)
                 {
                     if (span[i] != literal[i])
                     {
@@ -1214,7 +1214,7 @@ namespace SpanJson
             _consumed += consumed;
             _bytePositionInLine += consumed;
 
-            if (_consumed >= (uint)_buffer.Length)
+            if ((uint)_consumed >= (uint)_buffer.Length)
             {
                 Debug.Assert(IsLastSpan);
 
@@ -1231,7 +1231,7 @@ namespace SpanJson
                 ((_consumed < _buffer.Length) &&
                 !_isNotPrimitive &&
                 JsonUtf8Constant.Delimiters.IndexOf(_buffer[_consumed]) >= 0)
-                || (_isNotPrimitive ^ (_consumed >= (uint)_buffer.Length)));
+                || (_isNotPrimitive ^ (_consumed >= _buffer.Length)));
 
             return true;
         }
@@ -1565,7 +1565,7 @@ namespace SpanJson
             if (nextByte == '-')
             {
                 i++;
-                if (i >= data.Length)
+                if ((uint)i >= (uint)data.Length)
                 {
                     if (IsLastSpan)
                     {
@@ -1590,7 +1590,7 @@ namespace SpanJson
             Debug.Assert(data[i] == (byte)'0');
             i++;
             byte nextByte = default;
-            if (i < data.Length)
+            if ((uint)i < (uint)data.Length)
             {
                 nextByte = data[i];
                 if (JsonUtf8Constant.Delimiters.IndexOf(nextByte) >= 0)
@@ -1633,7 +1633,7 @@ namespace SpanJson
                     break;
                 }
             }
-            if (i >= data.Length)
+            if ((uint)i >= (uint)data.Length)
             {
                 if (IsLastSpan)
                 {
@@ -1657,7 +1657,7 @@ namespace SpanJson
 
         private ConsumeNumberResult ConsumeDecimalDigits(ref ReadOnlySpan<byte> data, ref int i)
         {
-            if (i >= data.Length)
+            if ((uint)i >= (uint)data.Length)
             {
                 if (IsLastSpan)
                 {
@@ -1679,7 +1679,7 @@ namespace SpanJson
 
         private ConsumeNumberResult ConsumeSign(ref ReadOnlySpan<byte> data, ref int i)
         {
-            if (i >= data.Length)
+            if ((uint)i >= (uint)data.Length)
             {
                 if (IsLastSpan)
                 {
@@ -1693,7 +1693,7 @@ namespace SpanJson
             if (nextByte == '+' || nextByte == '-')
             {
                 i++;
-                if (i >= data.Length)
+                if ((uint)i >= (uint)data.Length)
                 {
                     if (IsLastSpan)
                     {
@@ -1774,7 +1774,7 @@ namespace SpanJson
                     _consumed++;
                     _bytePositionInLine++;
 
-                    if (_consumed >= (uint)_buffer.Length)
+                    if ((uint)_consumed >= (uint)_buffer.Length)
                     {
                         if (IsLastSpan)
                         {
@@ -1886,7 +1886,7 @@ namespace SpanJson
                 first = _buffer[_consumed];
             }
 
-            if (_bitStack.CurrentDepth == 0 && _tokenType != JsonTokenType.None)
+            if (0u >= (uint)_bitStack.CurrentDepth && _tokenType != JsonTokenType.None)
             {
                 SysJsonThrowHelper.ThrowJsonReaderException(ref this, ExceptionResource.ExpectedEndAfterSingleJson, first);
             }
@@ -1907,7 +1907,7 @@ namespace SpanJson
                     _consumed++;
                     _bytePositionInLine++;
 
-                    if (_consumed >= (uint)_buffer.Length)
+                    if ((uint)_consumed >= (uint)_buffer.Length)
                     {
                         if (IsLastSpan)
                         {
@@ -2218,7 +2218,7 @@ namespace SpanJson
                     _consumed++;
                     _bytePositionInLine++;
 
-                    if (_consumed >= (uint)_buffer.Length)
+                    if ((uint)_consumed >= (uint)_buffer.Length)
                     {
                         if (IsLastSpan)
                         {
@@ -2347,7 +2347,7 @@ namespace SpanJson
                 // If we are here, we have definintely found a \r. So now to check if \n follows.
                 Debug.Assert(localBuffer[idx] == JsonUtf8Constant.CarriageReturn);
 
-                if (idx < localBuffer.Length - 1)
+                if ((uint)idx < (uint)(localBuffer.Length - 1))
                 {
                     if (localBuffer[idx + 1] == JsonUtf8Constant.LineFeed)
                     {
@@ -2425,7 +2425,7 @@ namespace SpanJson
             // UTF-8 representation for them is E2, 80, A8/A9
             // we have already read E2, we need to check for remaining 2 bytes
 
-            if (localBuffer.Length < 2)
+            if ((uint)localBuffer.Length < 2u)
             {
                 return;
             }
@@ -2486,7 +2486,7 @@ namespace SpanJson
             // Create local copy to avoid bounds checks.
             ReadOnlySpan<byte> localBuffer = _buffer.Slice(_consumed + 1);
 
-            if (localBuffer.Length > 0)
+            if ((uint)localBuffer.Length > 0u)
             {
                 byte marker = localBuffer[0];
                 switch (marker)

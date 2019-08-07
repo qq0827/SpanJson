@@ -61,7 +61,7 @@ namespace SpanJson.Document
             readonly get => _maxDepth;
             set
             {
-                if (value < 0)
+                if ((uint)value > JsonSharedConstant.TooBigOrNegative)
                     throw SysJsonThrowHelper.GetArgumentOutOfRangeException_MaxDepthMustBePositive(nameof(value));
 
                 _maxDepth = value;

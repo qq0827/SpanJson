@@ -41,7 +41,7 @@ namespace SpanJson.Linq
 
         private static bool ValuesEquals(JValue v1, JValue v2)
         {
-            return (v1 == v2 || (v1._valueType == v2._valueType && Compare(v1._valueType, v1._value, v2._value) == 0));
+            return (v1 == v2 || (v1._valueType == v2._valueType && Compare(v1._valueType, v1._value, v2._value).IsEqual()));
         }
 
         /// <summary>Determines whether the specified <see cref="Object"/> is equal to the current <see cref="Object"/>.</summary>

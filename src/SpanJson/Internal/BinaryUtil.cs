@@ -85,7 +85,7 @@ namespace SpanJson.Internal
                 }
 
                 var newSize = unchecked((current * 2));
-                if (newSize < 0) // overflow
+                if ((uint)newSize > JsonSharedConstant.TooBigOrNegative) // overflow
                 {
                     num = ArrayMaxSize;
                 }
@@ -104,7 +104,7 @@ namespace SpanJson.Internal
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void FastResize(ref byte[] array, int newSize)
         {
-            if (newSize < 0) ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.newSize);
+            if ((uint)newSize > JsonSharedConstant.TooBigOrNegative) ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.newSize);
 
             byte[] array2 = array;
             if (array2 == null)
@@ -125,7 +125,7 @@ namespace SpanJson.Internal
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte[] FastCloneWithResize(byte[] src, int newSize)
         {
-            if (newSize < 0) ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.newSize);
+            if ((uint)newSize > JsonSharedConstant.TooBigOrNegative) ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.newSize);
             if (src == null) return new byte[newSize];
             if (src.Length < newSize) ThrowHelper.ThrowArgumentException_Length();
 

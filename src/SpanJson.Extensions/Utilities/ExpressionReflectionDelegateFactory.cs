@@ -86,7 +86,7 @@ namespace SpanJson.Utilities
 
             Expression[] argsExpression;
             IList<ByRefParameter> refParameterMap;
-            if (parametersInfo.Length == 0)
+            if (0u >= (uint)parametersInfo.Length)
             {
                 argsExpression = EmptyArray<Expression>.Instance;
                 refParameterMap = EmptyArray<ByRefParameter>.Instance;

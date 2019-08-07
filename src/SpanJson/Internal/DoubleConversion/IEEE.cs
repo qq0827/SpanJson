@@ -89,12 +89,12 @@ namespace SpanJson.Internal.DoubleConversion
         public double NextDouble()
         {
             if (d64_ == kInfinity) return new Double(kInfinity).value();
-            if (Sign() < 0 && Significand() == 0)
+            if ((uint)Sign() > JsonSharedConstant.TooBigOrNegative && Significand() == 0)
             {
                 // -0.0
                 return 0.0;
             }
-            if (Sign() < 0)
+            if ((uint)Sign() > JsonSharedConstant.TooBigOrNegative)
             {
                 return new Double(d64_ - 1).value();
             }
@@ -107,13 +107,13 @@ namespace SpanJson.Internal.DoubleConversion
         public double PreviousDouble()
         {
             if (d64_ == (kInfinity | kSignMask)) return -Infinity();
-            if (Sign() < 0)
+            if ((uint)Sign() > JsonSharedConstant.TooBigOrNegative)
             {
                 return new Double(d64_ + 1).value();
             }
             else
             {
-                if (Significand() == 0) return -0.0;
+                if (Significand() == 0ul) return -0.0;
                 return new Double(d64_ - 1).value();
             }
         }

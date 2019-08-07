@@ -292,7 +292,7 @@ namespace SpanJson.Linq
                             }
 
                             JToken[] result;
-                            if (count == 0)
+                            if (0u >= (uint)count)
                             {
                                 result = JsonHelpers.Empty<JToken>();
                             }

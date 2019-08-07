@@ -123,9 +123,9 @@ namespace SpanJson.Linq
         void ICollection<KeyValuePair<string, JToken>>.CopyTo(KeyValuePair<string, JToken>[] array, int arrayIndex)
         {
             if (array == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.array); }
-            if (arrayIndex < 0) { ThrowHelper2.ThrowArgumentOutOfRangeException_ArrayIndex(); }
-            if (arrayIndex >= array.Length && arrayIndex != 0) { ThrowHelper2.ThrowArgumentException_ArrayIndex(); }
-            if (Count > array.Length - arrayIndex) { ThrowHelper2.ThrowArgumentException_The_number_of_elements(); }
+            if ((uint)arrayIndex > JsonSharedConstant.TooBigOrNegative) { ThrowHelper2.ThrowArgumentOutOfRangeException_ArrayIndex(); }
+            if ((uint)arrayIndex >= (uint)array.Length && arrayIndex != 0) { ThrowHelper2.ThrowArgumentException_ArrayIndex(); }
+            if ((uint)Count > (uint)(array.Length - arrayIndex)) { ThrowHelper2.ThrowArgumentException_The_number_of_elements(); }
 
             int index = 0;
             foreach (JProperty property in _properties)
