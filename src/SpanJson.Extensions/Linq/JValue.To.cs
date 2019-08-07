@@ -34,9 +34,9 @@ namespace SpanJson.Linq
                     return JsonSerializer.Generic.Utf8.Deserialize<T, TUtf8Resolver>(utf8String.Symbols);
 
                 default:
-                    if (typeof(T).IsAssignableFrom(value.GetType()))
+                    if (value is T val)
                     {
-                        return (T)value;
+                        return val;
                     }
                     else
                     {
@@ -105,15 +105,16 @@ namespace SpanJson.Linq
         /// <param name="converters">A collection of <see cref="Newtonsoft.Json.JsonConverter"/> which will be used when writing the token.</param>
         public override void WriteTo(Newtonsoft.Json.JsonWriter writer, IList<Newtonsoft.Json.JsonConverter> converters)
         {
-            if (converters != null && converters.Count > 0 && _value != null)
-            {
-                var matchingConverter = GetMatchingConverter(converters, _value.GetType());
-                if (matchingConverter != null && matchingConverter.CanWrite)
-                {
-                    matchingConverter.WriteJson(writer, _value, Newtonsoft.Json.JsonSerializer.Create(DefaultSettings));
-                    return;
-                }
-            }
+            // 这儿需屏蔽，JValue所能处理的基元类型不能再有 JsonConverter 来处理
+            //if (converters != null && converters.Count > 0 && _value != null)
+            //{
+            //    var matchingConverter = GetMatchingConverter(converters, _value.GetType());
+            //    if (matchingConverter != null && matchingConverter.CanWrite)
+            //    {
+            //        matchingConverter.WriteJson(writer, _value, Newtonsoft.Json.JsonSerializer.Create(DefaultSettings));
+            //        return;
+            //    }
+            //}
 
             switch (_valueType)
             {

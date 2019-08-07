@@ -25,16 +25,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using SpanJson.Utilities;
 
 namespace SpanJson.Linq
 {
-    /// <summary>
-    /// Contains the LINQ to JSON extension methods.
-    /// </summary>
+    /// <summary>Contains the LINQ to JSON extension methods.</summary>
     public static class Extensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -50,9 +46,7 @@ namespace SpanJson.Linq
             }
         }
 
-        /// <summary>
-        /// Returns a collection of tokens that contains the ancestors of every token in the source collection.
-        /// </summary>
+        /// <summary>Returns a collection of tokens that contains the ancestors of every token in the source collection.</summary>
         /// <typeparam name="T">The type of the objects in source, constrained to <see cref="JToken"/>.</typeparam>
         /// <param name="source">An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the source collection.</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the ancestors of every token in the source collection.</returns>
@@ -63,9 +57,8 @@ namespace SpanJson.Linq
             return source.SelectMany(j => j.Ancestors()).AsJEnumerable();
         }
 
-        /// <summary>
-        /// Returns a collection of tokens that contains every token in the source collection, and the ancestors of every token in the source collection.
-        /// </summary>
+        /// <summary>Returns a collection of tokens that contains every token in the source collection,
+        /// and the ancestors of every token in the source collection.</summary>
         /// <typeparam name="T">The type of the objects in source, constrained to <see cref="JToken"/>.</typeparam>
         /// <param name="source">An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the source collection.</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains every token in the source collection, the ancestors of every token in the source collection.</returns>
@@ -76,9 +69,7 @@ namespace SpanJson.Linq
             return source.SelectMany(j => j.AncestorsAndSelf()).AsJEnumerable();
         }
 
-        /// <summary>
-        /// Returns a collection of tokens that contains the descendants of every token in the source collection.
-        /// </summary>
+        /// <summary>Returns a collection of tokens that contains the descendants of every token in the source collection.</summary>
         /// <typeparam name="T">The type of the objects in source, constrained to <see cref="JContainer"/>.</typeparam>
         /// <param name="source">An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the source collection.</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the descendants of every token in the source collection.</returns>
@@ -89,9 +80,8 @@ namespace SpanJson.Linq
             return source.SelectMany(j => j.Descendants()).AsJEnumerable();
         }
 
-        /// <summary>
-        /// Returns a collection of tokens that contains every token in the source collection, and the descendants of every token in the source collection.
-        /// </summary>
+        /// <summary>Returns a collection of tokens that contains every token in the source collection,
+        /// and the descendants of every token in the source collection.</summary>
         /// <typeparam name="T">The type of the objects in source, constrained to <see cref="JContainer"/>.</typeparam>
         /// <param name="source">An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the source collection.</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains every token in the source collection, and the descendants of every token in the source collection.</returns>
@@ -102,9 +92,7 @@ namespace SpanJson.Linq
             return source.SelectMany(j => j.DescendantsAndSelf()).AsJEnumerable();
         }
 
-        /// <summary>
-        /// Returns a collection of child properties of every object in the source collection.
-        /// </summary>
+        /// <summary>Returns a collection of child properties of every object in the source collection.</summary>
         /// <param name="source">An <see cref="IEnumerable{T}"/> of <see cref="JObject"/> that contains the source collection.</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JProperty"/> that contains the properties of every object in the source collection.</returns>
         public static IJEnumerable<JProperty> Properties(this IEnumerable<JObject> source)
@@ -114,9 +102,7 @@ namespace SpanJson.Linq
             return source.SelectMany(d => d.Properties()).AsJEnumerable();
         }
 
-        /// <summary>
-        /// Returns a collection of child values of every object in the source collection with the given key.
-        /// </summary>
+        /// <summary>Returns a collection of child values of every object in the source collection with the given key.</summary>
         /// <param name="source">An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the source collection.</param>
         /// <param name="key">The token key.</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the values of every token in the source collection with the given key.</returns>
@@ -125,9 +111,7 @@ namespace SpanJson.Linq
             return Values<JToken, JToken>(source, key).AsJEnumerable();
         }
 
-        /// <summary>
-        /// Returns a collection of child values of every object in the source collection.
-        /// </summary>
+        /// <summary>Returns a collection of child values of every object in the source collection.</summary>
         /// <param name="source">An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the source collection.</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the values of every token in the source collection.</returns>
         public static IJEnumerable<JToken> Values(this IEnumerable<JToken> source)
@@ -135,9 +119,7 @@ namespace SpanJson.Linq
             return source.Values(null);
         }
 
-        /// <summary>
-        /// Returns a collection of converted child values of every object in the source collection with the given key.
-        /// </summary>
+        /// <summary>Returns a collection of converted child values of every object in the source collection with the given key.</summary>
         /// <typeparam name="U">The type to convert the values to.</typeparam>
         /// <param name="source">An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the source collection.</param>
         /// <param name="key">The token key.</param>
@@ -147,9 +129,7 @@ namespace SpanJson.Linq
             return Values<JToken, U>(source, key);
         }
 
-        /// <summary>
-        /// Returns a collection of converted child values of every object in the source collection.
-        /// </summary>
+        /// <summary>Returns a collection of converted child values of every object in the source collection.</summary>
         /// <typeparam name="U">The type to convert the values to.</typeparam>
         /// <param name="source">An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the source collection.</param>
         /// <returns>An <see cref="IEnumerable{T}"/> that contains the converted values of every token in the source collection.</returns>
@@ -158,9 +138,7 @@ namespace SpanJson.Linq
             return Values<JToken, U>(source, null);
         }
 
-        /// <summary>
-        /// Converts the value.
-        /// </summary>
+        /// <summary>Converts the value.</summary>
         /// <typeparam name="U">The type to convert the value to.</typeparam>
         /// <param name="value">A <see cref="JToken"/> cast as a <see cref="IEnumerable{T}"/> of <see cref="JToken"/>.</param>
         /// <returns>A converted value.</returns>
@@ -169,9 +147,7 @@ namespace SpanJson.Linq
             return value.Value<JToken, U>();
         }
 
-        /// <summary>
-        /// Converts the value.
-        /// </summary>
+        /// <summary>Converts the value.</summary>
         /// <typeparam name="T">The source collection type.</typeparam>
         /// <typeparam name="U">The type to convert the value to.</typeparam>
         /// <param name="value">A <see cref="JToken"/> cast as a <see cref="IEnumerable{T}"/> of <see cref="JToken"/>.</param>
@@ -225,9 +201,7 @@ namespace SpanJson.Linq
         //TODO
         //public static IEnumerable<T> InDocumentOrder<T>(this IEnumerable<T> source) where T : JObject;
 
-        /// <summary>
-        /// Returns a collection of child tokens of every array in the source collection.
-        /// </summary>
+        /// <summary>Returns a collection of child tokens of every array in the source collection.</summary>
         /// <typeparam name="T">The source collection type.</typeparam>
         /// <param name="source">An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the source collection.</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the values of every token in the source collection.</returns>
@@ -236,9 +210,7 @@ namespace SpanJson.Linq
             return Children<T, JToken>(source).AsJEnumerable();
         }
 
-        /// <summary>
-        /// Returns a collection of converted child tokens of every array in the source collection.
-        /// </summary>
+        /// <summary>Returns a collection of converted child tokens of every array in the source collection.</summary>
         /// <param name="source">An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the source collection.</param>
         /// <typeparam name="U">The type to convert the values to.</typeparam>
         /// <typeparam name="T">The source collection type.</typeparam>
@@ -262,10 +234,7 @@ namespace SpanJson.Linq
 
         internal static U Convert<T, U>(this T token) where T : JToken
         {
-            if (token == null)
-            {
-                return default;
-            }
+            if (token == null) { return default; }
 
             if (token is U castValue
                 // don't want to cast JValue to its interfaces, want to get the internal value
@@ -280,34 +249,37 @@ namespace SpanJson.Linq
                     throw ThrowHelper2.GetInvalidCastException<T>(token);
                 }
 
-                if (value.Value is U u)
-                {
-                    return u;
-                }
+                #region ## 苦竹 修改 ##
 
-                Type targetType = typeof(U);
+                // 这儿直接采用 JValue 进行转换，考虑扩展基元类型 JTokenType.Number => U;JTokenType.String => U;JTokenType.Dynamic => U
 
-                if (ReflectionUtils.IsNullableType(targetType))
-                {
-                    if (value.Value == null)
-                    {
-                        return default;
-                    }
+                //if (value.Value is U u)
+                //{
+                //    return u;
+                //}
 
-                    targetType = Nullable.GetUnderlyingType(targetType);
-                }
+                //Type targetType = typeof(U);
 
-                // 这儿直接采用 JValue 进行转换
-                return (U)System.Convert.ChangeType(value/*.Value*/, targetType, CultureInfo.InvariantCulture);
+                //if (ReflectionUtils.IsNullableType(targetType))
+                //{
+                //    if (value.Value == null)
+                //    {
+                //        return default;
+                //    }
+
+                //    targetType = Nullable.GetUnderlyingType(targetType);
+                //}
+
+                ////return (U)System.Convert.ChangeType(value/*.Value*/, targetType, CultureInfo.InvariantCulture);
+                return value.ToObject<U>();
+                #endregion
             }
         }
 
         //TODO
         //public static void Remove<T>(this IEnumerable<T> source) where T : JContainer;
 
-        /// <summary>
-        /// Returns the input typed as <see cref="IJEnumerable{T}"/>.
-        /// </summary>
+        /// <summary>Returns the input typed as <see cref="IJEnumerable{T}"/>.</summary>
         /// <param name="source">An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the source collection.</param>
         /// <returns>The input typed as <see cref="IJEnumerable{T}"/>.</returns>
         public static IJEnumerable<JToken> AsJEnumerable(this IEnumerable<JToken> source)
@@ -315,25 +287,22 @@ namespace SpanJson.Linq
             return source.AsJEnumerable<JToken>();
         }
 
-        /// <summary>
-        /// Returns the input typed as <see cref="IJEnumerable{T}"/>.
-        /// </summary>
+        /// <summary>Returns the input typed as <see cref="IJEnumerable{T}"/>.</summary>
         /// <typeparam name="T">The source collection type.</typeparam>
         /// <param name="source">An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the source collection.</param>
         /// <returns>The input typed as <see cref="IJEnumerable{T}"/>.</returns>
         public static IJEnumerable<T> AsJEnumerable<T>(this IEnumerable<T> source) where T : JToken
         {
-            if (source == null)
+            switch (source)
             {
-                return null;
-            }
-            else if (source is IJEnumerable<T> customEnumerable)
-            {
-                return customEnumerable;
-            }
-            else
-            {
-                return new JEnumerable<T>(source);
+                case null:
+                    return null;
+
+                case IJEnumerable<T> customEnumerable:
+                    return customEnumerable;
+
+                default:
+                    return new JEnumerable<T>(source);
             }
         }
     }

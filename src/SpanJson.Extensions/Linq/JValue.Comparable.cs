@@ -279,11 +279,12 @@ namespace SpanJson.Linq
 
             JTokenType comparisonType;
             object otherValue;
-            if (obj is JValue value)
+            if (obj is JValue other)
             {
-                otherValue = value.Value;
-                comparisonType = (_valueType.IsString() && _valueType != value._valueType)
-                    ? value._valueType
+                otherValue = other.Value;
+                var otherValueType = other._valueType;
+                comparisonType = (_valueType.IsString() && _valueType != otherValueType)
+                    ? otherValueType
                     : _valueType;
             }
             else

@@ -196,12 +196,14 @@ namespace SpanJson.Linq
                 case SpanJsonDynamicUtf8String _:
                 case JToken _:
                     AddValue(value);
+                    base.WriteUndefined();
                     break;
 
                 default:
                     if (JValue.CustomPrimitiveTypes.TryGetValue(value.GetType(), out JTokenType tokenType))
                     {
                         AddValue(new JValue(value, tokenType));
+                        base.WriteUndefined();
                     }
                     else
                     {
