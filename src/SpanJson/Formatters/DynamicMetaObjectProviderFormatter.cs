@@ -64,124 +64,113 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<TSymbol> writer, T value, IJsonFormatterResolver<TSymbol> resolver)
         {
-            if (value == null)
-            {
-                writer.WriteNull();
-                return;
-            }
-
             // if we serialize our dynamic value again we simply write the symbols directly if it is the same type
             if (value is ISpanJsonDynamicValue<TSymbol> dynamicValue)
             {
                 writer.WriteVerbatim(dynamicValue.Symbols);
+                return;
             }
-            else if (value is ISpanJsonDynamicValue<byte> bValue)
-            {
-                var cMaxLength = Encoding.UTF8.GetMaxCharCount(bValue.Symbols.Count);
-                char[] buffer = null;
-                try
-                {
-                    Span<char> utf16Span = (uint)cMaxLength <= JsonSharedConstant.StackallocThreshold ?
-                        stackalloc char[cMaxLength] :
-                        (buffer = ArrayPool<char>.Shared.Rent(cMaxLength));
 
-                    var written = TextEncodings.Utf8.GetChars(bValue.Symbols, utf16Span);
+            switch (value)
+            {
+                case null:
+                    writer.WriteNull();
+                    return;
+
+                case ISpanJsonDynamicValue<byte> bValue:
+                    var cMaxLength = Encoding.UTF8.GetMaxCharCount(bValue.Symbols.Count);
+                    char[] cBuffer = null;
+                    try
+                    {
+                        Span<char> utf16Span = (uint)cMaxLength <= JsonSharedConstant.StackallocThreshold ?
+                            stackalloc char[cMaxLength] :
+                            (cBuffer = ArrayPool<char>.Shared.Rent(cMaxLength));
+
+                        var written = TextEncodings.Utf8.GetChars(bValue.Symbols, utf16Span);
 
 #if NETSTANDARD2_0 || NET471 || NET451
-                    unsafe
-                    {
-                        writer.WriteUtf16Verbatim(new ReadOnlySpan<char>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(utf16Span)), written));
-                    }
+                        unsafe
+                        {
+                            writer.WriteUtf16Verbatim(new ReadOnlySpan<char>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(utf16Span)), written));
+                        }
 #else
-                    writer.WriteUtf16Verbatim(MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(utf16Span), written));
+                        writer.WriteUtf16Verbatim(MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(utf16Span), written));
 #endif
-                }
-                finally
-                {
-                    if (buffer != null) { ArrayPool<char>.Shared.Return(buffer); }
-                }
+                    }
+                    finally
+                    {
+                        if (cBuffer != null) { ArrayPool<char>.Shared.Return(cBuffer); }
+                    }
+                    break;
 
-            }
-            else if (value is ISpanJsonDynamicValue<char> cValue)
-            {
-                var bMaxLength = TextEncodings.Utf8.GetMaxByteCount(cValue.Symbols.Count);
-                byte[] buffer = null;
-                try
-                {
-                    Span<byte> utf8Span = (uint)bMaxLength <= JsonSharedConstant.StackallocThreshold ?
-                        stackalloc byte[bMaxLength] :
-                        (buffer = ArrayPool<byte>.Shared.Rent(bMaxLength));
+                case ISpanJsonDynamicValue<char> cValue:
+                    var bMaxLength = TextEncodings.Utf8.GetMaxByteCount(cValue.Symbols.Count);
+                    byte[] bBuffer = null;
+                    try
+                    {
+                        Span<byte> utf8Span = (uint)bMaxLength <= JsonSharedConstant.StackallocThreshold ?
+                            stackalloc byte[bMaxLength] :
+                            (bBuffer = ArrayPool<byte>.Shared.Rent(bMaxLength));
 
-                    var written = TextEncodings.Utf8.GetBytes(cValue.Symbols, utf8Span);
+                        var written = TextEncodings.Utf8.GetBytes(cValue.Symbols, utf8Span);
 
 #if NETSTANDARD2_0 || NET471 || NET451
-                    unsafe
-                    {
-                        writer.WriteUtf8Verbatim(new ReadOnlySpan<byte>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(utf8Span)), written));
-                    }
+                        unsafe
+                        {
+                            writer.WriteUtf8Verbatim(new ReadOnlySpan<byte>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(utf8Span)), written));
+                        }
 #else
-                    writer.WriteUtf8Verbatim(MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(utf8Span), written));
+                        writer.WriteUtf8Verbatim(MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(utf8Span), written));
 #endif
-                }
-                finally
-                {
-                    if (buffer != null) { ArrayPool<byte>.Shared.Return(buffer); }
-                }
-            }
-            else if (value is ISpanJsonDynamicArray dynamicArray)
-            {
-                writer.IncrementDepth();
-                EnumerableFormatter<IEnumerable<object>, object, TSymbol, TResolver>.Default.Serialize(ref writer, dynamicArray, resolver);
-                writer.DecrementDepth();
-            }
-            else
-            {
-                var memberInfos = Resolver.GetDynamicObjectDescription(value);
-                var counter = 0;
-                writer.WriteBeginObject();
-                foreach (var memberInfo in memberInfos)
-                {
-                    var getter = GetOrAddGetMember(memberInfo.MemberName);
-                    var child = getter(value);
-                    if (memberInfo.ExcludeNull && child == null)
-                    {
-                        continue;
                     }
-
-                    if (counter++ > 0)
+                    finally
                     {
-                        writer.WriteValueSeparator();
+                        if (bBuffer != null) { ArrayPool<byte>.Shared.Return(bBuffer); }
                     }
+                    break;
 
+                case ISpanJsonDynamicArray dynamicArray:
                     writer.IncrementDepth();
-                    writer.WriteName(memberInfo.EscapedName);
-                    RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child, resolver);
+                    EnumerableFormatter<IEnumerable<object>, object, TSymbol, TResolver>.Default.Serialize(ref writer, dynamicArray, resolver);
                     writer.DecrementDepth();
-                }
+                    break;
 
-                // Some dlr objects also have properties which are defined on the custom type, we also need to serialize/deserialize them
-                var definedMembers = Resolver.GetObjectDescription<T>();
-                foreach (var memberInfo in definedMembers)
-                {
-                    var getter = GetOrAddGetDefinedMember(memberInfo.MemberName);
-                    var child = getter(value);
-                    if (memberInfo.ExcludeNull && child == null)
+                default:
+                    var memberInfos = Resolver.GetDynamicObjectDescription(value);
+                    var counter = 0;
+                    writer.WriteBeginObject();
+                    foreach (var memberInfo in memberInfos)
                     {
-                        continue;
+                        var getter = GetOrAddGetMember(memberInfo.MemberName);
+                        var child = getter(value);
+                        if (memberInfo.ExcludeNull && child == null) { continue; }
+
+                        if (counter++ > 0) { writer.WriteValueSeparator(); }
+
+                        writer.IncrementDepth();
+                        writer.WriteName(memberInfo.EscapedName);
+                        RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child, resolver);
+                        writer.DecrementDepth();
                     }
 
-                    if (counter++ > 0)
+                    // Some dlr objects also have properties which are defined on the custom type, we also need to serialize/deserialize them
+                    var definedMembers = Resolver.GetObjectDescription<T>();
+                    foreach (var memberInfo in definedMembers)
                     {
-                        writer.WriteValueSeparator();
+                        var getter = GetOrAddGetDefinedMember(memberInfo.MemberName);
+                        var child = getter(value);
+                        if (memberInfo.ExcludeNull && child == null) { continue; }
+
+                        if (counter++ > 0) { writer.WriteValueSeparator(); }
+
+                        writer.IncrementDepth();
+                        writer.WriteName(memberInfo.EscapedName);
+                        RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child, resolver);
+                        writer.DecrementDepth();
                     }
 
-                    writer.IncrementDepth();
-                    writer.WriteName(memberInfo.EscapedName);
-                    RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child, resolver);
-                    writer.DecrementDepth();
-                }
-
-                writer.WriteEndObject();
+                    writer.WriteEndObject();
+                    break;
             }
         }
 
@@ -237,7 +226,6 @@ namespace SpanJson.Formatters
                     .Compile();
             });
         }
-
 
         private static Func<T, object> GetOrAddGetMember(string memberName)
         {
