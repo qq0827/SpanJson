@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\nuget.props" />
+  <Import Project="..\version.props" />
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net451</TargetFrameworks>
+    <RootNamespace>SpanJson</RootNamespace>
+    <AssemblyName>SpanJson.Annotations</AssemblyName>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <NoWarn>$(NoWarn);1701;1702;</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Label="NuGet">
+    <PackageId>SpanJson.Annotations</PackageId>
+    <Title>SpanJson.Annotations</Title>
+    <Description>SpanJson(Unofficial) is a JSON serializer for .Net451+</Description>
+    <PackageTags>JSON</PackageTags>
+  </PropertyGroup>
+
+</Project>

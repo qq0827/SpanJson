@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpanJson.Resources", "tests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpanJson.Linq.Tests", "tests\SpanJson.Linq.Tests\SpanJson.Linq.Tests.csproj", "{287503F4-3B2F-498C-A5AA-67F091EA090D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpanJson.Annotations", "src\SpanJson.Annotations\SpanJson.Annotations.csproj", "{4EA99EFD-04AC-414D-AB6D-3CE31EA371B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{287503F4-3B2F-498C-A5AA-67F091EA090D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{287503F4-3B2F-498C-A5AA-67F091EA090D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{287503F4-3B2F-498C-A5AA-67F091EA090D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4EA99EFD-04AC-414D-AB6D-3CE31EA371B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EA99EFD-04AC-414D-AB6D-3CE31EA371B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EA99EFD-04AC-414D-AB6D-3CE31EA371B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4EA99EFD-04AC-414D-AB6D-3CE31EA371B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,6 +61,7 @@ Global
 		{E50E897B-CBE5-49AF-8AF0-6EB6E010B182} = {B51B4CA6-C3AE-48E2-B499-9FBED9296F76}
 		{99B4DFF1-2AD6-42FB-B65D-199A40DEA9E4} = {F8B2B379-E132-4DFA-A407-89EF3B657145}
 		{287503F4-3B2F-498C-A5AA-67F091EA090D} = {F8B2B379-E132-4DFA-A407-89EF3B657145}
+		{4EA99EFD-04AC-414D-AB6D-3CE31EA371B7} = {B51B4CA6-C3AE-48E2-B499-9FBED9296F76}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FEEFB390-E34D-4BA7-8E75-63CAB99BC709}

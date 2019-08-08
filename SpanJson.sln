@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpanJson.Resources", "tests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpanJson.Linq.Tests", "tests\SpanJson.Linq.Tests\SpanJson.Linq.Tests.csproj", "{860C1905-6468-41C1-B0BF-FE737B1B828E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpanJson.Annotations", "src\SpanJson.Annotations\SpanJson.Annotations.csproj", "{F34EE21C-55C3-4D0A-8842-E44A192E67CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{860C1905-6468-41C1-B0BF-FE737B1B828E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{860C1905-6468-41C1-B0BF-FE737B1B828E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{860C1905-6468-41C1-B0BF-FE737B1B828E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F34EE21C-55C3-4D0A-8842-E44A192E67CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F34EE21C-55C3-4D0A-8842-E44A192E67CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F34EE21C-55C3-4D0A-8842-E44A192E67CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F34EE21C-55C3-4D0A-8842-E44A192E67CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -90,6 +96,7 @@ Global
 		{3FCAA73D-2EA7-4C72-B323-53309126A054} = {F8B2B379-E132-4DFA-A407-89EF3B657145}
 		{3F5C8C55-6472-423E-BB60-DF03EBC3738D} = {F8B2B379-E132-4DFA-A407-89EF3B657145}
 		{860C1905-6468-41C1-B0BF-FE737B1B828E} = {F8B2B379-E132-4DFA-A407-89EF3B657145}
+		{F34EE21C-55C3-4D0A-8842-E44A192E67CA} = {B51B4CA6-C3AE-48E2-B499-9FBED9296F76}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FEEFB390-E34D-4BA7-8E75-63CAB99BC709}

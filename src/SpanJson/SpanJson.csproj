@@ -31,6 +31,9 @@
     <PackageReference Include="System.ValueTuple" Version="$(SystemValueTuplePackageVersion)" />
     <PackageReference Include="Microsoft.CSharp" Version="$(MicrosoftCSharpPackageVersion)" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SpanJson.Annotations\SpanJson.Annotations.csproj" />
+  </ItemGroup>
 
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />

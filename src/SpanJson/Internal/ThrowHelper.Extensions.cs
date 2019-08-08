@@ -19,6 +19,7 @@ namespace SpanJson
         json,
         type,
         name,
+        inner,
         array,
         count,
         index,
