@@ -24,6 +24,15 @@ namespace SpanJson
                     return JsonSerializer.NonGeneric.Inner<char, IncludeNullsSnakeCaseResolver<char>>.InnerSerializeToString(input);
                 }
 
+                /// <summary>Serialize to string.</summary>
+                /// <param name="input">Input</param>
+                /// <returns>String</returns>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                public static char[] SerializeToCharArray(object input)
+                {
+                    return JsonSerializer.NonGeneric.Inner<char, IncludeNullsSnakeCaseResolver<char>>.InnerSerializeToCharArray(input);
+                }
+
                 /// <summary>Serialize to char buffer from ArrayPool.
                 /// The returned ArraySegment's Array needs to be returned to the ArrayPool.</summary>
                 /// <param name="input">Input</param>

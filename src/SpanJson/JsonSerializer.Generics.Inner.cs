@@ -55,6 +55,8 @@ namespace SpanJson
 
                 public static ValueTask InnerSerializeAsync(T input, TextWriter writer, CancellationToken cancellationToken = default)
                 {
+                    if (null == writer) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.writer); }
+
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
                     Formatter.Serialize(ref jsonWriter, input, Resolver);
                     var data = jsonWriter._utf16Buffer;
@@ -101,6 +103,8 @@ namespace SpanJson
 
                 public static ValueTask InnerSerializeAsync(T input, Stream stream, CancellationToken cancellationToken = default)
                 {
+                    if (null == stream) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.stream); }
+
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
                     Formatter.Serialize(ref jsonWriter, input, Resolver);
                     var data = jsonWriter._utf8Buffer;
@@ -129,7 +133,7 @@ namespace SpanJson
 
                 public static T InnerDeserialize(TSymbol[] input)
                 {
-                    if (null == input) { return default; }
+                    if (null == input) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.input); }
 
                     _lastDeserializationSizeEstimate = input.Length;
                     var jsonReader = new JsonReader<TSymbol>(input);
@@ -138,8 +142,6 @@ namespace SpanJson
 
                 public static T InnerDeserialize(in ArraySegment<TSymbol> input)
                 {
-                    if (input.IsEmpty()) { return default; }
-
                     _lastDeserializationSizeEstimate = input.Count;
                     var jsonReader = new JsonReader<TSymbol>(input);
                     return Formatter.Deserialize(ref jsonReader, Resolver);
@@ -147,8 +149,6 @@ namespace SpanJson
 
                 public static T InnerDeserialize(in ReadOnlyMemory<TSymbol> input)
                 {
-                    if (input.IsEmpty) { return default; }
-
                     _lastDeserializationSizeEstimate = input.Length;
                     var jsonReader = new JsonReader<TSymbol>(input);
                     return Formatter.Deserialize(ref jsonReader, Resolver);
@@ -156,8 +156,6 @@ namespace SpanJson
 
                 public static T InnerDeserialize(in ReadOnlySpan<TSymbol> input)
                 {
-                    if (input.IsEmpty) { return default; }
-
                     _lastDeserializationSizeEstimate = input.Length;
                     var jsonReader = new JsonReader<TSymbol>(input);
                     return Formatter.Deserialize(ref jsonReader, Resolver);
@@ -169,6 +167,8 @@ namespace SpanJson
 
                 public static ValueTask<T> InnerDeserializeAsync(TextReader reader, CancellationToken cancellationToken = default)
                 {
+                    if (null == reader) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.reader); }
+
                     var input = reader.ReadToEndAsync();
                     if (input.IsCompletedSuccessfully())
                     {
@@ -198,6 +198,8 @@ namespace SpanJson
 
                 public static ValueTask<T> InnerDeserializeAsync(Stream stream, CancellationToken cancellationToken = default)
                 {
+                    if (null == stream) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.stream); }
+
 #if !NET451
                     if (stream is MemoryStream ms && ms.TryGetBuffer(out var buffer))
                     {

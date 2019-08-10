@@ -23,7 +23,7 @@ namespace SpanJson.Internal
             // and exclude characters that need to be escaped by adding a backslash: '\n', '\r', '\t', '\\', '\b', '\f'
             //
             // non-zero = allowed, 0 = disallowed
-            private static ReadOnlySpan<byte> AllowList => new byte[LastAsciiCharacter + 1]
+            private static ReadOnlySpan<byte> AllowList => new byte[byte.MaxValue + 1]
             {
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // U+0000..U+000F
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // U+0010..U+001F
@@ -33,6 +33,16 @@ namespace SpanJson.Internal
                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, // U+0050..U+005F
                 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // U+0060..U+006F
                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, // U+0070..U+007F
+
+                // Also include the ranges from U+0080 to U+00FF for performance to avoid UTF8 code from checking boundary.
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // U+00F0..U+00FF
             };
 
             private static readonly ConcurrentDictionary<string, JsonEncodedText> s_encodedTextCache =
@@ -58,36 +68,30 @@ namespace SpanJson.Internal
             }
 #endif
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private static bool NeedsEscapingNoBoundsCheck(byte value)
-            {
-                Debug.Assert(value <= LastAsciiCharacter);
-                return 0u >= AllowList[value] ? true : false;
-            }
 
-            private static bool NeedsEscapingNoBoundsCheck(char value)
-            {
-                Debug.Assert(value <= LastAsciiCharacter);
-                return 0u >= AllowList[value] ? true : false;
-            }
+            private static bool NeedsEscapingNoBoundsCheck(char value) => 0u >= (uint)AllowList[value] ? true : false;
+
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static bool NeedsEscaping(byte utf8Value) => (uint)utf8Value > nLastAsciiCharacter || 0u >= AllowList[utf8Value] ? true : false;
+            public static bool NeedsEscaping(byte utf8Value) => 0u >= (uint)AllowList[utf8Value] ? true : false;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static bool NeedsEscaping(char value) => (uint)value > nLastAsciiCharacter || 0u >= AllowList[value] ? true : false;
+            public static bool NeedsEscaping(char value) => ((uint)value > byte.MaxValue || 0u >= AllowList[value]) ? true : false;
 
             public static int NeedsEscaping(in ReadOnlySpan<byte> utf8Source, JavaScriptEncoder encoder = null)
             {
+                int idx;
+
 #if !NET451
                 if (encoder != null)
                 {
-                    return encoder.FindFirstCharacterToEncodeUtf8(utf8Source);
+                    idx = encoder.FindFirstCharacterToEncodeUtf8(utf8Source);
+                    goto Return;
                 }
 #endif
 
                 ref byte space = ref MemoryMarshal.GetReference(utf8Source);
-                int idx = 0;
+                idx = 0;
                 uint nlen = (uint)utf8Source.Length;
                 while ((uint)idx < nlen)
                 {
@@ -103,15 +107,18 @@ namespace SpanJson.Internal
 
             public static int NeedsEscaping(in ReadOnlySpan<char> utf16Source, JavaScriptEncoder encoder = null)
             {
+                int idx;
+
 #if !NET451
                 if (encoder != null)
                 {
-                    return encoder.FindFirstCharacterToEncodeUtf8(MemoryMarshal.Cast<char, byte>(utf16Source));
+                    idx = encoder.FindFirstCharacterToEncodeUtf8(MemoryMarshal.Cast<char, byte>(utf16Source));
+                    goto Return;
                 }
 #endif
 
                 ref char space = ref MemoryMarshal.GetReference(utf16Source);
-                int idx = 0;
+                idx = 0;
                 uint nlen = (uint)utf16Source.Length;
                 while ((uint)idx < nlen)
                 {
@@ -133,7 +140,6 @@ namespace SpanJson.Internal
 
                 utf8Source.Slice(0, indexOfFirstByteToEscape).CopyTo(destination);
                 written = indexOfFirstByteToEscape;
-                int consumed = indexOfFirstByteToEscape;
 
                 if (encoder != null)
                 {
@@ -149,27 +155,27 @@ namespace SpanJson.Internal
                     ref byte sourceSpace = ref MemoryMarshal.GetReference(utf8Value);
                     ref byte destSpace = ref MemoryMarshal.GetReference(destination);
                     uint nlen = (uint)utf8Value.Length;
-                    while ((uint)consumed < (uint)utf8Value.Length)
+                    while ((uint)indexOfFirstByteToEscape < (uint)utf8Value.Length)
                     {
-                        byte val = Unsafe.Add(ref sourceSpace, consumed);
+                        byte val = Unsafe.Add(ref sourceSpace, indexOfFirstByteToEscape);
                         if (IsAsciiValue(val))
                         {
-                            if (NeedsEscapingNoBoundsCheck(val))
+                            if (NeedsEscaping(val))
                             {
                                 EscapeNextBytes(JsonEscapeHandling.EscapeNonAscii, val, destination, ref destSpace, ref written);
-                                consumed++;
+                                indexOfFirstByteToEscape++;
                             }
                             else
                             {
                                 Unsafe.Add(ref destSpace, written++) = val;
-                                consumed++;
+                                indexOfFirstByteToEscape++;
                             }
                         }
                         else
                         {
                             // Fall back to default encoder.
                             destination = destination.Slice(written);
-                            utf8Value = utf8Value.Slice(consumed);
+                            utf8Value = utf8Value.Slice(indexOfFirstByteToEscape);
                             EscapeStringInternal(utf8Value, destination, JavaScriptEncoder.Default, ref written);
                             break;
                         }
@@ -185,12 +191,13 @@ namespace SpanJson.Internal
 
                 Debug.Assert(result != OperationStatus.DestinationTooSmall);
                 Debug.Assert(result != OperationStatus.NeedMoreData);
-                Debug.Assert(encoderBytesConsumed == value.Length);
 
                 if (result != OperationStatus.Done)
                 {
                     ThrowHelper.ThrowArgumentException_InvalidUTF8(value, encoderBytesWritten);
                 }
+
+                Debug.Assert(encoderBytesConsumed == value.Length);
 
                 written += encoderBytesWritten;
             }
@@ -201,7 +208,6 @@ namespace SpanJson.Internal
 
                 utf16Source.Slice(0, indexOfFirstByteToEscape).CopyTo(destination);
                 written = indexOfFirstByteToEscape;
-                int consumed = indexOfFirstByteToEscape;
 
                 if (encoder != null)
                 {
@@ -217,27 +223,27 @@ namespace SpanJson.Internal
                     ref char sourceSpace = ref MemoryMarshal.GetReference(utf16Value);
                     ref char destSpace = ref MemoryMarshal.GetReference(destination);
                     uint nlen = (uint)utf16Value.Length;
-                    while ((uint)consumed < nlen)
+                    while ((uint)indexOfFirstByteToEscape < nlen)
                     {
-                        char val = Unsafe.Add(ref sourceSpace, consumed);
+                        char val = Unsafe.Add(ref sourceSpace, indexOfFirstByteToEscape);
                         if (IsAsciiValue(val))
                         {
                             if (NeedsEscapingNoBoundsCheck(val))
                             {
                                 EscapeNextChars(JsonEscapeHandling.EscapeNonAscii, val, ref destSpace, ref written);
-                                consumed++;
+                                indexOfFirstByteToEscape++;
                             }
                             else
                             {
                                 Unsafe.Add(ref destSpace, written++) = val;
-                                consumed++;
+                                indexOfFirstByteToEscape++;
                             }
                         }
                         else
                         {
                             // Fall back to default encoder.
                             destination = destination.Slice(written);
-                            utf16Value = utf16Value.Slice(consumed);
+                            utf16Value = utf16Value.Slice(indexOfFirstByteToEscape);
                             EscapeStringInternal(utf16Value, destination, JavaScriptEncoder.Default, ref written);
                             break;
                         }
@@ -247,94 +253,21 @@ namespace SpanJson.Internal
 
             private static void EscapeStringInternal(in ReadOnlySpan<char> value, Span<char> destination, JavaScriptEncoder encoder, ref int written)
             {
-                // todo: issue #39523: add an Encode(ReadOnlySpan<char>) decode API to System.Text.Encodings.Web.TextEncoding to avoid utf16->utf8->utf16 conversion.
-
                 Debug.Assert(encoder != null);
 
-                // Convert char to byte.
-                byte[] utf8DestinationArray = null;
-                Span<byte> utf8Destination;
-                int length = checked((value.Length) * JsonSharedConstant.MaxExpansionFactorWhileTranscoding);
-                if ((uint)length > JsonSharedConstant.StackallocThreshold)
+                OperationStatus result = encoder.Encode(value, destination, out int encoderBytesConsumed, out int encoderCharsWritten);
+
+                Debug.Assert(result != OperationStatus.DestinationTooSmall);
+                Debug.Assert(result != OperationStatus.NeedMoreData);
+
+                if (result != OperationStatus.Done)
                 {
-                    utf8DestinationArray = ArrayPool<byte>.Shared.Rent(length);
-                    utf8Destination = utf8DestinationArray;
-                }
-                else
-                {
-                    unsafe
-                    {
-                        byte* ptr = stackalloc byte[JsonSharedConstant.StackallocMaxLength];
-                        utf8Destination = new Span<byte>(ptr, JsonSharedConstant.StackallocMaxLength);
-                    }
+                    ThrowHelper.ThrowArgumentException_InvalidUTF16(value[encoderCharsWritten]);
                 }
 
-                ReadOnlySpan<byte> utf16Value = MemoryMarshal.AsBytes(value);
-                OperationStatus toUtf8Status = TextEncodings.Utf8.ToUtf8(
-                    ref MemoryMarshal.GetReference(utf16Value), utf16Value.Length,
-                    ref MemoryMarshal.GetReference(utf8Destination), utf8Destination.Length,
-                    out int bytesConsumed, out int bytesWritten);
+                Debug.Assert(encoderBytesConsumed == value.Length);
 
-                Debug.Assert(toUtf8Status != OperationStatus.DestinationTooSmall);
-                Debug.Assert(toUtf8Status != OperationStatus.NeedMoreData);
-
-                if (toUtf8Status != OperationStatus.Done)
-                {
-                    if (utf8DestinationArray != null)
-                    {
-                        utf8Destination.Slice(0, bytesWritten).Clear();
-                        ArrayPool<byte>.Shared.Return(utf8DestinationArray);
-                    }
-
-                    ThrowHelper.ThrowArgumentException_InvalidUTF8(utf16Value, bytesWritten);
-                }
-
-                Debug.Assert(toUtf8Status == OperationStatus.Done);
-                Debug.Assert(bytesConsumed == utf16Value.Length);
-
-                // Escape the bytes.
-                byte[] utf8ConvertedDestinationArray = null;
-                Span<byte> utf8ConvertedDestination;
-                length = checked(bytesWritten * JsonSharedConstant.MaxExpansionFactorWhileEscaping);
-                if ((uint)length > JsonSharedConstant.StackallocThreshold)
-                {
-                    utf8ConvertedDestinationArray = ArrayPool<byte>.Shared.Rent(length);
-                    utf8ConvertedDestination = utf8ConvertedDestinationArray;
-                }
-                else
-                {
-                    unsafe
-                    {
-                        byte* ptr = stackalloc byte[JsonSharedConstant.StackallocMaxLength];
-                        utf8ConvertedDestination = new Span<byte>(ptr, JsonSharedConstant.StackallocMaxLength);
-                    }
-                }
-
-                EscapeString(utf8Destination.Slice(0, bytesWritten), utf8ConvertedDestination, indexOfFirstByteToEscape: 0, encoder, out int convertedBytesWritten);
-
-                if (utf8DestinationArray != null)
-                {
-                    utf8Destination.Slice(0, bytesWritten).Clear();
-                    ArrayPool<byte>.Shared.Return(utf8DestinationArray);
-                }
-
-                // Convert byte to char.
-#if NETCOREAPP_2_X_GREATER
-                OperationStatus toUtf16Status = Utf8.ToUtf16(utf8ConvertedDestination.Slice(0, convertedBytesWritten), destination, out int bytesRead, out int charsWritten);
-                Debug.Assert(toUtf16Status == OperationStatus.Done);
-                Debug.Assert(bytesRead == convertedBytesWritten);
-#else
-                string utf16 = JsonReaderHelper.GetTextFromUtf8(utf8ConvertedDestination.Slice(0, convertedBytesWritten));
-                utf16.AsSpan().CopyTo(destination);
-                int charsWritten = utf16.Length;
-#endif
-                written += charsWritten;
-
-                if (utf8ConvertedDestinationArray != null)
-                {
-                    utf8ConvertedDestination.Slice(0, written).Clear();
-                    ArrayPool<byte>.Shared.Return(utf8ConvertedDestinationArray);
-                }
+                written += encoderCharsWritten;
             }
 
 #endif

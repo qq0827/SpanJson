@@ -1551,6 +1551,14 @@ namespace SpanJson.Internal
             return (byte)((value < 10) ? ('0' + value) : ('a' + (value - 10)));
         }
 
+        /// <summary>Converts a number 0 - 15 to its associated hex character '0' - 'F' as byte.</summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static byte Int32LsbToUpperHexDigit(int value)
+        {
+            Debug.Assert(value < 16);
+            return (byte)((value < 10) ? ('0' + value) : ('A' + (value - 10)));
+        }
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static bool IsUnicodeLinefeeds(char value)
         {

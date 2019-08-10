@@ -15,49 +15,50 @@ namespace SpanJson
         {
             public static class Inner<TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
             {
-                private static readonly ConcurrentDictionary<Type, Invoker> Invokers =
-                    new ConcurrentDictionary<Type, Invoker>();
+                internal static readonly ConcurrentDictionary<Type, Invoker> Invokers = new ConcurrentDictionary<Type, Invoker>();
+
+                internal static readonly Func<Type, Invoker> InvokerFactory = x => BuildInvoker(x);
 
                 #region -- Utf16 Serialize --
 
                 public static string InnerSerializeToString(object input)
                 {
-                    if (input == null) { return null; }
+                    if (input == null) { return Generic.Utf16.Serialize<object>(null); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
-                    var invoker = Invokers.GetOrAdd(input.GetType(), x => BuildInvoker(x));
+                    var invoker = Invokers.GetOrAdd(input.GetType(), InvokerFactory);
                     // ReSharper restore ConvertClosureToMethodGroup
                     return invoker.ToStringSerializer(input);
                 }
 
                 public static char[] InnerSerializeToCharArray(object input)
                 {
-                    if (input == null) { return default; }
+                    if (input == null) { return Generic.Utf16.SerializeToCharArray<object>(null); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
-                    var invoker = Invokers.GetOrAdd(input.GetType(), x => BuildInvoker(x));
+                    var invoker = Invokers.GetOrAdd(input.GetType(), InvokerFactory);
                     // ReSharper restore ConvertClosureToMethodGroup
                     return invoker.ToCharArraySerializer(input);
                 }
 
                 public static ArraySegment<char> InnerSerializeToCharArrayPool(object input)
                 {
-                    if (input == null) { return default; }
+                    if (input == null) { return Generic.Utf16.SerializeToArrayPool<object>(null); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
-                    var invoker = Invokers.GetOrAdd(input.GetType(), x => BuildInvoker(x));
+                    var invoker = Invokers.GetOrAdd(input.GetType(), InvokerFactory);
                     // ReSharper restore ConvertClosureToMethodGroup
                     return invoker.ToCharArrayPoolSerializer(input);
                 }
 
-                public static ValueTask InnerSerializeAsync(object input, Stream stream, CancellationToken cancellationToken = default)
+                public static ValueTask InnerSerializeAsync(object input, TextWriter writer, CancellationToken cancellationToken = default)
                 {
-                    if (input == null) { return new ValueTask(JsonHelpers.CompletedTask); }
+                    if (input == null) { return Generic.Utf16.SerializeAsync<object>(null, writer, cancellationToken); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
-                    var invoker = Invokers.GetOrAdd(input.GetType(), x => BuildInvoker(x));
+                    var invoker = Invokers.GetOrAdd(input.GetType(), InvokerFactory);
                     // ReSharper restore ConvertClosureToMethodGroup
-                    return invoker.ToStreamSerializerAsync(input, stream, cancellationToken);
+                    return invoker.ToTextWriterSerializerAsync(input, writer, cancellationToken);
                 }
 
                 #endregion
@@ -67,32 +68,32 @@ namespace SpanJson
 
                 public static byte[] InnerSerializeToByteArray(object input)
                 {
-                    if (input == null) { return null; }
+                    if (input == null) { return Generic.Utf8.Serialize<object>(null); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
-                    var invoker = Invokers.GetOrAdd(input.GetType(), x => BuildInvoker(x));
+                    var invoker = Invokers.GetOrAdd(input.GetType(), InvokerFactory);
                     // ReSharper restore ConvertClosureToMethodGroup
                     return invoker.ToByteArraySerializer(input);
                 }
 
                 public static ArraySegment<byte> InnerSerializeToByteArrayPool(object input)
                 {
-                    if (input == null) { return default; }
+                    if (input == null) { return Generic.Utf8.SerializeToArrayPool<object>(null); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
-                    var invoker = Invokers.GetOrAdd(input.GetType(), x => BuildInvoker(x));
+                    var invoker = Invokers.GetOrAdd(input.GetType(), InvokerFactory);
                     // ReSharper restore ConvertClosureToMethodGroup
                     return invoker.ToByteArrayPoolSerializer(input);
                 }
 
-                public static ValueTask InnerSerializeAsync(object input, TextWriter writer, CancellationToken cancellationToken = default)
+                public static ValueTask InnerSerializeAsync(object input, Stream stream, CancellationToken cancellationToken = default)
                 {
-                    if (input == null) { return new ValueTask(JsonHelpers.CompletedTask); }
+                    if (input == null) { return Generic.Utf8.SerializeAsync<object>(null, stream, cancellationToken); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
-                    var invoker = Invokers.GetOrAdd(input.GetType(), x => BuildInvoker(x));
+                    var invoker = Invokers.GetOrAdd(input.GetType(), InvokerFactory);
                     // ReSharper restore ConvertClosureToMethodGroup
-                    return invoker.ToTextWriterSerializerAsync(input, writer, cancellationToken);
+                    return invoker.ToStreamSerializerAsync(input, stream, cancellationToken);
                 }
 
                 #endregion
@@ -101,40 +102,40 @@ namespace SpanJson
 
                 public static object InnerDeserialize(TSymbol[] input, Type type)
                 {
-                    if (input == null) { return null; }
+                    if (type == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
-                    var invoker = Invokers.GetOrAdd(type, x => BuildInvoker(x));
+                    var invoker = Invokers.GetOrAdd(type, InvokerFactory);
                     // ReSharper restore ConvertClosureToMethodGroup
                     return invoker.FromByteArrayDeserializer(input);
                 }
 
                 public static object InnerDeserialize(in ArraySegment<TSymbol> input, Type type)
                 {
-                    if (input.IsEmpty()) { return null; }
+                    if (type == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
-                    var invoker = Invokers.GetOrAdd(type, x => BuildInvoker(x));
+                    var invoker = Invokers.GetOrAdd(type, InvokerFactory);
                     // ReSharper restore ConvertClosureToMethodGroup
                     return invoker.FromBufferDeserializer(input);
                 }
 
                 public static object InnerDeserialize(in ReadOnlyMemory<TSymbol> input, Type type)
                 {
-                    if (input.IsEmpty) { return null; }
+                    if (type == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
-                    var invoker = Invokers.GetOrAdd(type, x => BuildInvoker(x));
+                    var invoker = Invokers.GetOrAdd(type, InvokerFactory);
                     // ReSharper restore ConvertClosureToMethodGroup
                     return invoker.FromMemoryDeserializer(input);
                 }
 
                 public static object InnerDeserialize(in ReadOnlySpan<TSymbol> input, Type type)
                 {
-                    if (input.IsEmpty) { return null; }
+                    if (type == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
-                    var invoker = Invokers.GetOrAdd(type, x => BuildInvoker(x));
+                    var invoker = Invokers.GetOrAdd(type, InvokerFactory);
                     // ReSharper restore ConvertClosureToMethodGroup
                     return invoker.Deserializer(input);
                 }
@@ -145,10 +146,10 @@ namespace SpanJson
 
                 public static ValueTask<object> InnerDeserializeAsync(TextReader reader, Type type, CancellationToken cancellationToken = default)
                 {
-                    if (reader == null) { return new ValueTask<object>(null); }
+                    if (type == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
-                    var invoker = Invokers.GetOrAdd(type, x => BuildInvoker(x));
+                    var invoker = Invokers.GetOrAdd(type, InvokerFactory);
                     // ReSharper restore ConvertClosureToMethodGroup
                     return invoker.FromTextReaderDeserializerAsync(reader, cancellationToken);
                 }
@@ -159,10 +160,10 @@ namespace SpanJson
 
                 public static ValueTask<object> InnerDeserializeAsync(Stream stream, Type type, CancellationToken cancellationToken = default)
                 {
-                    if (stream == null) { return new ValueTask<object>(null); }
+                    if (type == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
-                    var invoker = Invokers.GetOrAdd(type, x => BuildInvoker(x));
+                    var invoker = Invokers.GetOrAdd(type, InvokerFactory);
                     // ReSharper restore ConvertClosureToMethodGroup
                     return invoker.FromStreamDeserializerAsync(stream, cancellationToken);
                 }
@@ -388,7 +389,7 @@ namespace SpanJson
 
                 #region -- class Invoker --
 
-                private sealed class Invoker
+                internal sealed class Invoker
                 {
                     public Invoker(
                         SerializeToByteArrayDelegate toByteArraySerializer,
@@ -436,60 +437,60 @@ namespace SpanJson
                         FromTextReaderDeserializerAsync = deserializeFromTextReaderDelegateAsync;
                     }
 
-                    public readonly DeserializeDelegate Deserializer;
-                    public readonly DeserializeFromByteArrayDelegate FromByteArrayDeserializer;
-                    public readonly DeserializeFromBufferDelegate FromBufferDeserializer;
-                    public readonly DeserializeFromMemoryDelegate FromMemoryDeserializer;
+                    internal readonly DeserializeDelegate Deserializer;
+                    internal readonly DeserializeFromByteArrayDelegate FromByteArrayDeserializer;
+                    internal readonly DeserializeFromBufferDelegate FromBufferDeserializer;
+                    internal readonly DeserializeFromMemoryDelegate FromMemoryDeserializer;
 
-                    public readonly SerializeToByteArrayDelegate ToByteArraySerializer;
-                    public readonly SerializeToByteArrayPoolDelegate ToByteArrayPoolSerializer;
-                    public readonly SerializeToStreamDelegateAsync ToStreamSerializerAsync;
+                    internal readonly SerializeToByteArrayDelegate ToByteArraySerializer;
+                    internal readonly SerializeToByteArrayPoolDelegate ToByteArrayPoolSerializer;
+                    internal readonly SerializeToStreamDelegateAsync ToStreamSerializerAsync;
 
-                    public readonly DeserializeFromStreamDelegateAsync FromStreamDeserializerAsync;
+                    internal readonly DeserializeFromStreamDelegateAsync FromStreamDeserializerAsync;
 
-                    public readonly SerializeToStringDelegate ToStringSerializer;
-                    public readonly SerializeToCharArrayDelegate ToCharArraySerializer;
-                    public readonly SerializeToCharArrayPoolDelegate ToCharArrayPoolSerializer;
-                    public readonly SerializeToTextWriterDelegateAsync ToTextWriterSerializerAsync;
+                    internal readonly SerializeToStringDelegate ToStringSerializer;
+                    internal readonly SerializeToCharArrayDelegate ToCharArraySerializer;
+                    internal readonly SerializeToCharArrayPoolDelegate ToCharArrayPoolSerializer;
+                    internal readonly SerializeToTextWriterDelegateAsync ToTextWriterSerializerAsync;
 
-                    public readonly DeserializeFromTextReaderDelegateAsync FromTextReaderDeserializerAsync;
+                    internal readonly DeserializeFromTextReaderDelegateAsync FromTextReaderDeserializerAsync;
                 }
 
                 #endregion
 
                 #region -- Delegates --
 
-                private delegate object DeserializeFromByteArrayDelegate(TSymbol[] input);
+                internal delegate object DeserializeFromByteArrayDelegate(TSymbol[] input);
 
-                private delegate object DeserializeFromBufferDelegate(in ArraySegment<TSymbol> input);
+                internal delegate object DeserializeFromBufferDelegate(in ArraySegment<TSymbol> input);
 
-                private delegate object DeserializeFromMemoryDelegate(in ReadOnlyMemory<TSymbol> input);
+                internal delegate object DeserializeFromMemoryDelegate(in ReadOnlyMemory<TSymbol> input);
 
-                private delegate object DeserializeDelegate(in ReadOnlySpan<TSymbol> input);
-
-
-
-
-                private delegate byte[] SerializeToByteArrayDelegate(object input);
-
-                private delegate ArraySegment<byte> SerializeToByteArrayPoolDelegate(object input);
-
-                private delegate ValueTask SerializeToStreamDelegateAsync(object input, Stream stream, CancellationToken cancellationToken = default);
-
-                private delegate ValueTask<object> DeserializeFromStreamDelegateAsync(Stream stream, CancellationToken cancellationToken = default);
+                internal delegate object DeserializeDelegate(in ReadOnlySpan<TSymbol> input);
 
 
 
 
-                private delegate string SerializeToStringDelegate(object input);
+                internal delegate byte[] SerializeToByteArrayDelegate(object input);
 
-                private delegate char[] SerializeToCharArrayDelegate(object input);
+                internal delegate ArraySegment<byte> SerializeToByteArrayPoolDelegate(object input);
 
-                private delegate ArraySegment<char> SerializeToCharArrayPoolDelegate(object input);
+                internal delegate ValueTask SerializeToStreamDelegateAsync(object input, Stream stream, CancellationToken cancellationToken = default);
 
-                private delegate ValueTask SerializeToTextWriterDelegateAsync(object input, TextWriter writer, CancellationToken cancellationToken = default);
+                internal delegate ValueTask<object> DeserializeFromStreamDelegateAsync(Stream stream, CancellationToken cancellationToken = default);
 
-                private delegate ValueTask<object> DeserializeFromTextReaderDelegateAsync(TextReader textReader, CancellationToken cancellationToken = default);
+
+
+
+                internal delegate string SerializeToStringDelegate(object input);
+
+                internal delegate char[] SerializeToCharArrayDelegate(object input);
+
+                internal delegate ArraySegment<char> SerializeToCharArrayPoolDelegate(object input);
+
+                internal delegate ValueTask SerializeToTextWriterDelegateAsync(object input, TextWriter writer, CancellationToken cancellationToken = default);
+
+                internal delegate ValueTask<object> DeserializeFromTextReaderDelegateAsync(TextReader textReader, CancellationToken cancellationToken = default);
 
                 #endregion
             }

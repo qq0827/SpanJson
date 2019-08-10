@@ -32,6 +32,8 @@ namespace SpanJson.Linq
                 new SpanJson.Converters.JsonElementConverter(),
 
                 new SpanJson.Converters.JTokenConverter(),
+
+                new SpanJson.Converters.CombGuidJTokenConverter(),
             };
             _serializerSettings.Converters = converters;
         }

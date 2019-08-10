@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\nuget.props" />
-  <Import Project="..\version.props" />
+  <Import Project="..\version.extensions.props" />
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.2;netstandard2.0;net471;net451</TargetFrameworks>
@@ -19,7 +19,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CuteAnt.Runtime" Version="$(CuteAntRuntimePackageVersion)" />
     <PackageReference Include="Newtonsoft.Json" Version="$(NewtonsoftJsonPackageVersion)" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' != 'net451' ">
+    <!--<PackageReference Include="System.Text.Json" Version="$(SystemTextJsonPackageVersion)" />-->
   </ItemGroup>
 
   <ItemGroup>

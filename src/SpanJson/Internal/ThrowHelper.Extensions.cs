@@ -27,6 +27,8 @@ namespace SpanJson
         token,
         value,
         other,
+        stream,
+        writer,
         reader,
         length,
         format,
@@ -53,6 +55,8 @@ namespace SpanJson
         propertyInfo,
         propertyName,
         jsonSerializer,
+        serializerSettings,
+        deserializerSettings,
         genericInterfaceDefinition,
     }
 
