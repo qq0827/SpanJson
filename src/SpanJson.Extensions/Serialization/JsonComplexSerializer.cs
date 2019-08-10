@@ -27,10 +27,10 @@ namespace SpanJson.Serialization
         static readonly Func<Type, JsonSerializer.NonGeneric.Inner<byte, TUtf8Resolver>.Invoker> Utf8InvokerFactory =
             JsonSerializer.NonGeneric.Inner<byte, TUtf8Resolver>.InvokerFactory;
 
-        private NJsonSerializerSettings _defaultSerializerSettings;
-        private NJsonSerializerSettings _defaultDeserializerSettings;
-        private ObjectPool<NJsonSerializer> _outputJsonSerializerPool;
-        private ObjectPool<NJsonSerializer> _inputJsonSerializerPool;
+        private readonly NJsonSerializerSettings _defaultSerializerSettings;
+        private readonly NJsonSerializerSettings _defaultDeserializerSettings;
+        private readonly ObjectPool<NJsonSerializer> _outputJsonSerializerPool;
+        private readonly ObjectPool<NJsonSerializer> _inputJsonSerializerPool;
 
         public JsonComplexSerializer()
         {
@@ -85,6 +85,7 @@ namespace SpanJson.Serialization
         {
             if (null == serializerSettings) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.serializerSettings); }
             if (null == deserializerSettings) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.deserializerSettings); }
+            if (ReferenceEquals(serializerSettings, serializerSettings)) { ThrowHelper.ThrowArgumentException_SerializerSettings_same_instance(); }
 
             _defaultSerializerSettings = serializerSettings;
             _outputJsonSerializerPool = JsonConvertX.GetJsonSerializerPool(_defaultSerializerSettings);

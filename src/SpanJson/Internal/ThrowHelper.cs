@@ -13,9 +13,19 @@ namespace SpanJson
         internal static void ThrowArgumentException()
         {
             throw GetArgumentException();
-            ArgumentException GetArgumentException()
+            static ArgumentException GetArgumentException()
             {
                 return new ArgumentException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static void ThrowArgumentException_SerializerSettings_same_instance()
+        {
+            throw GetArgumentException();
+            static ArgumentException GetArgumentException()
+            {
+                return new ArgumentException("The serializerSettings and deserializerSettings");
             }
         }
 

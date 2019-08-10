@@ -13,7 +13,6 @@ namespace SpanJson.Formatters
         private static readonly DeserializeDelegate Deserializer = BuildDeserializeDelegate();
         public static readonly EnumStringFormatter<T, TSymbol, TResolver> Default = new EnumStringFormatter<T, TSymbol, TResolver>();
 
-
         public T Deserialize(ref JsonReader<TSymbol> reader, IJsonFormatterResolver<TSymbol> resolver)
         {
             return Deserializer(ref reader);
@@ -46,5 +45,32 @@ namespace SpanJson.Formatters
 
 
         private delegate T DeserializeDelegate(ref JsonReader<TSymbol> reader);
+    }
+
+    public sealed class EnumStringFormatter<T> : ICustomJsonFormatter<T> where T : struct, Enum
+    {
+        public static readonly EnumStringFormatter<T> Default = new EnumStringFormatter<T>();
+
+        public object Arguments { get; set; }
+
+        public T Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
+        {
+            return resolver.GetEnumStringFormatter<T>().Deserialize(ref reader, resolver);
+        }
+
+        public T Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
+        {
+            return resolver.GetEnumStringFormatter<T>().Deserialize(ref reader, resolver);
+        }
+
+        public void Serialize(ref JsonWriter<byte> writer, T value, IJsonFormatterResolver<byte> resolver)
+        {
+            resolver.GetEnumStringFormatter<T>().Serialize(ref writer, value, resolver);
+        }
+
+        public void Serialize(ref JsonWriter<char> writer, T value, IJsonFormatterResolver<char> resolver)
+        {
+            resolver.GetEnumStringFormatter<T>().Serialize(ref writer, value, resolver);
+        }
     }
 }

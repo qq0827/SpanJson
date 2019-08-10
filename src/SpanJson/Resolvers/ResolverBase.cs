@@ -158,6 +158,21 @@ namespace SpanJson.Resolvers
         }
 
         public IJsonFormatter<object, TSymbol> GetRuntimeFormatter() => RuntimeFormatter<TSymbol, TResolver>.Default;
+        public IJsonFormatter<T, TSymbol> GetEnumStringFormatter<T>() where T : struct, Enum
+        {
+            var type = typeof(T);
+            if (type.FirstAttribute<FlagsAttribute>() != null)
+            {
+                var enumBaseType = Enum.GetUnderlyingType(type);
+                return (IJsonFormatter<T, TSymbol>)GetDefaultOrCreate(typeof(EnumStringFlagsFormatter<,,,>).MakeGenericType(type, enumBaseType, typeof(TSymbol), typeof(TResolver)));
+            }
+
+            return EnumStringFormatter<T, TSymbol, TResolver>.Default;
+        }
+        public IJsonFormatter<T, TSymbol> GetEnumIntegerFormatter<T>() where T : struct, Enum
+        {
+            return EnumIntegerFormatter<T, TSymbol, TResolver>.Default;
+        }
         public virtual IJsonFormatter<T, TSymbol> GetFormatter<T>()
         {
             return (IJsonFormatter<T, TSymbol>)GetFormatter(typeof(T));

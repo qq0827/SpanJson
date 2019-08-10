@@ -102,6 +102,14 @@
             }
 
             public IJsonFormatter<object, TSymbol> GetRuntimeFormatter() => RuntimeFormatter<TSymbol, TResolver>.Default;
+            public IJsonFormatter<T, TSymbol> GetEnumStringFormatter<T>() where T : struct, Enum
+            {
+                return EnumStringFormatterCache<T>.Instance;
+            }
+            public IJsonFormatter<T, TSymbol> GetEnumIntegerFormatter<T>() where T : struct, Enum
+            {
+                return EnumIntegerFormatter<T, TSymbol, TResolver>.Default;
+            }
 
             public IJsonFormatter<T, TSymbol> GetFormatter<T>()
             {
@@ -192,6 +200,24 @@
                 private static IJsonFormatter<T, TSymbol> EnsureFormatterCreated()
                 {
                     Interlocked.Exchange(ref s_formatter, s_innerResolver.GetFormatter<T>());
+                    return s_formatter;
+                }
+            }
+
+            internal static class EnumStringFormatterCache<T> where T : struct, Enum
+            {
+                private static IJsonFormatter<T, TSymbol> s_formatter;
+
+                public static IJsonFormatter<T, TSymbol> Instance
+                {
+                    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                    get { return s_formatter ?? EnsureFormatterCreated(); }
+                }
+
+                [MethodImpl(MethodImplOptions.NoInlining)]
+                private static IJsonFormatter<T, TSymbol> EnsureFormatterCreated()
+                {
+                    Interlocked.Exchange(ref s_formatter, s_innerResolver.GetEnumStringFormatter<T>());
                     return s_formatter;
                 }
             }
