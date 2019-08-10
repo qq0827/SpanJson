@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using CuteAnt.Pool;
 using Newtonsoft.Json;
 using SpanJson.Resolvers;
@@ -27,14 +29,14 @@ namespace SpanJson.Serialization
         static readonly Func<Type, JsonSerializer.NonGeneric.Inner<byte, TUtf8Resolver>.Invoker> Utf8InvokerFactory =
             JsonSerializer.NonGeneric.Inner<byte, TUtf8Resolver>.InvokerFactory;
 
-        private readonly NJsonSerializerSettings _defaultSerializerSettings;
-        private readonly NJsonSerializerSettings _defaultDeserializerSettings;
-        private readonly ObjectPool<NJsonSerializer> _outputJsonSerializerPool;
-        private readonly ObjectPool<NJsonSerializer> _inputJsonSerializerPool;
+        private readonly NJsonSerializerSettings _serializerSettings;
+        private readonly NJsonSerializerSettings _deserializerSettings;
+        private ObjectPool<NJsonSerializer> _serializerPool;
+        private ObjectPool<NJsonSerializer> _deserializerPool;
 
         public JsonComplexSerializer()
         {
-            _defaultSerializerSettings = new NJsonSerializerSettings
+            _serializerSettings = new NJsonSerializerSettings
             {
                 //PreserveReferencesHandling = PreserveReferencesHandling.Objects,
                 TypeNameHandling = TypeNameHandling.Auto,
@@ -53,18 +55,17 @@ namespace SpanJson.Serialization
 
                 SerializationBinder = JsonSerializationBinder.Instance
             };
-            _defaultSerializerSettings.Converters.Add(Newtonsoft.Json.Converters.IPAddressConverter.Instance);
-            _defaultSerializerSettings.Converters.Add(Newtonsoft.Json.Converters.IPEndPointConverter.Instance);
-            _defaultSerializerSettings.Converters.Add(Newtonsoft.Json.Converters.CombGuidConverter.Instance);
+            _serializerSettings.Converters.Add(Newtonsoft.Json.Converters.IPAddressConverter.Instance);
+            _serializerSettings.Converters.Add(Newtonsoft.Json.Converters.IPEndPointConverter.Instance);
+            _serializerSettings.Converters.Add(Newtonsoft.Json.Converters.CombGuidConverter.Instance);
 
-            _outputJsonSerializerPool = JsonConvertX.GetJsonSerializerPool(_defaultSerializerSettings);
-
-            _defaultDeserializerSettings = new NJsonSerializerSettings
+            _deserializerSettings = new NJsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Auto,
                 TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
                 ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
 
+                DateParseHandling = DateParseHandling.None,
                 DefaultValueHandling = DefaultValueHandling.Ignore,
                 MissingMemberHandling = MissingMemberHandling.Ignore,
                 NullValueHandling = NullValueHandling.Ignore,
@@ -74,11 +75,9 @@ namespace SpanJson.Serialization
 
                 SerializationBinder = JsonSerializationBinder.Instance
             };
-            _defaultDeserializerSettings.Converters.Add(Newtonsoft.Json.Converters.IPAddressConverter.Instance);
-            _defaultDeserializerSettings.Converters.Add(Newtonsoft.Json.Converters.IPEndPointConverter.Instance);
-            _defaultDeserializerSettings.Converters.Add(Newtonsoft.Json.Converters.CombGuidConverter.Instance);
-
-            _inputJsonSerializerPool = JsonConvertX.GetJsonSerializerPool(_defaultDeserializerSettings);
+            _deserializerSettings.Converters.Add(Newtonsoft.Json.Converters.IPAddressConverter.Instance);
+            _deserializerSettings.Converters.Add(Newtonsoft.Json.Converters.IPEndPointConverter.Instance);
+            _deserializerSettings.Converters.Add(Newtonsoft.Json.Converters.CombGuidConverter.Instance);
         }
 
         public JsonComplexSerializer(NJsonSerializerSettings serializerSettings, NJsonSerializerSettings deserializerSettings)
@@ -87,17 +86,64 @@ namespace SpanJson.Serialization
             if (null == deserializerSettings) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.deserializerSettings); }
             if (ReferenceEquals(serializerSettings, serializerSettings)) { ThrowHelper.ThrowArgumentException_SerializerSettings_same_instance(); }
 
-            _defaultSerializerSettings = serializerSettings;
-            _outputJsonSerializerPool = JsonConvertX.GetJsonSerializerPool(_defaultSerializerSettings);
-
-            _defaultDeserializerSettings = deserializerSettings;
-            _inputJsonSerializerPool = JsonConvertX.GetJsonSerializerPool(_defaultDeserializerSettings);
+            _serializerSettings = serializerSettings;
+            _deserializerSettings = deserializerSettings;
         }
 
         /// <summary>Gets or sets the default <see cref="NJsonSerializerSettings"/> used to configure the <see cref="NJsonSerializer"/>.</summary>
-        public NJsonSerializerSettings DefaultSerializerSettings => _defaultSerializerSettings;
+        public NJsonSerializerSettings SerializerSettings => _serializerSettings;
+        public ObjectPool<NJsonSerializer> SerializerPool
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _serializerPool ?? EnsureSerializerPoolCreated();
+        }
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private ObjectPool<NJsonSerializer> EnsureSerializerPoolCreated()
+        {
+            Interlocked.CompareExchange(ref _serializerPool, JsonConvertX.GetJsonSerializerPool(_serializerSettings), null);
+            return _serializerPool;
+        }
 
         /// <summary>Gets or sets the default <see cref="NJsonSerializerSettings"/> used to configure the <see cref="NJsonSerializer"/>.</summary>
-        public NJsonSerializerSettings DefaultDeserializerSettings => _defaultDeserializerSettings;
+        public NJsonSerializerSettings DeserializerSettings => _deserializerSettings;
+        public ObjectPool<NJsonSerializer> DeserializerPool
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _deserializerPool ?? EnsureDeserializerPoolCreated();
+        }
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private ObjectPool<NJsonSerializer> EnsureDeserializerPoolCreated()
+        {
+            Interlocked.CompareExchange(ref _deserializerPool, JsonConvertX.GetJsonSerializerPool(_deserializerSettings), null);
+            return _deserializerPool;
+        }
+
+        public NJsonSerializerSettings CreateSerializerSettings(Action<NJsonSerializerSettings> configSettings)
+        {
+            if (null == configSettings) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.configSettings); }
+
+            var serializerSettings = new NJsonSerializerSettings();
+            var converters = serializerSettings.Converters;
+            foreach (var item in _serializerSettings.Converters)
+            {
+                converters.Add(item);
+            }
+            configSettings.Invoke(serializerSettings);
+            return serializerSettings;
+        }
+
+        public NJsonSerializerSettings CreateDeserializerSettings(Action<NJsonSerializerSettings> configSettings)
+        {
+            if (null == configSettings) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.configSettings); }
+
+            var serializerSettings = new NJsonSerializerSettings();
+            var converters = serializerSettings.Converters;
+            foreach (var item in _deserializerSettings.Converters)
+            {
+                converters.Add(item);
+            }
+            configSettings.Invoke(serializerSettings);
+            return serializerSettings;
+        }
     }
 }

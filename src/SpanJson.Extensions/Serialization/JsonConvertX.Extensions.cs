@@ -7,11 +7,13 @@ using CuteAnt;
 using CuteAnt.Collections;
 using CuteAnt.Pool;
 using CuteAnt.Reflection;
-using Newtonsoft.Json.Serialization;
 using NFormatting = Newtonsoft.Json.Formatting;
+using NIJsonLineInfo = Newtonsoft.Json.IJsonLineInfo;
+using NJsonReader = Newtonsoft.Json.JsonReader;
 using NJsonConverter = Newtonsoft.Json.JsonConverter;
 using NJsonSerializer = Newtonsoft.Json.JsonSerializer;
 using NJsonSerializerSettings = Newtonsoft.Json.JsonSerializerSettings;
+using NJsonSerializationException = Newtonsoft.Json.JsonSerializationException;
 
 namespace SpanJson.Serialization
 {
@@ -32,7 +34,7 @@ namespace SpanJson.Serialization
 
         public static readonly Newtonsoft.Json.IArrayPool<char> GlobalCharacterArrayPool;
 
-        public static readonly ISerializationBinder DefaultSerializationBinder;
+        public static readonly Newtonsoft.Json.Serialization.ISerializationBinder DefaultSerializationBinder;
 
         static JsonConvertX()
         {
@@ -93,6 +95,27 @@ namespace SpanJson.Serialization
         {
             if (null == jsonSerializer) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.jsonSerializer); }
             s_formattingSetter(jsonSerializer, formatting);
+        }
+
+        #endregion
+
+        #region == CreateJsonSerializationException ==
+
+        internal static NJsonSerializationException CreateJsonSerializationException(NJsonReader reader, string message)
+        {
+            return CreateJsonSerializationException(reader, message, null);
+        }
+
+        internal static NJsonSerializationException CreateJsonSerializationException(NJsonReader reader, string message, Exception ex)
+        {
+            return CreateJsonSerializationException(reader as NIJsonLineInfo, reader.Path, message, ex);
+        }
+
+        internal static NJsonSerializationException CreateJsonSerializationException(NIJsonLineInfo lineInfo, string path, string message, Exception ex)
+        {
+            message = JsonPosition.FormatMessage(lineInfo, path, message);
+
+            return new NJsonSerializationException(message, ex);
         }
 
         #endregion

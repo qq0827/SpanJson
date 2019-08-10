@@ -262,7 +262,7 @@ namespace SpanJson.Tests
                 IncludeNullsCamelCaseResolver<char>.TryRegisterGlobalCustomrResolver(JsonDynamicResolver.Instance);
                 IncludeNullsCamelCaseResolver<byte>.TryRegisterGlobalCustomrResolver(JsonDynamicResolver.Instance);
 
-                JToken.DefaultSettings.Converters.Add(new PrimitiveAConverter());
+                JToken.DefaultSerializerSettings.Converters.Add(new PrimitiveAConverter());
                 JValue.CustomPrimitiveTypes.TryAdd(typeof(PrimitiveA), JTokenType.Undefined);
             }
         }

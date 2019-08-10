@@ -2,11 +2,11 @@
 
 namespace SpanJson.Formatters
 {
-    public sealed class JTokenFormatter : JTokenFormatterBase<JToken>
+    public sealed class JContainerFormatter : JTokenFormatterBase<JContainer>
     {
-        public static readonly JTokenFormatter Default = new JTokenFormatter();
+        public static readonly JContainerFormatter Default = new JContainerFormatter();
 
-        public override void Serialize(ref JsonWriter<byte> writer, JToken value, IJsonFormatterResolver<byte> resolver)
+        public override void Serialize(ref JsonWriter<byte> writer, JContainer value, IJsonFormatterResolver<byte> resolver)
         {
             if (null == value) { return; }
 
@@ -22,12 +22,11 @@ namespace SpanJson.Formatters
                     JPropertyFormatter<JProperty>.Default.Serialize(ref writer, (JProperty)value, resolver);
                     break;
                 default:
-                    JValueFormatter<JValue>.Default.Serialize(ref writer, (JValue)value, resolver);
-                    break;
+                    throw ThrowHelper.GetNotSupportedException();
             }
         }
 
-        public override void Serialize(ref JsonWriter<char> writer, JToken value, IJsonFormatterResolver<char> resolver)
+        public override void Serialize(ref JsonWriter<char> writer, JContainer value, IJsonFormatterResolver<char> resolver)
         {
             if (null == value) { return; }
 
@@ -43,8 +42,7 @@ namespace SpanJson.Formatters
                     JPropertyFormatter<JProperty>.Default.Serialize(ref writer, (JProperty)value, resolver);
                     break;
                 default:
-                    JValueFormatter<JValue>.Default.Serialize(ref writer, (JValue)value, resolver);
-                    break;
+                    throw ThrowHelper.GetNotSupportedException();
             }
         }
     }

@@ -20,7 +20,7 @@ namespace SpanJson.Serialization
         {
             if (IsPolymorphically<T>())
             {
-                return _outputJsonSerializerPool.SerializeObject(input, input.GetType());
+                return SerializerPool.SerializeObject(input, input.GetType());
             }
             return JsonSerializer.Generic.Inner<T, char, TResolver>.InnerSerializeToString(input);
         }
@@ -34,7 +34,7 @@ namespace SpanJson.Serialization
         {
             if (IsPolymorphically<T>())
             {
-                return _outputJsonSerializerPool.SerializeObject(input, input.GetType()).ToCharArray();
+                return SerializerPool.SerializeObject(input, input.GetType()).ToCharArray();
             }
             return JsonSerializer.Generic.Inner<T, char, TResolver>.InnerSerializeToCharArray(input);
         }
@@ -65,7 +65,7 @@ namespace SpanJson.Serialization
         {
             if (IsPolymorphically<T>())
             {
-                _outputJsonSerializerPool.SerializeToWriter(writer, input, input.GetType());
+                SerializerPool.SerializeToWriter(writer, input, input.GetType());
                 return default;
             }
             return JsonSerializer.Generic.Inner<T, char, TResolver>.InnerSerializeAsync(input, writer, cancellationToken);
@@ -84,7 +84,7 @@ namespace SpanJson.Serialization
         {
             if (IsPolymorphically<T>())
             {
-                return (T)_inputJsonSerializerPool.DeserializeObject(input, typeof(T));
+                return (T)DeserializerPool.DeserializeObject(input, typeof(T));
             }
 #if NETSTANDARD2_0 || NET471 || NET451
             return JsonSerializer.Generic.Inner<T, char, TResolver>.InnerDeserialize(input.AsSpan());
@@ -102,7 +102,7 @@ namespace SpanJson.Serialization
         {
             if (IsPolymorphically<T>())
             {
-                return (T)_inputJsonSerializerPool.DeserializeObject(input.AsSpan().ToString(), typeof(T));
+                return (T)DeserializerPool.DeserializeObject(input.AsSpan().ToString(), typeof(T));
             }
             return JsonSerializer.Generic.Inner<T, char, TResolver>.InnerDeserialize(input);
         }
@@ -116,7 +116,7 @@ namespace SpanJson.Serialization
         {
             if (IsPolymorphically<T>())
             {
-                return (T)_inputJsonSerializerPool.DeserializeObject(input.AsSpan().ToString(), typeof(T));
+                return (T)DeserializerPool.DeserializeObject(input.AsSpan().ToString(), typeof(T));
             }
             return JsonSerializer.Generic.Inner<T, char, TResolver>.InnerDeserialize(input);
         }
@@ -130,7 +130,7 @@ namespace SpanJson.Serialization
         {
             if (IsPolymorphically<T>())
             {
-                return (T)_inputJsonSerializerPool.DeserializeObject(input.ToString(), typeof(T));
+                return (T)DeserializerPool.DeserializeObject(input.ToString(), typeof(T));
             }
             return JsonSerializer.Generic.Inner<T, char, TResolver>.InnerDeserialize(input);
         }
@@ -144,7 +144,7 @@ namespace SpanJson.Serialization
         {
             if (IsPolymorphically<T>())
             {
-                return (T)_inputJsonSerializerPool.DeserializeObject(input.ToString(), typeof(T));
+                return (T)DeserializerPool.DeserializeObject(input.ToString(), typeof(T));
             }
             return JsonSerializer.Generic.Inner<T, char, TResolver>.InnerDeserialize(input);
         }
@@ -159,7 +159,7 @@ namespace SpanJson.Serialization
         {
             if (IsPolymorphically<T>())
             {
-                var result = (T)_inputJsonSerializerPool.DeserializeFromReader(reader, typeof(T));
+                var result = (T)DeserializerPool.DeserializeFromReader(reader, typeof(T));
                 return new ValueTask<T>(result);
             }
             return JsonSerializer.Generic.Inner<T, char, TResolver>.InnerDeserializeAsync(reader, cancellationToken);
@@ -178,7 +178,7 @@ namespace SpanJson.Serialization
         {
             if (IsPolymorphically<T>())
             {
-                return _outputJsonSerializerPool.SerializeToByteArray(input);
+                return SerializerPool.SerializeToByteArray(input);
             }
             return JsonSerializer.Generic.Inner<T, byte, TUtf8Resolver>.InnerSerializeToByteArray(input);
         }
@@ -193,7 +193,7 @@ namespace SpanJson.Serialization
         {
             if (IsPolymorphically<T>())
             {
-                return _outputJsonSerializerPool.SerializeToMemoryPool(input);
+                return SerializerPool.SerializeToMemoryPool(input);
             }
             return JsonSerializer.Generic.Inner<T, byte, TUtf8Resolver>.InnerSerializeToByteArrayPool(input);
         }
@@ -209,7 +209,7 @@ namespace SpanJson.Serialization
         {
             if (IsPolymorphically<T>())
             {
-                _outputJsonSerializerPool.SerializeToStream(stream, input);
+                SerializerPool.SerializeToStream(stream, input);
                 return default;
             }
             return JsonSerializer.Generic.Inner<T, byte, TUtf8Resolver>.InnerSerializeAsync(input, stream, cancellationToken);
@@ -228,7 +228,7 @@ namespace SpanJson.Serialization
         {
             if (IsPolymorphically<T>())
             {
-                return (T)_inputJsonSerializerPool.DeserializeFromByteArray(input, typeof(T));
+                return (T)DeserializerPool.DeserializeFromByteArray(input, typeof(T));
             }
             return JsonSerializer.Generic.Inner<T, byte, TUtf8Resolver>.InnerDeserialize(input);
         }
@@ -242,7 +242,7 @@ namespace SpanJson.Serialization
         {
             if (IsPolymorphically<T>())
             {
-                return (T)_inputJsonSerializerPool.DeserializeFromByteArray(input.Array, input.Offset, input.Count, typeof(T));
+                return (T)DeserializerPool.DeserializeFromByteArray(input.Array, input.Offset, input.Count, typeof(T));
             }
             return JsonSerializer.Generic.Inner<T, byte, TUtf8Resolver>.InnerDeserialize(input);
         }
@@ -258,11 +258,11 @@ namespace SpanJson.Serialization
             {
                 if(MemoryMarshal.TryGetArray(input, out ArraySegment<byte> segment))
                 {
-                    return (T)_inputJsonSerializerPool.DeserializeFromByteArray(segment.Array, segment.Offset, segment.Count, typeof(T));
+                    return (T)DeserializerPool.DeserializeFromByteArray(segment.Array, segment.Offset, segment.Count, typeof(T));
                 }
                 else
                 {
-                    return (T)_inputJsonSerializerPool.DeserializeFromByteArray(input.ToArray(), typeof(T));
+                    return (T)DeserializerPool.DeserializeFromByteArray(input.ToArray(), typeof(T));
                 }
             }
             return JsonSerializer.Generic.Inner<T, byte, TUtf8Resolver>.InnerDeserialize(input);
@@ -277,7 +277,7 @@ namespace SpanJson.Serialization
         {
             if (IsPolymorphically<T>())
             {
-                return (T)_inputJsonSerializerPool.DeserializeFromByteArray(input.ToArray(), typeof(T));
+                return (T)DeserializerPool.DeserializeFromByteArray(input.ToArray(), typeof(T));
             }
             return JsonSerializer.Generic.Inner<T, byte, TUtf8Resolver>.InnerDeserialize(input);
         }
@@ -292,7 +292,7 @@ namespace SpanJson.Serialization
         {
             if (IsPolymorphically<T>())
             {
-                var result = (T)_inputJsonSerializerPool.DeserializeFromStream(stream, typeof(T));
+                var result = (T)DeserializerPool.DeserializeFromStream(stream, typeof(T));
                 return new ValueTask<T>(result);
             }
             return JsonSerializer.Generic.Inner<T, byte, TUtf8Resolver>.InnerDeserializeAsync(stream, cancellationToken);

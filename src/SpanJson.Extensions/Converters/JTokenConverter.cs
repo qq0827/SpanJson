@@ -1,11 +1,15 @@
 ﻿using System;
 using SpanJson.Linq;
+using NJsonConverter = Newtonsoft.Json.JsonConverter;
+using NJsonReader = Newtonsoft.Json.JsonReader;
+using NJsonSerializer = Newtonsoft.Json.JsonSerializer;
+using NJsonWriter = Newtonsoft.Json.JsonWriter;
 
 namespace SpanJson.Converters
 {
-    public class JTokenConverter : Newtonsoft.Json.JsonConverter
+    public class JTokenConverter : NJsonConverter
     {
-        public override void WriteJson(Newtonsoft.Json.JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer)
+        public override void WriteJson(NJsonWriter writer, object value, NJsonSerializer serializer)
         {
             switch (value)
             {
@@ -14,7 +18,7 @@ namespace SpanJson.Converters
                     break;
 
                 case JToken jToken:
-                    jToken.WriteTo(writer, serializer.Converters);
+                    jToken.WriteTo(writer, serializer);
                     break;
 
                 default:
@@ -22,7 +26,7 @@ namespace SpanJson.Converters
             }
         }
 
-        public override object ReadJson(Newtonsoft.Json.JsonReader reader, Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer)
+        public override object ReadJson(NJsonReader reader, Type objectType, object existingValue, NJsonSerializer serializer)
         {
             throw ThrowHelper.GetNotSupportedException();
         }

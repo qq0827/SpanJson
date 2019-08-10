@@ -31,6 +31,7 @@ using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using SpanJson.Linq.JsonPath;
+using SpanJson.Serialization;
 using SpanJson.Utilities;
 
 namespace SpanJson.Linq

@@ -26,12 +26,14 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using SpanJson.Internal;
 using SpanJson.Utilities;
+using NIJsonLineInfo = Newtonsoft.Json.IJsonLineInfo;
 
-namespace SpanJson.Linq
+namespace SpanJson.Serialization
 {
     internal enum JsonContainerType
     {
@@ -65,7 +67,7 @@ namespace SpanJson.Linq
                 case JsonContainerType.Object:
                     return PropertyName.Length + 5;
                 case JsonContainerType.Array:
-                //case JsonContainerType.Constructor:
+                    //case JsonContainerType.Constructor:
                     return MathUtils.IntLength((ulong)Position) + 2;
                 default:
                     throw ThrowHelper.GetArgumentOutOfRangeException(ExceptionArgument.type);
@@ -102,7 +104,7 @@ namespace SpanJson.Linq
                     }
                     break;
                 case JsonContainerType.Array:
-                //case JsonContainerType.Constructor:
+                    //case JsonContainerType.Constructor:
                     sb.Append('[');
                     sb.Append(Position);
                     sb.Append(']');
@@ -153,7 +155,7 @@ namespace SpanJson.Linq
                     }
                     break;
                 case JsonContainerType.Array:
-                //case JsonContainerType.Constructor:
+                    //case JsonContainerType.Constructor:
                     sb.Append('[');
                     sb.Append(Position);
                     sb.Append(']');
@@ -197,6 +199,33 @@ namespace SpanJson.Linq
             }
 
             return sb.ToString();
+        }
+
+        internal static string FormatMessage(NIJsonLineInfo lineInfo, string path, string message)
+        {
+            // don't add a fullstop and space when message ends with a new line
+            if (!message.EndsWith(Environment.NewLine, StringComparison.Ordinal))
+            {
+                message = message.Trim();
+
+                if (!message.EndsWith('.'))
+                {
+                    message += ".";
+                }
+
+                message += " ";
+            }
+
+            message += "Path '{0}'".FormatWith(CultureInfo.InvariantCulture, path);
+
+            if (lineInfo != null && lineInfo.HasLineInfo())
+            {
+                message += ", line {0}, position {1}".FormatWith(CultureInfo.InvariantCulture, lineInfo.LineNumber, lineInfo.LinePosition);
+            }
+
+            message += ".";
+
+            return message;
         }
     }
 }

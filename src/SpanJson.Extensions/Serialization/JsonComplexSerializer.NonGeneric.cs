@@ -20,7 +20,7 @@ namespace SpanJson.Serialization
             var inputType = input.GetType();
             if (IsPolymorphically(inputType))
             {
-                return _outputJsonSerializerPool.SerializeObject(input, inputType);
+                return SerializerPool.SerializeObject(input, inputType);
             }
             var invoker = Utf16Invokers.GetOrAdd(inputType, Utf16InvokerFactory);
             return invoker.ToStringSerializer(input);
@@ -36,7 +36,7 @@ namespace SpanJson.Serialization
             var inputType = input.GetType();
             if (IsPolymorphically(inputType))
             {
-                return _outputJsonSerializerPool.SerializeObject(input, inputType).ToCharArray();
+                return SerializerPool.SerializeObject(input, inputType).ToCharArray();
             }
             var invoker = Utf16Invokers.GetOrAdd(inputType, Utf16InvokerFactory);
             return invoker.ToCharArraySerializer(input);
@@ -71,7 +71,7 @@ namespace SpanJson.Serialization
             var inputType = input.GetType();
             if (IsPolymorphically(inputType))
             {
-                _outputJsonSerializerPool.SerializeToWriter(writer, input, inputType);
+                SerializerPool.SerializeToWriter(writer, input, inputType);
                 return default;
             }
             var invoker = Utf16Invokers.GetOrAdd(inputType, Utf16InvokerFactory);
@@ -92,7 +92,7 @@ namespace SpanJson.Serialization
 
             if (IsPolymorphically(type))
             {
-                return _inputJsonSerializerPool.DeserializeObject(input, type);
+                return DeserializerPool.DeserializeObject(input, type);
             }
             var invoker = Utf16Invokers.GetOrAdd(type, Utf16InvokerFactory);
 #if NETSTANDARD2_0 || NET471 || NET451
@@ -112,7 +112,7 @@ namespace SpanJson.Serialization
 
             if (IsPolymorphically(type))
             {
-                return _inputJsonSerializerPool.DeserializeObject(input.AsSpan().ToString(), type);
+                return DeserializerPool.DeserializeObject(input.AsSpan().ToString(), type);
             }
             var invoker = Utf16Invokers.GetOrAdd(type, Utf16InvokerFactory);
             return invoker.FromByteArrayDeserializer(input);
@@ -128,7 +128,7 @@ namespace SpanJson.Serialization
 
             if (IsPolymorphically(type))
             {
-                return _inputJsonSerializerPool.DeserializeObject(input.AsSpan().ToString(), type);
+                return DeserializerPool.DeserializeObject(input.AsSpan().ToString(), type);
             }
             var invoker = Utf16Invokers.GetOrAdd(type, Utf16InvokerFactory);
             return invoker.FromBufferDeserializer(input);
@@ -144,7 +144,7 @@ namespace SpanJson.Serialization
 
             if (IsPolymorphically(type))
             {
-                return _inputJsonSerializerPool.DeserializeObject(input.ToString(), type);
+                return DeserializerPool.DeserializeObject(input.ToString(), type);
             }
             var invoker = Utf16Invokers.GetOrAdd(type, Utf16InvokerFactory);
             return invoker.FromMemoryDeserializer(input);
@@ -160,7 +160,7 @@ namespace SpanJson.Serialization
 
             if (IsPolymorphically(type))
             {
-                return _inputJsonSerializerPool.DeserializeObject(input.ToString(), type);
+                return DeserializerPool.DeserializeObject(input.ToString(), type);
             }
             var invoker = Utf16Invokers.GetOrAdd(type, Utf16InvokerFactory);
             return invoker.Deserializer(input);
@@ -177,7 +177,7 @@ namespace SpanJson.Serialization
 
             if (IsPolymorphically(type))
             {
-                var result = _inputJsonSerializerPool.DeserializeFromReader(reader, type);
+                var result = DeserializerPool.DeserializeFromReader(reader, type);
                 return new ValueTask<object>(result);
             }
             var invoker = Utf16Invokers.GetOrAdd(type, Utf16InvokerFactory);
@@ -198,7 +198,7 @@ namespace SpanJson.Serialization
             var inputType = input.GetType();
             if (IsPolymorphically(inputType))
             {
-                return _outputJsonSerializerPool.SerializeToByteArray(input, inputType);
+                return SerializerPool.SerializeToByteArray(input, inputType);
             }
             var invoker = Utf8Invokers.GetOrAdd(inputType, Utf8InvokerFactory);
             return invoker.ToByteArraySerializer(input);
@@ -215,7 +215,7 @@ namespace SpanJson.Serialization
             var inputType = input.GetType();
             if (IsPolymorphically(inputType))
             {
-                return _outputJsonSerializerPool.SerializeToMemoryPool(input, inputType);
+                return SerializerPool.SerializeToMemoryPool(input, inputType);
             }
             var invoker = Utf8Invokers.GetOrAdd(inputType, Utf8InvokerFactory);
             return invoker.ToByteArrayPoolSerializer(input);
@@ -233,7 +233,7 @@ namespace SpanJson.Serialization
             var inputType = input.GetType();
             if (IsPolymorphically(inputType))
             {
-                _outputJsonSerializerPool.SerializeToStream(stream, input, inputType);
+                SerializerPool.SerializeToStream(stream, input, inputType);
                 return default;
             }
             var invoker = Utf8Invokers.GetOrAdd(inputType, Utf8InvokerFactory);
@@ -253,7 +253,7 @@ namespace SpanJson.Serialization
 
             if (IsPolymorphically(type))
             {
-                return _inputJsonSerializerPool.DeserializeFromByteArray(input, type);
+                return DeserializerPool.DeserializeFromByteArray(input, type);
             }
             var invoker = Utf8Invokers.GetOrAdd(type, Utf8InvokerFactory);
             return invoker.FromByteArrayDeserializer(input);
@@ -269,7 +269,7 @@ namespace SpanJson.Serialization
 
             if (IsPolymorphically(type))
             {
-                return _inputJsonSerializerPool.DeserializeFromByteArray(input.Array, input.Offset, input.Count, type);
+                return DeserializerPool.DeserializeFromByteArray(input.Array, input.Offset, input.Count, type);
             }
             var invoker = Utf8Invokers.GetOrAdd(type, Utf8InvokerFactory);
             return invoker.FromBufferDeserializer(input);
@@ -287,11 +287,11 @@ namespace SpanJson.Serialization
             {
                 if (MemoryMarshal.TryGetArray(input, out ArraySegment<byte> segment))
                 {
-                    return _inputJsonSerializerPool.DeserializeFromByteArray(segment.Array, segment.Offset, segment.Count, type);
+                    return DeserializerPool.DeserializeFromByteArray(segment.Array, segment.Offset, segment.Count, type);
                 }
                 else
                 {
-                    return _inputJsonSerializerPool.DeserializeFromByteArray(input.ToArray(), type);
+                    return DeserializerPool.DeserializeFromByteArray(input.ToArray(), type);
                 }
             }
             var invoker = Utf8Invokers.GetOrAdd(type, Utf8InvokerFactory);
@@ -308,7 +308,7 @@ namespace SpanJson.Serialization
 
             if (IsPolymorphically(type))
             {
-                return _inputJsonSerializerPool.DeserializeFromByteArray(input.ToArray(), type);
+                return DeserializerPool.DeserializeFromByteArray(input.ToArray(), type);
             }
             var invoker = Utf8Invokers.GetOrAdd(type, Utf8InvokerFactory);
             return invoker.Deserializer(input);
@@ -325,7 +325,7 @@ namespace SpanJson.Serialization
 
             if (IsPolymorphically(type))
             {
-                var result = _inputJsonSerializerPool.DeserializeFromStream(stream, type);
+                var result = DeserializerPool.DeserializeFromStream(stream, type);
                 return new ValueTask<object>(result);
             }
             var invoker = Utf8Invokers.GetOrAdd(type, Utf8InvokerFactory);

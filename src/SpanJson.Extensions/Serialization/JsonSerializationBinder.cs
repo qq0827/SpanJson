@@ -1,9 +1,8 @@
-﻿using Newtonsoft.Json.Serialization;
-
-namespace SpanJson.Serialization
+﻿namespace SpanJson.Serialization
 {
     /// <summary>The default serialization binder used when resolving and loading classes from type names.</summary>
-    public sealed class JsonSerializationBinder : CuteAnt.Serialization.DefaultSerializationBinder, ISerializationBinder
+    public sealed class JsonSerializationBinder
+        : CuteAnt.Serialization.DefaultSerializationBinder, Newtonsoft.Json.Serialization.ISerializationBinder
     {
         public static readonly JsonSerializationBinder Instance = new JsonSerializationBinder();
 

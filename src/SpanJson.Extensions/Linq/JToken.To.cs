@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using CuteAnt;
 using SpanJson.Internal;
 using SpanJson.Resolvers;
+using SpanJson.Serialization;
 using SpanJson.Utilities;
+using NJsonWriter = Newtonsoft.Json.JsonWriter;
+using NJsonSerializer = Newtonsoft.Json.JsonSerializer;
+using NJsonSerializerSettings = Newtonsoft.Json.JsonSerializerSettings;
 
 namespace SpanJson.Linq
 {
@@ -22,8 +25,8 @@ namespace SpanJson.Linq
 
         /// <summary>Creates an instance of the specified .NET type from the <see cref="JToken"/>.</summary>
         /// <typeparam name="T">The object type that the token will be deserialized to.</typeparam>
-        /// <typeparam name="TUtf8Resolver">The resolver.</typeparam>
-        /// <typeparam name="TUtf16Resolver">The resolver.</typeparam>
+        /// <typeparam name="TUtf8Resolver">The Utf8 resolver.</typeparam>
+        /// <typeparam name="TUtf16Resolver">The Utf16 resolver.</typeparam>
         /// <returns>The new object created from the JSON value.</returns>
         public T ToObject<T, TUtf8Resolver, TUtf16Resolver>()
             where TUtf8Resolver : IJsonFormatterResolver<byte, TUtf8Resolver>, new()
@@ -43,17 +46,117 @@ namespace SpanJson.Linq
         }
 
         /// <summary>Creates an instance of the specified .NET type from the <see cref="JToken"/>.</summary>
-        /// <typeparam name="TUtf8Resolver">The resolver.</typeparam>
-        /// <typeparam name="TUtf16Resolver">The resolver.</typeparam>
+        /// <typeparam name="TUtf8Resolver">The Utf8 resolver.</typeparam>
+        /// <typeparam name="TUtf16Resolver">The Utf16 resolver.</typeparam>
         /// <param name="objectType">The object type that the token will be deserialized to.</param>
         /// <returns>The new object created from the JSON value.</returns>
         public object ToObject<TUtf8Resolver, TUtf16Resolver>(Type objectType)
             where TUtf8Resolver : IJsonFormatterResolver<byte, TUtf8Resolver>, new()
             where TUtf16Resolver : IJsonFormatterResolver<char, TUtf16Resolver>, new()
         {
+            if (null == objectType) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.objectType); }
+
             if (TryConvertOrCast<TUtf8Resolver, TUtf16Resolver>(objectType, out object result)) { return result; }
 
             return ToObjectInternal<TUtf8Resolver, TUtf16Resolver>(objectType);
+        }
+
+        /// <summary>Creates an instance of the specified .NET type from the <see cref="JToken"/>.</summary>
+        /// <typeparam name="T">The object type that the token will be deserialized to.</typeparam>
+        /// <returns>The new object created from the JSON value.</returns>
+        public T ToPolymorphicObject<T>()
+        {
+            if (TryConvertOrCast<ExcludeNullsOriginalCaseResolver<byte>, ExcludeNullsOriginalCaseResolver<char>>(typeof(T), out object result)) { return (T)result; }
+
+            var jsonSerializer = DefaultDeserializerPool.Take();
+            try
+            {
+                return ToObjectInternal<T, ExcludeNullsOriginalCaseResolver<byte>, ExcludeNullsOriginalCaseResolver<char>>(jsonSerializer);
+            }
+            finally
+            {
+                DefaultDeserializerPool.Return(jsonSerializer);
+            }
+        }
+
+        /// <summary>Creates an instance of the specified .NET type from the <see cref="JToken"/>
+        /// using the specified <see cref="NJsonSerializer"/>.</summary>
+        /// <typeparam name="T">The object type that the token will be deserialized to.</typeparam>
+        /// <param name="jsonSerializer">The <see cref="NJsonSerializer"/> that will be used when creating the object.</param>
+        /// <returns>The new object created from the JSON value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T ToPolymorphicObject<T>(NJsonSerializer jsonSerializer)
+        {
+            return ToPolymorphicObject<T, ExcludeNullsOriginalCaseResolver<byte>, ExcludeNullsOriginalCaseResolver<char>>(jsonSerializer);
+        }
+
+        /// <summary>Creates an instance of the specified .NET type from the <see cref="JToken"/>
+        /// using the specified <see cref="NJsonSerializer"/>.</summary>
+        /// <typeparam name="T">The object type that the token will be deserialized to.</typeparam>
+        /// <typeparam name="TUtf8Resolver">The Utf8 resolver.</typeparam>
+        /// <typeparam name="TUtf16Resolver">The Utf16 resolver.</typeparam>
+        /// <param name="jsonSerializer">The <see cref="NJsonSerializer"/> that will be used when creating the object.</param>
+        /// <returns>The new object created from the JSON value.</returns>
+        public T ToPolymorphicObject<T, TUtf8Resolver, TUtf16Resolver>(NJsonSerializer jsonSerializer)
+            where TUtf8Resolver : IJsonFormatterResolver<byte, TUtf8Resolver>, new()
+            where TUtf16Resolver : IJsonFormatterResolver<char, TUtf16Resolver>, new()
+        {
+            if (TryConvertOrCast<TUtf8Resolver, TUtf16Resolver>(typeof(T), out object result)) { return (T)result; }
+
+            if (null == jsonSerializer) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.jsonSerializer); }
+
+            return ToObjectInternal<T, TUtf8Resolver, TUtf16Resolver>(jsonSerializer);
+        }
+
+        /// <summary>Creates an instance of the specified .NET type from the <see cref="JToken"/>.</summary>
+        /// <param name="objectType">The object type that the token will be deserialized to.</param>
+        /// <returns>The new object created from the JSON value.</returns>
+        public object ToPolymorphicObject(Type objectType)
+        {
+            if (null == objectType) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.objectType); }
+
+            if (TryConvertOrCast<ExcludeNullsOriginalCaseResolver<byte>, ExcludeNullsOriginalCaseResolver<char>>(objectType, out object result)) { return result; }
+
+            var jsonSerializer = DefaultDeserializerPool.Take();
+            try
+            {
+                return ToObjectInternal<ExcludeNullsOriginalCaseResolver<byte>, ExcludeNullsOriginalCaseResolver<char>>(objectType, jsonSerializer);
+            }
+            finally
+            {
+                DefaultDeserializerPool.Return(jsonSerializer);
+            }
+        }
+
+        /// <summary>Creates an instance of the specified .NET type from the <see cref="JToken"/>
+        /// using the specified <see cref="NJsonSerializer"/>.</summary>
+        /// <param name="objectType">The object type that the token will be deserialized to.</param>
+        /// <param name="jsonSerializer">The <see cref="NJsonSerializer"/> that will be used when creating the object.</param>
+        /// <returns>The new object created from the JSON value.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public object ToPolymorphicObject(Type objectType, NJsonSerializer jsonSerializer)
+        {
+            return ToPolymorphicObject<ExcludeNullsOriginalCaseResolver<byte>, ExcludeNullsOriginalCaseResolver<char>>(objectType, jsonSerializer);
+        }
+
+        /// <summary>Creates an instance of the specified .NET type from the <see cref="JToken"/>
+        /// using the specified <see cref="NJsonSerializer"/>.</summary>
+        /// <typeparam name="TUtf8Resolver">The Utf8 resolver.</typeparam>
+        /// <typeparam name="TUtf16Resolver">The Utf16 resolver.</typeparam>
+        /// <param name="objectType">The object type that the token will be deserialized to.</param>
+        /// <param name="jsonSerializer">The <see cref="NJsonSerializer"/> that will be used when creating the object.</param>
+        /// <returns>The new object created from the JSON value.</returns>
+        public object ToPolymorphicObject<TUtf8Resolver, TUtf16Resolver>(Type objectType, NJsonSerializer jsonSerializer)
+            where TUtf8Resolver : IJsonFormatterResolver<byte, TUtf8Resolver>, new()
+            where TUtf16Resolver : IJsonFormatterResolver<char, TUtf16Resolver>, new()
+        {
+            if (null == objectType) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.objectType); }
+
+            if (TryConvertOrCast<TUtf8Resolver, TUtf16Resolver>(objectType, out object result)) { return result; }
+
+            if (null == jsonSerializer) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.jsonSerializer); }
+
+            return ToObjectInternal<TUtf8Resolver, TUtf16Resolver>(objectType, jsonSerializer);
         }
 
         #region ** TryConvertOrCast **
@@ -248,10 +351,40 @@ namespace SpanJson.Linq
             return JsonSerializer.NonGeneric.Utf8.Deserialize<TUtf8Resolver>(utf8Json, objectType);
         }
 
-        /// <summary>Writes this token to a <see cref="Newtonsoft.Json.JsonWriter"/>.</summary>
-        /// <param name="writer">A <see cref="Newtonsoft.Json.JsonWriter"/> into which this method will write.</param>
-        /// <param name="converters">A collection of <see cref="Newtonsoft.Json.JsonConverter"/> which will be used when writing the token.</param>
-        public abstract void WriteTo(Newtonsoft.Json.JsonWriter writer, IList<Newtonsoft.Json.JsonConverter> converters);
+        protected virtual T ToObjectInternal<T, TUtf8Resolver, TUtf16Resolver>(NJsonSerializer jsonSerializer)
+            where TUtf8Resolver : IJsonFormatterResolver<byte, TUtf8Resolver>, new()
+            where TUtf16Resolver : IJsonFormatterResolver<char, TUtf16Resolver>, new()
+        {
+            var utf8Json = JsonSerializer.NonGeneric.Utf8.SerializeToArrayPool<TUtf8Resolver>(this);
+            try
+            {
+                return (T)jsonSerializer.DeserializeFromByteArray(utf8Json.Array, utf8Json.Offset, utf8Json.Count, typeof(T));
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(utf8Json.Array);
+            }
+        }
+
+        protected virtual object ToObjectInternal<TUtf8Resolver, TUtf16Resolver>(Type objectType, NJsonSerializer jsonSerializer)
+            where TUtf8Resolver : IJsonFormatterResolver<byte, TUtf8Resolver>, new()
+            where TUtf16Resolver : IJsonFormatterResolver<char, TUtf16Resolver>, new()
+        {
+            var utf8Json = JsonSerializer.NonGeneric.Utf8.SerializeToArrayPool<TUtf8Resolver>(this);
+            try
+            {
+                return jsonSerializer.DeserializeFromByteArray(utf8Json.Array, utf8Json.Offset, utf8Json.Count, objectType);
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(utf8Json.Array);
+            }
+        }
+
+        /// <summary>Writes this token to a <see cref="NJsonWriter"/>.</summary>
+        /// <param name="writer">A <see cref="NJsonWriter"/> into which this method will write.</param>
+        /// <param name="serializer">The calling serializer.</param>
+        public abstract void WriteTo(NJsonWriter writer, NJsonSerializer serializer);
 
         /// <summary>Returns the JSON for this token.</summary>
         /// <returns>The JSON for this token.</returns>

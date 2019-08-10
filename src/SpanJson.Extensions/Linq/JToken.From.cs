@@ -4,42 +4,12 @@ using System.Runtime.CompilerServices;
 using SpanJson.Document;
 using SpanJson.Dynamic;
 using SpanJson.Resolvers;
+using NJsonSerializer = Newtonsoft.Json.JsonSerializer;
 
 namespace SpanJson.Linq
 {
     partial class JToken
     {
-        #region -- DefaultSettings --
-
-        private static readonly Newtonsoft.Json.JsonSerializerSettings _serializerSettings;
-
-        public static Newtonsoft.Json.JsonSerializerSettings DefaultSettings => _serializerSettings;
-
-        static JToken()
-        {
-            _serializerSettings = new Newtonsoft.Json.JsonSerializerSettings();
-            var converters = new List<Newtonsoft.Json.JsonConverter>
-            {
-                new SpanJson.Converters.DynamicObjectConverter(),
-                new SpanJson.Converters.DynamicUtf16ArrayConverter(),
-                new SpanJson.Converters.DynamicUtf16NumberConverter(),
-                new SpanJson.Converters.DynamicUtf16StringConverter(),
-                new SpanJson.Converters.DynamicUtf8ArrayConverter(),
-                new SpanJson.Converters.DynamicUtf8NumberConverter(),
-                new SpanJson.Converters.DynamicUtf8StringConverter(),
-
-                new SpanJson.Converters.JsonDocumentConverter(),
-                new SpanJson.Converters.JsonElementConverter(),
-
-                new SpanJson.Converters.JTokenConverter(),
-
-                new SpanJson.Converters.CombGuidJTokenConverter(),
-            };
-            _serializerSettings.Converters = converters;
-        }
-
-        #endregion
-
         #region -- From --
 
         /// <summary>Creates a <see cref="JToken"/> from an object.</summary>
@@ -115,19 +85,43 @@ namespace SpanJson.Linq
         /// <returns>A <see cref="JToken"/> with the value of the specified object.</returns>
         public static JToken FromObject(object o)
         {
-            return FromObjectInternal(o, Newtonsoft.Json.JsonSerializer.Create(DefaultSettings));
+            var jsonSerializer = DefaultSerializerPool.Take();
+            try
+            {
+                return FromObjectInternal(o, jsonSerializer);
+            }
+            finally
+            {
+                DefaultSerializerPool.Return(jsonSerializer);
+            }
         }
 
-        /// <summary>Creates a <see cref="JToken"/> from an object using the specified <see cref="Newtonsoft.Json.JsonSerializer"/>.</summary>
+        /// <summary>Creates a <see cref="JToken"/> from an object.</summary>
         /// <param name="o">The object that will be used to create <see cref="JToken"/>.</param>
-        /// <param name="jsonSerializer">The <see cref="Newtonsoft.Json.JsonSerializer"/> that will be used when reading the object.</param>
         /// <returns>A <see cref="JToken"/> with the value of the specified object.</returns>
-        public static JToken FromObject(object o, Newtonsoft.Json.JsonSerializer jsonSerializer)
+        public static JToken FromPolymorphicObject(object o)
+        {
+            var jsonSerializer = PolymorphicSerializerPool.Take();
+            try
+            {
+                return FromObjectInternal(o, jsonSerializer);
+            }
+            finally
+            {
+                PolymorphicSerializerPool.Return(jsonSerializer);
+            }
+        }
+
+        /// <summary>Creates a <see cref="JToken"/> from an object using the specified <see cref="NJsonSerializer"/>.</summary>
+        /// <param name="o">The object that will be used to create <see cref="JToken"/>.</param>
+        /// <param name="jsonSerializer">The <see cref="NJsonSerializer"/> that will be used when reading the object.</param>
+        /// <returns>A <see cref="JToken"/> with the value of the specified object.</returns>
+        public static JToken FromObject(object o, NJsonSerializer jsonSerializer)
         {
             return FromObjectInternal(o, jsonSerializer);
         }
 
-        internal static JToken FromObjectInternal(object o, Newtonsoft.Json.JsonSerializer jsonSerializer)
+        internal static JToken FromObjectInternal(object o, NJsonSerializer jsonSerializer)
         {
             if (TryReadJsonDynamic(o, out JToken token)) { return token; }
 

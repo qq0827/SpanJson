@@ -26,11 +26,12 @@
 using System;
 using System.Xml;
 using System.Xml.Linq;
-using Newtonsoft.Json.Converters;
 using NFormatting = Newtonsoft.Json.Formatting;
+using NTypeNameHandling = Newtonsoft.Json.TypeNameHandling;
 using NJsonConverter = Newtonsoft.Json.JsonConverter;
 using NJsonSerializer = Newtonsoft.Json.JsonSerializer;
 using NJsonSerializerSettings = Newtonsoft.Json.JsonSerializerSettings;
+using NXmlNodeConverter = Newtonsoft.Json.Converters.XmlNodeConverter;
 
 namespace SpanJson.Serialization
 {
@@ -98,7 +99,7 @@ namespace SpanJson.Serialization
         /// <param name="settings">The <see cref="NJsonSerializerSettings"/> used to serialize the object.
         /// If this is <c>null</c>, default serialization settings will be used.</param>
         /// <param name="type">The type of the value being serialized.
-        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="Newtonsoft.Json.TypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
+        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="NTypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
         /// Specifying the type is optional.</param>
         /// <returns>A JSON string representation of the object.</returns>
         public static string SerializeObject(object value, Type type, NJsonSerializerSettings settings)
@@ -125,7 +126,7 @@ namespace SpanJson.Serialization
         /// <param name="settings">The <see cref="NJsonSerializerSettings"/> used to serialize the object.
         /// If this is <c>null</c>, default serialization settings will be used.</param>
         /// <param name="type">The type of the value being serialized.
-        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="Newtonsoft.Json.TypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
+        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="NTypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
         /// Specifying the type is optional.</param>
         /// <returns>A JSON string representation of the object.</returns>
         public static string SerializeObject(object value, Type type, NFormatting formatting, NJsonSerializerSettings settings)
@@ -250,6 +251,30 @@ namespace SpanJson.Serialization
 
         #endregion
 
+        #region -- Populate --
+
+        /// <summary>Populates the object with values from the JSON string.</summary>
+        /// <param name="value">The JSON to populate values from.</param>
+        /// <param name="target">The target object to populate values onto.</param>
+        public static void PopulateObject(string value, object target)
+        {
+            PopulateObject(value, target, null);
+        }
+
+        /// <summary>Populates the object with values from the JSON string using <see cref="NJsonSerializerSettings"/>.</summary>
+        /// <param name="value">The JSON to populate values from.</param>
+        /// <param name="target">The target object to populate values onto.</param>
+        /// <param name="settings">The <see cref="NJsonSerializerSettings"/> used to deserialize the object.
+        /// If this is <c>null</c>, default serialization settings will be used.</param>
+        public static void PopulateObject(string value, object target, NJsonSerializerSettings settings)
+        {
+            var jsonSerializer = NJsonSerializer.CreateDefault(settings);
+
+            jsonSerializer.PopulateObject(target, value);
+        }
+
+        #endregion
+
         #region -- Xml --
 
         /// <summary>Serializes the <see cref="XmlNode"/> to a JSON string.</summary>
@@ -266,7 +291,7 @@ namespace SpanJson.Serialization
         /// <returns>A JSON string of the <see cref="XmlNode"/>.</returns>
         public static string SerializeXmlNode(XmlNode node, NFormatting formatting)
         {
-            var converter = new XmlNodeConverter();
+            var converter = new NXmlNodeConverter();
 
             return SerializeObject(node, formatting, converter);
         }
@@ -278,7 +303,7 @@ namespace SpanJson.Serialization
         /// <returns>A JSON string of the <see cref="XmlNode"/>.</returns>
         public static string SerializeXmlNode(XmlNode node, NFormatting formatting, bool omitRootObject)
         {
-            var converter = new XmlNodeConverter { OmitRootObject = omitRootObject };
+            var converter = new NXmlNodeConverter { OmitRootObject = omitRootObject };
 
             return SerializeObject(node, formatting, converter);
         }
@@ -309,7 +334,7 @@ namespace SpanJson.Serialization
         /// <returns>The deserialized <see cref="XmlNode"/>.</returns>
         public static XmlDocument DeserializeXmlNode(string value, string deserializeRootElementName, bool writeArrayAttribute)
         {
-            var converter = new XmlNodeConverter()
+            var converter = new NXmlNodeConverter()
             {
                 DeserializeRootElementName = deserializeRootElementName,
                 WriteArrayAttribute = writeArrayAttribute
@@ -341,7 +366,7 @@ namespace SpanJson.Serialization
         /// <returns>A JSON string of the <see cref="XNode"/>.</returns>
         public static string SerializeXNode(XObject node, NFormatting formatting, bool omitRootObject)
         {
-            var converter = new XmlNodeConverter { OmitRootObject = omitRootObject };
+            var converter = new NXmlNodeConverter { OmitRootObject = omitRootObject };
 
             return SerializeObject(node, formatting, converter);
         }
@@ -372,7 +397,7 @@ namespace SpanJson.Serialization
         /// <returns>The deserialized <see cref="XNode"/>.</returns>
         public static XDocument DeserializeXNode(string value, string deserializeRootElementName, bool writeArrayAttribute)
         {
-            var converter = new XmlNodeConverter()
+            var converter = new NXmlNodeConverter()
             {
                 DeserializeRootElementName = deserializeRootElementName,
                 WriteArrayAttribute = writeArrayAttribute

@@ -5,6 +5,8 @@ using System.Numerics;
 using SpanJson.Document;
 using SpanJson.Dynamic;
 using SpanJson.Utilities;
+using NJsonSerializer = Newtonsoft.Json.JsonSerializer;
+using NJsonWriter = Newtonsoft.Json.JsonWriter;
 
 namespace SpanJson.Linq
 {
@@ -100,21 +102,33 @@ namespace SpanJson.Linq
             }
         }
 
-        /// <summary>Writes this token to a <see cref="Newtonsoft.Json.JsonWriter"/>.</summary>
-        /// <param name="writer">A <see cref="Newtonsoft.Json.JsonWriter"/> into which this method will write.</param>
-        /// <param name="converters">A collection of <see cref="Newtonsoft.Json.JsonConverter"/> which will be used when writing the token.</param>
-        public override void WriteTo(Newtonsoft.Json.JsonWriter writer, IList<Newtonsoft.Json.JsonConverter> converters)
+        protected override T ToObjectInternal<T, TUtf8Resolver, TUtf16Resolver>(NJsonSerializer jsonSerializer)
         {
-            // 这儿需屏蔽，JValue所能处理的基元类型不能再有 JsonConverter 来处理
-            //if (converters != null && converters.Count > 0 && _value != null)
-            //{
-            //    var matchingConverter = GetMatchingConverter(converters, _value.GetType());
-            //    if (matchingConverter != null && matchingConverter.CanWrite)
-            //    {
-            //        matchingConverter.WriteJson(writer, _value, Newtonsoft.Json.JsonSerializer.Create(DefaultSettings));
-            //        return;
-            //    }
-            //}
+            return ToObjectInternal<T, TUtf8Resolver, TUtf16Resolver>();
+        }
+
+        protected override object ToObjectInternal<TUtf8Resolver, TUtf16Resolver>(Type objectType, NJsonSerializer jsonSerializer)
+        {
+            return ToObjectInternal<TUtf8Resolver, TUtf16Resolver>(objectType);
+        }
+
+        /// <summary>Writes this token to a <see cref="NJsonWriter"/>.</summary>
+        /// <param name="writer">A <see cref="NJsonWriter"/> into which this method will write.</param>
+        /// <param name="serializer">The calling serializer.</param>
+        public override void WriteTo(NJsonWriter writer, NJsonSerializer serializer)
+        {
+            if(!(writer is JTokenWriter))
+            {
+                if (_value != null)
+                {
+                    var matchingConverter = GetMatchingConverter(serializer.Converters, _value.GetType());
+                    if (matchingConverter != null && matchingConverter.CanWrite)
+                    {
+                        matchingConverter.WriteJson(writer, _value, serializer);
+                        return;
+                    }
+                }
+            }
 
             switch (_valueType)
             {

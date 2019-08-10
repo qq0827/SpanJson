@@ -1,6 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
 using SpanJson.Document;
 using SpanJson.Resolvers;
+using SpanJson.Serialization;
+using NJsonSerializer = Newtonsoft.Json.JsonSerializer;
 
 namespace SpanJson.Linq
 {
@@ -57,16 +59,42 @@ namespace SpanJson.Linq
         /// <returns>A <see cref="JObject"/> with the value of the specified object.</returns>
         public new static JObject FromObject(object o)
         {
-            JToken token = FromObjectInternal(o, Newtonsoft.Json.JsonSerializer.Create(DefaultSettings));
+            var jsonSerializer = DefaultSerializerPool.Take();
+            try
+            {
+                JToken token = FromObjectInternal(o, jsonSerializer);
 
-            return ToJObject(token);
+                return ToJObject(token);
+            }
+            finally
+            {
+                DefaultSerializerPool.Return(jsonSerializer);
+            }
         }
 
-        /// <summary>Creates a <see cref="JObject"/> from an object using the specified <see cref="Newtonsoft.Json.JsonSerializer"/>.</summary>
+        /// <summary>Creates a <see cref="JObject"/> from an object.</summary>
         /// <param name="o">The object that will be used to create <see cref="JObject"/>.</param>
-        /// <param name="jsonSerializer">The <see cref="Newtonsoft.Json.JsonSerializer"/> that will be used when reading the object.</param>
         /// <returns>A <see cref="JObject"/> with the value of the specified object.</returns>
-        public new static JObject FromObject(object o, Newtonsoft.Json.JsonSerializer jsonSerializer)
+        public new static JObject FromPolymorphicObject(object o)
+        {
+            var jsonSerializer = PolymorphicSerializerPool.Take();
+            try
+            {
+                JToken token = FromObjectInternal(o, jsonSerializer);
+
+                return ToJObject(token);
+            }
+            finally
+            {
+                PolymorphicSerializerPool.Return(jsonSerializer);
+            }
+        }
+
+        /// <summary>Creates a <see cref="JObject"/> from an object using the specified <see cref="NJsonSerializer"/>.</summary>
+        /// <param name="o">The object that will be used to create <see cref="JObject"/>.</param>
+        /// <param name="jsonSerializer">The <see cref="NJsonSerializer"/> that will be used when reading the object.</param>
+        /// <returns>A <see cref="JObject"/> with the value of the specified object.</returns>
+        public new static JObject FromObject(object o, NJsonSerializer jsonSerializer)
         {
             JToken token = FromObjectInternal(o, jsonSerializer);
 

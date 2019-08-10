@@ -3,11 +3,10 @@
 
 using System;
 using System.Buffers;
-using Newtonsoft.Json;
 
 namespace SpanJson.Serialization
 {
-    public class JsonArrayPool<T> : IArrayPool<T>
+    public class JsonArrayPool<T> : Newtonsoft.Json.IArrayPool<T>
     {
         private readonly ArrayPool<T> _inner;
 

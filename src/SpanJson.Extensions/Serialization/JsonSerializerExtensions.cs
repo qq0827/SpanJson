@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Buffers;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using CuteAnt.Buffers;
 using CuteAnt.Pool;
 using CuteAnt.Text;
+using NJsonReader = Newtonsoft.Json.JsonReader;
 using NJsonSerializer = Newtonsoft.Json.JsonSerializer;
-using JsonTextWriter = Newtonsoft.Json.JsonTextWriter;
-using JsonTextReader = Newtonsoft.Json.JsonTextReader;
-using TypeNameHandling = Newtonsoft.Json.TypeNameHandling;
+using NJsonTextReader = Newtonsoft.Json.JsonTextReader;
+using NJsonTextWriter = Newtonsoft.Json.JsonTextWriter;
+using NJsonToken = Newtonsoft.Json.JsonToken;
+using NTypeNameHandling = Newtonsoft.Json.TypeNameHandling;
 
 namespace SpanJson.Serialization
 {
@@ -24,7 +27,7 @@ namespace SpanJson.Serialization
         /// <param name="jsonSerializer">The <see cref="NJsonSerializer"/> used to serialize the object</param>
         /// <param name="value">The object to serialize.</param>
         /// <param name="type">The type of the value being serialized.
-        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="TypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
+        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="NTypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
         /// Specifying the type is optional.</param>
         /// <returns>A JSON string representation of the object.</returns>
         public static string SerializeObject(this NJsonSerializer jsonSerializer, object value, Type type = null)
@@ -33,7 +36,7 @@ namespace SpanJson.Serialization
             {
                 var sw = pooledStringWriter.Object;
 
-                using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
+                using (NJsonTextWriter jsonWriter = new NJsonTextWriter(sw))
                 {
                     jsonWriter.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
                     jsonWriter.CloseOutput = false;
@@ -50,7 +53,7 @@ namespace SpanJson.Serialization
         /// <param name="jsonSerializerPool">The <see cref="NJsonSerializer"/> pool used to serialize the object</param>
         /// <param name="value">The object to serialize.</param>
         /// <param name="type">The type of the value being serialized.
-        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="TypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
+        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="NTypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
         /// Specifying the type is optional.</param>
         /// <returns>A JSON string representation of the object.</returns>
         public static string SerializeObject(this ObjectPool<NJsonSerializer> jsonSerializerPool, object value, Type type = null)
@@ -60,7 +63,7 @@ namespace SpanJson.Serialization
 
             try
             {
-                using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
+                using (NJsonTextWriter jsonWriter = new NJsonTextWriter(sw))
                 {
                     jsonWriter.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
                     jsonWriter.CloseOutput = false;
@@ -100,7 +103,7 @@ namespace SpanJson.Serialization
                     jsonSerializer.CheckAdditionalContent = true;
                 }
 
-                using (var reader = new JsonTextReader(new StringReader(value)))
+                using (var reader = new NJsonTextReader(new StringReader(value)))
                 {
                     reader.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
                     reader.CloseInput = false;
@@ -133,7 +136,7 @@ namespace SpanJson.Serialization
                     jsonSerializer.CheckAdditionalContent = true;
                 }
 
-                using (var reader = new JsonTextReader(new StringReader(value)))
+                using (var reader = new NJsonTextReader(new StringReader(value)))
                 {
                     reader.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
                     reader.CloseInput = false;
@@ -156,7 +159,7 @@ namespace SpanJson.Serialization
         /// <param name="jsonSerializer">The <see cref="NJsonSerializer"/> used to serialize the object</param>
         /// <param name="value">The object to serialize.</param>
         /// <param name="type">The type of the value being serialized.
-        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="TypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
+        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="NTypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
         /// Specifying the type is optional.</param>
         /// <param name="initialBufferSize"></param>
         /// <returns>A JSON string representation of the object.</returns>
@@ -167,7 +170,7 @@ namespace SpanJson.Serialization
                 var outputStream = pooledOutputStream.Object;
                 outputStream.Reinitialize(initialBufferSize, s_sharedBufferPool);
 
-                using (JsonTextWriter jsonWriter = new JsonTextWriter(new StreamWriterX(outputStream, UTF8NoBOM)))
+                using (NJsonTextWriter jsonWriter = new NJsonTextWriter(new StreamWriterX(outputStream, UTF8NoBOM)))
                 {
                     jsonWriter.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
                     jsonWriter.CloseOutput = false;
@@ -184,7 +187,7 @@ namespace SpanJson.Serialization
         /// <param name="jsonSerializerPool">The <see cref="NJsonSerializer"/> pool used to serialize the object</param>
         /// <param name="value">The object to serialize.</param>
         /// <param name="type">The type of the value being serialized.
-        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="TypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
+        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="NTypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
         /// Specifying the type is optional.</param>
         /// <param name="initialBufferSize"></param>
         /// <returns>A JSON string representation of the object.</returns>
@@ -196,7 +199,7 @@ namespace SpanJson.Serialization
 
             try
             {
-                using (JsonTextWriter jsonWriter = new JsonTextWriter(new StreamWriterX(outputStream, UTF8NoBOM)))
+                using (NJsonTextWriter jsonWriter = new NJsonTextWriter(new StreamWriterX(outputStream, UTF8NoBOM)))
                 {
                     jsonWriter.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
                     jsonWriter.CloseOutput = false;
@@ -222,7 +225,7 @@ namespace SpanJson.Serialization
         /// <param name="jsonSerializer">The <see cref="NJsonSerializer"/> used to serialize the object</param>
         /// <param name="value">The object to serialize.</param>
         /// <param name="type">The type of the value being serialized.
-        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="TypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
+        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="NTypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
         /// Specifying the type is optional.</param>
         /// <param name="initialBufferSize"></param>
         /// <returns>A JSON string representation of the object.</returns>
@@ -233,7 +236,7 @@ namespace SpanJson.Serialization
                 var outputStream = pooledOutputStream.Object;
                 outputStream.Reinitialize(initialBufferSize, s_sharedBufferPool);
 
-                using (JsonTextWriter jsonWriter = new JsonTextWriter(new StreamWriterX(outputStream, UTF8NoBOM)))
+                using (NJsonTextWriter jsonWriter = new NJsonTextWriter(new StreamWriterX(outputStream, UTF8NoBOM)))
                 {
                     jsonWriter.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
                     jsonWriter.CloseOutput = false;
@@ -250,7 +253,7 @@ namespace SpanJson.Serialization
         /// <param name="jsonSerializerPool">The <see cref="NJsonSerializer"/> pool used to serialize the object</param>
         /// <param name="value">The object to serialize.</param>
         /// <param name="type">The type of the value being serialized.
-        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="TypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
+        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="NTypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
         /// Specifying the type is optional.</param>
         /// <param name="initialBufferSize"></param>
         /// <returns>A JSON string representation of the object.</returns>
@@ -262,7 +265,7 @@ namespace SpanJson.Serialization
 
             try
             {
-                using (JsonTextWriter jsonWriter = new JsonTextWriter(new StreamWriterX(outputStream, UTF8NoBOM)))
+                using (NJsonTextWriter jsonWriter = new NJsonTextWriter(new StreamWriterX(outputStream, UTF8NoBOM)))
                 {
                     jsonWriter.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
                     jsonWriter.CloseOutput = false;
@@ -314,7 +317,7 @@ namespace SpanJson.Serialization
                     jsonSerializer.CheckAdditionalContent = true;
                 }
 
-                using (var reader = new JsonTextReader(new StreamReaderX(new MemoryStream(value, offset, count), Encoding.UTF8)))
+                using (var reader = new NJsonTextReader(new StreamReaderX(new MemoryStream(value, offset, count), Encoding.UTF8)))
                 {
                     reader.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
                     reader.CloseInput = false;
@@ -361,7 +364,7 @@ namespace SpanJson.Serialization
                     jsonSerializer.CheckAdditionalContent = true;
                 }
 
-                using (var reader = new JsonTextReader(new StreamReaderX(new MemoryStream(value, offset, count), Encoding.UTF8)))
+                using (var reader = new NJsonTextReader(new StreamReaderX(new MemoryStream(value, offset, count), Encoding.UTF8)))
                 {
                     reader.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
                     reader.CloseInput = false;
@@ -385,12 +388,12 @@ namespace SpanJson.Serialization
         /// <param name="outputStream"></param>
         /// <param name="value">The object to serialize.</param>
         /// <param name="type">The type of the value being serialized.
-        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="TypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
+        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="NTypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
         /// Specifying the type is optional.</param>
         /// <returns>A JSON string representation of the object.</returns>
         public static void SerializeToStream(this NJsonSerializer jsonSerializer, Stream outputStream, object value, Type type = null)
         {
-            using (JsonTextWriter jsonWriter = new JsonTextWriter(new StreamWriterX(outputStream, UTF8NoBOM)))
+            using (NJsonTextWriter jsonWriter = new NJsonTextWriter(new StreamWriterX(outputStream, UTF8NoBOM)))
             {
                 jsonWriter.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
                 jsonWriter.CloseOutput = false;
@@ -406,7 +409,7 @@ namespace SpanJson.Serialization
         /// <param name="outputStream"></param>
         /// <param name="value">The object to serialize.</param>
         /// <param name="type">The type of the value being serialized.
-        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="TypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
+        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="NTypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
         /// Specifying the type is optional.</param>
         /// <returns>A JSON string representation of the object.</returns>
         public static void SerializeToStream(this ObjectPool<NJsonSerializer> jsonSerializerPool, Stream outputStream, object value, Type type = null)
@@ -442,7 +445,7 @@ namespace SpanJson.Serialization
                     jsonSerializer.CheckAdditionalContent = true;
                 }
 
-                using (var reader = new JsonTextReader(new StreamReaderX(inputStream, Encoding.UTF8)))
+                using (var reader = new NJsonTextReader(new StreamReaderX(inputStream, Encoding.UTF8)))
                 {
                     reader.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
                     reader.CloseInput = false;
@@ -483,12 +486,12 @@ namespace SpanJson.Serialization
         /// <param name="textWriter"></param>
         /// <param name="value">The object to serialize.</param>
         /// <param name="type">The type of the value being serialized.
-        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="TypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
+        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="NTypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
         /// Specifying the type is optional.</param>
         /// <returns>A JSON string representation of the object.</returns>
         public static void SerializeToWriter(this NJsonSerializer jsonSerializer, TextWriter textWriter, object value, Type type = null)
         {
-            using (JsonTextWriter jsonWriter = new JsonTextWriter(textWriter))
+            using (NJsonTextWriter jsonWriter = new NJsonTextWriter(textWriter))
             {
                 jsonWriter.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
                 jsonWriter.CloseOutput = false;
@@ -504,7 +507,7 @@ namespace SpanJson.Serialization
         /// <param name="textWriter"></param>
         /// <param name="value">The object to serialize.</param>
         /// <param name="type">The type of the value being serialized.
-        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="TypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
+        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="NTypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
         /// Specifying the type is optional.</param>
         /// <returns>A JSON string representation of the object.</returns>
         public static void SerializeToWriter(this ObjectPool<NJsonSerializer> jsonSerializerPool, TextWriter textWriter, object value, Type type = null)
@@ -540,7 +543,7 @@ namespace SpanJson.Serialization
                     jsonSerializer.CheckAdditionalContent = true;
                 }
 
-                using (var reader = new JsonTextReader(textReader))
+                using (var reader = new NJsonTextReader(textReader))
                 {
                     reader.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
                     reader.CloseInput = false;
@@ -570,6 +573,128 @@ namespace SpanJson.Serialization
             {
                 jsonSerializerPool.Return(jsonSerializer);
             }
+        }
+
+        #endregion
+
+        #region -- PopulateObject --
+
+        /// <summary>Populates the object with values from the JSON string using <see cref="NJsonSerializer"/>.</summary>
+        /// <param name="jsonSerializer">The <see cref="NJsonSerializer"/> used to deserialize the object.</param>
+        /// <param name="value">The JSON to populate values from.</param>
+        /// <param name="target">The target object to populate values onto.</param>
+        public static void PopulateObject(this NJsonSerializer jsonSerializer, object target, string value)
+        {
+            using (var jsonReader = new NJsonTextReader(new StringReader(value)))
+            {
+                jsonReader.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
+                jsonReader.CloseInput = false;
+
+                jsonSerializer.Populate(jsonReader, target);
+
+                if (jsonSerializer.CheckAdditionalContent)
+                {
+                    while (jsonReader.Read())
+                    {
+                        if (jsonReader.TokenType != NJsonToken.Comment)
+                        {
+                            ThrowJsonSerializationException(jsonReader);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>Populates the object with values from the JSON string using <see cref="NJsonSerializer"/>.</summary>
+        /// <param name="jsonSerializerPool">The <see cref="NJsonSerializer"/> pool used to deserialize the object.</param>
+        /// <param name="value">The JSON to populate values from.</param>
+        /// <param name="target">The target object to populate values onto.</param>
+        public static void PopulateObject(this ObjectPool<NJsonSerializer> jsonSerializerPool, object target, string value)
+        {
+            var jsonSerializer = jsonSerializerPool.Take();
+            try
+            {
+                jsonSerializer.PopulateObject(target, value);
+            }
+            finally
+            {
+                jsonSerializerPool.Return(jsonSerializer);
+            }
+        }
+
+        /// <summary>Populates the object with values from the JSON string using <see cref="NJsonSerializer"/>.</summary>
+        /// <param name="jsonSerializer">The <see cref="NJsonSerializer"/> used to deserialize the object.</param>
+        /// <param name="value">The JSON to populate values from.</param>
+        /// <param name="target">The target object to populate values onto.</param>
+        public static void PopulateObject(this NJsonSerializer jsonSerializer, object target, byte[] value)
+        {
+            if (null == value) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.value); }
+
+            PopulateObject(jsonSerializer, target, value, 0, value.Length);
+        }
+
+        /// <summary>Populates the object with values from the JSON string using <see cref="NJsonSerializer"/>.</summary>
+        /// <param name="jsonSerializer">The <see cref="NJsonSerializer"/> used to deserialize the object.</param>
+        /// <param name="value">The JSON to populate values from.</param>
+        /// <param name="offset"></param>
+        /// <param name="count"></param>
+        /// <param name="target">The target object to populate values onto.</param>
+        public static void PopulateObject(this NJsonSerializer jsonSerializer, object target, byte[] value, int offset, int count)
+        {
+            using (var jsonReader = new NJsonTextReader(new StreamReaderX(new MemoryStream(value, offset, count), Encoding.UTF8)))
+            {
+                jsonReader.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
+                jsonReader.CloseInput = false;
+
+                jsonSerializer.Populate(jsonReader, target);
+
+                if (jsonSerializer.CheckAdditionalContent)
+                {
+                    while (jsonReader.Read())
+                    {
+                        if (jsonReader.TokenType != NJsonToken.Comment)
+                        {
+                            ThrowJsonSerializationException(jsonReader);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>Populates the object with values from the JSON string using <see cref="NJsonSerializer"/>.</summary>
+        /// <param name="jsonSerializerPool">The <see cref="NJsonSerializer"/> pool used to deserialize the object.</param>
+        /// <param name="value">The JSON to populate values from.</param>
+        /// <param name="target">The target object to populate values onto.</param>
+        public static void PopulateObject(this ObjectPool<NJsonSerializer> jsonSerializerPool, object target, byte[] value)
+        {
+            if (null == value) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.value); }
+
+            PopulateObject(jsonSerializerPool, target, value, 0, value.Length);
+        }
+
+        /// <summary>Populates the object with values from the JSON string using <see cref="NJsonSerializer"/>.</summary>
+        /// <param name="jsonSerializerPool">The <see cref="NJsonSerializer"/> pool used to deserialize the object.</param>
+        /// <param name="value">The JSON to populate values from.</param>
+        /// <param name="offset"></param>
+        /// <param name="count"></param>
+        /// <param name="target">The target object to populate values onto.</param>
+        public static void PopulateObject(this ObjectPool<NJsonSerializer> jsonSerializerPool, object target, byte[] value, int offset, int count)
+        {
+            var jsonSerializer = jsonSerializerPool.Take();
+            try
+            {
+                jsonSerializer.PopulateObject(target, value, offset, count);
+            }
+            finally
+            {
+                jsonSerializerPool.Return(jsonSerializer);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void ThrowJsonSerializationException(NJsonReader jsonReader)
+        {
+            throw JsonConvertX.CreateJsonSerializationException(jsonReader, "Additional text found in JSON string after finishing deserializing object.");
         }
 
         #endregion

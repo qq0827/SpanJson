@@ -1,20 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using NJsonSerializer = Newtonsoft.Json.JsonSerializer;
+using NJsonWriter = Newtonsoft.Json.JsonWriter;
 
 namespace SpanJson.Linq
 {
     partial class JProperty
     {
-        /// <summary>Writes this token to a <see cref="Newtonsoft.Json.JsonWriter"/>.</summary>
-        /// <param name="writer">A <see cref="Newtonsoft.Json.JsonWriter"/> into which this method will write.</param>
-        /// <param name="converters">A collection of <see cref="Newtonsoft.Json.JsonConverter"/> which will be used when writing the token.</param>
-        public override void WriteTo(Newtonsoft.Json.JsonWriter writer, IList<Newtonsoft.Json.JsonConverter> converters)
+        /// <summary>Writes this token to a <see cref="NJsonWriter"/>.</summary>
+        /// <param name="writer">A <see cref="NJsonWriter"/> into which this method will write.</param>
+        /// <param name="serializer">The calling serializer.</param>
+        public override void WriteTo(NJsonWriter writer, NJsonSerializer serializer)
         {
             writer.WritePropertyName(_name);
 
             JToken value = Value;
             if (value != null)
             {
-                value.WriteTo(writer, converters);
+                value.WriteTo(writer, serializer);
             }
             else
             {

@@ -94,6 +94,7 @@ namespace SpanJson.Formatters
             { typeof(SpanJsonDynamicUtf8String), DynamicUtf8StringFormatter.Default },
 
             { typeof(JToken), JTokenFormatter.Default },
+            { typeof(JContainer), JContainerFormatter.Default },
             { typeof(JObject), JObjectFormatter.Default },
             { typeof(JArray), JArrayFormatter.Default },
         };

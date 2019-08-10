@@ -26,10 +26,10 @@
     <SystemThreadingTasksExtensionsPackageVersion>4.5.3</SystemThreadingTasksExtensionsPackageVersion>
     <SystemValueTuplePackageVersion>4.5.0</SystemValueTuplePackageVersion>
 
-    <SystemRuntimeCompilerServicesUnsafePackageVersion>4.6.0-preview9.19409.15</SystemRuntimeCompilerServicesUnsafePackageVersion>
+    <SystemRuntimeCompilerServicesUnsafePackageVersion>4.6.0-preview9.19410.6</SystemRuntimeCompilerServicesUnsafePackageVersion>
     <SystemRuntimeInteropServicesRuntimeInformationPackageVersion>4.3.0</SystemRuntimeInteropServicesRuntimeInformationPackageVersion>
-    <SystemTextEncodingsWebPackageVersion>4.6.0-preview9.19409.15</SystemTextEncodingsWebPackageVersion>
-    <SystemTextJsonPackageVersion>4.6.0-preview9.19409.15</SystemTextJsonPackageVersion>
+    <SystemTextEncodingsWebPackageVersion>4.6.0-preview9.19410.6</SystemTextEncodingsWebPackageVersion>
+    <SystemTextJsonPackageVersion>4.6.0-preview9.19410.6</SystemTextJsonPackageVersion>
 
     <SystemReflectionDispatchProxyPackageVersion>4.5.1</SystemReflectionDispatchProxyPackageVersion>
     <SystemReflectionEmitPackageVersion>4.3.0</SystemReflectionEmitPackageVersion>

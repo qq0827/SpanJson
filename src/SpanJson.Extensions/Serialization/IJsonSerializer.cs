@@ -2,14 +2,21 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using CuteAnt.Pool;
+using NJsonSerializer = Newtonsoft.Json.JsonSerializer;
 using NJsonSerializerSettings = Newtonsoft.Json.JsonSerializerSettings;
 
 namespace SpanJson.Serialization
 {
     public interface IJsonSerializer
     {
-        NJsonSerializerSettings DefaultSerializerSettings { get; }
-        NJsonSerializerSettings DefaultDeserializerSettings { get; }
+        NJsonSerializerSettings SerializerSettings { get; }
+        ObjectPool<NJsonSerializer> SerializerPool { get; }
+        NJsonSerializerSettings DeserializerSettings { get; }
+        ObjectPool<NJsonSerializer> DeserializerPool { get; }
+
+        NJsonSerializerSettings CreateSerializerSettings(Action<NJsonSerializerSettings> configSettings);
+        NJsonSerializerSettings CreateDeserializerSettings(Action<NJsonSerializerSettings> configSettings);
 
         string Serialize<T>(T input);
         char[] SerializeToCharArray<T>(T input);
