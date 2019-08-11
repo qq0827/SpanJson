@@ -233,7 +233,8 @@ namespace SpanJson.Linq
         {
             writer.WriteStartArray();
 
-            for (int i = 0; i < _values.Count; i++)
+            var count = _values.Count;
+            for (int i = 0; i < count; i++)
             {
                 _values[i].WriteTo(writer, serializer);
             }

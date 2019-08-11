@@ -1,30 +1,9 @@
-﻿using SpanJson.Linq;
-
-namespace SpanJson.Formatters
+﻿namespace SpanJson.Formatters
 {
-    public sealed class JObjectFormatter : JObjectFormatter<JObject>
+    public class NJObjectFormatter<TObject> : JTokenFormatterBase<TObject>
+        where TObject : Newtonsoft.Json.Linq.JObject, new()
     {
-        public new static readonly JObjectFormatter Default = new JObjectFormatter();
-
-        public override JObject Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
-        {
-            var token = JToken.ParseCore(ref reader, 0);
-
-            return JObject.ToJObject(token);
-        }
-
-        public override JObject Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
-        {
-            var token = JToken.ParseCore(ref reader, 0);
-
-            return JObject.ToJObject(token);
-        }
-    }
-
-    public class JObjectFormatter<TObject> : JTokenFormatterBase<TObject>
-        where TObject : JObject, new()
-    {
-        public static readonly JObjectFormatter<TObject> Default = new JObjectFormatter<TObject>();
+        public static readonly NJObjectFormatter<TObject> Default = new NJObjectFormatter<TObject>();
 
         public override void Serialize(ref JsonWriter<byte> writer, TObject value, IJsonFormatterResolver<byte> resolver)
         {

@@ -4,6 +4,11 @@ using System.Reflection;
 using SpanJson.Document;
 using SpanJson.Dynamic;
 using SpanJson.Linq;
+using NJArray = Newtonsoft.Json.Linq.JArray;
+using NJProperty = Newtonsoft.Json.Linq.JProperty;
+using NJObject = Newtonsoft.Json.Linq.JObject;
+using NJRaw = Newtonsoft.Json.Linq.JRaw;
+using NJValue = Newtonsoft.Json.Linq.JValue;
 
 namespace SpanJson.Formatters
 {
@@ -27,11 +32,21 @@ namespace SpanJson.Formatters
                 var formatterType = typeof(JObjectFormatter<>).MakeGenericType(type);
                 return GetDefaultOrCreate(formatterType);
             }
+            if (typeof(NJObject).IsAssignableFrom(type))
+            {
+                var formatterType = typeof(NJObjectFormatter<>).MakeGenericType(type);
+                return GetDefaultOrCreate(formatterType);
+            }
 
             // JArray
             if (typeof(JArray).IsAssignableFrom(type))
             {
                 var formatterType = typeof(JArrayFormatter<>).MakeGenericType(type);
+                return GetDefaultOrCreate(formatterType);
+            }
+            if (typeof(NJArray).IsAssignableFrom(type))
+            {
+                var formatterType = typeof(NJArrayFormatter<>).MakeGenericType(type);
                 return GetDefaultOrCreate(formatterType);
             }
 
@@ -41,6 +56,11 @@ namespace SpanJson.Formatters
                 var formatterType = typeof(JPropertyFormatter<>).MakeGenericType(type);
                 return GetDefaultOrCreate(formatterType);
             }
+            if (typeof(NJProperty).IsAssignableFrom(type))
+            {
+                var formatterType = typeof(NJPropertyFormatter<>).MakeGenericType(type);
+                return GetDefaultOrCreate(formatterType);
+            }
 
             // JRaw
             if (typeof(JRaw).IsAssignableFrom(type))
@@ -48,11 +68,21 @@ namespace SpanJson.Formatters
                 var formatterType = typeof(JRawFormatter<>).MakeGenericType(type);
                 return GetDefaultOrCreate(formatterType);
             }
+            if (typeof(NJRaw).IsAssignableFrom(type))
+            {
+                var formatterType = typeof(NJRawFormatter<>).MakeGenericType(type);
+                return GetDefaultOrCreate(formatterType);
+            }
 
             // JValue
             if (typeof(JValue).IsAssignableFrom(type))
             {
                 var formatterType = typeof(JValueFormatter<>).MakeGenericType(type);
+                return GetDefaultOrCreate(formatterType);
+            }
+            if (typeof(NJValue).IsAssignableFrom(type))
+            {
+                var formatterType = typeof(NJValueFormatter<>).MakeGenericType(type);
                 return GetDefaultOrCreate(formatterType);
             }
 
@@ -69,6 +99,12 @@ namespace SpanJson.Formatters
             if (typeof(JProperty).IsAssignableFrom(type)) { return true; }
             if (typeof(JRaw).IsAssignableFrom(type)) { return true; }
             if (typeof(JValue).IsAssignableFrom(type)) { return true; }
+
+            if (typeof(NJObject).IsAssignableFrom(type)) { return true; }
+            if (typeof(NJArray).IsAssignableFrom(type)) { return true; }
+            if (typeof(NJProperty).IsAssignableFrom(type)) { return true; }
+            if (typeof(NJRaw).IsAssignableFrom(type)) { return true; }
+            if (typeof(NJValue).IsAssignableFrom(type)) { return true; }
 
             return false;
         }

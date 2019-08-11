@@ -1,61 +1,8 @@
 ﻿using System;
-using System.Net;
 using CuteAnt;
-using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Converters
 {
-    public sealed class IPAddressConverter : JsonConverter
-    {
-        public static readonly IPAddressConverter Instance = new IPAddressConverter();
-
-        public override bool CanConvert(Type objectType)
-        {
-            return (objectType == typeof(IPAddress));
-        }
-
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            IPAddress ip = (IPAddress)value;
-            writer.WriteValue(ip.ToString());
-        }
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            JToken token = JToken.Load(reader);
-            return IPAddress.Parse(token.Value<string>());
-        }
-    }
-
-    public sealed class IPEndPointConverter : JsonConverter
-    {
-        public static readonly IPEndPointConverter Instance = new IPEndPointConverter();
-
-        public override bool CanConvert(Type objectType)
-        {
-            return (objectType == typeof(IPEndPoint));
-        }
-
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            IPEndPoint ep = (IPEndPoint)value;
-            writer.WriteStartObject();
-            writer.WritePropertyName("Address");
-            serializer.Serialize(writer, ep.Address);
-            writer.WritePropertyName("Port");
-            writer.WriteValue(ep.Port);
-            writer.WriteEndObject();
-        }
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            JObject jo = JObject.Load(reader);
-            IPAddress address = jo["Address"].ToObject<IPAddress>(serializer);
-            int port = jo["Port"].Value<int>();
-            return new IPEndPoint(address, port);
-        }
-    }
-
     /// <summary>Converts a <see cref="CombGuid"/> to and from a string.</summary>
     public sealed class CombGuidConverter : JsonConverter
     {

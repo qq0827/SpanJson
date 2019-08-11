@@ -58,6 +58,7 @@ namespace SpanJson.Serialization
             _serializerSettings.Converters.Add(Newtonsoft.Json.Converters.IPAddressConverter.Instance);
             _serializerSettings.Converters.Add(Newtonsoft.Json.Converters.IPEndPointConverter.Instance);
             _serializerSettings.Converters.Add(Newtonsoft.Json.Converters.CombGuidConverter.Instance);
+            _serializerSettings.Converters.Add(SpanJson.Converters.JTokenConverter.Instance);
 
             _deserializerSettings = new NJsonSerializerSettings
             {

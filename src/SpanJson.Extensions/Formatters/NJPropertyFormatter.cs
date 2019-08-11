@@ -1,11 +1,9 @@
-﻿using SpanJson.Linq;
-
-namespace SpanJson.Formatters
+﻿namespace SpanJson.Formatters
 {
-    public sealed class JPropertyFormatter<TProperty> : JTokenFormatterBase<TProperty>
-        where TProperty : JProperty
+    public sealed class NJPropertyFormatter<TProperty> : JTokenFormatterBase<TProperty>
+        where TProperty : Newtonsoft.Json.Linq.JProperty
     {
-        public static readonly JPropertyFormatter<TProperty> Default = new JPropertyFormatter<TProperty>();
+        public static readonly NJPropertyFormatter<TProperty> Default = new NJPropertyFormatter<TProperty>();
 
         public override void Serialize(ref JsonWriter<byte> writer, TProperty value, IJsonFormatterResolver<byte> resolver)
         {

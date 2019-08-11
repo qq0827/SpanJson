@@ -9,6 +9,8 @@ namespace SpanJson.Converters
 {
     public class JTokenConverter : NJsonConverter
     {
+        public static readonly JTokenConverter Instance = new JTokenConverter();
+
         public override void WriteJson(NJsonWriter writer, object value, NJsonSerializer serializer)
         {
             switch (value)

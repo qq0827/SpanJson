@@ -1,6 +1,5 @@
 ﻿using System;
 using SpanJson.Document;
-using SpanJson.Utilities;
 
 namespace SpanJson.Converters
 {

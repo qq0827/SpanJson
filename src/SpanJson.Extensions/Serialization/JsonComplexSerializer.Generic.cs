@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using SpanJson.Linq;
 
 namespace SpanJson.Serialization
 {
@@ -49,7 +50,8 @@ namespace SpanJson.Serialization
         {
             if (IsPolymorphically<T>())
             {
-                ThrowHelper.ThrowNotSupportedException();
+                var token = JToken.FromPolymorphicObject(input);
+                return JsonSerializer.Generic.Inner<JToken, char, TResolver>.InnerSerializeToCharArrayPool(token);
             }
             return JsonSerializer.Generic.Inner<T, char, TResolver>.InnerSerializeToCharArrayPool(input);
         }

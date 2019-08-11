@@ -21,10 +21,10 @@ namespace SpanJson.Serialization
         private static readonly ConcurrentDictionary<Type, bool> s_polymorphicallyTypeCache = new ConcurrentDictionary<Type, bool>();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsPolymorphically<T>() => PolymorphicallyContainer<T>.IsPolymorphically;
+        public static bool IsPolymorphically<T>() => PolymorphicallyContainer<T>.IsPolymorphically;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsPolymorphically(Type type)
+        public static bool IsPolymorphically(Type type)
         {
             if (s_polymorphicallyTypeCache.TryGetValue(type, out var result)) { return result; }
 

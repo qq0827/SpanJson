@@ -215,7 +215,8 @@ namespace SpanJson.Linq
         {
             writer.WriteStartObject();
 
-            for (int i = 0; i < _properties.Count; i++)
+            var count = _properties.Count;
+            for (int i = 0; i < count; i++)
             {
                 _properties[i].WriteTo(writer, serializer);
             }

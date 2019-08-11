@@ -76,7 +76,7 @@ namespace SpanJson.Linq
                 new SpanJson.Converters.JsonDocumentConverter(),
                 new SpanJson.Converters.JsonElementConverter(),
 
-                new SpanJson.Converters.JTokenConverter(),
+                SpanJson.Converters.JTokenConverter.Instance,
 
                 new SpanJson.Converters.CombGuidJTokenConverter(),
                 Newtonsoft.Json.Converters.IPAddressConverter.Instance,

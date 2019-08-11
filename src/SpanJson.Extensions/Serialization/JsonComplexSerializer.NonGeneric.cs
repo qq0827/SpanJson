@@ -3,6 +3,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using SpanJson.Linq;
 
 namespace SpanJson.Serialization
 {
@@ -53,7 +54,8 @@ namespace SpanJson.Serialization
             var inputType = input.GetType();
             if (IsPolymorphically(inputType))
             {
-                ThrowHelper.ThrowNotSupportedException();
+                var token = JToken.FromPolymorphicObject(input);
+                return JsonSerializer.Generic.Inner<JToken, char, TResolver>.InnerSerializeToCharArrayPool(token);
             }
             var invoker = Utf16Invokers.GetOrAdd(inputType, Utf16InvokerFactory);
             return invoker.ToCharArrayPoolSerializer(input);

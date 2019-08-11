@@ -1,12 +1,12 @@
-﻿using SpanJson.Linq;
-using SpanJson.Internal;
+﻿using SpanJson.Internal;
+using NJTokenType = Newtonsoft.Json.Linq.JTokenType;
 
 namespace SpanJson.Formatters
 {
-    public sealed class JValueFormatter<TValue> : JTokenFormatterBase<TValue>
-        where TValue : JValue
+    public sealed class NJValueFormatter<TValue> : JTokenFormatterBase<TValue>
+        where TValue : Newtonsoft.Json.Linq.JValue
     {
-        public static readonly JValueFormatter<TValue> Default = new JValueFormatter<TValue>();
+        public static readonly NJValueFormatter<TValue> Default = new NJValueFormatter<TValue>();
 
         public override void Serialize(ref JsonWriter<byte> writer, TValue value, IJsonFormatterResolver<byte> resolver)
         {
@@ -18,9 +18,10 @@ namespace SpanJson.Formatters
 
             switch (value.Type)
             {
-                case JTokenType.Null:
+                case NJTokenType.Null:
+                    writer.WriteUtf8Null();
                     break;
-                case JTokenType.Raw:
+                case NJTokenType.Raw:
                     if (value.Value is byte[] utf8Json)
                     {
                         writer.WriteUtf8Verbatim(utf8Json);
@@ -47,10 +48,10 @@ namespace SpanJson.Formatters
 
             switch (value.Type)
             {
-                case JTokenType.Null:
+                case NJTokenType.Null:
                     writer.WriteUtf16Null();
                     break;
-                case JTokenType.Raw:
+                case NJTokenType.Raw:
                     if (value.Value is byte[] utf8Json)
                     {
                         writer.WriteUtf16Verbatim(TextEncodings.Utf8.ToString(utf8Json));
