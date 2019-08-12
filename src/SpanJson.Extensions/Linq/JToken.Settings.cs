@@ -43,25 +43,11 @@ namespace SpanJson.Linq
 
         static JToken()
         {
-            _defaultSerializerSettings = new NJsonSerializerSettings
-            {
-                //Formatting = Newtonsoft.Json.Formatting.None,
-
-                DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
-                MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore,
-            };
+            _defaultSerializerSettings = new NJsonSerializerSettings();
             _polymorphicSerializerSettings = new NJsonSerializerSettings
             {
-                TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Auto,
-                TypeNameAssemblyFormatHandling = Newtonsoft.Json.TypeNameAssemblyFormatHandling.Simple,
-                ConstructorHandling = Newtonsoft.Json.ConstructorHandling.AllowNonPublicDefaultConstructor,
-
-                //Formatting = Newtonsoft.Json.Formatting.None,
-
-                DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
-                MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore,
-
-                SerializationBinder = JsonSerializationBinder.Instance
+                SerializationBinder = JsonSerializationBinder.Instance,
+                TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Auto
             };
             var jonsConverters = new List<Newtonsoft.Json.JsonConverter>
             {
@@ -91,19 +77,12 @@ namespace SpanJson.Linq
 
             _defaultDeserializerSettings = new NJsonSerializerSettings
             {
-                TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Auto,
-                TypeNameAssemblyFormatHandling = Newtonsoft.Json.TypeNameAssemblyFormatHandling.Simple,
                 ConstructorHandling = Newtonsoft.Json.ConstructorHandling.AllowNonPublicDefaultConstructor,
 
                 DateParseHandling = Newtonsoft.Json.DateParseHandling.None,
-                DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.Ignore,
-                MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore,
-                NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore,
 
-                ObjectCreationHandling = Newtonsoft.Json.ObjectCreationHandling.Replace,
-                FloatParseHandling = Newtonsoft.Json.FloatParseHandling.Double,
-
-                SerializationBinder = JsonSerializationBinder.Instance
+                SerializationBinder = JsonSerializationBinder.Instance,
+                TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Auto
             };
             _defaultDeserializerSettings.Converters.Add(Newtonsoft.Json.Converters.IPAddressConverter.Instance);
             _defaultDeserializerSettings.Converters.Add(Newtonsoft.Json.Converters.IPEndPointConverter.Instance);

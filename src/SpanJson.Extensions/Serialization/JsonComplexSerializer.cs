@@ -10,7 +10,7 @@ using NJsonSerializerSettings = Newtonsoft.Json.JsonSerializerSettings;
 
 namespace SpanJson.Serialization
 {
-    public sealed class JsonComplexSerializer : JsonComplexSerializer<ExcludeNullsOriginalCaseResolver<char>, ExcludeNullsOriginalCaseResolver<byte>>
+    public sealed class JsonComplexSerializer : JsonComplexSerializer<IncludeNullsOriginalCaseResolver<char>, IncludeNullsOriginalCaseResolver<byte>>
     {
         public static readonly JsonComplexSerializer Instance = new JsonComplexSerializer();
     }
@@ -38,22 +38,10 @@ namespace SpanJson.Serialization
         {
             _serializerSettings = new NJsonSerializerSettings
             {
-                //PreserveReferencesHandling = PreserveReferencesHandling.Objects,
-                TypeNameHandling = TypeNameHandling.Auto,
-                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
-                ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
+                //NullValueHandling = NullValueHandling.Ignore,
 
-                //Formatting = Formatting.None,
-
-                DateFormatHandling = DateFormatHandling.IsoDateFormat,
-                DefaultValueHandling = DefaultValueHandling.Ignore,
-                MissingMemberHandling = MissingMemberHandling.Ignore,
-                NullValueHandling = NullValueHandling.Ignore,
-
-                ObjectCreationHandling = ObjectCreationHandling.Replace,
-                FloatParseHandling = FloatParseHandling.Double,
-
-                SerializationBinder = JsonSerializationBinder.Instance
+                SerializationBinder = JsonSerializationBinder.Instance,
+                TypeNameHandling = TypeNameHandling.Auto
             };
             _serializerSettings.Converters.Add(Newtonsoft.Json.Converters.IPAddressConverter.Instance);
             _serializerSettings.Converters.Add(Newtonsoft.Json.Converters.IPEndPointConverter.Instance);
@@ -62,19 +50,12 @@ namespace SpanJson.Serialization
 
             _deserializerSettings = new NJsonSerializerSettings
             {
-                TypeNameHandling = TypeNameHandling.Auto,
-                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
                 ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
 
                 DateParseHandling = DateParseHandling.None,
-                DefaultValueHandling = DefaultValueHandling.Ignore,
-                MissingMemberHandling = MissingMemberHandling.Ignore,
-                NullValueHandling = NullValueHandling.Ignore,
 
-                ObjectCreationHandling = ObjectCreationHandling.Replace,
-                FloatParseHandling = FloatParseHandling.Double,
-
-                SerializationBinder = JsonSerializationBinder.Instance
+                SerializationBinder = JsonSerializationBinder.Instance,
+                TypeNameHandling = TypeNameHandling.Auto
             };
             _deserializerSettings.Converters.Add(Newtonsoft.Json.Converters.IPAddressConverter.Instance);
             _deserializerSettings.Converters.Add(Newtonsoft.Json.Converters.IPEndPointConverter.Instance);
