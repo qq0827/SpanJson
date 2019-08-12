@@ -7,7 +7,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
 using SpanJson.Helpers;
 using SpanJson.Internal;
 using SpanJson.Resolvers;
@@ -314,14 +313,27 @@ namespace SpanJson.Formatters
 
                 matchExpressionFunctor = memberInfo =>
                 {
-                    var element = dict[memberInfo.MemberName];
-                    var formatter = resolver.GetFormatter(memberInfo);
-                    var formatterType = formatter.GetType();
-                    var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
-                    return Expression.Assign(constructorParameterExpressions[element.Index],
-                        Expression.Call(Expression.Field(null, fieldInfo),
-                            FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType(), resolverParameter.Type),
-                            readerParameter, resolverParameter));
+                    if (dict.TryGetValue(memberInfo.MemberName, out var element))
+                    {
+                        var formatter = resolver.GetFormatter(memberInfo);
+                        var formatterType = formatter.GetType();
+                        var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
+                        return Expression.Assign(constructorParameterExpressions[element.Index],
+                            Expression.Call(Expression.Field(null, fieldInfo),
+                                FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType(), resolverParameter.Type),
+                                readerParameter, resolverParameter));
+                    }
+                    else
+                    {
+                        // TODO 
+                        var formatter = resolver.GetFormatter(memberInfo);
+                        var formatterType = formatter.GetType();
+                        var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
+                        return Expression.Assign(Expression.PropertyOrField(returnValue, memberInfo.MemberName),
+                            Expression.Call(Expression.Field(null, fieldInfo),
+                                FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType(), resolverParameter.Type),
+                                readerParameter, resolverParameter));
+                    }
                 };
             }
             else
@@ -394,7 +406,6 @@ namespace SpanJson.Formatters
                 var extensionBlock = Expression.Block(extensionExpressions);
                 skipCall = extensionBlock;
             }
-
 
             var expressions = new List<Expression>();
             if (memberInfos.Count > 0)
