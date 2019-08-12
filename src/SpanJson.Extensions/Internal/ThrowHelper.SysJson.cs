@@ -4,6 +4,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using SpanJson.Internal;
@@ -596,6 +597,17 @@ namespace SpanJson
             var ex = new FormatException(message);
             ex.Source = ExceptionSourceValueToRethrowAsJsonException;
             return ex;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static NotSupportedException GetNotSupportedException_SerializationNotSupportedCollection(Type propertyType, Type parentType, MemberInfo memberInfo)
+        {
+            if (parentType != null && parentType != typeof(object) && memberInfo != null)
+            {
+                return new NotSupportedException(SR.Format(SR.SerializationNotSupportedCollection, propertyType, $"{parentType}.{memberInfo.Name}"));
+            }
+
+            return new NotSupportedException(SR.Format(SR.SerializationNotSupportedCollectionType, propertyType));
         }
     }
 

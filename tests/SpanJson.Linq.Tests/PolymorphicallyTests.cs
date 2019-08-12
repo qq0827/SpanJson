@@ -14,8 +14,10 @@ namespace SpanJson.Tests
         public void GetElementType()
         {
             var type = typeof(Dictionary<int, string>);
-            var elementType = JsonClassInfo.GetElementType(type);
+            var elementType = JsonClassInfo.GetElementType(type, null, null);
             Assert.Equal(typeof(string), elementType);
+            elementType = JsonClassInfo.GetElementType(typeof(byte[]), null, null);
+            Assert.Equal(typeof(byte), elementType);
         }
 
         [Fact]

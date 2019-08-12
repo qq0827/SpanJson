@@ -43,7 +43,7 @@ namespace SpanJson.Serialization
                 TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
                 ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
 
-                Formatting = Formatting.None,
+                //Formatting = Formatting.None,
 
                 DateFormatHandling = DateFormatHandling.IsoDateFormat,
                 DefaultValueHandling = DefaultValueHandling.Ignore,

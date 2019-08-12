@@ -6,6 +6,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
+using SpanJson.Utilities;
 
 namespace SpanJson.Serialization
 {
@@ -13,7 +15,7 @@ namespace SpanJson.Serialization
     internal sealed partial class JsonClassInfo
     {
         // Return the element type of the IEnumerable or return null if not an IEnumerable.
-        public static Type GetElementType(Type propertyType/*, Type parentType, MemberInfo memberInfo, JsonSerializerOptions options*/)
+        public static Type GetElementType(Type propertyType, Type parentType, MemberInfo memberInfo/*, JsonSerializerOptions options*/)
         {
             // We want to handle as the implemented collection type, if applicable.
             Type implementedType = GetImplementedCollectionType(propertyType);
@@ -57,8 +59,7 @@ namespace SpanJson.Serialization
                 return typeof(object);
             }
 
-            //throw SysJsonThrowHelper.GetNotSupportedException_SerializationNotSupportedCollection(propertyType, parentType, memberInfo);
-            throw ThrowHelper.GetNotSupportedException();
+            throw SysJsonThrowHelper.GetNotSupportedException_SerializationNotSupportedCollection(propertyType, parentType, memberInfo);
         }
 
         public static ClassType GetClassType(Type type/*, JsonSerializerOptions options*/)
@@ -78,10 +79,10 @@ namespace SpanJson.Serialization
                 return ClassType.Unknown;
             }
 
-            //if (options.HasConverter(implementedType))
-            //{
-            //    return ClassType.Value;
-            //}
+            if (ConvertUtils.GetTypeCode(implementedType, out _) != PrimitiveTypeCode.Object) // 这儿只检测基元类型
+            {
+                return ClassType.Value;
+            }
 
             if (/*DefaultImmutableDictionaryConverter.*/IsImmutableDictionary(implementedType) ||
                 IsDeserializedByConstructingWithIDictionary(implementedType))

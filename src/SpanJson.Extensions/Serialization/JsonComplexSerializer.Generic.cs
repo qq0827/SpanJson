@@ -258,7 +258,7 @@ namespace SpanJson.Serialization
         {
             if (IsPolymorphically<T>())
             {
-                if(MemoryMarshal.TryGetArray(input, out ArraySegment<byte> segment))
+                if (MemoryMarshal.TryGetArray(input, out ArraySegment<byte> segment))
                 {
                     return (T)DeserializerPool.DeserializeFromByteArray(segment.Array, segment.Offset, segment.Count, typeof(T));
                 }

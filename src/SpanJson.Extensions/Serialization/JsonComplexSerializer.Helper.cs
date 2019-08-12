@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
+using CuteAnt;
 using SpanJson.Helpers;
 
 namespace SpanJson.Serialization
@@ -28,40 +29,69 @@ namespace SpanJson.Serialization
         {
             if (s_polymorphicallyTypeCache.TryGetValue(type, out var result)) { return result; }
 
-            return IsPolymorphicallyImpl(type);
+            return IsPolymorphicallyImpl(type, parentType: null, memberInfo: null);
+        }
+
+        private static bool IsPolymorphicallyInternal(Type type, Type parentType, MemberInfo memberInfo)
+        {
+            if (s_polymorphicallyTypeCache.TryGetValue(type, out var result)) { return result; }
+
+            return IsPolymorphicallyImpl(type, parentType: null, memberInfo: null);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static bool IsPolymorphicallyImpl(Type type)
+        private static bool IsPolymorphicallyImpl(Type type, Type parentType, MemberInfo memberInfo)
         {
+            static Type GetUnderlyingTypeLocal(Type t, Type pt, MemberInfo mi)
+            {
+                Type underlyingType = null;
+                var classType = JsonClassInfo.GetClassType(t);
+                switch (classType)
+                {
+                    case ClassType.Enumerable:
+                    case ClassType.Dictionary:
+                    case ClassType.IDictionaryConstructible:
+                        underlyingType = JsonClassInfo.GetElementType(t, pt, mi);
+                        break;
+                }
+                if (underlyingType is null) { underlyingType = t; }
+
+                if (underlyingType.IsGenericType && underlyingType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                {
+                    underlyingType = Nullable.GetUnderlyingType(underlyingType);
+                }
+
+                return underlyingType;
+            }
+
             var result = false;
 
-            Type implementedType = null;
-            var classType = JsonClassInfo.GetClassType(type);
-            switch (classType)
-            {
-                case ClassType.Enumerable:
-                case ClassType.Dictionary:
-                case ClassType.IDictionaryConstructible:
-                    implementedType = JsonClassInfo.GetElementType(type);
-                    break;
-            }
-            if (null == implementedType) { implementedType = type; }
+            Type implementedType = GetUnderlyingTypeLocal(type, parentType, memberInfo);
 
-            if (implementedType.IsGenericType && implementedType.GetGenericTypeDefinition() == typeof(Nullable<>))
+            if (implementedType == TypeConstants.ObjectType)
             {
-                implementedType = Nullable.GetUnderlyingType(implementedType);
+                result = true;
             }
-
-            if (implementedType.HasAttribute<JsonPolymorphicallyAttribute>(false))
+            else if (implementedType.HasAttribute<JsonPolymorphicallyAttribute>(false))
             {
                 result = true;
             }
             else
             {
-                result = implementedType
-                    .SerializableMembers()
-                    .Any(f => f.HasAttribute<JsonPolymorphicallyAttribute>());
+                foreach (var item in implementedType.SerializableMembers())
+                {
+                    if (item is FieldInfo fi)
+                    {
+                        if (fi.HasAttribute<JsonPolymorphicallyAttribute>()) { result = true; break; }
+                        if (IsPolymorphicallyInternal(fi.FieldType, implementedType, fi)) { result = true; break; }
+                    }
+
+                    if (item is PropertyInfo pi)
+                    {
+                        if (pi.HasAttribute<JsonPolymorphicallyAttribute>()) { result = true; break; }
+                        if (IsPolymorphicallyInternal(pi.PropertyType, implementedType, pi)) { result = true; break; }
+                    }
+                }
             }
 
             if (implementedType == type)
@@ -73,6 +103,7 @@ namespace SpanJson.Serialization
                 s_polymorphicallyTypeCache.TryAdd(type, result);
                 s_polymorphicallyTypeCache.TryAdd(implementedType, result);
             }
+
             return result;
         }
     }

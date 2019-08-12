@@ -45,7 +45,7 @@ namespace SpanJson.Linq
         {
             _defaultSerializerSettings = new NJsonSerializerSettings
             {
-                Formatting = Newtonsoft.Json.Formatting.None,
+                //Formatting = Newtonsoft.Json.Formatting.None,
 
                 DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
                 MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore,
@@ -56,7 +56,7 @@ namespace SpanJson.Linq
                 TypeNameAssemblyFormatHandling = Newtonsoft.Json.TypeNameAssemblyFormatHandling.Simple,
                 ConstructorHandling = Newtonsoft.Json.ConstructorHandling.AllowNonPublicDefaultConstructor,
 
-                Formatting = Newtonsoft.Json.Formatting.None,
+                //Formatting = Newtonsoft.Json.Formatting.None,
 
                 DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat,
                 MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore,

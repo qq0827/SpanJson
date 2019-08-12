@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using CuteAnt.Buffers;
+using CuteAnt.IO;
 using CuteAnt.Pool;
 using CuteAnt.Text;
 using NJsonReader = Newtonsoft.Json.JsonReader;
@@ -11,6 +12,7 @@ using NJsonSerializer = Newtonsoft.Json.JsonSerializer;
 using NJsonTextReader = Newtonsoft.Json.JsonTextReader;
 using NJsonTextWriter = Newtonsoft.Json.JsonTextWriter;
 using NJsonToken = Newtonsoft.Json.JsonToken;
+using NFormatting = Newtonsoft.Json.Formatting;
 using NTypeNameHandling = Newtonsoft.Json.TypeNameHandling;
 
 namespace SpanJson.Serialization
@@ -36,16 +38,35 @@ namespace SpanJson.Serialization
             {
                 var sw = pooledStringWriter.Object;
 
-                using (NJsonTextWriter jsonWriter = new NJsonTextWriter(sw))
-                {
-                    jsonWriter.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
-                    jsonWriter.CloseOutput = false;
-                    jsonWriter.Formatting = jsonSerializer.Formatting;
+                return SerializeInternal(jsonSerializer, sw, value, type);
+            }
+        }
 
-                    jsonSerializer.Serialize(jsonWriter, value, type);
-                    jsonWriter.Flush();
-                }
-                return sw.ToString();
+        /// <summary>Serializes the specified object to a JSON string using a type, formatting and <see cref="NJsonSerializer"/>.</summary>
+        /// <param name="jsonSerializer">The <see cref="NJsonSerializer"/> used to serialize the object</param>
+        /// <param name="value">The object to serialize.</param>
+        /// <param name="writeIndented">Defines whether JSON should pretty print which includes:
+        /// indenting nested JSON tokens, adding new lines, and adding white space between property names and values.
+        /// By default, the JSON is serialized without any extra white space.</param>
+        /// <param name="type">The type of the value being serialized.
+        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="NTypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
+        /// Specifying the type is optional.</param>
+        /// <returns>A JSON string representation of the object.</returns>
+        public static string SerializeObject(this NJsonSerializer jsonSerializer, object value, bool writeIndented, Type type = null)
+        {
+            var sw = StringWriterManager.Allocate();
+
+            var previousFormatting = jsonSerializer.GetFormatting();
+            jsonSerializer.Formatting = writeIndented ? NFormatting.Indented : NFormatting.None;
+
+            try
+            {
+                return SerializeInternal(jsonSerializer, sw, value, type);
+            }
+            finally
+            {
+                StringWriterManager.Free(sw);
+                jsonSerializer.SetFormatting(previousFormatting);
             }
         }
 
@@ -63,22 +84,58 @@ namespace SpanJson.Serialization
 
             try
             {
-                using (NJsonTextWriter jsonWriter = new NJsonTextWriter(sw))
-                {
-                    jsonWriter.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
-                    jsonWriter.CloseOutput = false;
-                    jsonWriter.Formatting = jsonSerializer.Formatting;
-
-                    jsonSerializer.Serialize(jsonWriter, value, type);
-                    jsonWriter.Flush();
-                }
-                return sw.ToString();
+                return SerializeInternal(jsonSerializer, sw, value, type);
             }
             finally
             {
                 StringWriterManager.Free(sw);
                 jsonSerializerPool.Return(jsonSerializer);
             }
+        }
+
+        /// <summary>Serializes the specified object to a JSON string using a type, formatting and <see cref="NJsonSerializer"/>.</summary>
+        /// <param name="jsonSerializerPool">The <see cref="NJsonSerializer"/> pool used to serialize the object</param>
+        /// <param name="value">The object to serialize.</param>
+        /// <param name="writeIndented">Defines whether JSON should pretty print which includes:
+        /// indenting nested JSON tokens, adding new lines, and adding white space between property names and values.
+        /// By default, the JSON is serialized without any extra white space.</param>
+        /// <param name="type">The type of the value being serialized.
+        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="NTypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
+        /// Specifying the type is optional.</param>
+        /// <returns>A JSON string representation of the object.</returns>
+        public static string SerializeObject(this ObjectPool<NJsonSerializer> jsonSerializerPool, object value, bool writeIndented, Type type = null)
+        {
+            var sw = StringWriterManager.Allocate();
+            var jsonSerializer = jsonSerializerPool.Take();
+
+            var previousFormatting = jsonSerializer.GetFormatting();
+            jsonSerializer.Formatting = writeIndented ? NFormatting.Indented : NFormatting.None;
+
+            try
+            {
+                return SerializeInternal(jsonSerializer, sw, value, type);
+            }
+            finally
+            {
+                StringWriterManager.Free(sw);
+                jsonSerializer.SetFormatting(previousFormatting);
+                jsonSerializerPool.Return(jsonSerializer);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static string SerializeInternal(NJsonSerializer jsonSerializer, StringWriterX sw, object value, Type type)
+        {
+            using (NJsonTextWriter jsonWriter = new NJsonTextWriter(sw))
+            {
+                jsonWriter.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
+                jsonWriter.CloseOutput = false;
+                jsonWriter.Formatting = jsonSerializer.Formatting;
+
+                jsonSerializer.Serialize(jsonWriter, value, type);
+                jsonWriter.Flush();
+            }
+            return sw.ToString();
         }
 
         #endregion
@@ -170,16 +227,37 @@ namespace SpanJson.Serialization
                 var outputStream = pooledOutputStream.Object;
                 outputStream.Reinitialize(initialBufferSize, s_sharedBufferPool);
 
-                using (NJsonTextWriter jsonWriter = new NJsonTextWriter(new StreamWriterX(outputStream, UTF8NoBOM)))
-                {
-                    jsonWriter.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
-                    jsonWriter.CloseOutput = false;
-                    jsonWriter.Formatting = jsonSerializer.Formatting;
+                return SerializeToByteArrayInternal(jsonSerializer, outputStream, value, type);
+            }
+        }
 
-                    jsonSerializer.Serialize(jsonWriter, value, type);
-                    jsonWriter.Flush();
-                }
-                return outputStream.ToByteArray();
+        /// <summary>Serializes the specified object to a JSON string using a type, formatting and <see cref="NJsonSerializer"/>.</summary>
+        /// <param name="jsonSerializer">The <see cref="NJsonSerializer"/> used to serialize the object</param>
+        /// <param name="value">The object to serialize.</param>
+        /// <param name="writeIndented">Defines whether JSON should pretty print which includes:
+        /// indenting nested JSON tokens, adding new lines, and adding white space between property names and values.
+        /// By default, the JSON is serialized without any extra white space.</param>
+        /// <param name="type">The type of the value being serialized.
+        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="NTypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
+        /// Specifying the type is optional.</param>
+        /// <param name="initialBufferSize"></param>
+        /// <returns>A JSON string representation of the object.</returns>
+        public static byte[] SerializeToByteArray(this NJsonSerializer jsonSerializer, object value, bool writeIndented, Type type = null, int initialBufferSize = c_initialBufferSize)
+        {
+            var outputStream = BufferManagerOutputStreamManager.Take();
+            outputStream.Reinitialize(initialBufferSize, s_sharedBufferPool);
+
+            var previousFormatting = jsonSerializer.GetFormatting();
+            jsonSerializer.Formatting = writeIndented ? NFormatting.Indented : NFormatting.None;
+
+            try
+            {
+                return SerializeToByteArrayInternal(jsonSerializer, outputStream, value, type);
+            }
+            finally
+            {
+                BufferManagerOutputStreamManager.Return(outputStream);
+                jsonSerializer.SetFormatting(previousFormatting);
             }
         }
 
@@ -199,22 +277,62 @@ namespace SpanJson.Serialization
 
             try
             {
-                using (NJsonTextWriter jsonWriter = new NJsonTextWriter(new StreamWriterX(outputStream, UTF8NoBOM)))
-                {
-                    jsonWriter.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
-                    jsonWriter.CloseOutput = false;
-                    jsonWriter.Formatting = jsonSerializer.Formatting;
-
-                    jsonSerializer.Serialize(jsonWriter, value, type);
-                    jsonWriter.Flush();
-                }
-                return outputStream.ToByteArray();
+                return SerializeToByteArrayInternal(jsonSerializer, outputStream, value, type);
             }
             finally
             {
                 BufferManagerOutputStreamManager.Return(outputStream);
                 jsonSerializerPool.Return(jsonSerializer);
             }
+        }
+
+        /// <summary>Serializes the specified object to a JSON string using a type, formatting and <see cref="NJsonSerializer"/>.</summary>
+        /// <param name="jsonSerializerPool">The <see cref="NJsonSerializer"/> pool used to serialize the object</param>
+        /// <param name="value">The object to serialize.</param>
+        /// <param name="writeIndented">Defines whether JSON should pretty print which includes:
+        /// indenting nested JSON tokens, adding new lines, and adding white space between property names and values.
+        /// By default, the JSON is serialized without any extra white space.</param>
+        /// <param name="type">The type of the value being serialized.
+        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="NTypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
+        /// Specifying the type is optional.</param>
+        /// <param name="initialBufferSize"></param>
+        /// <returns>A JSON string representation of the object.</returns>
+        public static byte[] SerializeToByteArray(this ObjectPool<NJsonSerializer> jsonSerializerPool, object value, bool writeIndented, Type type = null, int initialBufferSize = c_initialBufferSize)
+        {
+            var jsonSerializer = jsonSerializerPool.Take();
+
+            var previousFormatting = jsonSerializer.GetFormatting();
+            jsonSerializer.Formatting = writeIndented ? NFormatting.Indented : NFormatting.None;
+
+            var outputStream = BufferManagerOutputStreamManager.Take();
+            outputStream.Reinitialize(initialBufferSize, s_sharedBufferPool);
+
+            try
+            {
+                return SerializeToByteArrayInternal(jsonSerializer, outputStream, value, type);
+            }
+            finally
+            {
+                BufferManagerOutputStreamManager.Return(outputStream);
+                jsonSerializer.SetFormatting(previousFormatting);
+                jsonSerializerPool.Return(jsonSerializer);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static byte[] SerializeToByteArrayInternal(NJsonSerializer jsonSerializer, BufferManagerOutputStream outputStream, object value, Type type)
+        {
+            using (NJsonTextWriter jsonWriter = new NJsonTextWriter(new StreamWriterX(outputStream, UTF8NoBOM)))
+            {
+                jsonWriter.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
+                jsonWriter.CloseOutput = false;
+                jsonWriter.Formatting = jsonSerializer.Formatting;
+
+                jsonSerializer.Serialize(jsonWriter, value, type);
+                jsonWriter.Flush();
+            }
+
+            return outputStream.ToByteArray();
         }
 
         #endregion
@@ -236,16 +354,37 @@ namespace SpanJson.Serialization
                 var outputStream = pooledOutputStream.Object;
                 outputStream.Reinitialize(initialBufferSize, s_sharedBufferPool);
 
-                using (NJsonTextWriter jsonWriter = new NJsonTextWriter(new StreamWriterX(outputStream, UTF8NoBOM)))
-                {
-                    jsonWriter.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
-                    jsonWriter.CloseOutput = false;
-                    jsonWriter.Formatting = jsonSerializer.Formatting;
+                return SerializeToMemoryPoolInternal(jsonSerializer, outputStream, value, type);
+            }
+        }
 
-                    jsonSerializer.Serialize(jsonWriter, value, type);
-                    jsonWriter.Flush();
-                }
-                return outputStream.ToArraySegment();
+        /// <summary>Serializes the specified object to a JSON string using a type, formatting and <see cref="NJsonSerializer"/>.</summary>
+        /// <param name="jsonSerializer">The <see cref="NJsonSerializer"/> used to serialize the object</param>
+        /// <param name="value">The object to serialize.</param>
+        /// <param name="writeIndented">Defines whether JSON should pretty print which includes:
+        /// indenting nested JSON tokens, adding new lines, and adding white space between property names and values.
+        /// By default, the JSON is serialized without any extra white space.</param>
+        /// <param name="type">The type of the value being serialized.
+        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="NTypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
+        /// Specifying the type is optional.</param>
+        /// <param name="initialBufferSize"></param>
+        /// <returns>A JSON string representation of the object.</returns>
+        public static ArraySegment<byte> SerializeToMemoryPool(this NJsonSerializer jsonSerializer, object value, bool writeIndented, Type type = null, int initialBufferSize = c_initialBufferSize)
+        {
+            var previousFormatting = jsonSerializer.GetFormatting();
+            jsonSerializer.Formatting = writeIndented ? NFormatting.Indented : NFormatting.None;
+
+            var outputStream = BufferManagerOutputStreamManager.Take();
+            outputStream.Reinitialize(initialBufferSize, s_sharedBufferPool);
+
+            try
+            {
+                return SerializeToMemoryPoolInternal(jsonSerializer, outputStream, value, type);
+            }
+            finally
+            {
+                BufferManagerOutputStreamManager.Return(outputStream);
+                jsonSerializer.SetFormatting(previousFormatting);
             }
         }
 
@@ -260,27 +399,67 @@ namespace SpanJson.Serialization
         public static ArraySegment<byte> SerializeToMemoryPool(this ObjectPool<NJsonSerializer> jsonSerializerPool, object value, Type type = null, int initialBufferSize = c_initialBufferSize)
         {
             var jsonSerializer = jsonSerializerPool.Take();
+
             var outputStream = BufferManagerOutputStreamManager.Take();
             outputStream.Reinitialize(initialBufferSize, s_sharedBufferPool);
 
             try
             {
-                using (NJsonTextWriter jsonWriter = new NJsonTextWriter(new StreamWriterX(outputStream, UTF8NoBOM)))
-                {
-                    jsonWriter.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
-                    jsonWriter.CloseOutput = false;
-                    jsonWriter.Formatting = jsonSerializer.Formatting;
-
-                    jsonSerializer.Serialize(jsonWriter, value, type);
-                    jsonWriter.Flush();
-                }
-                return outputStream.ToArraySegment();
+                return SerializeToMemoryPoolInternal(jsonSerializer, outputStream, value, type);
             }
             finally
             {
                 BufferManagerOutputStreamManager.Return(outputStream);
                 jsonSerializerPool.Return(jsonSerializer);
             }
+        }
+
+        /// <summary>Serializes the specified object to a JSON string using a type, formatting and <see cref="NJsonSerializer"/>.</summary>
+        /// <param name="jsonSerializerPool">The <see cref="NJsonSerializer"/> pool used to serialize the object</param>
+        /// <param name="value">The object to serialize.</param>
+        /// <param name="writeIndented">Defines whether JSON should pretty print which includes:
+        /// indenting nested JSON tokens, adding new lines, and adding white space between property names and values.
+        /// By default, the JSON is serialized without any extra white space.</param>
+        /// <param name="type">The type of the value being serialized.
+        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="NTypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
+        /// Specifying the type is optional.</param>
+        /// <param name="initialBufferSize"></param>
+        /// <returns>A JSON string representation of the object.</returns>
+        public static ArraySegment<byte> SerializeToMemoryPool(this ObjectPool<NJsonSerializer> jsonSerializerPool, object value, bool writeIndented, Type type = null, int initialBufferSize = c_initialBufferSize)
+        {
+            var jsonSerializer = jsonSerializerPool.Take();
+
+            var previousFormatting = jsonSerializer.GetFormatting();
+            jsonSerializer.Formatting = writeIndented ? NFormatting.Indented : NFormatting.None;
+
+            var outputStream = BufferManagerOutputStreamManager.Take();
+            outputStream.Reinitialize(initialBufferSize, s_sharedBufferPool);
+
+            try
+            {
+                return SerializeToMemoryPoolInternal(jsonSerializer, outputStream, value, type);
+            }
+            finally
+            {
+                BufferManagerOutputStreamManager.Return(outputStream);
+                jsonSerializer.SetFormatting(previousFormatting);
+                jsonSerializerPool.Return(jsonSerializer);
+            }
+        }
+
+        private static ArraySegment<byte> SerializeToMemoryPoolInternal(NJsonSerializer jsonSerializer, BufferManagerOutputStream outputStream, object value, Type type)
+        {
+            using (NJsonTextWriter jsonWriter = new NJsonTextWriter(new StreamWriterX(outputStream, UTF8NoBOM)))
+            {
+                jsonWriter.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
+                jsonWriter.CloseOutput = false;
+                jsonWriter.Formatting = jsonSerializer.Formatting;
+
+                jsonSerializer.Serialize(jsonWriter, value, type);
+                jsonWriter.Flush();
+            }
+
+            return outputStream.ToArraySegment();
         }
 
         #endregion
@@ -405,6 +584,32 @@ namespace SpanJson.Serialization
         }
 
         /// <summary>Serializes the specified object to a JSON string using a type, formatting and <see cref="NJsonSerializer"/>.</summary>
+        /// <param name="jsonSerializer">The <see cref="NJsonSerializer"/> used to serialize the object</param>
+        /// <param name="outputStream"></param>
+        /// <param name="value">The object to serialize.</param>
+        /// <param name="writeIndented">Defines whether JSON should pretty print which includes:
+        /// indenting nested JSON tokens, adding new lines, and adding white space between property names and values.
+        /// By default, the JSON is serialized without any extra white space.</param>
+        /// <param name="type">The type of the value being serialized.
+        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="NTypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
+        /// Specifying the type is optional.</param>
+        /// <returns>A JSON string representation of the object.</returns>
+        public static void SerializeToStream(this NJsonSerializer jsonSerializer, Stream outputStream, object value, bool writeIndented, Type type = null)
+        {
+            var previousFormatting = jsonSerializer.GetFormatting();
+            jsonSerializer.Formatting = writeIndented ? NFormatting.Indented : NFormatting.None;
+
+            try
+            {
+                SerializeToStream(jsonSerializer, outputStream, value, type);
+            }
+            finally
+            {
+                jsonSerializer.SetFormatting(previousFormatting);
+            }
+        }
+
+        /// <summary>Serializes the specified object to a JSON string using a type, formatting and <see cref="NJsonSerializer"/>.</summary>
         /// <param name="jsonSerializerPool">The <see cref="NJsonSerializer"/> pool used to serialize the object</param>
         /// <param name="outputStream"></param>
         /// <param name="value">The object to serialize.</param>
@@ -421,6 +626,35 @@ namespace SpanJson.Serialization
             }
             finally
             {
+                jsonSerializerPool.Return(jsonSerializer);
+            }
+        }
+
+        /// <summary>Serializes the specified object to a JSON string using a type, formatting and <see cref="NJsonSerializer"/>.</summary>
+        /// <param name="jsonSerializerPool">The <see cref="NJsonSerializer"/> pool used to serialize the object</param>
+        /// <param name="outputStream"></param>
+        /// <param name="value">The object to serialize.</param>
+        /// <param name="writeIndented">Defines whether JSON should pretty print which includes:
+        /// indenting nested JSON tokens, adding new lines, and adding white space between property names and values.
+        /// By default, the JSON is serialized without any extra white space.</param>
+        /// <param name="type">The type of the value being serialized.
+        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="NTypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
+        /// Specifying the type is optional.</param>
+        /// <returns>A JSON string representation of the object.</returns>
+        public static void SerializeToStream(this ObjectPool<NJsonSerializer> jsonSerializerPool, Stream outputStream, object value, bool writeIndented, Type type = null)
+        {
+            var jsonSerializer = jsonSerializerPool.Take();
+
+            var previousFormatting = jsonSerializer.GetFormatting();
+            jsonSerializer.Formatting = writeIndented ? NFormatting.Indented : NFormatting.None;
+
+            try
+            {
+                SerializeToStream(jsonSerializer, outputStream, value, type);
+            }
+            finally
+            {
+                jsonSerializer.SetFormatting(previousFormatting);
                 jsonSerializerPool.Return(jsonSerializer);
             }
         }
@@ -503,6 +737,32 @@ namespace SpanJson.Serialization
         }
 
         /// <summary>Serializes the specified object to a JSON string using a type, formatting and <see cref="NJsonSerializer"/>.</summary>
+        /// <param name="jsonSerializer">The <see cref="NJsonSerializer"/> used to serialize the object</param>
+        /// <param name="textWriter"></param>
+        /// <param name="value">The object to serialize.</param>
+        /// <param name="writeIndented">Defines whether JSON should pretty print which includes:
+        /// indenting nested JSON tokens, adding new lines, and adding white space between property names and values.
+        /// By default, the JSON is serialized without any extra white space.</param>
+        /// <param name="type">The type of the value being serialized.
+        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="NTypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
+        /// Specifying the type is optional.</param>
+        /// <returns>A JSON string representation of the object.</returns>
+        public static void SerializeToWriter(this NJsonSerializer jsonSerializer, TextWriter textWriter, object value, bool writeIndented, Type type = null)
+        {
+            var previousFormatting = jsonSerializer.GetFormatting();
+            jsonSerializer.Formatting = writeIndented ? NFormatting.Indented : NFormatting.None;
+
+            try
+            {
+                SerializeToWriter(jsonSerializer, textWriter, value, type);
+            }
+            finally
+            {
+                jsonSerializer.SetFormatting(previousFormatting);
+            }
+        }
+
+        /// <summary>Serializes the specified object to a JSON string using a type, formatting and <see cref="NJsonSerializer"/>.</summary>
         /// <param name="jsonSerializerPool">The <see cref="NJsonSerializer"/> pool used to serialize the object</param>
         /// <param name="textWriter"></param>
         /// <param name="value">The object to serialize.</param>
@@ -519,6 +779,35 @@ namespace SpanJson.Serialization
             }
             finally
             {
+                jsonSerializerPool.Return(jsonSerializer);
+            }
+        }
+
+        /// <summary>Serializes the specified object to a JSON string using a type, formatting and <see cref="NJsonSerializer"/>.</summary>
+        /// <param name="jsonSerializerPool">The <see cref="NJsonSerializer"/> pool used to serialize the object</param>
+        /// <param name="textWriter"></param>
+        /// <param name="value">The object to serialize.</param>
+        /// <param name="writeIndented">Defines whether JSON should pretty print which includes:
+        /// indenting nested JSON tokens, adding new lines, and adding white space between property names and values.
+        /// By default, the JSON is serialized without any extra white space.</param>
+        /// <param name="type">The type of the value being serialized.
+        /// This parameter is used when <see cref="NJsonSerializer.TypeNameHandling"/> is <see cref="NTypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
+        /// Specifying the type is optional.</param>
+        /// <returns>A JSON string representation of the object.</returns>
+        public static void SerializeToWriter(this ObjectPool<NJsonSerializer> jsonSerializerPool, TextWriter textWriter, object value, bool writeIndented, Type type = null)
+        {
+            var jsonSerializer = jsonSerializerPool.Take();
+
+            var previousFormatting = jsonSerializer.GetFormatting();
+            jsonSerializer.Formatting = writeIndented ? NFormatting.Indented : NFormatting.None;
+
+            try
+            {
+                SerializeToWriter(jsonSerializer, textWriter, value, type);
+            }
+            finally
+            {
+                jsonSerializer.SetFormatting(previousFormatting);
                 jsonSerializerPool.Return(jsonSerializer);
             }
         }
