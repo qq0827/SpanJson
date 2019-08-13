@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using CuteAnt;
 using SpanJson.Helpers;
+using SpanJson.Resolvers;
 
 namespace SpanJson.Serialization
 {
@@ -29,18 +31,18 @@ namespace SpanJson.Serialization
         {
             if (s_polymorphicallyTypeCache.TryGetValue(type, out var result)) { return result; }
 
-            return IsPolymorphicallyImpl(type, parentType: null, memberInfo: null);
+            return IsPolymorphicallyImpl(type, parentType: null, memberInfo: null, parentTypes: new HashSet<Type>());
         }
 
-        private static bool IsPolymorphicallyInternal(Type type, Type parentType, MemberInfo memberInfo)
+        private static bool IsPolymorphicallyInternal(Type type, Type parentType, MemberInfo memberInfo, HashSet<Type> parentTypes)
         {
             if (s_polymorphicallyTypeCache.TryGetValue(type, out var result)) { return result; }
 
-            return IsPolymorphicallyImpl(type, parentType: null, memberInfo: null);
+            return IsPolymorphicallyImpl(type, parentType, memberInfo, parentTypes);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static bool IsPolymorphicallyImpl(Type type, Type parentType, MemberInfo memberInfo)
+        private static bool IsPolymorphicallyImpl(Type type, Type parentType, MemberInfo memberInfo, HashSet<Type> parentTypes)
         {
             static Type GetUnderlyingTypeLocal(Type t, Type pt, MemberInfo mi)
             {
@@ -76,6 +78,11 @@ namespace SpanJson.Serialization
             {
                 result = true;
             }
+            // 只判断是否已经注册自定义 Formatter，IncludeNullsOriginalCaseResolver 作为默认的 Resolver，会确保应用程序所用的 custom formatter
+            else if (StandardResolvers.GetResolver<char, IncludeNullsOriginalCaseResolver<char>>().IsSupportedType(implementedType))
+            {
+                result = false;
+            }
             else
             {
                 foreach (var item in implementedType.SerializableMembers())
@@ -83,13 +90,41 @@ namespace SpanJson.Serialization
                     if (item is FieldInfo fi)
                     {
                         if (fi.HasAttribute<JsonPolymorphicallyAttribute>()) { result = true; break; }
-                        if (IsPolymorphicallyInternal(fi.FieldType, implementedType, fi)) { result = true; break; }
+
+                        var fieldType = GetUnderlyingTypeLocal(fi.FieldType, type, fi);
+
+                        if (StandardResolvers.GetResolver<char, IncludeNullsOriginalCaseResolver<char>>().IsSupportedType(fieldType)) { continue; }
+
+                        if (fieldType.IsAbstract || fieldType.IsInterface) { result = true; break; }
+
+                        if (fi.FieldType == type) { continue; }
+                        if (fieldType == type) { continue; }
+                        if (fieldType == implementedType) { continue; }
+                        if (parentTypes.Contains(fieldType)) { continue; }
+                        parentTypes.Add(type);
+                        parentTypes.Add(implementedType);
+
+                        if (IsPolymorphicallyInternal(fieldType, type, fi, parentTypes)) { result = true; break; }
                     }
 
                     if (item is PropertyInfo pi)
                     {
                         if (pi.HasAttribute<JsonPolymorphicallyAttribute>()) { result = true; break; }
-                        if (IsPolymorphicallyInternal(pi.PropertyType, implementedType, pi)) { result = true; break; }
+
+                        var propertyType = GetUnderlyingTypeLocal(pi.PropertyType, type, pi);
+
+                        if (StandardResolvers.GetResolver<char, IncludeNullsOriginalCaseResolver<char>>().IsSupportedType(propertyType)) { continue; }
+
+                        if (propertyType.IsAbstract || propertyType.IsInterface) { result = true; break; }
+
+                        if (pi.PropertyType == type) { continue; }
+                        if (propertyType == type) { continue; }
+                        if (propertyType == implementedType) { continue; }
+                        if (parentTypes.Contains(propertyType)) { continue; }
+                        parentTypes.Add(type);
+                        parentTypes.Add(implementedType);
+
+                        if (IsPolymorphicallyInternal(propertyType, type, pi, parentTypes)) { result = true; break; }
                     }
                 }
             }
