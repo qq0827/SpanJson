@@ -223,5 +223,20 @@ namespace SpanJson.Linq
 
             writer.WriteEndObject();
         }
+
+        /// <summary>Writes this token to a <see cref="Utf8JsonWriter"/>.</summary>
+        /// <param name="writer">A <see cref="Utf8JsonWriter"/> into which this method will write.</param>
+        public override void WriteTo(ref Utf8JsonWriter writer)
+        {
+            writer.WriteStartObject();
+
+            var count = _properties.Count;
+            for (int i = 0; i < count; i++)
+            {
+                _properties[i].WriteTo(ref writer);
+            }
+
+            writer.WriteEndObject();
+        }
     }
 }

@@ -386,6 +386,10 @@ namespace SpanJson.Linq
         /// <param name="serializer">The calling serializer.</param>
         public abstract void WriteTo(NJsonWriter writer, NJsonSerializer serializer);
 
+        /// <summary>Writes this token to a <see cref="Utf8JsonWriter"/>.</summary>
+        /// <param name="writer">A <see cref="Utf8JsonWriter"/> into which this method will write.</param>
+        public abstract void WriteTo(ref Utf8JsonWriter writer);
+
         /// <summary>Returns the JSON for this token.</summary>
         /// <returns>The JSON for this token.</returns>
         public override string ToString()

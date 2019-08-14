@@ -311,6 +311,185 @@ namespace SpanJson.Linq
             throw MiscellaneousUtils.CreateArgumentOutOfRangeException(nameof(Type), _valueType, "Unexpected token type.");
         }
 
+        /// <summary>Writes this token to a <see cref="Utf8JsonWriter"/>.</summary>
+        /// <param name="writer">A <see cref="Utf8JsonWriter"/> into which this method will write.</param>
+        public override void WriteTo(ref Utf8JsonWriter writer)
+        {
+            if (_value is null) { writer.WriteNullValue(); return; }
+
+            switch (_valueType)
+            {
+                case JTokenType.Comment:
+                    writer.WriteCommentValue(_value?.ToString());
+                    return;
+                case JTokenType.Raw:
+                    writer.WriteStringValue(_value?.ToString());
+                    return;
+                case JTokenType.Null:
+                    writer.WriteNullValue();
+                    return;
+                case JTokenType.Undefined:
+                    if (tokenWriter is object)
+                    {
+                        tokenWriter.WriteUndefined(_value);
+                    }
+                    else
+                    {
+                        writer.WriteValue(_value);
+                    }
+                    return;
+                case JTokenType.Integer:
+                    switch (_value)
+                    {
+                        case int iv:
+                            writer.WriteNumberValue(iv);
+                            break;
+
+                        case long lv:
+                            writer.WriteNumberValue(lv);
+                            break;
+
+                        case ulong ulv:
+                            writer.WriteNumberValue(ulv);
+                            break;
+
+                        case BigInteger integer:
+                            writer.WriteNumberValue((long)integer);
+                            break;
+
+                        case SpanJsonDynamicUtf16Number _:
+                            if (tokenWriter is object)
+                            {
+                                tokenWriter.WriteValue(_value);
+                            }
+                            else
+                            {
+                                writer.WriteRawValue(_value.ToString());
+                            }
+                            break;
+                        case SpanJsonDynamicUtf8Number _:
+                            if (tokenWriter is object)
+                            {
+                                tokenWriter.WriteValue(_value);
+                            }
+                            else
+                            {
+                                writer.WriteRawValue(_value.ToString());
+                            }
+                            break;
+                        case JsonElement _:
+                            if (tokenWriter is object)
+                            {
+                                tokenWriter.WriteValue(_value);
+                            }
+                            else
+                            {
+                                writer.WriteRawValue(_value.ToString());
+                            }
+                            break;
+
+                        default:
+                            writer.WriteNumberValue(Convert.ToInt64(_value, CultureInfo.InvariantCulture));
+                            break;
+                    }
+                    return;
+                case JTokenType.Float:
+                    switch (_value)
+                    {
+                        case decimal dec:
+                            writer.WriteNumberValue(dec);
+                            break;
+
+                        case double d:
+                            writer.WriteNumberValue(d);
+                            break;
+
+                        case float f:
+                            writer.WriteNumberValue(f);
+                            break;
+
+                        case SpanJsonDynamicUtf16Number _:
+                            if (tokenWriter is object)
+                            {
+                                tokenWriter.WriteValue(_value);
+                            }
+                            else
+                            {
+                                writer.WriteRawValue(_value.ToString());
+                            }
+                            break;
+                        case SpanJsonDynamicUtf8Number _:
+                            if (tokenWriter is object)
+                            {
+                                tokenWriter.WriteValue(_value);
+                            }
+                            else
+                            {
+                                writer.WriteRawValue(_value.ToString());
+                            }
+                            break;
+                        case JsonElement _:
+                            if (tokenWriter is object)
+                            {
+                                tokenWriter.WriteValue(_value);
+                            }
+                            else
+                            {
+                                writer.WriteRawValue(_value.ToString());
+                            }
+                            break;
+
+                        default:
+                            writer.WriteValue(Convert.ToDouble(_value, CultureInfo.InvariantCulture));
+                            break;
+                    }
+                    return;
+                case JTokenType.String:
+                    writer.WriteStringValue(_value?.ToString());
+                    return;
+                case JTokenType.Boolean:
+                    writer.WriteBooleanValue(Convert.ToBoolean(_value, CultureInfo.InvariantCulture));
+                    return;
+                case JTokenType.Date:
+                    if (_value is DateTimeOffset offset)
+                    {
+                        writer.WriteStringValue(offset);
+                    }
+                    else
+                    {
+                        writer.WriteStringValue(Convert.ToDateTime(_value, CultureInfo.InvariantCulture));
+                    }
+                    return;
+                case JTokenType.Bytes:
+                    writer.WriteBase64String((byte[])_value);
+                    return;
+                case JTokenType.Guid:
+                    writer.WriteStringValue((Guid)_value);
+                    return;
+                case JTokenType.TimeSpan:
+                    writer.WriteStringValue((TimeSpan)_value);
+                    return;
+                case JTokenType.Uri:
+                    writer.WriteStringValue(((Uri)_value).OriginalString);
+                    return;
+                case JTokenType.Dynamic:
+                    if (tokenWriter is object)
+                    {
+                        tokenWriter.WriteValue(_value);
+                    }
+                    else
+                    {
+                        writer.WriteValue(_value.ToString());
+                    }
+                    return;
+                case JTokenType.CombGuid: // 非 JTokenWriter 无法到达这儿
+                    writer.WriteStringValue(_value.ToString());
+                    return;
+            }
+
+            throw MiscellaneousUtils.CreateArgumentOutOfRangeException(nameof(Type), _valueType, "Unexpected token type.");
+        }
+
         private static Newtonsoft.Json.JsonConverter GetMatchingConverter(IList<Newtonsoft.Json.JsonConverter> converters, Type objectType)
         {
             if (converters is object)
