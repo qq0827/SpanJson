@@ -88,7 +88,7 @@ namespace SpanJson.Document
             IsDisposable = isDisposable;
 
             // extraRentedBytes better be null if we're not disposable.
-            Debug.Assert(isDisposable || extraRentedBytes == null);
+            Debug.Assert(isDisposable || extraRentedBytes is null);
         }
 
         /// <inheritdoc />
@@ -105,7 +105,7 @@ namespace SpanJson.Document
 
             // When "extra rented bytes exist" they contain the document,
             // and thus need to be cleared before being returned.
-            if (_extraRentedBytes != null)
+            if (_extraRentedBytes is object)
             {
                 _extraRentedBytes.AsSpan(0, length).Clear();
                 ArrayPool<byte>.Shared.Return(_extraRentedBytes);
@@ -351,7 +351,7 @@ namespace SpanJson.Document
                 result = TextEquals(index, otherUtf8Text.Slice(0, written), isPropertyName);
             }
 
-            if (otherUtf8TextArray != null)
+            if (otherUtf8TextArray is object)
             {
                 otherUtf8Text.Slice(0, written).Clear();
                 ArrayPool<byte>.Shared.Return(otherUtf8TextArray);
@@ -1000,7 +1000,7 @@ namespace SpanJson.Document
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void ClearAndReturn(ArraySegment<byte> rented)
         {
-            if (rented.Array != null)
+            if (rented.Array is object)
             {
                 rented.AsSpan().Clear();
                 ArrayPool<byte>.Shared.Return(rented.Array);

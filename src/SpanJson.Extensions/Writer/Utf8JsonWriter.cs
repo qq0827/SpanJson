@@ -170,7 +170,7 @@ namespace SpanJson
             if (0u >= (uint)alreadyWritten) { return JsonHelpers.Empty<byte>(); }
 
             var borrowedBuffer = _borrowedBuffer;
-            if (null == borrowedBuffer) { return JsonHelpers.Empty<byte>(); }
+            if (borrowedBuffer is null) { return JsonHelpers.Empty<byte>(); }
 
             var destination = new byte[alreadyWritten];
             BinaryUtil.CopyMemory(borrowedBuffer, 0, destination, 0, alreadyWritten);
@@ -183,7 +183,7 @@ namespace SpanJson
             var toReturn = _borrowedBuffer;
             var arrayPool = _arrayPool;
             this = default; // for safety, to avoid using pooled array if this instance is erroneously appended to again
-            if (arrayPool != null)
+            if (arrayPool is object)
             {
                 arrayPool.Return(toReturn);
             }
@@ -214,7 +214,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void CheckAndResizeBuffer(int alreadyWritten, int sizeHint)
         {
-            Debug.Assert(_borrowedBuffer != null);
+            Debug.Assert(_borrowedBuffer is object);
 
             const int MinimumBufferSize = 256;
 
@@ -235,7 +235,7 @@ namespace SpanJson
 
                 var oldBuffer = _borrowedBuffer;
 
-                var useThreadLocal = null == _arrayPool ? true : false;
+                var useThreadLocal = _arrayPool is null ? true : false;
                 if (useThreadLocal) { _arrayPool = ArrayPool<byte>.Shared; }
 
                 _utf8Span = _borrowedBuffer = _arrayPool.Rent(newSize);
@@ -535,7 +535,7 @@ namespace SpanJson
             }
 #endif
 
-            if (propertyArray != null)
+            if (propertyArray is object)
             {
                 ArrayPool<byte>.Shared.Return(propertyArray);
             }
@@ -560,7 +560,7 @@ namespace SpanJson
         /// </exception>
         public void WriteStartArray(string propertyName)
         {
-            if (propertyName == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
+            if (propertyName is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
             WriteStartArray(propertyName.AsSpan());
         }
 
@@ -583,7 +583,7 @@ namespace SpanJson
         /// </exception>
         public void WriteStartObject(string propertyName)
         {
-            if (propertyName == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
+            if (propertyName is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
             WriteStartObject(propertyName.AsSpan());
         }
 
@@ -691,7 +691,7 @@ namespace SpanJson
             }
 #endif
 
-            if (propertyArray != null)
+            if (propertyArray is object)
             {
                 ArrayPool<char>.Shared.Return(propertyArray);
             }

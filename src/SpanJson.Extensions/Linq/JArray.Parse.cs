@@ -63,7 +63,7 @@ namespace SpanJson.Linq
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public new static JArray Parse(string utf16Json)
         {
-            if (utf16Json == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.utf16Json); }
+            if (utf16Json is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.utf16Json); }
 
             return Parse(utf16Json.ToCharArray());
         }
@@ -112,7 +112,7 @@ namespace SpanJson.Linq
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static JArray AsJArray(JToken token)
         {
-            if (token == null || token.Type != JTokenType.Array)
+            if (token is null || token.Type != JTokenType.Array)
             {
                 ThrowHelper2.ThrowJsonReaderException_Error_reading_JArray_from_JsonReader();
             }

@@ -21,7 +21,7 @@
 
         public void Serialize(ref JsonWriter<byte> writer, byte[] value, IJsonFormatterResolver<byte> resolver)
         {
-            if (null == value) { writer.WriteUtf8Null(); return; }
+            if (value is null) { writer.WriteUtf8Null(); return; }
 
             writer.WriteUtf8Base64String(value);
         }
@@ -42,7 +42,7 @@
 
         public void Serialize(ref JsonWriter<char> writer, byte[] value, IJsonFormatterResolver<char> resolver)
         {
-            if (null == value) { writer.WriteUtf16Null(); return; }
+            if (value is null) { writer.WriteUtf16Null(); return; }
 
             writer.WriteUtf16Base64String(value);
         }

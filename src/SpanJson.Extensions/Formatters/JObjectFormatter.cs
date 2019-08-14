@@ -28,7 +28,7 @@ namespace SpanJson.Formatters
 
         public override void Serialize(ref JsonWriter<byte> writer, TObject value, IJsonFormatterResolver<byte> resolver)
         {
-            if (value == null) { writer.WriteUtf8Null(); return; }
+            if (value is null) { writer.WriteUtf8Null(); return; }
 
             var valueLength = value.Count;
 
@@ -44,7 +44,7 @@ namespace SpanJson.Formatters
                     writer.IncrementDepth();
                     writer.WriteUtf8Name(resolver.GetEncodedPropertyName(item.Key));
                     var propertyValue = item.Value;
-                    if (propertyValue != null)
+                    if (propertyValue is object)
                     {
                         formatter.Serialize(ref writer, propertyValue, resolver);
                     }
@@ -66,7 +66,7 @@ namespace SpanJson.Formatters
 
         public override void Serialize(ref JsonWriter<char> writer, TObject value, IJsonFormatterResolver<char> resolver)
         {
-            if (value == null) { writer.WriteUtf16Null(); return; }
+            if (value is null) { writer.WriteUtf16Null(); return; }
 
             var valueLength = value.Count;
 
@@ -82,7 +82,7 @@ namespace SpanJson.Formatters
                     writer.IncrementDepth();
                     writer.WriteUtf16Name(resolver.GetEncodedPropertyName(item.Key));
                     var propertyValue = item.Value;
-                    if (propertyValue != null)
+                    if (propertyValue is object)
                     {
                         formatter.Serialize(ref writer, propertyValue, resolver);
                     }

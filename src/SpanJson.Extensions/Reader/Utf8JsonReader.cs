@@ -167,7 +167,7 @@ namespace SpanJson
             {
                 if (_isInputSequence)
                 {
-                    Debug.Assert(_currentPosition.GetObject() != null);
+                    Debug.Assert(_currentPosition.GetObject() is object);
                     return _sequence.GetPosition(_consumed, _currentPosition);
                 }
                 return default;
@@ -552,7 +552,7 @@ namespace SpanJson
                 result = TextEqualsHelper(otherUtf8Text.Slice(0, written));
             }
 
-            if (otherUtf8TextArray != null)
+            if (otherUtf8TextArray is object)
             {
                 otherUtf8Text.Slice(0, written).Clear();
                 ArrayPool<byte>.Shared.Return(otherUtf8TextArray);

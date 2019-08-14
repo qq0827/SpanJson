@@ -64,8 +64,8 @@ namespace SpanJson.Serialization
 
         public JsonComplexSerializer(NJsonSerializerSettings serializerSettings, NJsonSerializerSettings deserializerSettings)
         {
-            if (null == serializerSettings) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.serializerSettings); }
-            if (null == deserializerSettings) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.deserializerSettings); }
+            if (serializerSettings is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.serializerSettings); }
+            if (deserializerSettings is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.deserializerSettings); }
             if (ReferenceEquals(serializerSettings, serializerSettings)) { ThrowHelper.ThrowArgumentException_SerializerSettings_same_instance(); }
 
             _serializerSettings = serializerSettings;
@@ -102,7 +102,7 @@ namespace SpanJson.Serialization
 
         public NJsonSerializerSettings CreateSerializerSettings(Action<NJsonSerializerSettings> configSettings)
         {
-            if (null == configSettings) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.configSettings); }
+            if (configSettings is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.configSettings); }
 
             var serializerSettings = new NJsonSerializerSettings();
             var converters = serializerSettings.Converters;
@@ -116,7 +116,7 @@ namespace SpanJson.Serialization
 
         public NJsonSerializerSettings CreateDeserializerSettings(Action<NJsonSerializerSettings> configSettings)
         {
-            if (null == configSettings) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.configSettings); }
+            if (configSettings is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.configSettings); }
 
             var serializerSettings = new NJsonSerializerSettings();
             var converters = serializerSettings.Converters;

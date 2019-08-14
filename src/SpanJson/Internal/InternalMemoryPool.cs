@@ -17,7 +17,7 @@
 
         public static TSymbol[] GetBuffer()
         {
-            if (s_buffer == null) { s_buffer = new TSymbol[InitialCapacity]; }
+            if (s_buffer is null) { s_buffer = new TSymbol[InitialCapacity]; }
             return s_buffer;
         }
     }
@@ -29,7 +29,7 @@
 
         public static TSymbol[] GetBuffer()
         {
-            if (s_buffer == null) { s_buffer = new TSymbol[256]; }
+            if (s_buffer is null) { s_buffer = new TSymbol[256]; }
             return s_buffer;
         }
     }

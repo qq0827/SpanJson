@@ -602,7 +602,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static NotSupportedException GetNotSupportedException_SerializationNotSupportedCollection(Type propertyType, Type parentType, MemberInfo memberInfo)
         {
-            if (parentType != null && parentType != typeof(object) && memberInfo != null)
+            if (parentType is object && parentType != typeof(object) && memberInfo is object)
             {
                 return new NotSupportedException(SR.Format(SR.SerializationNotSupportedCollection, propertyType, $"{parentType}.{memberInfo.Name}"));
             }

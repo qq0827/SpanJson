@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using CuteAnt.Reflection;
 using SpanJson.Helpers;
 using SpanJson.Resolvers;
 
@@ -43,7 +44,7 @@ namespace SpanJson.Formatters
             if (typeof(TKey).IsEnum)
             {
                 return (IJsonFormatter<TKey, TSymbol>) ResolverBase.GetDefaultOrCreate(
-                    typeof(EnumStringFormatter<,,>).MakeGenericType(typeof(TKey), typeof(TSymbol), typeof(TResolver)));
+                    typeof(EnumStringFormatter<,,>).GetCachedGenericType(typeof(TKey), typeof(TSymbol), typeof(TResolver)));
             }
 
             return StandardResolvers.GetFormatter<TSymbol, TResolver, TKey>();
@@ -178,7 +179,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<TSymbol> writer, TDictionary value, IJsonFormatterResolver<TSymbol> resolver)
         {
-            if (value == null)
+            if (value is null)
             {
                 writer.WriteNull();
                 return;

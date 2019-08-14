@@ -29,7 +29,7 @@ namespace SpanJson.Formatters
 
         public override void Serialize(ref JsonWriter<byte> writer, TArray value, IJsonFormatterResolver<byte> resolver)
         {
-            if (value == null) { writer.WriteUtf8Null(); return; }
+            if (value is null) { writer.WriteUtf8Null(); return; }
 
             var valueLength = value.Count;
             writer.IncrementDepth();
@@ -52,7 +52,7 @@ namespace SpanJson.Formatters
 
         public override void Serialize(ref JsonWriter<char> writer, TArray value, IJsonFormatterResolver<char> resolver)
         {
-            if (value == null) { writer.WriteUtf16Null(); return; }
+            if (value is null) { writer.WriteUtf16Null(); return; }
 
             var valueLength = value.Count;
             writer.IncrementDepth();

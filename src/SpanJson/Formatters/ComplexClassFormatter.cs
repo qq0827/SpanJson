@@ -23,7 +23,7 @@
 
         public void Serialize(ref JsonWriter<TSymbol> writer, T value, IJsonFormatterResolver<TSymbol> resolver)
         {
-            if (value == null)
+            if (value is null)
             {
                 writer.WriteNull();
                 return;

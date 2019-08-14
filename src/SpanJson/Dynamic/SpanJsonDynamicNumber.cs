@@ -46,7 +46,7 @@ namespace SpanJson.Dynamic
                 if (!fix)
                 {
                     var nullable = Nullable.GetUnderlyingType(type);
-                    if (nullable != null)
+                    if (nullable is object)
                     {
                         fix |= IsSupported(nullable);
                     }

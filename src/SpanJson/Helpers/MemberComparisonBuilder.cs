@@ -80,7 +80,7 @@ namespace SpanJson.Helpers
                     }
 
                     var lengthExpression = Expression.Equal(lengthParameter, Expression.Constant(length));
-                    var ifExpression = comparisonExpression == null ? lengthExpression : Expression.AndAlso(lengthExpression, comparisonExpression);
+                    var ifExpression = comparisonExpression is null ? lengthExpression : Expression.AndAlso(lengthExpression, comparisonExpression);
                     expressions.Add(Expression.IfThen(ifExpression, matchExpression));
                 }
                 else

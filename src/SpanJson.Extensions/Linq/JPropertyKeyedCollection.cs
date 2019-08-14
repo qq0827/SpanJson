@@ -56,12 +56,12 @@ namespace SpanJson.Linq
             string keyForItem = GetKeyForItem(item);
             if (!Comparer.Equals(keyForItem, newKey))
             {
-                if (newKey != null)
+                if (newKey is object)
                 {
                     AddKey(newKey, item);
                 }
 
-                if (keyForItem != null)
+                if (keyForItem is object)
                 {
                     RemoveKey(keyForItem);
                 }
@@ -77,9 +77,9 @@ namespace SpanJson.Linq
 
         public bool Contains(string key)
         {
-            if (key == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.key); }
+            if (key is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.key); }
 
-            if (_dictionary != null)
+            if (_dictionary is object)
             {
                 return _dictionary.ContainsKey(key);
             }
@@ -89,7 +89,7 @@ namespace SpanJson.Linq
 
         private bool ContainsItem(JToken item)
         {
-            if (_dictionary == null)
+            if (_dictionary is null)
             {
                 return false;
             }
@@ -100,7 +100,7 @@ namespace SpanJson.Linq
 
         private void EnsureDictionary()
         {
-            if (_dictionary == null)
+            if (_dictionary is null)
             {
                 _dictionary = new Dictionary<string, JToken>(Comparer);
             }
@@ -119,9 +119,9 @@ namespace SpanJson.Linq
 
         public bool Remove(string key)
         {
-            if (key == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.key); }
+            if (key is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.key); }
 
-            if (_dictionary != null)
+            if (_dictionary is object)
             {
                 return _dictionary.TryGetValue(key, out JToken value) && Remove(value);
             }
@@ -148,7 +148,7 @@ namespace SpanJson.Linq
 
             if (Comparer.Equals(keyAtIndex, keyForItem))
             {
-                if (_dictionary != null)
+                if (_dictionary is object)
                 {
                     _dictionary[keyForItem] = item;
                 }
@@ -157,7 +157,7 @@ namespace SpanJson.Linq
             {
                 AddKey(keyForItem, item);
 
-                if (keyAtIndex != null)
+                if (keyAtIndex is object)
                 {
                     RemoveKey(keyAtIndex);
                 }
@@ -169,9 +169,9 @@ namespace SpanJson.Linq
         {
             get
             {
-                if (key == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.key); }
+                if (key is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.key); }
 
-                if (_dictionary != null)
+                if (_dictionary is object)
                 {
                     return _dictionary[key];
                 }
@@ -182,7 +182,7 @@ namespace SpanJson.Linq
 
         public bool TryGetValue(string key, out JToken value)
         {
-            if (_dictionary == null)
+            if (_dictionary is null)
             {
                 value = null;
                 return false;
@@ -223,11 +223,11 @@ namespace SpanJson.Linq
             Dictionary<string, JToken> d1 = _dictionary;
             Dictionary<string, JToken> d2 = other._dictionary;
 
-            if (d1 == null && d2 == null) { return true; }
+            if (d1 is null && d2 is null) { return true; }
 
-            if (d1 == null) { return (0u >= (uint)d2.Count); }
+            if (d1 is null) { return (0u >= (uint)d2.Count); }
 
-            if (d2 == null) { return (0u >= (uint)d1.Count); }
+            if (d2 is null) { return (0u >= (uint)d1.Count); }
 
             if (d1.Count != d2.Count) { return false; }
 
@@ -241,9 +241,9 @@ namespace SpanJson.Linq
                 JProperty p1 = (JProperty)keyAndProperty.Value;
                 JProperty p2 = (JProperty)secondValue;
 
-                if (p1.Value == null)
+                if (p1.Value is null)
                 {
-                    return (p2.Value == null);
+                    return (p2.Value is null);
                 }
 
                 if (!p1.Value.DeepEquals(p2.Value))

@@ -140,7 +140,7 @@ namespace SpanJson
             }
 #endif
 
-            if (propertyArray != null)
+            if (propertyArray is object)
             {
                 ArrayPool<char>.Shared.Return(propertyArray);
             }
@@ -170,7 +170,7 @@ namespace SpanJson
             }
 #endif
 
-            if (propertyArray != null)
+            if (propertyArray is object)
             {
                 ArrayPool<byte>.Shared.Return(propertyArray);
             }

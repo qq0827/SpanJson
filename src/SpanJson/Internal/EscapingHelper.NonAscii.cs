@@ -52,7 +52,7 @@ namespace SpanJson.Internal
 #if !NET451
             public static JsonEncodedText GetEncodedText(string text, JavaScriptEncoder encoder)
             {
-                if (null == encoder)
+                if (encoder is null)
                 {
                     return s_encodedTextCache.GetOrAdd(text, s => JsonEncodedText.Encode(s, JsonEscapeHandling.EscapeNonAscii));
                 }
@@ -83,7 +83,7 @@ namespace SpanJson.Internal
                 int idx;
 
 #if !NET451
-                if (encoder != null)
+                if (encoder is object)
                 {
                     idx = encoder.FindFirstCharacterToEncodeUtf8(utf8Source);
                     goto Return;
@@ -110,7 +110,7 @@ namespace SpanJson.Internal
                 int idx;
 
 #if !NET451
-                if (encoder != null)
+                if (encoder is object)
                 {
                     idx = encoder.FindFirstCharacterToEncodeUtf8(MemoryMarshal.Cast<char, byte>(utf16Source));
                     goto Return;
@@ -141,7 +141,7 @@ namespace SpanJson.Internal
                 utf8Source.Slice(0, indexOfFirstByteToEscape).CopyTo(destination);
                 written = indexOfFirstByteToEscape;
 
-                if (encoder != null)
+                if (encoder is object)
                 {
                     destination = destination.Slice(indexOfFirstByteToEscape);
                     var utf8Value = utf8Source.Slice(indexOfFirstByteToEscape);
@@ -185,7 +185,7 @@ namespace SpanJson.Internal
 
             private static void EscapeStringInternal(in ReadOnlySpan<byte> value, Span<byte> destination, JavaScriptEncoder encoder, ref int written)
             {
-                Debug.Assert(encoder != null);
+                Debug.Assert(encoder is object);
 
                 OperationStatus result = encoder.EncodeUtf8(value, destination, out int encoderBytesConsumed, out int encoderBytesWritten);
 
@@ -209,7 +209,7 @@ namespace SpanJson.Internal
                 utf16Source.Slice(0, indexOfFirstByteToEscape).CopyTo(destination);
                 written = indexOfFirstByteToEscape;
 
-                if (encoder != null)
+                if (encoder is object)
                 {
                     destination = destination.Slice(indexOfFirstByteToEscape);
                     var utf16Value = utf16Source.Slice(indexOfFirstByteToEscape);
@@ -253,7 +253,7 @@ namespace SpanJson.Internal
 
             private static void EscapeStringInternal(in ReadOnlySpan<char> value, Span<char> destination, JavaScriptEncoder encoder, ref int written)
             {
-                Debug.Assert(encoder != null);
+                Debug.Assert(encoder is object);
 
                 OperationStatus result = encoder.Encode(value, destination, out int encoderBytesConsumed, out int encoderCharsWritten);
 

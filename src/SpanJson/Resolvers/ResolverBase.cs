@@ -115,7 +115,7 @@ namespace SpanJson.Resolvers
             var type = typeof(T);
             var formatterType = typeof(TFormatter);
             var staticDefaultField = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
-            if (staticDefaultField == null)
+            if (staticDefaultField is null)
             {
                 throw new InvalidOperationException($"{formatterType.FullName} must have a public static field 'Default' returning an instance of it.");
             }
@@ -126,10 +126,10 @@ namespace SpanJson.Resolvers
         public virtual IJsonFormatter GetFormatter(JsonMemberInfo memberInfo, Type overrideMemberType = null)
         {
             // ReSharper disable ConvertClosureToMethodGroup
-            if (memberInfo.CustomSerializer != null)
+            if (memberInfo.CustomSerializer is object)
             {
                 var formatter = GetDefaultOrCreate(memberInfo.CustomSerializer);
-                if (formatter is ICustomJsonFormatter csf && memberInfo.CustomSerializerArguments != null)
+                if (formatter is ICustomJsonFormatter csf && memberInfo.CustomSerializerArguments is object)
                 {
                     csf.Arguments = memberInfo.CustomSerializerArguments;
                 }
@@ -161,10 +161,10 @@ namespace SpanJson.Resolvers
         public IJsonFormatter<T, TSymbol> GetEnumStringFormatter<T>() where T : struct, Enum
         {
             var type = typeof(T);
-            if (type.FirstAttribute<FlagsAttribute>() != null)
+            if (type.FirstAttribute<FlagsAttribute>() is object)
             {
                 var enumBaseType = Enum.GetUnderlyingType(type);
-                return (IJsonFormatter<T, TSymbol>)GetDefaultOrCreate(typeof(EnumStringFlagsFormatter<,,,>).MakeGenericType(type, enumBaseType, typeof(TSymbol), typeof(TResolver)));
+                return (IJsonFormatter<T, TSymbol>)GetDefaultOrCreate(typeof(EnumStringFlagsFormatter<,,,>).GetCachedGenericType(type, enumBaseType, typeof(TSymbol), typeof(TResolver)));
             }
 
             return EnumStringFormatter<T, TSymbol, TResolver>.Default;
@@ -204,7 +204,7 @@ namespace SpanJson.Resolvers
                     canWrite = propertyInfo.CanWrite;
                 }
 
-                if (memberInfo.FirstAttribute<JsonExtensionDataAttribute>() != null && typeof(IDictionary<string, object>).IsAssignableFrom(memberType) && canRead && canWrite)
+                if (memberInfo.FirstAttribute<JsonExtensionDataAttribute>() is object && typeof(IDictionary<string, object>).IsAssignableFrom(memberType) && canRead && canWrite)
                 {
                     extensionMemberInfo = new JsonExtensionMemberInfo(memberInfo.Name, memberType, excludeNulls);
                 }
@@ -223,8 +223,8 @@ namespace SpanJson.Resolvers
         protected virtual void TryGetAnnotatedAttributeConstructor(Type type, out ConstructorInfo constructor, out JsonConstructorAttribute attribute)
         {
             constructor = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance)
-                .FirstOrDefault(a => a.FirstAttribute<JsonConstructorAttribute>() != null);
-            if (constructor != null)
+                .FirstOrDefault(a => a.FirstAttribute<JsonConstructorAttribute>() is object);
+            if (constructor is object)
             {
                 attribute = constructor.FirstAttribute<JsonConstructorAttribute>();
                 return;
@@ -244,7 +244,7 @@ namespace SpanJson.Resolvers
 
         private static bool IsIgnored(MemberInfo memberInfo)
         {
-            return memberInfo.FirstAttribute<IgnoreDataMemberAttribute>() != null;
+            return memberInfo.FirstAttribute<IgnoreDataMemberAttribute>() is object;
         }
 
         private static string GetAttributeName(MemberInfo memberInfo)
@@ -255,16 +255,16 @@ namespace SpanJson.Resolvers
         private IJsonFormatter BuildFormatter(Type type)
         {
             var integrated = GetIntegrated(type);
-            if (integrated != null)
+            if (integrated is object)
             {
                 return integrated;
             }
 
             JsonCustomSerializerAttribute attr;
-            if ((attr = type.FirstAttribute<JsonCustomSerializerAttribute>()) != null)
+            if ((attr = type.FirstAttribute<JsonCustomSerializerAttribute>()) is object)
             {
                 var formatter = GetDefaultOrCreate(attr.Type);
-                if (formatter is ICustomJsonFormatter csf && attr.Arguments != null)
+                if (formatter is ICustomJsonFormatter csf && attr.Arguments is object)
                 {
                     csf.Arguments = attr.Arguments;
                 }
@@ -277,7 +277,7 @@ namespace SpanJson.Resolvers
             foreach (var item in resolvers)
             {
                 var f = item.GetFormatter(type);
-                if (f != null) { return f; }
+                if (f is object) { return f; }
             }
 
             if (type == typeof(object))
@@ -291,10 +291,10 @@ namespace SpanJson.Resolvers
                 switch (rank)
                 {
                     case 1:
-                        return GetDefaultOrCreate(typeof(ArrayFormatter<,,>).MakeGenericType(type.GetElementType(),
+                        return GetDefaultOrCreate(typeof(ArrayFormatter<,,>).GetCachedGenericType(type.GetElementType(),
                             typeof(TSymbol), typeof(TResolver)));
                     case 2:
-                        return GetDefaultOrCreate(typeof(TwoDimensionalArrayFormatter<,,>).MakeGenericType(type.GetElementType(),
+                        return GetDefaultOrCreate(typeof(TwoDimensionalArrayFormatter<,,>).GetCachedGenericType(type.GetElementType(),
                             typeof(TSymbol), typeof(TResolver)));
                     default:
                         throw new NotSupportedException("Only One- and Two-dimensional arrrays are supported.");
@@ -307,53 +307,53 @@ namespace SpanJson.Resolvers
                 {
                     case EnumOptions.String:
                         {
-                            if (type.FirstAttribute<FlagsAttribute>() != null)
+                            if (type.FirstAttribute<FlagsAttribute>() is object)
                             {
                                 var enumBaseType = Enum.GetUnderlyingType(type);
-                                return GetDefaultOrCreate(typeof(EnumStringFlagsFormatter<,,,>).MakeGenericType(type, enumBaseType, typeof(TSymbol), typeof(TResolver)));
+                                return GetDefaultOrCreate(typeof(EnumStringFlagsFormatter<,,,>).GetCachedGenericType(type, enumBaseType, typeof(TSymbol), typeof(TResolver)));
                             }
 
-                            return GetDefaultOrCreate(typeof(EnumStringFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
+                            return GetDefaultOrCreate(typeof(EnumStringFormatter<,,>).GetCachedGenericType(type, typeof(TSymbol), typeof(TResolver)));
                         }
                     case EnumOptions.Integer:
-                        return GetDefaultOrCreate(typeof(EnumIntegerFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
+                        return GetDefaultOrCreate(typeof(EnumIntegerFormatter<,,>).GetCachedGenericType(type, typeof(TSymbol), typeof(TResolver)));
                 }
             }
 
             if (typeof(IDynamicMetaObjectProvider).IsAssignableFrom(type))
             {
-                return GetDefaultOrCreate(typeof(DynamicMetaObjectProviderFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
+                return GetDefaultOrCreate(typeof(DynamicMetaObjectProviderFormatter<,,>).GetCachedGenericType(type, typeof(TSymbol), typeof(TResolver)));
             }
 
             if (type.TryGetTypeOfGenericInterface(typeof(IDictionary<,>), out var dictArgumentTypes) && HasApplicableCtor(type))
             {
                 var writableType = type.IsInterface ? GetFunctorFallBackType(type) : type;
-                return GetDefaultOrCreate(typeof(DictionaryFormatter<,,,,,>).MakeGenericType(type, writableType, dictArgumentTypes[0], dictArgumentTypes[1],
+                return GetDefaultOrCreate(typeof(DictionaryFormatter<,,,,,>).GetCachedGenericType(type, writableType, dictArgumentTypes[0], dictArgumentTypes[1],
                     typeof(TSymbol), typeof(TResolver)));
             }
 
             if (type.TryGetTypeOfGenericInterface(typeof(IReadOnlyDictionary<,>), out var rodictArgumentTypes))
             {
-                var writableType = typeof(Dictionary<,>).MakeGenericType(rodictArgumentTypes);
+                var writableType = typeof(Dictionary<,>).GetCachedGenericType(rodictArgumentTypes);
                 return GetDefaultOrCreate(
-                    typeof(DictionaryFormatter<,,,,,>).MakeGenericType(type, writableType, rodictArgumentTypes[0], rodictArgumentTypes[1], typeof(TSymbol),
+                    typeof(DictionaryFormatter<,,,,,>).GetCachedGenericType(type, writableType, rodictArgumentTypes[0], rodictArgumentTypes[1], typeof(TSymbol),
                         typeof(TResolver)));
             }
 
             if (type.TryGetTypeOfGenericInterface(typeof(IList<>), out var listArgumentTypes) && HasApplicableCtor(type))
             {
-                return GetDefaultOrCreate(typeof(ListFormatter<,,,>).MakeGenericType(type, listArgumentTypes.Single(), typeof(TSymbol), typeof(TResolver)));
+                return GetDefaultOrCreate(typeof(ListFormatter<,,,>).GetCachedGenericType(type, listArgumentTypes.Single(), typeof(TSymbol), typeof(TResolver)));
             }
 
             if (type.TryGetTypeOfGenericInterface(typeof(IEnumerable<>), out var enumArgumentTypes))
             {
                 return GetDefaultOrCreate(
-                    typeof(EnumerableFormatter<,,,>).MakeGenericType(type, enumArgumentTypes.Single(), typeof(TSymbol), typeof(TResolver)));
+                    typeof(EnumerableFormatter<,,,>).GetCachedGenericType(type, enumArgumentTypes.Single(), typeof(TSymbol), typeof(TResolver)));
             }
 
             if (type.TryGetNullableUnderlyingType(out var underlyingType))
             {
-                return GetDefaultOrCreate(typeof(NullableFormatter<,,>).MakeGenericType(underlyingType,
+                return GetDefaultOrCreate(typeof(NullableFormatter<,,>).GetCachedGenericType(underlyingType,
                     typeof(TSymbol), typeof(TResolver)));
             }
 
@@ -361,10 +361,10 @@ namespace SpanJson.Resolvers
             if (type.IsValueType)
             {
                 return GetDefaultOrCreate(
-                    typeof(ComplexStructFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
+                    typeof(ComplexStructFormatter<,,>).GetCachedGenericType(type, typeof(TSymbol), typeof(TResolver)));
             }
 
-            return GetDefaultOrCreate(typeof(ComplexClassFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
+            return GetDefaultOrCreate(typeof(ComplexClassFormatter<,,>).GetCachedGenericType(type, typeof(TSymbol), typeof(TResolver)));
         }
 
         /// <summary>
@@ -383,7 +383,7 @@ namespace SpanJson.Resolvers
                 return true; // late checking with fallback
             }
 
-            return type.GetConstructor(Type.EmptyTypes) != null;
+            return type.GetConstructor(Type.EmptyTypes) is object;
         }
 
         private static IJsonFormatter GetIntegrated(Type type)
@@ -418,24 +418,24 @@ namespace SpanJson.Resolvers
         private static bool HasCustomFormatterForRelatedType(Type type)
         {
             Type relatedType = Nullable.GetUnderlyingType(type);
-            if (relatedType == null && type.IsArray)
+            if (relatedType is null && type.IsArray)
             {
                 relatedType = type.GetElementType();
             }
 
-            if (relatedType == null && type.TryGetTypeOfGenericInterface(typeof(IList<>), out var argumentTypes) && argumentTypes.Length == 1)
+            if (relatedType is null && type.TryGetTypeOfGenericInterface(typeof(IList<>), out var argumentTypes) && argumentTypes.Length == 1)
             {
                 relatedType = argumentTypes.Single();
             }
 
-            if (relatedType != null)
+            if (relatedType is object)
             {
                 if (Formatters.TryGetValue(relatedType, out var formatter) && formatter is ICustomJsonFormatter)
                 {
                     return true;
                 }
 
-                if (Nullable.GetUnderlyingType(relatedType) != null)
+                if (Nullable.GetUnderlyingType(relatedType) is object)
                 {
                     return HasCustomFormatterForRelatedType(relatedType); // we need to recurse if the related type is again nullable
                 }
@@ -448,10 +448,10 @@ namespace SpanJson.Resolvers
         {
             var type = typeof(T);
             var ci = type.GetConstructor(Type.EmptyTypes);
-            if (type.IsInterface || ci == null)
+            if (type.IsInterface || ci is null)
             {
                 type = GetFunctorFallBackType(type);
-                if (type == null)
+                if (type is null)
                 {
                     return () => throw new NotSupportedException($"Can't create {typeof(T).Name}.");
                 }
@@ -464,22 +464,22 @@ namespace SpanJson.Resolvers
         {
             if (type.TryGetTypeOfGenericInterface(typeof(IDictionary<,>), out var dictArgumentTypes))
             {
-                return typeof(Dictionary<,>).MakeGenericType(dictArgumentTypes);
+                return typeof(Dictionary<,>).GetCachedGenericType(dictArgumentTypes);
             }
 
             if (type.TryGetTypeOfGenericInterface(typeof(IReadOnlyDictionary<,>), out var rodictArgumentTypes))
             {
-                return typeof(Dictionary<,>).MakeGenericType(rodictArgumentTypes);
+                return typeof(Dictionary<,>).GetCachedGenericType(rodictArgumentTypes);
             }
 
             if (type.TryGetTypeOfGenericInterface(typeof(IList<>), out var listArgumentTypes))
             {
-                return typeof(List<>).MakeGenericType(listArgumentTypes);
+                return typeof(List<>).GetCachedGenericType(listArgumentTypes);
             }
 
             if (type.TryGetTypeOfGenericInterface(typeof(ISet<>), out var setArgumentTypes))
             {
-                return typeof(HashSet<>).MakeGenericType(setArgumentTypes);
+                return typeof(HashSet<>).GetCachedGenericType(setArgumentTypes);
             }
 
             return null;
@@ -512,7 +512,7 @@ namespace SpanJson.Resolvers
                 var emptyField = convertedType.GetField("Empty", BindingFlags.Public | BindingFlags.Static);
                 var addRangeMethod = convertedType.GetMethods(BindingFlags.Public | BindingFlags.Instance).FirstOrDefault(a =>
                     a.Name == "AddRange" && a.GetParameters().Length == 1 && a.GetParameters().Single().ParameterType.IsAssignableFrom(paramExpression.Type));
-                if (emptyField == null || addRangeMethod == null)
+                if (emptyField is null || addRangeMethod is null)
                 {
                     return _ => throw new NotSupportedException($"{typeof(TConverted).Name} has no supported Immutable Collections (Immutable.Empty.AddRange) pattern.");
                 }
@@ -524,7 +524,7 @@ namespace SpanJson.Resolvers
             if (convertedType.IsInterface)
             {
                 convertedType = GetFunctorFallBackType(convertedType);
-                if (convertedType == null)
+                if (convertedType is null)
                 {
                     return _ => throw new NotSupportedException($"Can't convert {typeof(T).Name} to {typeof(TConverted).Name}.");
                 }
@@ -532,7 +532,7 @@ namespace SpanJson.Resolvers
 
             var ci = convertedType.GetConstructors().FirstOrDefault(a =>
                 a.GetParameters().Length == 1 && a.GetParameters().Single().ParameterType.IsAssignableFrom(paramExpression.Type));
-            if (ci == null)
+            if (ci is null)
             {
                 return _ => throw new NotSupportedException($"No constructor of {convertedType.Name} accepts {paramExpression.Type.Name}.");
             }
@@ -560,7 +560,7 @@ namespace SpanJson.Resolvers
         /// <returns>Resolved key of the dictionary.</returns>
         public string ResolveDictionaryKey(string dictionaryKey)
         {
-            if (_dictionayKeyPolicy != null)
+            if (_dictionayKeyPolicy is object)
             {
                 return _dictionayKeyPolicy.ConvertName(dictionaryKey);
             }
@@ -573,7 +573,7 @@ namespace SpanJson.Resolvers
         /// <returns>Resolved name of the extension data.</returns>
         public string ResolveExtensionDataName(string extensionDataName)
         {
-            if (_extensionDataPolicy != null)
+            if (_extensionDataPolicy is object)
             {
                 return _extensionDataPolicy.ConvertName(extensionDataName);
             }
@@ -586,7 +586,7 @@ namespace SpanJson.Resolvers
         /// <returns>Resolved name of the property.</returns>
         public string ResolvePropertyName(string propertyName)
         {
-            if (_jsonPropertyNamingPolicy != null)
+            if (_jsonPropertyNamingPolicy is object)
             {
                 return _jsonPropertyNamingPolicy.ConvertName(propertyName);
             }
@@ -633,7 +633,7 @@ namespace SpanJson.Resolvers
 
         public static void RegisterGlobalCustomrResolver(params ICustomJsonFormatterResolver[] resolvers)
         {
-            if (null == resolvers || 0u >= (uint)resolvers.Length) { return; }
+            if (resolvers is null || 0u >= (uint)resolvers.Length) { return; }
 
             if (TryRegisterGlobalCustomrResolver(resolvers)) { return; }
             ThrowHelper.ThrowInvalidOperationException_Register_Resolver_Err();
@@ -641,7 +641,7 @@ namespace SpanJson.Resolvers
 
         public static bool TryRegisterGlobalCustomrResolver(params ICustomJsonFormatterResolver[] resolvers)
         {
-            if (null == resolvers || 0u >= (uint)resolvers.Length) { return false; }
+            if (resolvers is null || 0u >= (uint)resolvers.Length) { return false; }
             if (Locked == Volatile.Read(ref s_isFreezed)) { return false; }
 
             List<ICustomJsonFormatterResolver> snapshot, newCache;

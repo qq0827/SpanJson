@@ -53,7 +53,7 @@ namespace SpanJson
         /// </remarks>
         public void WriteNull(string propertyName)
         {
-            if (propertyName == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
+            if (propertyName is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
             WriteNull(propertyName.AsSpan());
         }
 
@@ -148,7 +148,7 @@ namespace SpanJson
         /// </remarks>
         public void WriteBoolean(string propertyName, bool value)
         {
-            if (propertyName == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
+            if (propertyName is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
             WriteBoolean(propertyName.AsSpan(), value);
         }
 
@@ -260,7 +260,7 @@ namespace SpanJson
             }
 #endif
 
-            if (propertyArray != null)
+            if (propertyArray is object)
             {
                 ArrayPool<char>.Shared.Return(propertyArray);
             }
@@ -290,7 +290,7 @@ namespace SpanJson
             }
 #endif
 
-            if (propertyArray != null)
+            if (propertyArray is object)
             {
                 ArrayPool<byte>.Shared.Return(propertyArray);
             }

@@ -42,7 +42,7 @@ namespace SpanJson.Linq
 
         public static bool RegisterCustomrComparer(params JValueCompareDelegate[] comparers)
         {
-            if (null == comparers || 0u >= (uint)comparers.Length) { return false; }
+            if (comparers is null || 0u >= (uint)comparers.Length) { return false; }
 
             List<JValueCompareDelegate> snapshot, newCache;
             do
@@ -83,8 +83,8 @@ namespace SpanJson.Linq
         internal static int Compare(JTokenType valueType, object objA, object objB)
         {
             if (objA == objB) { return 0; }
-            if (objB == null) { return 1; }
-            if (objA == null) { return -1; }
+            if (objB is null) { return 1; }
+            if (objA is null) { return -1; }
 
             switch (valueType)
             {
@@ -201,7 +201,7 @@ namespace SpanJson.Linq
                     }
 
                     byte[] bytesA = objA as byte[];
-                    Debug.Assert(bytesA != null);
+                    Debug.Assert(bytesA is object);
 
                     return bytesA.AsSpan().SequenceCompareTo(bytesB);
 
@@ -227,7 +227,7 @@ namespace SpanJson.Linq
 
                 case JTokenType.Uri:
                     Uri uri2 = objB as Uri;
-                    if (uri2 == null)
+                    if (uri2 is null)
                     {
                         throw ThrowHelper2.GetArgumentException_MustBe<Uri>();
                     }
@@ -275,7 +275,7 @@ namespace SpanJson.Linq
 
         int IComparable.CompareTo(object obj)
         {
-            if (obj == null) { return 1; }
+            if (obj is null) { return 1; }
 
             JTokenType comparisonType;
             object otherValue;
@@ -315,7 +315,7 @@ namespace SpanJson.Linq
         /// </exception>
         public int CompareTo(JValue obj)
         {
-            if (obj == null)
+            if (obj is null)
             {
                 return 1;
             }

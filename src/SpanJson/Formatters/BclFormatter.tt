@@ -104,7 +104,7 @@ void GenerateArrayDeserializeCode(string typeName, string utfName)
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<<#= typeName #>>.Shared.Return(temp);
                 }
@@ -171,7 +171,7 @@ namespace SpanJson.Formatters
         public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #> value, IJsonFormatterResolver<<#= symbol.Name #>> resolver)
         {
 <# if(t == typeof(string)) { #>
-            if(value == null)
+            if(value is null)
             {
                 writer.Write<#= utfName #>Null();
                 return;
@@ -182,7 +182,7 @@ namespace SpanJson.Formatters
             writer.Write<#= utfName #><#= t.Name #>(value, resolver.EscapeHandling);
 <# } #>
 <# else if(!t.IsValueType) { #>
-            if(value == null)
+            if(value is null)
             {
                 writer.Write<#= utfName #>Null();
                 return;

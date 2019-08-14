@@ -37,7 +37,7 @@ namespace System.IO
     {
       get
       {
-        if (_UTF8NoBOM == null)
+        if (_UTF8NoBOM is null)
         {
           // No need for double lock - we just want to avoid extra
           // allocations in the common case.

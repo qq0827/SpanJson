@@ -62,7 +62,7 @@ namespace SpanJson.Utilities
         {
             // leave this a private to force code to use an explicit overload
             // avoids stack memory being reserved for the object array
-            if (null == format) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.format); }
+            if (format is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.format); }
 
             return string.Format(provider, format, args);
         }

@@ -56,7 +56,7 @@ namespace SpanJson
         /// </remarks>
         public void WriteBase64String(string propertyName, in ReadOnlySpan<byte> bytes)
         {
-            if (propertyName == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
+            if (propertyName is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
             WriteBase64String(propertyName.AsSpan(), bytes);
         }
 
@@ -164,7 +164,7 @@ namespace SpanJson
             }
 #endif
 
-            if (propertyArray != null)
+            if (propertyArray is object)
             {
                 ArrayPool<char>.Shared.Return(propertyArray);
             }
@@ -194,7 +194,7 @@ namespace SpanJson
             }
 #endif
 
-            if (propertyArray != null)
+            if (propertyArray is object)
             {
                 ArrayPool<byte>.Shared.Return(propertyArray);
             }

@@ -34,7 +34,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf8Verbatim(MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(utf8Json), written));
 #endif
 
-            if (valueArray != null) { ArrayPool<byte>.Shared.Return(valueArray); }
+            if (valueArray is object) { ArrayPool<byte>.Shared.Return(valueArray); }
         }
 
         public override void Serialize(ref JsonWriter<char> writer, SpanJsonDynamicUtf16String value, IJsonFormatterResolver<char> resolver)

@@ -108,7 +108,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<CombGuid?>.Shared.Return(temp);
                 }
@@ -223,7 +223,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<CombGuid>.Shared.Return(temp);
                 }
@@ -379,7 +379,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<CombGuid?>.Shared.Return(temp);
                 }
@@ -494,7 +494,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<CombGuid>.Shared.Return(temp);
                 }

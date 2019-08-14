@@ -6,7 +6,6 @@ using System;
 using System.Globalization;
 using System.Text;
 using Xunit;
-using Newtonsoft.Json;
 
 namespace SpanJson.Tests
 {

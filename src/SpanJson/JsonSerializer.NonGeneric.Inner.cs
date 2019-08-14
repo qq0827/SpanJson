@@ -23,7 +23,7 @@ namespace SpanJson
 
                 public static string InnerSerializeToString(object input)
                 {
-                    if (input == null) { return Generic.Utf16.Serialize<object>(null); }
+                    if (input is null) { return Generic.Utf16.Serialize<object>(null); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
                     var invoker = Invokers.GetOrAdd(input.GetType(), InvokerFactory);
@@ -33,7 +33,7 @@ namespace SpanJson
 
                 public static char[] InnerSerializeToCharArray(object input)
                 {
-                    if (input == null) { return Generic.Utf16.SerializeToCharArray<object>(null); }
+                    if (input is null) { return Generic.Utf16.SerializeToCharArray<object>(null); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
                     var invoker = Invokers.GetOrAdd(input.GetType(), InvokerFactory);
@@ -43,7 +43,7 @@ namespace SpanJson
 
                 public static ArraySegment<char> InnerSerializeToCharArrayPool(object input)
                 {
-                    if (input == null) { return Generic.Utf16.SerializeToArrayPool<object>(null); }
+                    if (input is null) { return Generic.Utf16.SerializeToArrayPool<object>(null); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
                     var invoker = Invokers.GetOrAdd(input.GetType(), InvokerFactory);
@@ -53,7 +53,7 @@ namespace SpanJson
 
                 public static ValueTask InnerSerializeAsync(object input, TextWriter writer, CancellationToken cancellationToken = default)
                 {
-                    if (input == null) { return Generic.Utf16.SerializeAsync<object>(null, writer, cancellationToken); }
+                    if (input is null) { return Generic.Utf16.SerializeAsync<object>(null, writer, cancellationToken); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
                     var invoker = Invokers.GetOrAdd(input.GetType(), InvokerFactory);
@@ -68,7 +68,7 @@ namespace SpanJson
 
                 public static byte[] InnerSerializeToByteArray(object input)
                 {
-                    if (input == null) { return Generic.Utf8.Serialize<object>(null); }
+                    if (input is null) { return Generic.Utf8.Serialize<object>(null); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
                     var invoker = Invokers.GetOrAdd(input.GetType(), InvokerFactory);
@@ -78,7 +78,7 @@ namespace SpanJson
 
                 public static ArraySegment<byte> InnerSerializeToByteArrayPool(object input)
                 {
-                    if (input == null) { return Generic.Utf8.SerializeToArrayPool<object>(null); }
+                    if (input is null) { return Generic.Utf8.SerializeToArrayPool<object>(null); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
                     var invoker = Invokers.GetOrAdd(input.GetType(), InvokerFactory);
@@ -88,7 +88,7 @@ namespace SpanJson
 
                 public static ValueTask InnerSerializeAsync(object input, Stream stream, CancellationToken cancellationToken = default)
                 {
-                    if (input == null) { return Generic.Utf8.SerializeAsync<object>(null, stream, cancellationToken); }
+                    if (input is null) { return Generic.Utf8.SerializeAsync<object>(null, stream, cancellationToken); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
                     var invoker = Invokers.GetOrAdd(input.GetType(), InvokerFactory);
@@ -102,7 +102,7 @@ namespace SpanJson
 
                 public static object InnerDeserialize(TSymbol[] input, Type type)
                 {
-                    if (type == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
+                    if (type is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
                     var invoker = Invokers.GetOrAdd(type, InvokerFactory);
@@ -112,7 +112,7 @@ namespace SpanJson
 
                 public static object InnerDeserialize(in ArraySegment<TSymbol> input, Type type)
                 {
-                    if (type == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
+                    if (type is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
                     var invoker = Invokers.GetOrAdd(type, InvokerFactory);
@@ -122,7 +122,7 @@ namespace SpanJson
 
                 public static object InnerDeserialize(in ReadOnlyMemory<TSymbol> input, Type type)
                 {
-                    if (type == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
+                    if (type is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
                     var invoker = Invokers.GetOrAdd(type, InvokerFactory);
@@ -132,7 +132,7 @@ namespace SpanJson
 
                 public static object InnerDeserialize(in ReadOnlySpan<TSymbol> input, Type type)
                 {
-                    if (type == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
+                    if (type is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
                     var invoker = Invokers.GetOrAdd(type, InvokerFactory);
@@ -146,7 +146,7 @@ namespace SpanJson
 
                 public static ValueTask<object> InnerDeserializeAsync(TextReader reader, Type type, CancellationToken cancellationToken = default)
                 {
-                    if (type == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
+                    if (type is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
                     var invoker = Invokers.GetOrAdd(type, InvokerFactory);
@@ -160,7 +160,7 @@ namespace SpanJson
 
                 public static ValueTask<object> InnerDeserializeAsync(Stream stream, Type type, CancellationToken cancellationToken = default)
                 {
-                    if (type == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
+                    if (type is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
                     // ReSharper disable ConvertClosureToMethodGroup
                     var invoker = Invokers.GetOrAdd(type, InvokerFactory);

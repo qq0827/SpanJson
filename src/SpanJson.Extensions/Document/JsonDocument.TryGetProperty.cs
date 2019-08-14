@@ -203,7 +203,7 @@ namespace SpanJson.Document
                             }
                             finally
                             {
-                                if (rented != null)
+                                if (rented is object)
                                 {
                                     rented.AsSpan(0, written).Clear();
                                     ArrayPool<byte>.Shared.Return(rented);

@@ -40,7 +40,7 @@ namespace SpanJson.Linq
 
             public IEnumerator<JToken> GetEnumerator()
             {
-                if (_token != null)
+                if (_token is object)
                 {
                     yield return _token;
                 }
@@ -68,7 +68,7 @@ namespace SpanJson.Linq
 
             public void CopyTo(JToken[] array, int arrayIndex)
             {
-                if (_token != null)
+                if (_token is object)
                 {
                     array[arrayIndex] = _token;
                 }
@@ -84,7 +84,7 @@ namespace SpanJson.Linq
                 return false;
             }
 
-            public int Count => (_token != null) ? 1 : 0;
+            public int Count => (_token is object) ? 1 : 0;
 
             public bool IsReadOnly => false;
 
@@ -142,7 +142,7 @@ namespace SpanJson.Linq
 
                 JToken newValue = value ?? JValue.CreateNull();
 
-                if (_content._token == null)
+                if (_content._token is null)
                 {
                     InsertItem(0, newValue, false);
                 }
@@ -199,9 +199,9 @@ namespace SpanJson.Linq
         internal override void InsertItem(int index, JToken item, bool skipParentCheck)
         {
             // don't add comments to JProperty
-            if (item != null && item.Type == JTokenType.Comment) { return; }
+            if (item is object && item.Type == JTokenType.Comment) { return; }
 
-            if (Value != null) { ThrowHelper2.ThrowJsonException_Cannot_have_multiple_values_JProperty(); }
+            if (Value is object) { ThrowHelper2.ThrowJsonException_Cannot_have_multiple_values_JProperty(); }
 
             base.InsertItem(0, item, false);
         }
@@ -215,7 +215,7 @@ namespace SpanJson.Linq
         {
             JToken value = (content as JProperty)?.Value;
 
-            if (value != null && value.Type != JTokenType.Null)
+            if (value is object && value.Type != JTokenType.Null)
             {
                 Value = value;
             }
@@ -247,7 +247,7 @@ namespace SpanJson.Linq
         internal JProperty(string name)
         {
             // called from JTokenWriter
-            if (null == name) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.name); }
+            if (name is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.name); }
 
             _name = name;
         }
@@ -265,7 +265,7 @@ namespace SpanJson.Linq
         /// <param name="content">The property content.</param>
         public JProperty(string name, object content)
         {
-            if (null == name) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.name); }
+            if (name is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.name); }
 
             _name = name;
 

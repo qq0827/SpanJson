@@ -63,7 +63,7 @@ namespace SpanJson.Serialization
         /// <returns>A JSON string representation of the object.</returns>
         public static string SerializeObject(object value, params NJsonConverter[] converters)
         {
-            var settings = (converters != null && converters.Length > 0)
+            var settings = (converters is object && converters.Length > 0)
                 ? new NJsonSerializerSettings { Converters = converters }
                 : null;
 
@@ -77,7 +77,7 @@ namespace SpanJson.Serialization
         /// <returns>A JSON string representation of the object.</returns>
         public static string SerializeObject(object value, NFormatting formatting, params NJsonConverter[] converters)
         {
-            var settings = (converters != null && converters.Length > 0)
+            var settings = (converters is object && converters.Length > 0)
                 ? new NJsonSerializerSettings { Converters = converters }
                 : null;
 
@@ -229,7 +229,7 @@ namespace SpanJson.Serialization
         /// <returns>The deserialized object from the JSON string.</returns>
         public static object DeserializeObject(string value, Type type, params NJsonConverter[] converters)
         {
-            var settings = (converters != null && converters.Length > 0)
+            var settings = (converters is object && converters.Length > 0)
                 ? new NJsonSerializerSettings { Converters = converters }
                 : null;
             return DeserializeObject(value, type, settings);

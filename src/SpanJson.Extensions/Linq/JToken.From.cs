@@ -34,7 +34,7 @@ namespace SpanJson.Linq
         internal static JToken FromInternal<T, TResolver>(T o)
             where TResolver : IJsonFormatterResolver<char, TResolver>, new()
         {
-            if (null == o) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.o); }
+            if (o is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.o); }
 
             if (TryReadJsonDynamic(o, out JToken token)) { return token; }
 
@@ -68,7 +68,7 @@ namespace SpanJson.Linq
         internal static JToken FromDynamicInternal<TResolver>(object o)
             where TResolver : IJsonFormatterResolver<char, TResolver>, new()
         {
-            if (null == o) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.o); }
+            if (o is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.o); }
 
             if (TryReadJsonDynamic(o, out JToken token)) { return token; }
 
@@ -125,8 +125,8 @@ namespace SpanJson.Linq
         {
             if (TryReadJsonDynamic(o, out JToken token)) { return token; }
 
-            if (null == o) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.o); }
-            if (null == jsonSerializer) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.jsonSerializer); }
+            if (o is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.o); }
+            if (jsonSerializer is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.jsonSerializer); }
 
             using (JTokenWriter jsonWriter = new JTokenWriter())
             {
@@ -283,7 +283,7 @@ namespace SpanJson.Linq
 
         public static JToken FromDocument(JsonDocument doc)
         {
-            if (null == doc) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.doc); }
+            if (doc is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.doc); }
 
             var token = FromElement(doc.RootElement);
             switch (token.Type)

@@ -19,7 +19,7 @@
             if (0u >= (uint)alreadyWritten) { return JsonHelpers.Empty<char>(); }
 
             var borrowedBuffer = _utf16Buffer;
-            if (null == borrowedBuffer) { return JsonHelpers.Empty<char>(); }
+            if (borrowedBuffer is null) { return JsonHelpers.Empty<char>(); }
 
             var destination = new char[alreadyWritten];
             Utf16WrittenSpan.CopyTo(destination);

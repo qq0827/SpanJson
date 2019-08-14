@@ -34,7 +34,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<TSymbol> writer, TEnumerable value, IJsonFormatterResolver<TSymbol> resolver)
         {
-            if (value == null)
+            if (value is null)
             {
                 writer.WriteNull();
                 return;

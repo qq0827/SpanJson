@@ -51,7 +51,7 @@ namespace SpanJson
         /// </remarks>
         public void WritePropertyName(string propertyName)
         {
-            if (propertyName == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
+            if (propertyName is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
             WritePropertyName(propertyName.AsSpan());
         }
 
@@ -122,7 +122,7 @@ namespace SpanJson
                 WriteStringByOptionsPropertyName(propertyName);
             }
 
-            if (propertyArray != null)
+            if (propertyArray is object)
             {
                 ArrayPool<char>.Shared.Return(propertyArray);
             }
@@ -272,7 +272,7 @@ namespace SpanJson
                 WriteStringByOptionsPropertyName(utf8PropertyName);
             }
 
-            if (propertyArray != null)
+            if (propertyArray is object)
             {
                 ArrayPool<byte>.Shared.Return(propertyArray);
             }
@@ -399,7 +399,7 @@ namespace SpanJson
         /// </remarks>
         public void WriteString(string propertyName, in JsonEncodedText value)
         {
-            if (propertyName == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
+            if (propertyName is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
             WriteString(propertyName.AsSpan(), value);
         }
 
@@ -428,12 +428,12 @@ namespace SpanJson
         /// </remarks>
         public void WriteString(string propertyName, string value)
         {
-            if (propertyName == null)
+            if (propertyName is null)
             {
                 throw new ArgumentNullException(nameof(propertyName));
             }
 
-            if (value == null)
+            if (value is null)
             {
                 WriteNull(propertyName.AsSpan());
             }
@@ -513,7 +513,7 @@ namespace SpanJson
         /// </remarks>
         public void WriteString(in JsonEncodedText propertyName, string value)
         {
-            if (value == null)
+            if (value is null)
             {
                 WriteNull(propertyName);
             }
@@ -582,7 +582,7 @@ namespace SpanJson
         /// </remarks>
         public void WriteString(string propertyName, in ReadOnlySpan<char> value)
         {
-            if (propertyName == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
+            if (propertyName is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
             WriteString(propertyName.AsSpan(), value);
         }
 
@@ -669,7 +669,7 @@ namespace SpanJson
         /// </remarks>
         public void WriteString(string propertyName, in ReadOnlySpan<byte> utf8Value)
         {
-            if (propertyName == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
+            if (propertyName is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
             WriteString(propertyName.AsSpan(), utf8Value);
         }
 
@@ -759,7 +759,7 @@ namespace SpanJson
         /// </remarks>
         public void WriteString(in ReadOnlySpan<char> propertyName, string value)
         {
-            if (value == null)
+            if (value is null)
             {
                 WriteNull(propertyName);
             }
@@ -831,7 +831,7 @@ namespace SpanJson
         /// </remarks>
         public void WriteString(in ReadOnlySpan<byte> utf8PropertyName, string value)
         {
-            if (value == null)
+            if (value is null)
             {
                 WriteNull(utf8PropertyName);
             }
@@ -865,7 +865,7 @@ namespace SpanJson
             }
 #endif
 
-            if (valueArray != null)
+            if (valueArray is object)
             {
                 ArrayPool<byte>.Shared.Return(valueArray);
             }
@@ -895,7 +895,7 @@ namespace SpanJson
             }
 #endif
 
-            if (valueArray != null)
+            if (valueArray is object)
             {
                 ArrayPool<char>.Shared.Return(valueArray);
             }
@@ -925,7 +925,7 @@ namespace SpanJson
             }
 #endif
 
-            if (propertyArray != null)
+            if (propertyArray is object)
             {
                 ArrayPool<char>.Shared.Return(propertyArray);
             }
@@ -955,7 +955,7 @@ namespace SpanJson
             }
 #endif
 
-            if (propertyArray != null)
+            if (propertyArray is object)
             {
                 ArrayPool<byte>.Shared.Return(propertyArray);
             }
@@ -1102,12 +1102,12 @@ namespace SpanJson
                 WriteStringByOptions(propertyName, escapedValue);
             }
 
-            if (valueArray != null)
+            if (valueArray is object)
             {
                 ArrayPool<char>.Shared.Return(valueArray);
             }
 
-            if (propertyArray != null)
+            if (propertyArray is object)
             {
                 ArrayPool<char>.Shared.Return(propertyArray);
             }
@@ -1178,12 +1178,12 @@ namespace SpanJson
                 WriteStringByOptions(utf8PropertyName, escapedValue);
             }
 
-            if (valueArray != null)
+            if (valueArray is object)
             {
                 ArrayPool<byte>.Shared.Return(valueArray);
             }
 
-            if (propertyArray != null)
+            if (propertyArray is object)
             {
                 ArrayPool<byte>.Shared.Return(propertyArray);
             }
@@ -1254,12 +1254,12 @@ namespace SpanJson
                 WriteStringByOptions(propertyName, escapedValue);
             }
 
-            if (valueArray != null)
+            if (valueArray is object)
             {
                 ArrayPool<byte>.Shared.Return(valueArray);
             }
 
-            if (propertyArray != null)
+            if (propertyArray is object)
             {
                 ArrayPool<char>.Shared.Return(propertyArray);
             }
@@ -1330,12 +1330,12 @@ namespace SpanJson
                 WriteStringByOptions(utf8PropertyName, escapedValue);
             }
 
-            if (valueArray != null)
+            if (valueArray is object)
             {
                 ArrayPool<char>.Shared.Return(valueArray);
             }
 
-            if (propertyArray != null)
+            if (propertyArray is object)
             {
                 ArrayPool<byte>.Shared.Return(propertyArray);
             }

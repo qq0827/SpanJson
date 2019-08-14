@@ -39,7 +39,7 @@ namespace SpanJson.Linq
         /// <param name="enumerable">The enumerable.</param>
         public JEnumerable(IEnumerable<T> enumerable)
         {
-            if (null == enumerable) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.enumerable); }
+            if (enumerable is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.enumerable); }
 
             _enumerable = enumerable;
         }
@@ -62,7 +62,7 @@ namespace SpanJson.Linq
         {
             get
             {
-                if (_enumerable == null) { return JEnumerable<JToken>.Empty; }
+                if (_enumerable is null) { return JEnumerable<JToken>.Empty; }
 
                 return new JEnumerable<JToken>(_enumerable.Values<T, JToken>(key));
             }
@@ -93,7 +93,7 @@ namespace SpanJson.Linq
         /// <returns>A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table.</returns>
         public override int GetHashCode()
         {
-            if (_enumerable == null) { return 0; }
+            if (_enumerable is null) { return 0; }
 
             return _enumerable.GetHashCode();
         }

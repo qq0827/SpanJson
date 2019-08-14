@@ -37,7 +37,7 @@ namespace SpanJson.Utilities
     {
         public static char[] EnsureBufferSize(int size, char[] buffer)
         {
-            if (buffer != null)
+            if (buffer is object)
             {
                 ArrayPool<char>.Shared.Return(buffer);
             }
@@ -73,7 +73,7 @@ namespace SpanJson.Utilities
 
         public static bool ShouldEscapeJavaScriptString(string s, bool[] charEscapeFlags)
         {
-            if (s == null)
+            if (s is null)
             {
                 return false;
             }
@@ -109,7 +109,7 @@ namespace SpanJson.Utilities
                 {
                     if (lastWritePosition != 0)
                     {
-                        if (writeBuffer == null || writeBuffer.Length < lastWritePosition)
+                        if (writeBuffer is null || writeBuffer.Length < lastWritePosition)
                         {
                             writeBuffer = BufferUtils.EnsureBufferSize(lastWritePosition, writeBuffer);
                         }
@@ -173,7 +173,7 @@ namespace SpanJson.Utilities
                                     }
                                     else
                                     {
-                                        if (writeBuffer == null || writeBuffer.Length < UnicodeTextLength)
+                                        if (writeBuffer is null || writeBuffer.Length < UnicodeTextLength)
                                         {
                                             writeBuffer = BufferUtils.EnsureBufferSize(UnicodeTextLength, writeBuffer);
                                         }
@@ -191,7 +191,7 @@ namespace SpanJson.Utilities
                                 break;
                         }
 
-                        if (escapedValue == null)
+                        if (escapedValue is null)
                         {
                             continue;
                         }
@@ -203,7 +203,7 @@ namespace SpanJson.Utilities
                             length = i - lastWritePosition + ((isEscapedUnicodeText) ? UnicodeTextLength : 0);
                             int start = (isEscapedUnicodeText) ? UnicodeTextLength : 0;
 
-                            if (writeBuffer == null || writeBuffer.Length < length)
+                            if (writeBuffer is null || writeBuffer.Length < length)
                             {
                                 char[] newBuffer = ArrayPool<char>.Shared.Rent(length);
 
@@ -211,7 +211,7 @@ namespace SpanJson.Utilities
                                 // copy it over when creating new buffer
                                 if (isEscapedUnicodeText)
                                 {
-                                    Debug.Assert(writeBuffer != null, "Write buffer should never be null because it is set when the escaped unicode text is encountered.");
+                                    Debug.Assert(writeBuffer is object, "Write buffer should never be null because it is set when the escaped unicode text is encountered.");
 
                                     Array.Copy(writeBuffer, newBuffer, UnicodeTextLength);
                                 }
@@ -242,7 +242,7 @@ namespace SpanJson.Utilities
                     length = s.Length - lastWritePosition;
                     if (length > 0)
                     {
-                        if (writeBuffer == null || writeBuffer.Length < length)
+                        if (writeBuffer is null || writeBuffer.Length < length)
                         {
                             writeBuffer = BufferUtils.EnsureBufferSize(length, writeBuffer);
                         }

@@ -174,7 +174,7 @@ namespace SpanJson.Linq
         {
             get
             {
-                if (_syncRoot == null)
+                if (_syncRoot is null)
                 {
                     Interlocked.CompareExchange(ref _syncRoot, new object(), null);
                 }
@@ -196,20 +196,18 @@ namespace SpanJson.Linq
             AddingNewEventArgs args = new AddingNewEventArgs();
             OnAddingNew(args);
 
-            if (args.NewObject == null)
+            switch (args.NewObject)
             {
-                ThrowHelper2.ThrowJsonException_Could_not_determine_new_value_to_add_to(this);
+                case null:
+                    throw ThrowHelper2.GetJsonException_Could_not_determine_new_value_to_add_to(this);
+
+                case JToken newItem:
+                    Add(newItem);
+                    return newItem;
+
+                default:
+                    throw ThrowHelper2.GetJsonException_New_item_to_be_added_to_collection_must_be_compatible_with();
             }
-
-            var newItem = args.NewObject as JToken;
-            if (null == newItem)
-            {
-                ThrowHelper2.ThrowJsonException_New_item_to_be_added_to_collection_must_be_compatible_with();
-            }
-
-            Add(newItem);
-
-            return newItem;
         }
 
         bool IBindingList.AllowEdit => true;

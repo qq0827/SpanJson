@@ -296,7 +296,7 @@ namespace SpanJson
             }
             finally
             {
-                if (unescapedArray != null) { ArrayPool<byte>.Shared.Return(unescapedArray); }
+                if (unescapedArray is object) { ArrayPool<byte>.Shared.Return(unescapedArray); }
             }
         }
 
@@ -339,7 +339,7 @@ namespace SpanJson
             }
             finally
             {
-                if (unescapedArray != null) { ArrayPool<byte>.Shared.Return(unescapedArray); }
+                if (unescapedArray is object) { ArrayPool<byte>.Shared.Return(unescapedArray); }
             }
         }
 
@@ -382,7 +382,7 @@ namespace SpanJson
             }
             finally
             {
-                if (unescapedArray != null) { ArrayPool<byte>.Shared.Return(unescapedArray); }
+                if (unescapedArray is object) { ArrayPool<byte>.Shared.Return(unescapedArray); }
             }
         }
 
@@ -425,7 +425,7 @@ namespace SpanJson
             }
             finally
             {
-                if (unescapedArray != null) { ArrayPool<byte>.Shared.Return(unescapedArray); }
+                if (unescapedArray is object) { ArrayPool<byte>.Shared.Return(unescapedArray); }
             }
         }
 
@@ -476,7 +476,7 @@ namespace SpanJson
             }
             finally
             {
-                if (unescapedArray != null) { ArrayPool<byte>.Shared.Return(unescapedArray); }
+                if (unescapedArray is object) { ArrayPool<byte>.Shared.Return(unescapedArray); }
             }
         }
 
@@ -953,7 +953,7 @@ namespace SpanJson
         public Version ReadUtf8Version()
         {
             var stringValue = ReadUtf8String();
-            if (stringValue == null)
+            if (stringValue is null)
             {
                 return default;
             }
@@ -965,7 +965,7 @@ namespace SpanJson
         public Uri ReadUtf8Uri()
         {
             var stringValue = ReadUtf8String();
-            if (stringValue == null)
+            if (stringValue is null)
             {
                 return default;
             }
@@ -1314,7 +1314,7 @@ namespace SpanJson
                         }
                         finally
                         {
-                            if (temp != null)
+                            if (temp is object)
                             {
                                 ArrayPool<object>.Shared.Return(temp);
                             }

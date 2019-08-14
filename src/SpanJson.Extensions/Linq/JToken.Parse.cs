@@ -154,7 +154,7 @@ namespace SpanJson.Linq
                         }
                         finally
                         {
-                            if (temp != null)
+                            if (temp is object)
                             {
                                 ArrayPool<JToken>.Shared.Return(temp);
                             }
@@ -173,7 +173,7 @@ namespace SpanJson.Linq
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static JToken Parse(string json)
         {
-            if (json == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.json); }
+            if (json is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.json); }
 
             return Parse(json.ToCharArray());
         }
@@ -311,7 +311,7 @@ namespace SpanJson.Linq
                         }
                         finally
                         {
-                            if (temp != null)
+                            if (temp is object)
                             {
                                 ArrayPool<JToken>.Shared.Return(temp);
                             }

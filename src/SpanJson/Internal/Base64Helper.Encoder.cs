@@ -25,14 +25,14 @@ namespace SpanJson.Internal
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ToBase64String(byte[] inArray)
         {
-            if (inArray == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.inArray); }
+            if (inArray is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.inArray); }
             return ToBase64String(new ReadOnlySpan<byte>(inArray), Base64FormattingOptions.None);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ToBase64String(byte[] inArray, Base64FormattingOptions options)
         {
-            if (inArray == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.inArray); }
+            if (inArray is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.inArray); }
             return ToBase64String(new ReadOnlySpan<byte>(inArray), options);
         }
 
@@ -45,7 +45,7 @@ namespace SpanJson.Internal
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string ToBase64String(byte[] inArray, int offset, int length, Base64FormattingOptions options)
         {
-            if (inArray == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.inArray); }
+            if (inArray is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.inArray); }
             if ((uint)length > JsonSharedConstant.TooBigOrNegative) { ThrowHelper.ThrowArgumentOutOfRangeException_Index(ExceptionArgument.length); }
             if ((uint)offset > JsonSharedConstant.TooBigOrNegative) { ThrowHelper.ThrowArgumentOutOfRangeException_GenericPositive(ExceptionArgument.offset); }
             if ((uint)offset > (uint)(inArray.Length - length)) { ThrowHelper.ThrowArgumentOutOfRangeException_OffsetLength(ExceptionArgument.offset); }
@@ -87,8 +87,8 @@ namespace SpanJson.Internal
         public static unsafe int ToBase64CharArray(byte[] inArray, int offsetIn, int length, char[] outArray, int offsetOut, Base64FormattingOptions options)
         {
             //Do data verfication
-            if (inArray == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.inArray); }
-            if (outArray == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.outArray); }
+            if (inArray is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.inArray); }
+            if (outArray is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.outArray); }
             if ((uint)length > JsonSharedConstant.TooBigOrNegative) { ThrowHelper.ThrowArgumentOutOfRangeException_Index(ExceptionArgument.length); }
             if ((uint)offsetIn > JsonSharedConstant.TooBigOrNegative) { ThrowHelper.ThrowArgumentOutOfRangeException_GenericPositive(ExceptionArgument.offsetIn); }
             if ((uint)offsetOut > JsonSharedConstant.TooBigOrNegative) { ThrowHelper.ThrowArgumentOutOfRangeException_GenericPositive(ExceptionArgument.offsetOut); }

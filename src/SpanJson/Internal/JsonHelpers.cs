@@ -18,7 +18,7 @@ namespace SpanJson.Internal
 
         public static HashSet<TSource> ToHashSet<TSource>(this IEnumerable<TSource> source, IEqualityComparer<TSource> comparer)
         {
-            if (source == null)
+            if (source is null)
             {
                 ThrowHelper.ThrowArgumentNullException(ExceptionArgument.source);
             }

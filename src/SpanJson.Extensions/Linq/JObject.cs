@@ -94,14 +94,14 @@ namespace SpanJson.Linq
         internal override void InsertItem(int index, JToken item, bool skipParentCheck)
         {
             // don't add comments to JObject, no name to reference comment by
-            if (item != null && item.Type == JTokenType.Comment) { return; }
+            if (item is object && item.Type == JTokenType.Comment) { return; }
 
             base.InsertItem(index, item, skipParentCheck);
         }
 
         internal override void ValidateToken(JToken o, JToken existing)
         {
-            if (null == o) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.o); }
+            if (o is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.o); }
 
             if (o.Type != JTokenType.Property)
             {
@@ -110,7 +110,7 @@ namespace SpanJson.Linq
 
             JProperty newProperty = (JProperty)o;
 
-            if (existing != null)
+            if (existing is object)
             {
                 JProperty existingProperty = (JProperty)existing;
 
@@ -152,11 +152,11 @@ namespace SpanJson.Linq
             {
                 JProperty existingProperty = Property(contentItem.Key, settings?.PropertyNameComparison ?? StringComparison.Ordinal);
 
-                if (existingProperty == null)
+                if (existingProperty is null)
                 {
                     Add(contentItem.Key, contentItem.Value);
                 }
-                else if (contentItem.Value != null)
+                else if (contentItem.Value is object)
                 {
                     if (!(existingProperty.Value is JContainer existingContainer) || existingContainer.Type != contentItem.Value.Type)
                     {
@@ -205,7 +205,7 @@ namespace SpanJson.Linq
         /// <returns>A <see cref="JProperty"/> matched with the specified name or <c>null</c>.</returns>
         public JProperty Property(string name, StringComparison comparison)
         {
-            if (name == null) { return null; }
+            if (name is null) { return null; }
 
             if (_properties.TryGetValue(name, out JToken property))
             {
@@ -241,25 +241,32 @@ namespace SpanJson.Linq
         {
             get
             {
-                if (null == key) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.key); }
-
-                if (!(key is string propertyName))
+                switch (key)
                 {
-                    throw ThrowHelper2.GetArgumentException_Accessed_JObject_values_with_invalid_key_value(key);
-                }
+                    case null:
+                        throw ThrowHelper.GetArgumentNullException(ExceptionArgument.key);
 
-                return this[propertyName];
+                    case string propertyName:
+                        return this[propertyName];
+
+                    default:
+                        throw ThrowHelper2.GetArgumentException_Accessed_JObject_values_with_invalid_key_value(key);
+                }
             }
             set
             {
-                if (null == key) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.key); }
-
-                if (!(key is string propertyName))
+                switch (key)
                 {
-                    throw ThrowHelper2.GetArgumentException_Set_JObject_values_with_invalid_key_value(key);
-                }
+                    case null:
+                        throw ThrowHelper.GetArgumentNullException(ExceptionArgument.key);
 
-                this[propertyName] = value;
+                    case string propertyName:
+                        this[propertyName] = value;
+                        break;
+
+                    default:
+                        throw ThrowHelper2.GetArgumentException_Set_JObject_values_with_invalid_key_value(key);
+                }
             }
         }
 
@@ -269,7 +276,7 @@ namespace SpanJson.Linq
         {
             get
             {
-                if (null == propertyName) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
+                if (propertyName is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
 
                 JProperty property = Property(propertyName, StringComparison.Ordinal);
 
@@ -278,7 +285,7 @@ namespace SpanJson.Linq
             set
             {
                 JProperty property = Property(propertyName, StringComparison.Ordinal);
-                if (property != null)
+                if (property is object)
                 {
                     property.Value = value;
                 }
@@ -307,7 +314,7 @@ namespace SpanJson.Linq
         /// <returns>The <see cref="JToken"/> with the specified property name.</returns>
         public JToken GetValue(string propertyName, StringComparison comparison)
         {
-            if (propertyName == null) { return null; }
+            if (propertyName is null) { return null; }
 
             // attempt to get value via dictionary first for performance
             var property = Property(propertyName, comparison);
@@ -325,7 +332,7 @@ namespace SpanJson.Linq
         public bool TryGetValue(string propertyName, StringComparison comparison, out JToken value)
         {
             value = GetValue(propertyName, comparison);
-            return (value != null);
+            return (value is object);
         }
 
         internal override int GetDeepHashCode()

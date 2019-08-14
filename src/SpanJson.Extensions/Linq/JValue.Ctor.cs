@@ -101,7 +101,7 @@ namespace SpanJson.Linq
 
         /// <summary>Initializes a new instance of the <see cref="JValue"/> class with the given value.</summary>
         /// <param name="value">The value.</param>
-        public JValue(Uri value) : this(value, (value != null) ? JTokenType.Uri : JTokenType.Null) { }
+        public JValue(Uri value) : this(value, (value is object) ? JTokenType.Uri : JTokenType.Null) { }
 
         /// <summary>Initializes a new instance of the <see cref="JValue"/> class with the given value.</summary>
         /// <param name="value">The value.</param>
@@ -305,7 +305,7 @@ namespace SpanJson.Linq
 
         private static JTokenType GetStringValueType(JTokenType? current)
         {
-            if (current == null)
+            if (current is null)
             {
                 return JTokenType.String;
             }

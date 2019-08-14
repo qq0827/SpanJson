@@ -104,7 +104,7 @@ namespace SpanJson.Internal
                     for (int i = 0; i < buckets.Length; i++)
                     {
                         var e = buckets[i];
-                        while (e != null)
+                        while (e is object)
                         {
                             var newEntry = new Entry { Key = e.Key, Value = e.Value, Hash = e.Hash };
                             AddToBuckets(nextBucket, key, newEntry, null, out resultingValue);
@@ -133,10 +133,10 @@ namespace SpanJson.Internal
 
         bool AddToBuckets(Entry[] buckets, byte[] newKey, Entry newEntryOrNull, Func<byte[], TValue> valueFactory, out TValue resultingValue)
         {
-            var h = (newEntryOrNull != null) ? newEntryOrNull.Hash : comparer.GetHashCode(newKey);
-            if (buckets[h & (buckets.Length - 1)] == null)
+            var h = (newEntryOrNull is object) ? newEntryOrNull.Hash : comparer.GetHashCode(newKey);
+            if (buckets[h & (buckets.Length - 1)] is null)
             {
-                if (newEntryOrNull != null)
+                if (newEntryOrNull is object)
                 {
                     resultingValue = newEntryOrNull.Value;
                     VolatileWrite(ref buckets[h & (buckets.Length - 1)], newEntryOrNull);
@@ -158,9 +158,9 @@ namespace SpanJson.Internal
                         return false;
                     }
 
-                    if (searchLastEntry.Next == null)
+                    if (searchLastEntry.Next is null)
                     {
-                        if (newEntryOrNull != null)
+                        if (newEntryOrNull is object)
                         {
                             resultingValue = newEntryOrNull.Value;
                             VolatileWrite(ref searchLastEntry.Next, newEntryOrNull);
@@ -185,7 +185,7 @@ namespace SpanJson.Internal
             var hash = comparer.GetHashCode(key);
             var entry = table[hash & table.Length - 1];
 
-            if (entry == null) { goto NOT_FOUND; }
+            if (entry is null) { goto NOT_FOUND; }
 
             if (comparer.Equals(entry.Key, key))
             {
@@ -194,7 +194,7 @@ namespace SpanJson.Internal
             }
 
             var next = entry.Next;
-            while (next != null)
+            while (next is object)
             {
                 if (comparer.Equals(next.Key, key))
                 {
@@ -254,7 +254,7 @@ namespace SpanJson.Internal
                 {
                     var count = 1;
                     var n = this;
-                    while (n.Next != null)
+                    while (n.Next is object)
                     {
                         count++;
                         n = n.Next;

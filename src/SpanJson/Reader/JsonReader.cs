@@ -18,7 +18,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public JsonReader(TSymbol[] input)
         {
-            if (null == input) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.input); }
+            if (input is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.input); }
 
             _length = (uint)input.Length;
             _pos = 0;

@@ -10,7 +10,7 @@ namespace SpanJson.Formatters
 
         public override void Serialize(ref JsonWriter<byte> writer, TValue value, IJsonFormatterResolver<byte> resolver)
         {
-            if (null == value || null == value.Value)
+            if (value is null || value.Value is null)
             {
                 writer.WriteUtf8Null();
                 return;
@@ -30,7 +30,7 @@ namespace SpanJson.Formatters
 
         public override void Serialize(ref JsonWriter<char> writer, TValue value, IJsonFormatterResolver<char> resolver)
         {
-            if (null == value || null == value.Value)
+            if (value is null || value.Value is null)
             {
                 writer.WriteUtf16Null();
                 return;

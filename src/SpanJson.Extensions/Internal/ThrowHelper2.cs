@@ -534,8 +534,8 @@ namespace SpanJson
             JsonException GetJsonException()
             {
                 return new JsonException(string.Format(CultureInfo.InvariantCulture, "Array slice of {0} to {1} returned no results.",
-                    start != null ? start.GetValueOrDefault().ToString(CultureInfo.InvariantCulture) : "*",
-                    end != null ? end.GetValueOrDefault().ToString(CultureInfo.InvariantCulture) : "*"));
+                    start is object ? start.GetValueOrDefault().ToString(CultureInfo.InvariantCulture) : "*",
+                    end is object ? end.GetValueOrDefault().ToString(CultureInfo.InvariantCulture) : "*"));
             }
         }
 
@@ -590,23 +590,15 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        internal static void ThrowJsonException_New_item_to_be_added_to_collection_must_be_compatible_with()
+        internal static JsonException GetJsonException_New_item_to_be_added_to_collection_must_be_compatible_with()
         {
-            throw GetJsonException();
-            JsonException GetJsonException()
-            {
-                return new JsonException(string.Format(CultureInfo.InvariantCulture, "New item to be added to collection must be compatible with {0}.", typeof(JToken)));
-            }
+            return new JsonException(string.Format(CultureInfo.InvariantCulture, "New item to be added to collection must be compatible with {0}.", typeof(JToken)));
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        internal static void ThrowJsonException_Could_not_determine_new_value_to_add_to(JContainer container)
+        internal static JsonException GetJsonException_Could_not_determine_new_value_to_add_to(JContainer container)
         {
-            throw GetJsonException();
-            JsonException GetJsonException()
-            {
-                return new JsonException(string.Format(CultureInfo.InvariantCulture, "Could not determine new value to add to '{0}'.", container.GetType()));
-            }
+            return new JsonException(string.Format(CultureInfo.InvariantCulture, "Could not determine new value to add to '{0}'.", container.GetType()));
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]

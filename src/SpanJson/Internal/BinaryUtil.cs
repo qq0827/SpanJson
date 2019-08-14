@@ -61,7 +61,7 @@ namespace SpanJson.Internal
             var newLength = offset + appendLength;
 
             // If null(most case fisrt time) fill byte.
-            if (bytes == null)
+            if (bytes is null)
             {
                 bytes = new byte[newLength];
                 return;
@@ -107,7 +107,7 @@ namespace SpanJson.Internal
             if ((uint)newSize > JsonSharedConstant.TooBigOrNegative) ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.newSize);
 
             byte[] array2 = array;
-            if (array2 == null)
+            if (array2 is null)
             {
                 array = new byte[newSize];
                 return;
@@ -126,7 +126,7 @@ namespace SpanJson.Internal
         public static byte[] FastCloneWithResize(byte[] src, int newSize)
         {
             if ((uint)newSize > JsonSharedConstant.TooBigOrNegative) ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.newSize);
-            if (src == null) return new byte[newSize];
+            if (src is null) return new byte[newSize];
             if (src.Length < newSize) ThrowHelper.ThrowArgumentException_Length();
 
             byte[] dst = new byte[newSize];

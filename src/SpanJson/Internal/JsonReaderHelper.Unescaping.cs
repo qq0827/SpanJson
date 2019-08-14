@@ -32,7 +32,7 @@ namespace SpanJson.Internal
 
             bool result = TryDecodeBase64InPlace(utf8Unescaped, out bytes);
 
-            if (unescapedArray != null)
+            if (unescapedArray is object)
             {
                 utf8Unescaped.Clear();
                 ArrayPool<byte>.Shared.Return(unescapedArray);
@@ -63,7 +63,7 @@ namespace SpanJson.Internal
             }
             finally
             {
-                if (unescapedArray != null)
+                if (unescapedArray is object)
                 {
                     //utf8Unescaped.Clear();
                     ArrayPool<byte>.Shared.Return(unescapedArray);
@@ -89,7 +89,7 @@ namespace SpanJson.Internal
 
             bool result = other.SequenceEqual(utf8Unescaped);
 
-            if (unescapedArray != null)
+            if (unescapedArray is object)
             {
                 //utf8Unescaped.Clear();
                 ArrayPool<byte>.Shared.Return(unescapedArray);
@@ -127,9 +127,9 @@ namespace SpanJson.Internal
 
             bool result = other.SequenceEqual(utf8Unescaped);
 
-            if (unescapedArray != null)
+            if (unescapedArray is object)
             {
-                Debug.Assert(escapedArray != null);
+                Debug.Assert(escapedArray is object);
                 //utf8Unescaped.Clear();
                 ArrayPool<byte>.Shared.Return(unescapedArray);
                 //utf8Escaped.Clear();
@@ -165,7 +165,7 @@ namespace SpanJson.Internal
             {
                 bytes = null;
 
-                if (pooledArray != null)
+                if (pooledArray is object)
                 {
                     //byteSpan.Clear();
                     ArrayPool<byte>.Shared.Return(pooledArray);
@@ -177,7 +177,7 @@ namespace SpanJson.Internal
 
             bytes = byteSpan.Slice(0, bytesWritten).ToArray();
 
-            if (pooledArray != null)
+            if (pooledArray is object)
             {
                 //byteSpan.Clear();
                 ArrayPool<byte>.Shared.Return(pooledArray);

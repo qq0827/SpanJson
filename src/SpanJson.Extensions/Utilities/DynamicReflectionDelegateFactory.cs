@@ -166,7 +166,7 @@ namespace SpanJson.Utilities
                         MethodInfo toParameterTypeMethod = typeof(IConvertible)
                             .GetMethod("To" + parameterType.Name, new[] { typeof(IFormatProvider) });
                         
-                        if (toParameterTypeMethod != null)
+                        if (toParameterTypeMethod is object)
                         {
                             Label skipConvertible = generator.DefineLabel();
 
@@ -264,7 +264,7 @@ namespace SpanJson.Utilities
                 ConstructorInfo constructorInfo =
                     type.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, ReflectionUtils.EmptyTypes, null);
 
-                if (constructorInfo == null)
+                if (constructorInfo is null)
                 {
                     throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "Could not get constructor for {0}.", type));
                 }
@@ -288,7 +288,7 @@ namespace SpanJson.Utilities
         private void GenerateCreateGetPropertyIL(PropertyInfo propertyInfo, ILGenerator generator)
         {
             MethodInfo getMethod = propertyInfo.GetGetMethod(true);
-            if (getMethod == null)
+            if (getMethod is null)
             {
                 throw new ArgumentException(string.Format(CultureInfo.InvariantCulture, "Property '{0}' does not have a getter.", propertyInfo.Name));
             }

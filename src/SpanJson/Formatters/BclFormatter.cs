@@ -108,7 +108,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<SByte?>.Shared.Return(temp);
                 }
@@ -223,7 +223,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<SByte>.Shared.Return(temp);
                 }
@@ -377,7 +377,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<SByte?>.Shared.Return(temp);
                 }
@@ -492,7 +492,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<SByte>.Shared.Return(temp);
                 }
@@ -646,7 +646,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Int16?>.Shared.Return(temp);
                 }
@@ -761,7 +761,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Int16>.Shared.Return(temp);
                 }
@@ -915,7 +915,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Int16?>.Shared.Return(temp);
                 }
@@ -1030,7 +1030,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Int16>.Shared.Return(temp);
                 }
@@ -1184,7 +1184,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Int32?>.Shared.Return(temp);
                 }
@@ -1299,7 +1299,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Int32>.Shared.Return(temp);
                 }
@@ -1453,7 +1453,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Int32?>.Shared.Return(temp);
                 }
@@ -1568,7 +1568,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Int32>.Shared.Return(temp);
                 }
@@ -1722,7 +1722,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Int64?>.Shared.Return(temp);
                 }
@@ -1837,7 +1837,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Int64>.Shared.Return(temp);
                 }
@@ -1991,7 +1991,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Int64?>.Shared.Return(temp);
                 }
@@ -2106,7 +2106,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Int64>.Shared.Return(temp);
                 }
@@ -2260,7 +2260,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Byte?>.Shared.Return(temp);
                 }
@@ -2375,7 +2375,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Byte>.Shared.Return(temp);
                 }
@@ -2529,7 +2529,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Byte?>.Shared.Return(temp);
                 }
@@ -2644,7 +2644,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Byte>.Shared.Return(temp);
                 }
@@ -2798,7 +2798,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<UInt16?>.Shared.Return(temp);
                 }
@@ -2913,7 +2913,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<UInt16>.Shared.Return(temp);
                 }
@@ -3067,7 +3067,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<UInt16?>.Shared.Return(temp);
                 }
@@ -3182,7 +3182,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<UInt16>.Shared.Return(temp);
                 }
@@ -3336,7 +3336,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<UInt32?>.Shared.Return(temp);
                 }
@@ -3451,7 +3451,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<UInt32>.Shared.Return(temp);
                 }
@@ -3605,7 +3605,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<UInt32?>.Shared.Return(temp);
                 }
@@ -3720,7 +3720,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<UInt32>.Shared.Return(temp);
                 }
@@ -3874,7 +3874,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<UInt64?>.Shared.Return(temp);
                 }
@@ -3989,7 +3989,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<UInt64>.Shared.Return(temp);
                 }
@@ -4143,7 +4143,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<UInt64?>.Shared.Return(temp);
                 }
@@ -4258,7 +4258,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<UInt64>.Shared.Return(temp);
                 }
@@ -4412,7 +4412,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Single?>.Shared.Return(temp);
                 }
@@ -4527,7 +4527,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Single>.Shared.Return(temp);
                 }
@@ -4681,7 +4681,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Single?>.Shared.Return(temp);
                 }
@@ -4796,7 +4796,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Single>.Shared.Return(temp);
                 }
@@ -4950,7 +4950,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Double?>.Shared.Return(temp);
                 }
@@ -5065,7 +5065,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Double>.Shared.Return(temp);
                 }
@@ -5219,7 +5219,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Double?>.Shared.Return(temp);
                 }
@@ -5334,7 +5334,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Double>.Shared.Return(temp);
                 }
@@ -5488,7 +5488,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Decimal?>.Shared.Return(temp);
                 }
@@ -5603,7 +5603,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Decimal>.Shared.Return(temp);
                 }
@@ -5757,7 +5757,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Decimal?>.Shared.Return(temp);
                 }
@@ -5872,7 +5872,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Decimal>.Shared.Return(temp);
                 }
@@ -6026,7 +6026,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Boolean?>.Shared.Return(temp);
                 }
@@ -6141,7 +6141,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Boolean>.Shared.Return(temp);
                 }
@@ -6295,7 +6295,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Boolean?>.Shared.Return(temp);
                 }
@@ -6410,7 +6410,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Boolean>.Shared.Return(temp);
                 }
@@ -6564,7 +6564,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Char?>.Shared.Return(temp);
                 }
@@ -6679,7 +6679,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Char>.Shared.Return(temp);
                 }
@@ -6833,7 +6833,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Char?>.Shared.Return(temp);
                 }
@@ -6948,7 +6948,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Char>.Shared.Return(temp);
                 }
@@ -7102,7 +7102,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<DateTime?>.Shared.Return(temp);
                 }
@@ -7217,7 +7217,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<DateTime>.Shared.Return(temp);
                 }
@@ -7371,7 +7371,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<DateTime?>.Shared.Return(temp);
                 }
@@ -7486,7 +7486,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<DateTime>.Shared.Return(temp);
                 }
@@ -7640,7 +7640,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<DateTimeOffset?>.Shared.Return(temp);
                 }
@@ -7755,7 +7755,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<DateTimeOffset>.Shared.Return(temp);
                 }
@@ -7909,7 +7909,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<DateTimeOffset?>.Shared.Return(temp);
                 }
@@ -8024,7 +8024,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<DateTimeOffset>.Shared.Return(temp);
                 }
@@ -8178,7 +8178,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<TimeSpan?>.Shared.Return(temp);
                 }
@@ -8293,7 +8293,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<TimeSpan>.Shared.Return(temp);
                 }
@@ -8447,7 +8447,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<TimeSpan?>.Shared.Return(temp);
                 }
@@ -8562,7 +8562,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<TimeSpan>.Shared.Return(temp);
                 }
@@ -8716,7 +8716,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Guid?>.Shared.Return(temp);
                 }
@@ -8831,7 +8831,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Guid>.Shared.Return(temp);
                 }
@@ -8985,7 +8985,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Guid?>.Shared.Return(temp);
                 }
@@ -9100,7 +9100,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Guid>.Shared.Return(temp);
                 }
@@ -9160,7 +9160,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<Char> writer, String value, IJsonFormatterResolver<Char> resolver)
         {
-            if(value == null)
+            if(value is null)
             {
                 writer.WriteUtf16Null();
                 return;
@@ -9234,7 +9234,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<String>.Shared.Return(temp);
                 }
@@ -9294,7 +9294,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<Byte> writer, String value, IJsonFormatterResolver<Byte> resolver)
         {
-            if(value == null)
+            if(value is null)
             {
                 writer.WriteUtf8Null();
                 return;
@@ -9368,7 +9368,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<String>.Shared.Return(temp);
                 }
@@ -9428,7 +9428,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<Char> writer, Version value, IJsonFormatterResolver<Char> resolver)
         {
-            if(value == null)
+            if(value is null)
             {
                 writer.WriteUtf16Null();
                 return;
@@ -9502,7 +9502,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Version>.Shared.Return(temp);
                 }
@@ -9562,7 +9562,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<Byte> writer, Version value, IJsonFormatterResolver<Byte> resolver)
         {
-            if(value == null)
+            if(value is null)
             {
                 writer.WriteUtf8Null();
                 return;
@@ -9636,7 +9636,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Version>.Shared.Return(temp);
                 }
@@ -9696,7 +9696,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<Char> writer, Uri value, IJsonFormatterResolver<Char> resolver)
         {
-            if(value == null)
+            if(value is null)
             {
                 writer.WriteUtf16Null();
                 return;
@@ -9770,7 +9770,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Uri>.Shared.Return(temp);
                 }
@@ -9830,7 +9830,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<Byte> writer, Uri value, IJsonFormatterResolver<Byte> resolver)
         {
-            if(value == null)
+            if(value is null)
             {
                 writer.WriteUtf8Null();
                 return;
@@ -9904,7 +9904,7 @@ namespace SpanJson.Formatters
             }
             finally
             {
-                if (temp != null)
+                if (temp is object)
                 {
                     ArrayPool<Uri>.Shared.Return(temp);
                 }

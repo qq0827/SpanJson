@@ -18,7 +18,7 @@ namespace SpanJson.Internal
         public static byte[] FromBase64String(string s)
         {
             // "s" is an unfortunate parameter name, but we need to keep it for backward compat.
-            if (s == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.s); }
+            if (s is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.s); }
 
             unsafe
             {
@@ -32,7 +32,7 @@ namespace SpanJson.Internal
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryFromBase64String(string s, Span<byte> bytes, out int bytesWritten)
         {
-            if (s == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.s); }
+            if (s is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.s); }
 
             return TryFromBase64Chars(s.AsSpan(), bytes, out bytesWritten);
         }
@@ -171,7 +171,7 @@ namespace SpanJson.Internal
         /// <returns>The array of bytes represented by the specified Base64 encoding characters.</returns>
         public static byte[] FromBase64CharArray(char[] inArray, int offset, int length)
         {
-            if (inArray == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.inArray); }
+            if (inArray is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.inArray); }
             if ((uint)length > JsonSharedConstant.TooBigOrNegative) { ThrowHelper.ThrowArgumentOutOfRangeException_Index(ExceptionArgument.length); }
             if ((uint)offset > JsonSharedConstant.TooBigOrNegative) { ThrowHelper.ThrowArgumentOutOfRangeException_GenericPositive(ExceptionArgument.offset); }
             if ((uint)offset > (uint)(inArray.Length - length)) { ThrowHelper.ThrowArgumentOutOfRangeException_OffsetLength(ExceptionArgument.offset); }

@@ -33,7 +33,7 @@ namespace SpanJson.Linq
 
         internal IEnumerable<JToken> GetAncestors(bool self)
         {
-            for (JToken current = self ? this : Parent; current != null; current = current.Parent)
+            for (JToken current = self ? this : Parent; current is object; current = current.Parent)
             {
                 yield return current;
             }
@@ -43,12 +43,12 @@ namespace SpanJson.Linq
         /// <returns>A collection of the sibling tokens after this tokens, in document order.</returns>
         public IEnumerable<JToken> AfterSelf()
         {
-            if (Parent == null)
+            if (Parent is null)
             {
                 yield break;
             }
 
-            for (JToken o = Next; o != null; o = o.Next)
+            for (JToken o = Next; o is object; o = o.Next)
             {
                 yield return o;
             }

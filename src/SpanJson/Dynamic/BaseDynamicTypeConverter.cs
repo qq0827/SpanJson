@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using CuteAnt.Reflection;
 using SpanJson.Helpers;
 
 namespace SpanJson.Dynamic
@@ -34,7 +35,7 @@ namespace SpanJson.Dynamic
         public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value,
             Type destinationType)
         {
-            if (value == null)
+            if (value is null)
             {
                 if (destinationType.IsNullable())
                 {
@@ -78,7 +79,7 @@ namespace SpanJson.Dynamic
             foreach (var allowedType in allowedTypes)
             {
                 var method = typeof(JsonReader<TSymbol>).GetMethod($"Read{utfType}{allowedType.Name}");
-                if (method != null)
+                if (method is object)
                 {
                     var parameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
                     var lambda = Expression.Lambda<ConvertDelegate>(
@@ -92,7 +93,7 @@ namespace SpanJson.Dynamic
                             Expression.Constant(null),
                             Expression.Convert(Expression.Call(parameter, method), typeof(object)));
                         lambda = Expression.Lambda<ConvertDelegate>(conditionExpression, parameter);
-                        result.Add(typeof(Nullable<>).MakeGenericType(allowedType), lambda.Compile());
+                        result.Add(typeof(Nullable<>).GetCachedGenericType(allowedType), lambda.Compile());
                     }
                 }
 

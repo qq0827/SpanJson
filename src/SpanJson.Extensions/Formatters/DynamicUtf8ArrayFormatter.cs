@@ -13,7 +13,7 @@ namespace SpanJson.Formatters
 
         public override void Serialize(ref JsonWriter<byte> writer, SpanJsonDynamicArray<byte> value, IJsonFormatterResolver<byte> resolver)
         {
-            if (value == null) { writer.WriteUtf8Null(); return; }
+            if (value is null) { writer.WriteUtf8Null(); return; }
 
             if (value.TryGetRaw(out ArraySegment<byte> rawJson))
             {
@@ -42,7 +42,7 @@ namespace SpanJson.Formatters
 
         public override void Serialize(ref JsonWriter<char> writer, SpanJsonDynamicArray<byte> value, IJsonFormatterResolver<char> resolver)
         {
-            if (value == null) { writer.WriteUtf16Null(); return; }
+            if (value is null) { writer.WriteUtf16Null(); return; }
 
             if (value.TryGetRaw(out ArraySegment<byte> rawJson))
             {
@@ -65,7 +65,7 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Verbatim(MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(utf16Json), written));
 #endif
 
-                if (valueArray != null) { ArrayPool<char>.Shared.Return(valueArray); }
+                if (valueArray is object) { ArrayPool<char>.Shared.Return(valueArray); }
             }
             else
             {

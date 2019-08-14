@@ -63,7 +63,7 @@ namespace SpanJson.Dynamic
                         return true;
                     }
 
-                    if (destinationType.IsEnum || (destinationType = Nullable.GetUnderlyingType(destinationType)) != null)
+                    if (destinationType.IsEnum || (destinationType = Nullable.GetUnderlyingType(destinationType)) is object)
                     {
                         string data;
                         if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
@@ -98,7 +98,7 @@ namespace SpanJson.Dynamic
                 if (!fix)
                 {
                     var nullable = Nullable.GetUnderlyingType(type);
-                    if (nullable != null)
+                    if (nullable is object)
                     {
                         fix |= IsSupported(nullable);
                     }
@@ -274,14 +274,14 @@ namespace SpanJson.Dynamic
         public static explicit operator Version(SpanJsonDynamicString<TSymbol> input)
         {
             var strValue = input.ToString();
-            if (null == strValue) { return null; }
+            if (strValue is null) { return null; }
             return Version.Parse(strValue);
         }
 
         public static explicit operator Uri(SpanJsonDynamicString<TSymbol> input)
         {
             var strValue = input.ToString();
-            if (null == strValue) { return null; }
+            if (strValue is null) { return null; }
             if (Uri.TryCreate(strValue, UriKind.RelativeOrAbsolute, out Uri value))
             {
                 return value;
@@ -293,7 +293,7 @@ namespace SpanJson.Dynamic
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override string ToString()
         {
-            if (_value != null) { return _value; }
+            if (_value is object) { return _value; }
             if (DynamicConverter.TryConvertTo(typeof(string), Symbols, out var value))
             {
                 _value = (string)value;

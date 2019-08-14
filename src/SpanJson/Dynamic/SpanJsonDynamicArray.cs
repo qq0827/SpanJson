@@ -8,6 +8,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using CuteAnt.Reflection;
 using SpanJson.Internal;
 
 namespace SpanJson.Dynamic
@@ -97,14 +98,15 @@ namespace SpanJson.Dynamic
 
         public override string ToString()
         {
-            return $"[{string.Join(",", _input.Select(a => a == null ? "null" : a.ToJsonValue()))}]";
+            return $"[{string.Join(",", _input.Select(a => a is null ? "null" : a.ToJsonValue()))}]";
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string ToJsonValue() => ToString();
 
         private static Func<object[], ICountableEnumerable> CreateEnumerable(Type type)
         {
-            var ctor = typeof(Enumerable<>).MakeGenericType(typeof(TSymbol), type).GetConstructor(new[] { typeof(object[]) });
+            var ctor = typeof(Enumerable<>).GetCachedGenericType(typeof(TSymbol), type).GetConstructor(new[] { typeof(object[]) });
             var paramExpression = Expression.Parameter(typeof(object[]), "input");
             var lambda =
                 Expression.Lambda<Func<object[], ICountableEnumerable>>(

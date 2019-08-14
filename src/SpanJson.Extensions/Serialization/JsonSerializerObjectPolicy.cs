@@ -27,6 +27,6 @@ namespace SpanJson.Serialization
         public Newtonsoft.Json.JsonSerializer PreGetting(Newtonsoft.Json.JsonSerializer serializer) => serializer;
 
         /// <inheritdoc />
-        public bool Return(Newtonsoft.Json.JsonSerializer serializer) => serializer != null;
+        public bool Return(Newtonsoft.Json.JsonSerializer serializer) => serializer is object;
     }
 }

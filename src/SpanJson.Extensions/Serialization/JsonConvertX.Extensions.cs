@@ -61,21 +61,21 @@ namespace SpanJson.Serialization
         [MethodImpl(InlineMethod.Value)]
         public static bool IsCheckAdditionalContentSetX(this NJsonSerializer jsonSerializer)
         {
-            if (null == jsonSerializer) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.jsonSerializer); }
-            return s_checkAdditionalContentGetter(jsonSerializer) != null;
+            if (jsonSerializer is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.jsonSerializer); }
+            return s_checkAdditionalContentGetter(jsonSerializer) is object;
         }
 
         [MethodImpl(InlineMethod.Value)]
         public static bool? GetCheckAdditionalContent(this NJsonSerializer jsonSerializer)
         {
-            if (null == jsonSerializer) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.jsonSerializer); }
+            if (jsonSerializer is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.jsonSerializer); }
             return (bool?)s_checkAdditionalContentGetter(jsonSerializer);
         }
 
         [MethodImpl(InlineMethod.Value)]
         public static void SetCheckAdditionalContent(this NJsonSerializer jsonSerializer, bool? checkAdditionalContent = null)
         {
-            if (null == jsonSerializer) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.jsonSerializer); }
+            if (jsonSerializer is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.jsonSerializer); }
             s_checkAdditionalContentSetter(jsonSerializer, checkAdditionalContent);
         }
 
@@ -86,14 +86,14 @@ namespace SpanJson.Serialization
         [MethodImpl(InlineMethod.Value)]
         public static NFormatting? GetFormatting(this NJsonSerializer jsonSerializer)
         {
-            if (null == jsonSerializer) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.jsonSerializer); }
+            if (jsonSerializer is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.jsonSerializer); }
             return (NFormatting?)s_formattingGetter(jsonSerializer);
         }
 
         [MethodImpl(InlineMethod.Value)]
         public static void SetFormatting(this NJsonSerializer jsonSerializer, NFormatting? formatting = null)
         {
-            if (null == jsonSerializer) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.jsonSerializer); }
+            if (jsonSerializer is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.jsonSerializer); }
             s_formattingSetter(jsonSerializer, formatting);
         }
 
@@ -129,7 +129,7 @@ namespace SpanJson.Serialization
 
         public static NJsonSerializer AllocateSerializer(NJsonSerializerSettings jsonSettings)
         {
-            if (null == jsonSettings) { return s_defaultJsonSerializerPool.Take(); }
+            if (jsonSettings is null) { return s_defaultJsonSerializerPool.Take(); }
 
             var pool = s_jsonSerializerPoolCache.GetItem(jsonSettings, s_getJsonSerializerPoolFunc);
             return pool.Take();
@@ -137,7 +137,7 @@ namespace SpanJson.Serialization
 
         public static void FreeSerializer(NJsonSerializerSettings jsonSettings, NJsonSerializer jsonSerializer)
         {
-            if (null == jsonSettings) { s_defaultJsonSerializerPool.Return(jsonSerializer); return; }
+            if (jsonSettings is null) { s_defaultJsonSerializerPool.Return(jsonSerializer); return; }
 
             if (s_jsonSerializerPoolCache.TryGetValue(jsonSettings, out ObjectPool<NJsonSerializer> pool))
             {
@@ -183,7 +183,7 @@ namespace SpanJson.Serialization
         /// <returns>A JSON string representation of the object.</returns>
         public static byte[] SerializeToByteArray(object value, params NJsonConverter[] converters)
         {
-            var settings = (converters != null && converters.Length > 0)
+            var settings = (converters is object && converters.Length > 0)
                 ? new NJsonSerializerSettings { Converters = converters }
                 : null;
             return SerializeToByteArray(value, null, settings);
@@ -196,7 +196,7 @@ namespace SpanJson.Serialization
         /// <returns>A JSON string representation of the object.</returns>
         public static byte[] SerializeToByteArray(object value, NFormatting formatting, params NJsonConverter[] converters)
         {
-            var settings = (converters != null && converters.Length > 0)
+            var settings = (converters is object && converters.Length > 0)
                 ? new NJsonSerializerSettings { Converters = converters }
                 : null;
             return SerializeToByteArray(value, null, formatting, settings);
@@ -288,7 +288,7 @@ namespace SpanJson.Serialization
         /// <returns>A JSON string representation of the object.</returns>
         public static ArraySegment<Byte> SerializeToMemoryPool(object value, params NJsonConverter[] converters)
         {
-            var settings = (converters != null && converters.Length > 0)
+            var settings = (converters is object && converters.Length > 0)
                 ? new NJsonSerializerSettings { Converters = converters }
                 : null;
 
@@ -302,7 +302,7 @@ namespace SpanJson.Serialization
         /// <returns>A JSON string representation of the object.</returns>
         public static ArraySegment<Byte> SerializeToMemoryPool(object value, NFormatting formatting, params NJsonConverter[] converters)
         {
-            var settings = (converters != null && converters.Length > 0)
+            var settings = (converters is object && converters.Length > 0)
                 ? new NJsonSerializerSettings { Converters = converters }
                 : null;
             return SerializeToMemoryPool(value, null, formatting, settings);
@@ -433,7 +433,7 @@ namespace SpanJson.Serialization
         /// <returns>The deserialized object from the JSON string.</returns>
         public static object DeserializeFromByteArray(byte[] bytes, Type type, params NJsonConverter[] converters)
         {
-            var settings = (converters != null && converters.Length > 0)
+            var settings = (converters is object && converters.Length > 0)
                 ? new NJsonSerializerSettings { Converters = converters }
                 : null;
             return DeserializeFromByteArray(bytes, type, settings);
@@ -533,7 +533,7 @@ namespace SpanJson.Serialization
         /// <returns>The deserialized object from the JSON string.</returns>
         public static object DeserializeFromByteArray(byte[] bytes, int index, int count, Type type, params NJsonConverter[] converters)
         {
-            var settings = (converters != null && converters.Length > 0)
+            var settings = (converters is object && converters.Length > 0)
                 ? new NJsonSerializerSettings { Converters = converters }
                 : null;
             return DeserializeFromByteArray(bytes, index, count, type, settings);
@@ -583,7 +583,7 @@ namespace SpanJson.Serialization
         /// <param name="converters">A collection of converters used while serializing.</param>
         public static void SerializeToStream(Stream stream, object value, params NJsonConverter[] converters)
         {
-            var settings = (converters != null && converters.Length > 0)
+            var settings = (converters is object && converters.Length > 0)
                 ? new NJsonSerializerSettings { Converters = converters }
                 : null;
             SerializeToStream(stream, value, null, settings);
@@ -596,7 +596,7 @@ namespace SpanJson.Serialization
         /// <param name="converters">A collection of converters used while serializing.</param>
         public static void SerializeToStream(Stream stream, object value, NFormatting formatting, params NJsonConverter[] converters)
         {
-            var settings = (converters != null && converters.Length > 0)
+            var settings = (converters is object && converters.Length > 0)
                 ? new NJsonSerializerSettings { Converters = converters }
                 : null;
             SerializeToStream(stream, value, null, formatting, settings);
@@ -723,7 +723,7 @@ namespace SpanJson.Serialization
         /// <returns>The deserialized object from the JSON string.</returns>
         public static object DeserializeFromStream(Stream stream, Type type, params NJsonConverter[] converters)
         {
-            var settings = (converters != null && converters.Length > 0)
+            var settings = (converters is object && converters.Length > 0)
                 ? new NJsonSerializerSettings { Converters = converters }
                 : null;
             return DeserializeFromStream(stream, type, settings);
@@ -770,7 +770,7 @@ namespace SpanJson.Serialization
         /// <param name="converters">A collection of converters used while serializing.</param>
         public static void SerializeToWriter(TextWriter textWriter, object value, params NJsonConverter[] converters)
         {
-            var settings = (converters != null && converters.Length > 0)
+            var settings = (converters is object && converters.Length > 0)
                 ? new NJsonSerializerSettings { Converters = converters }
                 : null;
             SerializeToWriter(textWriter, value, null, settings);
@@ -783,7 +783,7 @@ namespace SpanJson.Serialization
         /// <param name="converters">A collection of converters used while serializing.</param>
         public static void SerializeToWriter(TextWriter textWriter, object value, NFormatting formatting, params NJsonConverter[] converters)
         {
-            var settings = (converters != null && converters.Length > 0)
+            var settings = (converters is object && converters.Length > 0)
                 ? new NJsonSerializerSettings { Converters = converters }
                 : null;
             SerializeToWriter(textWriter, value, null, formatting, settings);
@@ -910,7 +910,7 @@ namespace SpanJson.Serialization
         /// <returns>The deserialized object from the JSON string.</returns>
         public static object DeserializeFromReader(TextReader reader, Type type, params NJsonConverter[] converters)
         {
-            var settings = (converters != null && converters.Length > 0)
+            var settings = (converters is object && converters.Length > 0)
                 ? new NJsonSerializerSettings { Converters = converters }
                 : null;
             return DeserializeFromReader(reader, type, settings);

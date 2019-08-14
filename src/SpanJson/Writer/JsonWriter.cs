@@ -141,7 +141,7 @@
             var toReturn = _borrowedBuffer;
             var arrayPool = _arrayPool;
             this = default; // for safety, to avoid using pooled array if this instance is erroneously appended to again
-            if (arrayPool != null)
+            if (arrayPool is object)
             {
                 arrayPool.Return(toReturn);
             }
@@ -172,7 +172,7 @@
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void CheckAndResizeBuffer(int alreadyWritten, int sizeHint)
         {
-            Debug.Assert(_borrowedBuffer != null);
+            Debug.Assert(_borrowedBuffer is object);
 
             const int MinimumBufferSize = 256;
 
@@ -193,7 +193,7 @@
 
                 var oldBuffer = _borrowedBuffer;
 
-                var useThreadLocal = null == _arrayPool ? true : false;
+                var useThreadLocal = _arrayPool is null ? true : false;
                 if (useThreadLocal) { _arrayPool = ArrayPool<TSymbol>.Shared; }
 
                 _borrowedBuffer = _arrayPool.Rent(newSize);

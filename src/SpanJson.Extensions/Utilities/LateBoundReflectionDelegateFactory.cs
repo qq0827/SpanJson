@@ -37,7 +37,7 @@ namespace SpanJson.Utilities
 
         public override CtorInvoker<object> CreateParameterizedConstructor(MethodBase method)
         {
-            if (null == method) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.method); }
+            if (method is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.method); }
 
             if (method is ConstructorInfo c)
             {
@@ -51,7 +51,7 @@ namespace SpanJson.Utilities
 
         public override MethodCaller<T, object> CreateMethodCall<T>(MethodBase method)
         {
-            if (null == method) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.method); }
+            if (method is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.method); }
 
             if (method is ConstructorInfo c)
             {
@@ -63,7 +63,7 @@ namespace SpanJson.Utilities
 
         public override Func<T> CreateDefaultConstructor<T>(Type type)
         {
-            if (null == type) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
+            if (type is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
             if (type.IsValueType)
             {
@@ -77,28 +77,28 @@ namespace SpanJson.Utilities
 
         public override Func<T, object> CreateGet<T>(PropertyInfo propertyInfo)
         {
-            if (null == propertyInfo) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyInfo); }
+            if (propertyInfo is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyInfo); }
 
             return o => propertyInfo.GetValue(o, null);
         }
 
         public override Func<T, object> CreateGet<T>(FieldInfo fieldInfo)
         {
-            if (null == fieldInfo) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.fieldInfo); }
+            if (fieldInfo is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.fieldInfo); }
 
             return o => fieldInfo.GetValue(o);
         }
 
         public override Action<T, object> CreateSet<T>(FieldInfo fieldInfo)
         {
-            if (null == fieldInfo) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.fieldInfo); }
+            if (fieldInfo is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.fieldInfo); }
 
             return (o, v) => fieldInfo.SetValue(o, v);
         }
 
         public override Action<T, object> CreateSet<T>(PropertyInfo propertyInfo)
         {
-            if (null == propertyInfo) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyInfo); }
+            if (propertyInfo is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyInfo); }
 
             return (o, v) => propertyInfo.SetValue(o, v, null);
         }

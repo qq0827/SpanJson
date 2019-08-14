@@ -30,7 +30,7 @@ namespace SpanJson.Document
                 _rentedBuffer = null;
                 _topOfStack = 0;
 
-                if (toReturn != null)
+                if (toReturn is object)
                 {
                     // The data in this rented buffer only conveys the positions and
                     // lengths of tokens in a document, but no content; so it does not

@@ -31,7 +31,7 @@ namespace SpanJson.Linq
     {
         TypeCode IConvertible.GetTypeCode()
         {
-            if (_value == null)
+            if (_value is null)
             {
                 return TypeCode.Empty;
             }

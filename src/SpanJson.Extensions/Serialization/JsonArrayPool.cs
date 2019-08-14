@@ -12,7 +12,7 @@ namespace SpanJson.Serialization
 
         public JsonArrayPool(ArrayPool<T> inner)
         {
-            if (null == inner) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.inner); }
+            if (inner is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.inner); }
             _inner = inner;
         }
 
@@ -20,7 +20,7 @@ namespace SpanJson.Serialization
 
         public void Return(T[] array)
         {
-            if (null == array) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.array); }
+            if (array is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.array); }
 
             _inner.Return(array);
         }

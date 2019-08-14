@@ -39,7 +39,7 @@ namespace SpanJson.Linq
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the ancestors of every token in the source collection.</returns>
         public static IJEnumerable<JToken> Ancestors<T>(this IEnumerable<T> source) where T : JToken
         {
-            if (null == source) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.source); }
+            if (source is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.source); }
 
             return source.SelectMany(j => j.Ancestors()).AsJEnumerable();
         }
@@ -51,7 +51,7 @@ namespace SpanJson.Linq
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains every token in the source collection, the ancestors of every token in the source collection.</returns>
         public static IJEnumerable<JToken> AncestorsAndSelf<T>(this IEnumerable<T> source) where T : JToken
         {
-            if (null == source) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.source); }
+            if (source is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.source); }
 
             return source.SelectMany(j => j.AncestorsAndSelf()).AsJEnumerable();
         }
@@ -62,7 +62,7 @@ namespace SpanJson.Linq
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the descendants of every token in the source collection.</returns>
         public static IJEnumerable<JToken> Descendants<T>(this IEnumerable<T> source) where T : JContainer
         {
-            if (null == source) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.source); }
+            if (source is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.source); }
 
             return source.SelectMany(j => j.Descendants()).AsJEnumerable();
         }
@@ -74,7 +74,7 @@ namespace SpanJson.Linq
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains every token in the source collection, and the descendants of every token in the source collection.</returns>
         public static IJEnumerable<JToken> DescendantsAndSelf<T>(this IEnumerable<T> source) where T : JContainer
         {
-            if (null == source) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.source); }
+            if (source is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.source); }
 
             return source.SelectMany(j => j.DescendantsAndSelf()).AsJEnumerable();
         }
@@ -84,7 +84,7 @@ namespace SpanJson.Linq
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JProperty"/> that contains the properties of every object in the source collection.</returns>
         public static IJEnumerable<JProperty> Properties(this IEnumerable<JObject> source)
         {
-            if (null == source) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.source); }
+            if (source is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.source); }
 
             return source.SelectMany(d => d.Properties()).AsJEnumerable();
         }
@@ -141,21 +141,24 @@ namespace SpanJson.Linq
         /// <returns>A converted value.</returns>
         public static U Value<T, U>(this IEnumerable<T> value) where T : JToken
         {
-            if (null == value) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.value); }
-
-            if (!(value is JToken token))
+            switch (value)
             {
-                throw ThrowHelper2.GetArgumentException_Source_value_must_be_a_JToken();
-            }
+                case null:
+                    throw ThrowHelper.GetArgumentNullException(ExceptionArgument.value);
 
-            return token.Convert<JToken, U>();
+                case JToken token:
+                    return token.Convert<JToken, U>();
+
+                default:
+                    throw ThrowHelper2.GetArgumentException_Source_value_must_be_a_JToken();
+            }
         }
 
         internal static IEnumerable<U> Values<T, U>(this IEnumerable<T> source, object key) where T : JToken
         {
-            if (null == source) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.source); }
+            if (source is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.source); }
 
-            if (key == null)
+            if (key is null)
             {
                 foreach (T token in source)
                 {
@@ -177,7 +180,7 @@ namespace SpanJson.Linq
                 foreach (T token in source)
                 {
                     JToken value = token[key];
-                    if (value != null)
+                    if (value is object)
                     {
                         yield return value.Convert<JToken, U>();
                     }
@@ -204,14 +207,14 @@ namespace SpanJson.Linq
         /// <returns>An <see cref="IEnumerable{T}"/> that contains the converted values of every token in the source collection.</returns>
         public static IEnumerable<U> Children<T, U>(this IEnumerable<T> source) where T : JToken
         {
-            if (null == source) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.source); }
+            if (source is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.source); }
 
             return source.SelectMany(c => c.Children()).Convert<JToken, U>();
         }
 
         internal static IEnumerable<U> Convert<T, U>(this IEnumerable<T> source) where T : JToken
         {
-            if (null == source) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.source); }
+            if (source is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.source); }
 
             foreach (T token in source)
             {
@@ -221,45 +224,36 @@ namespace SpanJson.Linq
 
         internal static U Convert<T, U>(this T token) where T : JToken
         {
-            if (token == null) { return default; }
+            switch (token)
+            {
+                case null:
+                    return default;
 
-            if (token is U castValue
-                // don't want to cast JValue to its interfaces, want to get the internal value
-                && typeof(U) != typeof(IComparable) && typeof(U) != typeof(IFormattable))
-            {
-                return castValue;
-            }
-            else
-            {
-                if (!(token is JValue value))
-                {
+                case U castValue when typeof(U) != typeof(IComparable) && typeof(U) != typeof(IFormattable):
+                    return castValue;
+
+                case JValue value:
+                    if (value.Value is U u) { return u; }
+
+                    // 这儿直接采用 JValue 进行转换，考虑扩展基元类型 JTokenType.Number => U;JTokenType.String => U;JTokenType.Dynamic => U
+
+                    //Type targetType = typeof(U);
+
+                    //if (ReflectionUtils.IsNullableType(targetType))
+                    //{
+                    //    if (value.Value is null)
+                    //    {
+                    //        return default;
+                    //    }
+
+                    //    targetType = Nullable.GetUnderlyingType(targetType);
+                    //}
+
+                    ////return (U)System.Convert.ChangeType(value/*.Value*/, targetType, CultureInfo.InvariantCulture);
+                    return value.ToObject<U>();
+
+                default:
                     throw ThrowHelper2.GetInvalidCastException<T>(token);
-                }
-
-                #region ## 苦竹 修改 ##
-
-                // 这儿直接采用 JValue 进行转换，考虑扩展基元类型 JTokenType.Number => U;JTokenType.String => U;JTokenType.Dynamic => U
-
-                //if (value.Value is U u)
-                //{
-                //    return u;
-                //}
-
-                //Type targetType = typeof(U);
-
-                //if (ReflectionUtils.IsNullableType(targetType))
-                //{
-                //    if (value.Value == null)
-                //    {
-                //        return default;
-                //    }
-
-                //    targetType = Nullable.GetUnderlyingType(targetType);
-                //}
-
-                ////return (U)System.Convert.ChangeType(value/*.Value*/, targetType, CultureInfo.InvariantCulture);
-                return value.ToObject<U>();
-                #endregion
             }
         }
 

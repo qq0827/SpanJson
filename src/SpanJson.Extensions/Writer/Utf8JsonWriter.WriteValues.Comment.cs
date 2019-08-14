@@ -31,7 +31,7 @@ namespace SpanJson
         /// </remarks>
         public void WriteCommentValue(string value)
         {
-            if (value == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.value); }
+            if (value is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.value); }
             WriteCommentValue(value.AsSpan());
         }
 

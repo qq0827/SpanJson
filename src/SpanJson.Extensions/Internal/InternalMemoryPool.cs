@@ -11,7 +11,7 @@
 
         public static byte[] GetBuffer()
         {
-            if (s_buffer == null) { s_buffer = new byte[InitialCapacity]; }
+            if (s_buffer is null) { s_buffer = new byte[InitialCapacity]; }
             return s_buffer;
         }
     }

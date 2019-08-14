@@ -16,7 +16,7 @@ namespace SpanJson.Linq.JsonPath
                     {
                         JToken v = o[name];
 
-                        if (v != null)
+                        if (v is object)
                         {
                             yield return v;
                         }

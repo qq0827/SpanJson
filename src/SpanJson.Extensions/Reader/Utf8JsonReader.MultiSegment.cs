@@ -293,7 +293,7 @@ namespace SpanJson
             ReadOnlyMemory<byte> memory = default;
             while (true)
             {
-                Debug.Assert(!_isMultiSegment || _currentPosition.GetObject() != null);
+                Debug.Assert(!_isMultiSegment || _currentPosition.GetObject() is object);
                 SequencePosition copy = _currentPosition;
                 _currentPosition = _nextPosition;
                 bool noMoreData = !_sequence.TryGet(ref _nextPosition, out memory, advance: true);
@@ -310,7 +310,7 @@ namespace SpanJson
                 // _currentPosition needs to point to last non-empty segment
                 // Since memory.Length == 0, we need to revert back to previous.
                 _currentPosition = copy;
-                Debug.Assert(!_isMultiSegment || _currentPosition.GetObject() != null);
+                Debug.Assert(!_isMultiSegment || _currentPosition.GetObject() is object);
             }
 
             if (_isFinalBlock)

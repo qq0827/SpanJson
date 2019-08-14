@@ -160,7 +160,7 @@ namespace SpanJson.Serialization
 
         public static Type GetImplementedCollectionType(Type queryType)
         {
-            Debug.Assert(queryType != null);
+            Debug.Assert(queryType is object);
 
             if (!(typeof(IEnumerable).IsAssignableFrom(queryType)) ||
                 queryType == typeof(string) ||
@@ -184,7 +184,7 @@ namespace SpanJson.Serialization
             foreach (Type candidate in s_genericInterfacesWithAddMethods)
             {
                 Type derivedGeneric = ExtractGenericInterface(queryType, candidate);
-                if (derivedGeneric != null)
+                if (derivedGeneric is object)
                 {
                     return derivedGeneric;
                 }
@@ -203,7 +203,7 @@ namespace SpanJson.Serialization
             foreach (Type candidate in s_genericInterfacesWithoutAddMethods)
             {
                 Type derivedGeneric = ExtractGenericInterface(queryType, candidate);
-                if (derivedGeneric != null)
+                if (derivedGeneric is object)
                 {
                     return derivedGeneric;
                 }
@@ -261,7 +261,7 @@ namespace SpanJson.Serialization
         //public static bool HasConstructorThatTakesGenericIEnumerable(Type type, JsonSerializerOptions options)
         //{
         //    Type elementType = GetElementType(type, parentType: null, memberInfo: null, options);
-        //    return type.GetConstructor(new Type[] { typeof(List<>).MakeGenericType(elementType) }) != null;
+        //    return type.GetConstructor(new Type[] { typeof(List<>).MakeGenericType(elementType) }) is object;
         //}
 
         public static bool IsDeserializedByConstructingWithIList(Type type)
@@ -291,7 +291,7 @@ namespace SpanJson.Serialization
 
         public static bool IsNativelySupportedCollection(Type queryType)
         {
-            Debug.Assert(queryType != null);
+            Debug.Assert(queryType is object);
 
             if (queryType.IsGenericType)
             {
@@ -322,12 +322,12 @@ namespace SpanJson.Serialization
         /// </remarks>
         public static Type ExtractGenericInterface(Type queryType, Type interfaceType)
         {
-            if (queryType == null)
+            if (queryType is null)
             {
                 throw new ArgumentNullException(nameof(queryType));
             }
 
-            if (interfaceType == null)
+            if (interfaceType is null)
             {
                 throw new ArgumentNullException(nameof(interfaceType));
             }
@@ -362,7 +362,7 @@ namespace SpanJson.Serialization
             {
                 if (IsGenericInstantiation(@interface, interfaceType))
                 {
-                    if (bestMatch == null)
+                    if (bestMatch is null)
                     {
                         bestMatch = @interface;
                     }
@@ -378,14 +378,14 @@ namespace SpanJson.Serialization
                 }
             }
 
-            if (bestMatch != null)
+            if (bestMatch is object)
             {
                 return bestMatch;
             }
 
             // BaseType will be null for object and interfaces, which means we've reached 'bottom'.
             Type baseType = queryType?.GetTypeInfo().BaseType;
-            if (baseType == null)
+            if (baseType is null)
             {
                 return null;
             }

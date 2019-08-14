@@ -48,7 +48,7 @@ namespace SpanJson.Linq
 
         internal void AddContainer(JContainer other)
         {
-            if (null == other) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.other); }
+            if (other is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.other); }
 
             int i = 0;
             foreach (JToken child in other)
@@ -60,7 +60,7 @@ namespace SpanJson.Linq
 
         internal static IEnumerable CastMultiContent(IEnumerable content)
         {
-            if (null == content) { return null; }
+            if (content is null) { return null; }
 
             if (!HasJsonDynamic(content)) { return content; }
 
@@ -207,7 +207,7 @@ namespace SpanJson.Linq
 
         internal JToken EnsureParentToken(JToken item, bool skipParentCheck)
         {
-            if (item == null)
+            if (item is null)
             {
                 return JValue.CreateNull();
             }
@@ -221,7 +221,7 @@ namespace SpanJson.Linq
             // the item already has a parent
             // the item is being added to itself
             // the item is being added to the root parent of itself
-            if (item.Parent != null || item == this || (item.HasValues && Root == item))
+            if (item.Parent is object || item == this || (item.HasValues && Root == item))
             {
                 item = item.CloneToken();
             }
@@ -253,24 +253,24 @@ namespace SpanJson.Linq
             item.Parent = this;
 
             item.Previous = previous;
-            if (previous != null)
+            if (previous is object)
             {
                 previous.Next = item;
             }
 
             item.Next = next;
-            if (next != null)
+            if (next is object)
             {
                 next.Previous = item;
             }
 
             children.Insert(index, item);
 
-            if (_listChanged != null)
+            if (_listChanged is object)
             {
                 OnListChanged(new ListChangedEventArgs(ListChangedType.ItemAdded, index));
             }
-            if (_collectionChanged != null)
+            if (_collectionChanged is object)
             {
                 OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
             }
@@ -293,11 +293,11 @@ namespace SpanJson.Linq
             JToken previous = (0u >= (uint)index) ? null : children[index - 1];
             JToken next = (index == children.Count - 1) ? null : children[index + 1];
 
-            if (previous != null)
+            if (previous is object)
             {
                 previous.Next = next;
             }
-            if (next != null)
+            if (next is object)
             {
                 next.Previous = previous;
             }
@@ -308,11 +308,11 @@ namespace SpanJson.Linq
 
             children.RemoveAt(index);
 
-            if (_listChanged != null)
+            if (_listChanged is object)
             {
                 OnListChanged(new ListChangedEventArgs(ListChangedType.ItemDeleted, index));
             }
-            if (_collectionChanged != null)
+            if (_collectionChanged is object)
             {
                 OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
             }
@@ -364,13 +364,13 @@ namespace SpanJson.Linq
             item.Parent = this;
 
             item.Previous = previous;
-            if (previous != null)
+            if (previous is object)
             {
                 previous.Next = item;
             }
 
             item.Next = next;
-            if (next != null)
+            if (next is object)
             {
                 next.Previous = item;
             }
@@ -381,11 +381,11 @@ namespace SpanJson.Linq
             existing.Previous = null;
             existing.Next = null;
 
-            if (_listChanged != null)
+            if (_listChanged is object)
             {
                 OnListChanged(new ListChangedEventArgs(ListChangedType.ItemChanged, index));
             }
-            if (_collectionChanged != null)
+            if (_collectionChanged is object)
             {
                 OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, item, existing, index));
             }
@@ -406,11 +406,11 @@ namespace SpanJson.Linq
 
             children.Clear();
 
-            if (_listChanged != null)
+            if (_listChanged is object)
             {
                 OnListChanged(new ListChangedEventArgs(ListChangedType.Reset, -1));
             }
-            if (_collectionChanged != null)
+            if (_collectionChanged is object)
             {
                 OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
             }
@@ -418,7 +418,7 @@ namespace SpanJson.Linq
 
         internal virtual void ReplaceItem(JToken existing, JToken replacement)
         {
-            if (existing == null || existing.Parent != this)
+            if (existing is null || existing.Parent != this)
             {
                 return;
             }
@@ -434,7 +434,7 @@ namespace SpanJson.Linq
 
         internal virtual void CopyItemsTo(Array array, int arrayIndex)
         {
-            if (array == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.array); }
+            if (array is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.array); }
             if ((uint)arrayIndex > JsonSharedConstant.TooBigOrNegative) { ThrowHelper2.ThrowArgumentOutOfRangeException_ArrayIndex(); }
             if ((uint)arrayIndex >= (uint)array.Length && arrayIndex != 0) { ThrowHelper2.ThrowArgumentException_ArrayIndex(); }
             if ((uint)Count > (uint)(array.Length - arrayIndex)) { ThrowHelper2.ThrowArgumentException_The_number_of_elements(); }
@@ -452,7 +452,7 @@ namespace SpanJson.Linq
             if (currentValue is JValue v1)
             {
                 // null will get turned into a JValue of type null
-                if (v1.Type == JTokenType.Null && newValue == null)
+                if (v1.Type == JTokenType.Null && newValue is null)
                 {
                     return true;
                 }
@@ -465,7 +465,7 @@ namespace SpanJson.Linq
 
         internal virtual void ValidateToken(JToken o, JToken existing)
         {
-            if (null == o) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.o); }
+            if (o is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.o); }
 
             if (o.Type == JTokenType.Property)
             {
@@ -566,7 +566,7 @@ namespace SpanJson.Linq
 
         private JToken EnsureValue(object value)
         {
-            if (value == null) { return null; }
+            if (value is null) { return null; }
 
             if (value is JToken token) { return token; }
 
@@ -615,7 +615,7 @@ namespace SpanJson.Linq
                             }
                             else
                             {
-                                if (targetItem != null)
+                                if (targetItem is object)
                                 {
                                     JToken contentValue = CreateFromContent(targetItem);
                                     if (contentValue.Type != JTokenType.Null)

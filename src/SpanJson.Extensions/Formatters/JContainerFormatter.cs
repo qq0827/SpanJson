@@ -8,7 +8,7 @@ namespace SpanJson.Formatters
 
         public override void Serialize(ref JsonWriter<byte> writer, JContainer value, IJsonFormatterResolver<byte> resolver)
         {
-            if (null == value) { return; }
+            if (value is null) { return; }
 
             switch (value.Type)
             {
@@ -28,7 +28,7 @@ namespace SpanJson.Formatters
 
         public override void Serialize(ref JsonWriter<char> writer, JContainer value, IJsonFormatterResolver<char> resolver)
         {
-            if (null == value) { return; }
+            if (value is null) { return; }
 
             switch (value.Type)
             {

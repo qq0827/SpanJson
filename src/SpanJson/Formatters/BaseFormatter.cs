@@ -12,7 +12,7 @@ namespace SpanJson.Formatters
     {
         protected static MethodInfo FindPublicInstanceMethod(Type type, string name, params Type[] args)
         {
-            return (null == args || 0u >= (uint)args.Length) ? type.GetMethod(name) : type.GetMethod(name, args);
+            return (args is null || 0u >= (uint)args.Length) ? type.GetMethod(name) : type.GetMethod(name, args);
         }
 
         protected static MethodInfo FindGenericMethod(Type type, string name, BindingFlags bindingFlags, Type genericType, Type parameterType)
@@ -33,9 +33,9 @@ namespace SpanJson.Formatters
             // A null value can be serialized by both (doesn't matter, but we need to handle null for the runtime type check)
             // Checking for things like IsValueType and/or IsSealed is actually several times more expensive than the type comparison
 #if NETSTANDARD2_0 || NET471 || NET451
-            if (!JsonHelpers.IsReferenceOrContainsReferences<T>() || typeof(T) == typeof(string) || value == null || value.GetType() == typeof(T))
+            if (!JsonHelpers.IsReferenceOrContainsReferences<T>() || typeof(T) == typeof(string) || value is null || value.GetType() == typeof(T))
 #else
-            if (!RuntimeHelpers.IsReferenceOrContainsReferences<T>() || typeof(T) == typeof(string) || value == null || value.GetType() == typeof(T))
+            if (!RuntimeHelpers.IsReferenceOrContainsReferences<T>() || typeof(T) == typeof(string) || value is null || value.GetType() == typeof(T))
 #endif
             {
                 formatter.Serialize(ref writer, value, resolver);

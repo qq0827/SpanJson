@@ -13,7 +13,7 @@ namespace SpanJson.Resolvers
             ExtensionMemberInfo = extensionMemberInfo;
             Constructor = constructor;
             Attribute = attribute;
-            if (Constructor != null)
+            if (Constructor is object)
             {
                 ConstructorMapping = BuildMapping();
             }
@@ -56,7 +56,7 @@ namespace SpanJson.Resolvers
             foreach (var constructorParameter in constructorParameters)
             {
                 if (memberInfoDictionary.TryGetValue(constructorParameter.Name, out var memberInfo) ||
-                    Attribute.ParameterNames != null && index < Attribute.ParameterNames.Length &&
+                    Attribute.ParameterNames is object && index < Attribute.ParameterNames.Length &&
                     memberInfoDictionary.TryGetValue(Attribute.ParameterNames[index], out memberInfo))
                 {
                     constructorValueIndexDictionary[memberInfo.MemberName] = (memberInfo.MemberType, index++);

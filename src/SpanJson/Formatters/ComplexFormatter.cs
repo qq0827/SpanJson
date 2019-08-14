@@ -72,7 +72,7 @@ namespace SpanJson.Formatters
                 {
                     var underlyingType = Nullable.GetUnderlyingType(memberInfo.MemberType);
                     // if it's nullable and we don't need the null and we don't have a custom formatter, we call the underlying provider directly
-                    if (memberInfo.ExcludeNull && underlyingType != null && !typeof(ICustomJsonFormatter).IsAssignableFrom(formatterType))
+                    if (memberInfo.ExcludeNull && underlyingType is object && !typeof(ICustomJsonFormatter).IsAssignableFrom(formatterType))
                     {
                         formatterType = resolver.GetFormatter(memberInfo, underlyingType).GetType();
                         fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
@@ -163,31 +163,31 @@ namespace SpanJson.Formatters
                             Expression.PropertyOrField(valueParameter, memberInfo.MemberName),
                             Expression.Constant(null));
                     }
-                    else if (memberInfo.MemberType.IsValueType && Nullable.GetUnderlyingType(memberInfo.MemberType) != null) // nullable value type
+                    else if (memberInfo.MemberType.IsValueType && Nullable.GetUnderlyingType(memberInfo.MemberType) is object) // nullable value type
                     {
                         testNullExpression = Expression.IsTrue(
                             Expression.Property(Expression.PropertyOrField(valueParameter, memberInfo.MemberName), "HasValue"));
                     }
                 }
 
-                var shouldSerializeExpression = memberInfo.ShouldSerialize != null
+                var shouldSerializeExpression = memberInfo.ShouldSerialize is object
                     ? Expression.IsTrue(Expression.Call(valueParameter, memberInfo.ShouldSerialize))
                     : null;
                 Expression testExpression = null;
-                if (testNullExpression != null && shouldSerializeExpression != null)
+                if (testNullExpression is object && shouldSerializeExpression is object)
                 {
                     testExpression = Expression.AndAlso(testNullExpression, shouldSerializeExpression);
                 }
-                else if (testNullExpression != null)
+                else if (testNullExpression is object)
                 {
                     testExpression = testNullExpression;
                 }
-                else if (shouldSerializeExpression != null)
+                else if (shouldSerializeExpression is object)
                 {
                     testExpression = shouldSerializeExpression;
                 }
 
-                if (testExpression != null)
+                if (testExpression is object)
                 {
                     expressions.Add(Expression.IfThen(testExpression, Expression.Block(valueExpressions)));
                 }
@@ -202,7 +202,7 @@ namespace SpanJson.Formatters
                 }
             }
 
-            if (objectDescription.ExtensionMemberInfo != null)
+            if (objectDescription.ExtensionMemberInfo is object)
             {
                 var knownNames = objectDescription.Members.Where(t => t.CanWrite).Select(a => a.Name).ToHashSet(StringComparer.Ordinal);
                 var memberInfo = typeof(ComplexFormatter).GetMethod(nameof(SerializeExtension), BindingFlags.Static | BindingFlags.NonPublic);
@@ -256,19 +256,19 @@ namespace SpanJson.Formatters
                 return Expression.Lambda<DeserializeDelegate<T, TSymbol>>(Expression.Default(typeof(T)), readerParameter, resolverParameter).Compile();
             }
 
-            if (0u >= (uint)memberInfos.Count && objectDescription.ExtensionMemberInfo == null)
+            if (0u >= (uint)memberInfos.Count && objectDescription.ExtensionMemberInfo is null)
             {
                 Expression createExpression = null;
                 if (typeof(T).IsClass)
                 {
                     var ci = typeof(T).GetConstructor(Type.EmptyTypes);
-                    if (ci != null)
+                    if (ci is object)
                     {
                         createExpression = Expression.New(ci);
                     }
                 }
 
-                if (createExpression == null)
+                if (createExpression is null)
                 {
                     createExpression = Expression.Default(typeof(T));
                 }
@@ -301,7 +301,7 @@ namespace SpanJson.Formatters
             // We need to decide during generation if we handle constructors or normal member assignment, the difference is done in the functor below
             Func<JsonMemberInfo, Expression> matchExpressionFunctor;
             Expression[] constructorParameterExpressions = null;
-            if (objectDescription.Constructor != null)
+            if (objectDescription.Constructor is object)
             {
                 // If we want to use the constructor we serialize into an array of variables internally and then create the object from that
                 var dict = objectDescription.ConstructorMapping;
@@ -390,7 +390,7 @@ namespace SpanJson.Formatters
             Expression skipCall = Expression.Call(readerParameter, skipNextMethodInfo);
 
             // we don't support constructor and extensions at the same time, this only leads to chaos
-            if (objectDescription.ExtensionMemberInfo != null && objectDescription.Constructor == null)
+            if (objectDescription.ExtensionMemberInfo is object && objectDescription.Constructor is null)
             {
                 var extensionExpressions = new List<Expression>();
                 var dictExpression = Expression.PropertyOrField(returnValue, objectDescription.ExtensionMemberInfo.MemberName);
@@ -430,7 +430,7 @@ namespace SpanJson.Formatters
             var loopAbort = Expression.Label(typeof(void));
             var returnTarget = Expression.Label(returnValue.Type);
             Expression block;
-            if (objectDescription.Constructor != null)
+            if (objectDescription.Constructor is object)
             {
                 var blockParameters = new List<ParameterExpression> { returnValue, countExpression };
                 // ReSharper disable AssignNullToNotNullAttribute
@@ -467,7 +467,7 @@ namespace SpanJson.Formatters
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
             var value = RuntimeFormatter<TSymbol, TResolver>.Default.Deserialize(ref reader, resolver);
-            if (excludeNulls && value == null)
+            if (excludeNulls && value is null)
             {
                 return;
             }
@@ -499,7 +499,7 @@ namespace SpanJson.Formatters
             {
                 foreach (var kvp in value)
                 {
-                    if (excludeNulls && kvp.Value == null)
+                    if (excludeNulls && kvp.Value is null)
                     {
                         continue;
                     }

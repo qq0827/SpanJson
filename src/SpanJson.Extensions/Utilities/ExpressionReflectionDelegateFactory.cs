@@ -42,7 +42,7 @@ namespace SpanJson.Utilities
 
         public override CtorInvoker<object> CreateParameterizedConstructor(MethodBase method)
         {
-            if (null == method) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.method); }
+            if (method is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.method); }
 
             Type type = typeof(object);
 
@@ -58,7 +58,7 @@ namespace SpanJson.Utilities
 
         public override MethodCaller<T, object> CreateMethodCall<T>(MethodBase method)
         {
-            if (null == method) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.method); }
+            if (method is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.method); }
 
             Type type = typeof(object);
 
@@ -181,7 +181,7 @@ namespace SpanJson.Utilities
 
         public override Func<T> CreateDefaultConstructor<T>(Type type)
         {
-            if (null == type) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
+            if (type is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
             // avoid error from expressions compiler because of abstract class
             if (type.IsAbstract)
@@ -212,7 +212,7 @@ namespace SpanJson.Utilities
 
         public override Func<T, object> CreateGet<T>(PropertyInfo propertyInfo)
         {
-            if (null == propertyInfo) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyInfo); }
+            if (propertyInfo is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyInfo); }
 
             Type instanceType = typeof(T);
             Type resultType = typeof(object);
@@ -243,7 +243,7 @@ namespace SpanJson.Utilities
 
         public override Func<T, object> CreateGet<T>(FieldInfo fieldInfo)
         {
-            if (null == fieldInfo) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.fieldInfo); }
+            if (fieldInfo is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.fieldInfo); }
 
             ParameterExpression sourceParameter = Expression.Parameter(typeof(T), "source");
 
@@ -267,7 +267,7 @@ namespace SpanJson.Utilities
 
         public override Action<T, object> CreateSet<T>(FieldInfo fieldInfo)
         {
-            if (null == fieldInfo) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.fieldInfo); }
+            if (fieldInfo is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.fieldInfo); }
 
             // use reflection for structs
             // expression doesn't correctly set value
@@ -303,7 +303,7 @@ namespace SpanJson.Utilities
 
         public override Action<T, object> CreateSet<T>(PropertyInfo propertyInfo)
         {
-            if (null == propertyInfo) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyInfo); }
+            if (propertyInfo is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyInfo); }
 
             // use reflection for structs
             // expression doesn't correctly set value
@@ -359,7 +359,7 @@ namespace SpanJson.Utilities
                     MethodInfo toTargetTypeMethod = typeof(Convert)
                         .GetMethod("To" + targetType.Name, new[] { typeof(object) });
 
-                    if (toTargetTypeMethod != null)
+                    if (toTargetTypeMethod is object)
                     {
                         convert = Expression.Condition(
                             Expression.TypeIs(expression, targetType),

@@ -99,7 +99,7 @@ namespace SpanJson.Formatters
                     }
                     finally
                     {
-                        if (cBuffer != null) { ArrayPool<char>.Shared.Return(cBuffer); }
+                        if (cBuffer is object) { ArrayPool<char>.Shared.Return(cBuffer); }
                     }
                     break;
 
@@ -125,7 +125,7 @@ namespace SpanJson.Formatters
                     }
                     finally
                     {
-                        if (bBuffer != null) { ArrayPool<byte>.Shared.Return(bBuffer); }
+                        if (bBuffer is object) { ArrayPool<byte>.Shared.Return(bBuffer); }
                     }
                     break;
 
@@ -143,7 +143,7 @@ namespace SpanJson.Formatters
                     {
                         var getter = GetOrAddGetMember(memberInfo.MemberName);
                         var child = getter(value);
-                        if (memberInfo.ExcludeNull && child == null) { continue; }
+                        if (memberInfo.ExcludeNull && child is null) { continue; }
 
                         if (counter++ > 0) { writer.WriteValueSeparator(); }
 
@@ -159,7 +159,7 @@ namespace SpanJson.Formatters
                     {
                         var getter = GetOrAddGetDefinedMember(memberInfo.MemberName);
                         var child = getter(value);
-                        if (memberInfo.ExcludeNull && child == null) { continue; }
+                        if (memberInfo.ExcludeNull && child is null) { continue; }
 
                         if (counter++ > 0) { writer.WriteValueSeparator(); }
 

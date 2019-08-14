@@ -155,7 +155,7 @@ namespace SpanJson.Document
 
             public void Dispose()
             {
-                if (_data == null || !_isDisposable)
+                if (_data is null || !_isDisposable)
                 {
                     return;
                 }

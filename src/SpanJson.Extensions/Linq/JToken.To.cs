@@ -54,7 +54,7 @@ namespace SpanJson.Linq
             where TUtf8Resolver : IJsonFormatterResolver<byte, TUtf8Resolver>, new()
             where TUtf16Resolver : IJsonFormatterResolver<char, TUtf16Resolver>, new()
         {
-            if (null == objectType) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.objectType); }
+            if (objectType is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.objectType); }
 
             if (TryConvertOrCast<TUtf8Resolver, TUtf16Resolver>(objectType, out object result)) { return result; }
 
@@ -103,7 +103,7 @@ namespace SpanJson.Linq
         {
             if (TryConvertOrCast<TUtf8Resolver, TUtf16Resolver>(typeof(T), out object result)) { return (T)result; }
 
-            if (null == jsonSerializer) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.jsonSerializer); }
+            if (jsonSerializer is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.jsonSerializer); }
 
             return ToObjectInternal<T, TUtf8Resolver, TUtf16Resolver>(jsonSerializer);
         }
@@ -113,7 +113,7 @@ namespace SpanJson.Linq
         /// <returns>The new object created from the JSON value.</returns>
         public object ToPolymorphicObject(Type objectType)
         {
-            if (null == objectType) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.objectType); }
+            if (objectType is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.objectType); }
 
             if (TryConvertOrCast<ExcludeNullsOriginalCaseResolver<byte>, ExcludeNullsOriginalCaseResolver<char>>(objectType, out object result)) { return result; }
 
@@ -150,11 +150,11 @@ namespace SpanJson.Linq
             where TUtf8Resolver : IJsonFormatterResolver<byte, TUtf8Resolver>, new()
             where TUtf16Resolver : IJsonFormatterResolver<char, TUtf16Resolver>, new()
         {
-            if (null == objectType) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.objectType); }
+            if (objectType is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.objectType); }
 
             if (TryConvertOrCast<TUtf8Resolver, TUtf16Resolver>(objectType, out object result)) { return result; }
 
-            if (null == jsonSerializer) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.jsonSerializer); }
+            if (jsonSerializer is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.jsonSerializer); }
 
             return ToObjectInternal<TUtf8Resolver, TUtf16Resolver>(objectType, jsonSerializer);
         }

@@ -55,7 +55,7 @@ namespace SpanJson.Linq
         public static explicit operator bool(JToken value)
         {
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, BooleanTypes, false))
+            if (v is null || !ValidateToken(v, BooleanTypes, false))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<bool>(value);
             }
@@ -73,10 +73,10 @@ namespace SpanJson.Linq
         /// <returns>The result of the conversion.</returns>
         public static explicit operator bool?(JToken value)
         {
-            if (value == null) { return null; }
+            if (value is null) { return null; }
 
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, BooleanTypes, true))
+            if (v is null || !ValidateToken(v, BooleanTypes, true))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<bool>(value);
             }
@@ -86,7 +86,7 @@ namespace SpanJson.Linq
                 return Convert.ToBoolean((int)integer);
             }
 
-            return (v.Value != null) ? (bool?)Convert.ToBoolean(v.Value, CultureInfo.InvariantCulture) : null;
+            return (v.Value is object) ? (bool?)Convert.ToBoolean(v.Value, CultureInfo.InvariantCulture) : null;
         }
 
         /// <summary>Performs an explicit conversion from <see cref="JToken"/> to <see cref="Char"/>.</summary>
@@ -95,7 +95,7 @@ namespace SpanJson.Linq
         public static explicit operator char(JToken value)
         {
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, CharTypes, false))
+            if (v is null || !ValidateToken(v, CharTypes, false))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<char>(value);
             }
@@ -113,10 +113,10 @@ namespace SpanJson.Linq
         /// <returns>The result of the conversion.</returns>
         public static explicit operator char?(JToken value)
         {
-            if (value == null) { return null; }
+            if (value is null) { return null; }
 
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, CharTypes, true))
+            if (v is null || !ValidateToken(v, CharTypes, true))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<char>(value);
             }
@@ -126,7 +126,7 @@ namespace SpanJson.Linq
                 return (char?)integer;
             }
 
-            return (v.Value != null) ? (char?)Convert.ToChar(v.Value, CultureInfo.InvariantCulture) : null;
+            return (v.Value is object) ? (char?)Convert.ToChar(v.Value, CultureInfo.InvariantCulture) : null;
         }
 
 
@@ -138,7 +138,7 @@ namespace SpanJson.Linq
         public static explicit operator sbyte(JToken value)
         {
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, NumberTypes, false))
+            if (v is null || !ValidateToken(v, NumberTypes, false))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<sbyte>(value);
             }
@@ -185,10 +185,10 @@ namespace SpanJson.Linq
         /// <returns>The result of the conversion.</returns>
         public static explicit operator sbyte?(JToken value)
         {
-            if (value == null) { return null; }
+            if (value is null) { return null; }
 
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, NumberTypes, true))
+            if (v is null || !ValidateToken(v, NumberTypes, true))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<sbyte>(value);
             }
@@ -242,7 +242,7 @@ namespace SpanJson.Linq
         public static explicit operator byte(JToken value)
         {
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, NumberTypes, false))
+            if (v is null || !ValidateToken(v, NumberTypes, false))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<byte>(value);
             }
@@ -289,10 +289,10 @@ namespace SpanJson.Linq
         /// <returns>The result of the conversion.</returns>
         public static explicit operator byte?(JToken value)
         {
-            if (value == null) { return null; }
+            if (value is null) { return null; }
 
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, NumberTypes, true))
+            if (v is null || !ValidateToken(v, NumberTypes, true))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<byte>(value);
             }
@@ -346,7 +346,7 @@ namespace SpanJson.Linq
         public static explicit operator short(JToken value)
         {
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, NumberTypes, false))
+            if (v is null || !ValidateToken(v, NumberTypes, false))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<short>(value);
             }
@@ -393,10 +393,10 @@ namespace SpanJson.Linq
         /// <returns>The result of the conversion.</returns>
         public static explicit operator short?(JToken value)
         {
-            if (value == null) { return null; }
+            if (value is null) { return null; }
 
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, NumberTypes, true))
+            if (v is null || !ValidateToken(v, NumberTypes, true))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<short>(value);
             }
@@ -450,7 +450,7 @@ namespace SpanJson.Linq
         public static explicit operator ushort(JToken value)
         {
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, NumberTypes, false))
+            if (v is null || !ValidateToken(v, NumberTypes, false))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<ushort>(value);
             }
@@ -497,10 +497,10 @@ namespace SpanJson.Linq
         /// <returns>The result of the conversion.</returns>
         public static explicit operator ushort?(JToken value)
         {
-            if (value == null) { return null; }
+            if (value is null) { return null; }
 
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, NumberTypes, true))
+            if (v is null || !ValidateToken(v, NumberTypes, true))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<ushort>(value);
             }
@@ -554,7 +554,7 @@ namespace SpanJson.Linq
         public static explicit operator int(JToken value)
         {
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, NumberTypes, false))
+            if (v is null || !ValidateToken(v, NumberTypes, false))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<int>(value);
             }
@@ -601,10 +601,10 @@ namespace SpanJson.Linq
         /// <returns>The result of the conversion.</returns>
         public static explicit operator int?(JToken value)
         {
-            if (value == null) { return null; }
+            if (value is null) { return null; }
 
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, NumberTypes, true))
+            if (v is null || !ValidateToken(v, NumberTypes, true))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<int>(value);
             }
@@ -658,7 +658,7 @@ namespace SpanJson.Linq
         public static explicit operator uint(JToken value)
         {
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, NumberTypes, false))
+            if (v is null || !ValidateToken(v, NumberTypes, false))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<uint>(value);
             }
@@ -705,10 +705,10 @@ namespace SpanJson.Linq
         /// <returns>The result of the conversion.</returns>
         public static explicit operator uint?(JToken value)
         {
-            if (value == null) { return null; }
+            if (value is null) { return null; }
 
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, NumberTypes, true))
+            if (v is null || !ValidateToken(v, NumberTypes, true))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<uint>(value);
             }
@@ -762,7 +762,7 @@ namespace SpanJson.Linq
         public static explicit operator long(JToken value)
         {
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, NumberTypes, false))
+            if (v is null || !ValidateToken(v, NumberTypes, false))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<long>(value);
             }
@@ -809,10 +809,10 @@ namespace SpanJson.Linq
         /// <returns>The result of the conversion.</returns>
         public static explicit operator long?(JToken value)
         {
-            if (value == null) { return null; }
+            if (value is null) { return null; }
 
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, NumberTypes, true))
+            if (v is null || !ValidateToken(v, NumberTypes, true))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<long>(value);
             }
@@ -866,7 +866,7 @@ namespace SpanJson.Linq
         public static explicit operator ulong(JToken value)
         {
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, NumberTypes, false))
+            if (v is null || !ValidateToken(v, NumberTypes, false))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<ulong>(value);
             }
@@ -913,10 +913,10 @@ namespace SpanJson.Linq
         /// <returns>The result of the conversion.</returns>
         public static explicit operator ulong?(JToken value)
         {
-            if (value == null) { return null; }
+            if (value is null) { return null; }
 
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, NumberTypes, true))
+            if (v is null || !ValidateToken(v, NumberTypes, true))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<ulong>(value);
             }
@@ -973,7 +973,7 @@ namespace SpanJson.Linq
         public static explicit operator decimal(JToken value)
         {
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, NumberTypes, false))
+            if (v is null || !ValidateToken(v, NumberTypes, false))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<decimal>(value);
             }
@@ -1020,10 +1020,10 @@ namespace SpanJson.Linq
         /// <returns>The result of the conversion.</returns>
         public static explicit operator decimal?(JToken value)
         {
-            if (value == null) { return null; }
+            if (value is null) { return null; }
 
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, NumberTypes, true))
+            if (v is null || !ValidateToken(v, NumberTypes, true))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<decimal>(value);
             }
@@ -1077,7 +1077,7 @@ namespace SpanJson.Linq
         public static explicit operator double(JToken value)
         {
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, NumberTypes, false))
+            if (v is null || !ValidateToken(v, NumberTypes, false))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<double>(value);
             }
@@ -1124,10 +1124,10 @@ namespace SpanJson.Linq
         /// <returns>The result of the conversion.</returns>
         public static explicit operator double?(JToken value)
         {
-            if (value == null) { return null; }
+            if (value is null) { return null; }
 
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, NumberTypes, true))
+            if (v is null || !ValidateToken(v, NumberTypes, true))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<double>(value);
             }
@@ -1181,7 +1181,7 @@ namespace SpanJson.Linq
         public static explicit operator float(JToken value)
         {
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, NumberTypes, false))
+            if (v is null || !ValidateToken(v, NumberTypes, false))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<float>(value);
             }
@@ -1228,10 +1228,10 @@ namespace SpanJson.Linq
         /// <returns>The result of the conversion.</returns>
         public static explicit operator float?(JToken value)
         {
-            if (value == null) { return null; }
+            if (value is null) { return null; }
 
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, NumberTypes, true))
+            if (v is null || !ValidateToken(v, NumberTypes, true))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<float>(value);
             }
@@ -1284,10 +1284,10 @@ namespace SpanJson.Linq
         /// <returns>The result of the conversion.</returns>
         public static explicit operator string(JToken value)
         {
-            if (value == null) { return null; }
+            if (value is null) { return null; }
 
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, StringTypes, true))
+            if (v is null || !ValidateToken(v, StringTypes, true))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<string>(value);
             }
@@ -1329,10 +1329,10 @@ namespace SpanJson.Linq
         /// <returns>The result of the conversion.</returns>
         public static explicit operator byte[](JToken value)
         {
-            if (value == null) { return null; }
+            if (value is null) { return null; }
 
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, BytesTypes, false))
+            if (v is null || !ValidateToken(v, BytesTypes, false))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<byte[]>(value);
             }
@@ -1375,7 +1375,7 @@ namespace SpanJson.Linq
         public static explicit operator Guid(JToken value)
         {
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, GuidTypes, false))
+            if (v is null || !ValidateToken(v, GuidTypes, false))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<Guid>(value);
             }
@@ -1414,10 +1414,10 @@ namespace SpanJson.Linq
         /// <returns>The result of the conversion.</returns>
         public static explicit operator Guid?(JToken value)
         {
-            if (value == null) { return null; }
+            if (value is null) { return null; }
 
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, GuidTypes, true))
+            if (v is null || !ValidateToken(v, GuidTypes, true))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<Guid>(value);
             }
@@ -1460,7 +1460,7 @@ namespace SpanJson.Linq
         public static explicit operator CombGuid(JToken value)
         {
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, CombGuidTypes, false))
+            if (v is null || !ValidateToken(v, CombGuidTypes, false))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<CombGuid>(value);
             }
@@ -1499,10 +1499,10 @@ namespace SpanJson.Linq
         /// <returns>The result of the conversion.</returns>
         public static explicit operator CombGuid?(JToken value)
         {
-            if (value == null) { return null; }
+            if (value is null) { return null; }
 
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, CombGuidTypes, true))
+            if (v is null || !ValidateToken(v, CombGuidTypes, true))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<CombGuid>(value);
             }
@@ -1545,7 +1545,7 @@ namespace SpanJson.Linq
         public static explicit operator DateTime(JToken value)
         {
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, DateTimeTypes, false))
+            if (v is null || !ValidateToken(v, DateTimeTypes, false))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<DateTime>(value);
             }
@@ -1578,10 +1578,10 @@ namespace SpanJson.Linq
         /// <returns>The result of the conversion.</returns>
         public static explicit operator DateTime?(JToken value)
         {
-            if (value == null) { return null; }
+            if (value is null) { return null; }
 
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, DateTimeTypes, true))
+            if (v is null || !ValidateToken(v, DateTimeTypes, true))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<DateTime>(value);
             }
@@ -1618,7 +1618,7 @@ namespace SpanJson.Linq
         public static explicit operator DateTimeOffset(JToken value)
         {
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, DateTimeTypes, false))
+            if (v is null || !ValidateToken(v, DateTimeTypes, false))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<DateTimeOffset>(value);
             }
@@ -1651,10 +1651,10 @@ namespace SpanJson.Linq
         /// <returns>The result of the conversion.</returns>
         public static explicit operator DateTimeOffset?(JToken value)
         {
-            if (value == null) { return null; }
+            if (value is null) { return null; }
 
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, DateTimeTypes, true))
+            if (v is null || !ValidateToken(v, DateTimeTypes, true))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<DateTimeOffset>(value);
             }
@@ -1691,7 +1691,7 @@ namespace SpanJson.Linq
         public static explicit operator TimeSpan(JToken value)
         {
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, TimeSpanTypes, false))
+            if (v is null || !ValidateToken(v, TimeSpanTypes, false))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<TimeSpan>(value);
             }
@@ -1721,10 +1721,10 @@ namespace SpanJson.Linq
         /// <returns>The result of the conversion.</returns>
         public static explicit operator TimeSpan?(JToken value)
         {
-            if (value == null) { return null; }
+            if (value is null) { return null; }
 
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, TimeSpanTypes, true))
+            if (v is null || !ValidateToken(v, TimeSpanTypes, true))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<TimeSpan>(value);
             }
@@ -1757,10 +1757,10 @@ namespace SpanJson.Linq
         /// <returns>The result of the conversion.</returns>
         public static explicit operator Uri(JToken value)
         {
-            if (value == null) { return null; }
+            if (value is null) { return null; }
 
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, UriTypes, true))
+            if (v is null || !ValidateToken(v, UriTypes, true))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<Uri>(value);
             }
@@ -1791,7 +1791,7 @@ namespace SpanJson.Linq
         private static BigInteger ToBigInteger(JToken value)
         {
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, BigIntegerTypes, false))
+            if (v is null || !ValidateToken(v, BigIntegerTypes, false))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<BigInteger>(value);
             }
@@ -1802,12 +1802,12 @@ namespace SpanJson.Linq
         private static BigInteger? ToBigIntegerNullable(JToken value)
         {
             JValue v = EnsureValue(value);
-            if (v == null || !ValidateToken(v, BigIntegerTypes, true))
+            if (v is null || !ValidateToken(v, BigIntegerTypes, true))
             {
                 ThrowHelper2.ThrowArgumentException_Cast<BigInteger>(value);
             }
 
-            if (v.Value == null)
+            if (v.Value is null)
             {
                 return null;
             }

@@ -257,8 +257,8 @@ namespace SpanJson.Linq.JsonPath
 
         internal static bool EqualsWithStrictMatch(JValue value, JValue queryValue)
         {
-            Debug.Assert(value != null);
-            Debug.Assert(queryValue != null);
+            Debug.Assert(value is object);
+            Debug.Assert(queryValue is object);
 
             var valueType = value.Type;
             var queryValueType = queryValue.Type;

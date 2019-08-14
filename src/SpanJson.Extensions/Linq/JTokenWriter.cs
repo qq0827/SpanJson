@@ -49,7 +49,7 @@ namespace SpanJson.Linq
         {
             get
             {
-                if (_token != null) { return _token; }
+                if (_token is object) { return _token; }
 
                 return _value;
             }
@@ -59,7 +59,7 @@ namespace SpanJson.Linq
         /// <param name="container">The container being written to.</param>
         public JTokenWriter(JContainer container)
         {
-            if (null == container) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.container); }
+            if (container is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.container); }
 
             _token = container;
             _parent = container;
@@ -87,7 +87,7 @@ namespace SpanJson.Linq
 
         private void AddParent(JContainer container)
         {
-            if (_parent == null)
+            if (_parent is null)
             {
                 _token = container;
             }
@@ -105,7 +105,7 @@ namespace SpanJson.Linq
             _current = _parent;
             _parent = _parent.Parent;
 
-            if (_parent != null && _parent.Type == JTokenType.Property)
+            if (_parent is object && _parent.Type == JTokenType.Property)
             {
                 _parent = _parent.Parent;
             }
@@ -157,7 +157,7 @@ namespace SpanJson.Linq
 
         internal void AddValue(JValue value)
         {
-            if (_parent != null)
+            if (_parent is object)
             {
                 _parent.Add(value);
                 _current = _parent.Last;
@@ -416,7 +416,7 @@ namespace SpanJson.Linq
 
         public void WriteValue(CuteAnt.CombGuid? value)
         {
-            if (value == null)
+            if (value is null)
             {
                 WriteNull();
             }

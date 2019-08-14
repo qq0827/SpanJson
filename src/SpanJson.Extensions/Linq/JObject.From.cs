@@ -120,7 +120,7 @@ namespace SpanJson.Linq
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static JObject ToJObject(JToken token)
         {
-            if (token != null && token.Type != JTokenType.Object)
+            if (token is object && token.Type != JTokenType.Object)
             {
                 ThrowHelper2.ThrowArgumentException_Object_serialized_to_JObject_instance_expected(token.Type);
             }

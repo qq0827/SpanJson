@@ -10,7 +10,7 @@ namespace SpanJson.Linq.JsonPath
         {
             foreach (JToken c in current)
             {
-                if (Name == null)
+                if (Name is null)
                 {
                     yield return c;
                 }
@@ -22,7 +22,7 @@ namespace SpanJson.Linq.JsonPath
                     JContainer container = value as JContainer;
 
                     value = GetNextScanValue(c, container, value);
-                    if (value == null)
+                    if (value is null)
                     {
                         break;
                     }
@@ -36,7 +36,7 @@ namespace SpanJson.Linq.JsonPath
                     }
                     else
                     {
-                        if (Name == null)
+                        if (Name is null)
                         {
                             yield return value;
                         }

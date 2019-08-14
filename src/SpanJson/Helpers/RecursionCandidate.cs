@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using CuteAnt.Reflection;
 #if NETSTANDARD2_0 || NET471 || NET451
 using SpanJson.Internal;
 #endif
@@ -24,7 +25,7 @@ namespace SpanJson.Helpers
 
         private static bool BuildLookupFunctor(Type type)
         {
-            var functor = Expression.Lambda<Func<bool>>(Expression.Field(null, typeof(RecursionCandidate<>).MakeGenericType(type),
+            var functor = Expression.Lambda<Func<bool>>(Expression.Field(null, typeof(RecursionCandidate<>).GetCachedGenericType(type),
                 nameof(RecursionCandidate<object>.IsRecursionCandidate))).Compile();
             return functor();
         }
@@ -51,7 +52,7 @@ namespace SpanJson.Helpers
                 foreach (var memberInfo in publicMembers)
                 {
                     var memberType = memberInfo is PropertyInfo pi ? pi.PropertyType : memberInfo is FieldInfo fi ? fi.FieldType : null;
-                    if (memberType == null || memberInfo.FirstAttribute<IgnoreDataMemberAttribute>() != null)
+                    if (memberType is null || memberInfo.FirstAttribute<IgnoreDataMemberAttribute>() is object)
                     {
                         continue;
                     }

@@ -34,7 +34,7 @@ namespace SpanJson.Linq
         /// <param name="other">An object to compare with this object.</param>
         public bool Equals(JValue other)
         {
-            if (other == null) { return false; }
+            if (other is null) { return false; }
 
             return ValuesEquals(this, other);
         }
@@ -57,7 +57,7 @@ namespace SpanJson.Linq
         /// <returns>A hash code for the current <see cref="Object"/>.</returns>
         public override int GetHashCode()
         {
-            if (_value == null) { return 0; }
+            if (_value is null) { return 0; }
 
             return _value.GetHashCode();
         }

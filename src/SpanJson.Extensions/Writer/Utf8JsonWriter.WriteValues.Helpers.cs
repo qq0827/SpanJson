@@ -55,7 +55,7 @@ namespace SpanJson
             BinaryUtil.CopyMemory(ref MemoryMarshal.GetReference(encodedBytes), ref Unsafe.Add(ref output, pos), encodingLength);
             pos += encodingLength;
 
-            if (outputText != null)
+            if (outputText is object)
             {
                 ArrayPool<byte>.Shared.Return(outputText);
             }

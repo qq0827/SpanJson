@@ -66,7 +66,7 @@ namespace SpanJson.Internal.DoubleConversion
 
         static byte[] GetCopyBuffer()
         {
-            if (copyBuffer == null)
+            if (copyBuffer is null)
             {
                 copyBuffer = new byte[kMaxSignificantDecimalDigits];
             }

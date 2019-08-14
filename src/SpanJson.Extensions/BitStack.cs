@@ -62,7 +62,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void PushToArray(bool value)
         {
-            if (_array == null)
+            if (_array is null)
             {
                 _array = new int[DefaultInitialArraySize];
             }
@@ -124,7 +124,7 @@ namespace SpanJson
         private bool PopFromArray()
         {
             int index = _currentDepth - AllocationFreeMaxDepth - 1;
-            Debug.Assert(_array != null);
+            Debug.Assert(_array is object);
             Debug.Assert(index >= 0, $"Get - Negative - index: {index}, arrayLength: {_array.Length}");
 
             int elementIndex = Div32Rem(index, out int extraBits);

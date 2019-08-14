@@ -32,7 +32,7 @@ namespace SpanJson
 
         private JsonEncodedText(byte[] utf8Value)
         {
-            Debug.Assert(utf8Value != null);
+            Debug.Assert(utf8Value is object);
 
             _value = JsonReaderHelper.GetTextFromUtf8(utf8Value);
             _utf8Value = utf8Value;
@@ -40,7 +40,7 @@ namespace SpanJson
 
         private JsonEncodedText(string value)
         {
-            Debug.Assert(value != null);
+            Debug.Assert(value is object);
 
             _value = value;
             _utf8Value = TextEncodings.UTF8NoBOM.GetBytes(value);
@@ -60,7 +60,7 @@ namespace SpanJson
         /// </exception>
         public static JsonEncodedText Encode(string value, JsonEscapeHandling escapeHandling = JsonEscapeHandling.Default, JavaScriptEncoder encoder = null)
         {
-            if (value == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.value); }
+            if (value is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.value); }
 
             return Encode(value.AsSpan(), escapeHandling, encoder);
         }
@@ -165,7 +165,7 @@ namespace SpanJson
 
             byte[] escapedString = escapedValue.Slice(0, written).ToArray();
 
-            if (valueArray != null)
+            if (valueArray is object)
             {
                 ArrayPool<byte>.Shared.Return(valueArray);
             }
@@ -181,9 +181,9 @@ namespace SpanJson
         /// </remarks>
         public bool Equals(JsonEncodedText other)
         {
-            if (_value == null)
+            if (_value is null)
             {
-                return other._value == null;
+                return other._value is null;
             }
             else
             {
@@ -225,6 +225,6 @@ namespace SpanJson
         /// Returns 0 on a default instance of <see cref="JsonEncodedText"/>.
         /// </remarks>
         public override int GetHashCode()
-            => _value == null ? 0 : _value.GetHashCode();
+            => _value is null ? 0 : _value.GetHashCode();
     }
 }

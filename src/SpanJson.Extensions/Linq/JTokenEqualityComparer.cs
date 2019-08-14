@@ -53,7 +53,7 @@ namespace SpanJson.Linq
         /// <exception cref="System.ArgumentNullException">The type of <paramref name="obj"/> is a reference type and <paramref name="obj"/> is <c>null</c>.</exception>
         public int GetHashCode(JToken obj)
         {
-            if (obj == null)
+            if (obj is null)
             {
                 return 0;
             }

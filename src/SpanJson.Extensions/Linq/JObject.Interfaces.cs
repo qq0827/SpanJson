@@ -50,7 +50,7 @@ namespace SpanJson.Linq
         /// <returns><c>true</c> if the JSON object has the specified property name; otherwise, <c>false</c>.</returns>
         public bool ContainsKey(string propertyName)
         {
-            if (null == propertyName) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
+            if (propertyName is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
 
             return _properties.Contains(propertyName);
         }
@@ -65,7 +65,7 @@ namespace SpanJson.Linq
         public bool Remove(string propertyName)
         {
             JProperty property = Property(propertyName, StringComparison.Ordinal);
-            if (property == null)
+            if (property is null)
             {
                 return false;
             }
@@ -83,7 +83,7 @@ namespace SpanJson.Linq
         public bool TryGetValue(string propertyName, out JToken value)
         {
             JProperty property = Property(propertyName, StringComparison.Ordinal);
-            if (property == null)
+            if (property is null)
             {
                 value = null;
                 return false;
@@ -112,7 +112,7 @@ namespace SpanJson.Linq
         bool ICollection<KeyValuePair<string, JToken>>.Contains(KeyValuePair<string, JToken> item)
         {
             JProperty property = Property(item.Key, StringComparison.Ordinal);
-            if (property == null)
+            if (property is null)
             {
                 return false;
             }
@@ -122,7 +122,7 @@ namespace SpanJson.Linq
 
         void ICollection<KeyValuePair<string, JToken>>.CopyTo(KeyValuePair<string, JToken>[] array, int arrayIndex)
         {
-            if (array == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.array); }
+            if (array is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.array); }
             if ((uint)arrayIndex > JsonSharedConstant.TooBigOrNegative) { ThrowHelper2.ThrowArgumentOutOfRangeException_ArrayIndex(); }
             if ((uint)arrayIndex >= (uint)array.Length && arrayIndex != 0) { ThrowHelper2.ThrowArgumentException_ArrayIndex(); }
             if ((uint)Count > (uint)(array.Length - arrayIndex)) { ThrowHelper2.ThrowArgumentException_The_number_of_elements(); }

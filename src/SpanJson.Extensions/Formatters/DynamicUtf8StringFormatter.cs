@@ -39,7 +39,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf16Verbatim(MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(utf16Json), written));
 #endif
 
-            if (valueArray != null) { ArrayPool<char>.Shared.Return(valueArray); }
+            if (valueArray is object) { ArrayPool<char>.Shared.Return(valueArray); }
         }
     }
 }

@@ -245,7 +245,7 @@ namespace SpanJson.Utilities
                 resultMetaObject = new DynamicMetaObject(convert, resultMetaObject.Restrictions);
             }
 
-            if (fallbackInvoke != null)
+            if (fallbackInvoke is object)
             {
                 resultMetaObject = fallbackInvoke(resultMetaObject);
             }
@@ -359,7 +359,7 @@ namespace SpanJson.Utilities
         /// </summary>
         private BindingRestrictions GetRestrictions()
         {
-            return (Value == null && HasValue)
+            return (Value is null && HasValue)
                 ? BindingRestrictions.GetInstanceRestriction(Expression, null)
                 : BindingRestrictions.GetTypeRestriction(Expression, LimitType);
         }

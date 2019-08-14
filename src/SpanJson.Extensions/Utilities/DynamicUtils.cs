@@ -59,7 +59,7 @@ namespace SpanJson.Utilities
                 if (!_init)
                 {
                     Type binderType = Type.GetType(BinderTypeName, false);
-                    if (binderType == null)
+                    if (binderType is null)
                     {
                         throw new InvalidOperationException("Could not resolve type '{0}'. You may need to add a reference to Microsoft.CSharp.dll to work with dynamic types.".FormatWith(CultureInfo.InvariantCulture, BinderTypeName));
                     }

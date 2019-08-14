@@ -149,7 +149,7 @@ namespace SpanJson.Serialization
         /// <returns>The deserialized object from the JSON string.</returns>
         public static object DeserializeObject(this NJsonSerializer jsonSerializer, string value, Type type = null)
         {
-            if (null == value) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.value); }
+            if (value is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.value); }
 
             var isCheckAdditionalContentNoSet = !jsonSerializer.IsCheckAdditionalContentSetX();
             try
@@ -181,7 +181,7 @@ namespace SpanJson.Serialization
         /// <returns>The deserialized object from the JSON string.</returns>
         public static object DeserializeObject(this ObjectPool<NJsonSerializer> jsonSerializerPool, string value, Type type = null)
         {
-            if (null == value) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.value); }
+            if (value is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.value); }
 
             var jsonSerializer = jsonSerializerPool.Take();
             var isCheckAdditionalContentNoSet = !jsonSerializer.IsCheckAdditionalContentSetX();
@@ -473,7 +473,7 @@ namespace SpanJson.Serialization
         /// <returns>The deserialized object from the JSON string.</returns>
         public static object DeserializeFromByteArray(this NJsonSerializer jsonSerializer, byte[] value, Type type = null)
         {
-            if (null == value) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.value); }
+            if (value is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.value); }
 
             return DeserializeFromByteArray(jsonSerializer, value, 0, value.Length, type);
         }
@@ -517,7 +517,7 @@ namespace SpanJson.Serialization
         /// <returns>The deserialized object from the JSON string.</returns>
         public static object DeserializeFromByteArray(this ObjectPool<NJsonSerializer> jsonSerializerPool, byte[] value, Type type = null)
         {
-            if (null == value) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.value); }
+            if (value is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.value); }
 
             return DeserializeFromByteArray(jsonSerializerPool, value, 0, value.Length, type);
         }
@@ -531,7 +531,7 @@ namespace SpanJson.Serialization
         /// <returns>The deserialized object from the JSON string.</returns>
         public static object DeserializeFromByteArray(this ObjectPool<NJsonSerializer> jsonSerializerPool, byte[] value, int offset, int count, Type type = null)
         {
-            if (null == value) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.value); }
+            if (value is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.value); }
 
             var jsonSerializer = jsonSerializerPool.Take();
             var isCheckAdditionalContentNoSet = !jsonSerializer.IsCheckAdditionalContentSetX();
@@ -917,7 +917,7 @@ namespace SpanJson.Serialization
         /// <param name="target">The target object to populate values onto.</param>
         public static void PopulateObject(this NJsonSerializer jsonSerializer, object target, byte[] value)
         {
-            if (null == value) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.value); }
+            if (value is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.value); }
 
             PopulateObject(jsonSerializer, target, value, 0, value.Length);
         }
@@ -956,7 +956,7 @@ namespace SpanJson.Serialization
         /// <param name="target">The target object to populate values onto.</param>
         public static void PopulateObject(this ObjectPool<NJsonSerializer> jsonSerializerPool, object target, byte[] value)
         {
-            if (null == value) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.value); }
+            if (value is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.value); }
 
             PopulateObject(jsonSerializerPool, target, value, 0, value.Length);
         }

@@ -21,7 +21,7 @@ namespace SpanJson.AspNetCore.Formatter
             {
                 var model = await JsonSerializer.NonGeneric.Utf8.DeserializeAsync<TResolver>(context.HttpContext.Request.Body, context.ModelType)
                     .ConfigureAwait(false);
-                if (model == null && !context.TreatEmptyInputAsDefaultValue)
+                if (model is null && !context.TreatEmptyInputAsDefaultValue)
                 {
                     return InputFormatterResult.NoValue();
                 }

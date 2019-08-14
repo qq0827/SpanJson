@@ -56,7 +56,7 @@ namespace SpanJson.Utilities
 
         public static bool IsNullable(Type t)
         {
-            if (null == t) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.t); }
+            if (t is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.t); }
 
             if (t.IsValueType)
             {
@@ -68,7 +68,7 @@ namespace SpanJson.Utilities
 
         public static bool IsNullableType(Type t)
         {
-            if (null == t) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.t); }
+            if (t is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.t); }
 
             return (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>));
         }

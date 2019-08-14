@@ -19,7 +19,7 @@ namespace SpanJson.Document
 
         public static JsonDocument Parse(byte[] utf8Json, JsonDocumentOptions options = default, bool useArrayPools = true)
         {
-            if (utf8Json == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.utf8Json); }
+            if (utf8Json is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.utf8Json); }
             return ParseCore(new ReadOnlyMemory<byte>(utf8Json), options.GetReaderOptions(), null, useArrayPools);
         }
 
@@ -138,7 +138,7 @@ namespace SpanJson.Document
         /// </exception>
         public static JsonDocument Parse(Stream utf8Json, JsonDocumentOptions options = default, bool useArrayPools = true)
         {
-            if (utf8Json == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.utf8Json); }
+            if (utf8Json is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.utf8Json); }
 
             ArraySegment<byte> drained = ReadToEnd(utf8Json, useArrayPools);
 
@@ -184,7 +184,7 @@ namespace SpanJson.Document
             bool useArrayPools = true,
             CancellationToken cancellationToken = default)
         {
-            if (utf8Json == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.utf8Json); }
+            if (utf8Json is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.utf8Json); }
 
             return ParseAsyncCore(utf8Json, options, useArrayPools, cancellationToken);
         }
@@ -233,7 +233,7 @@ namespace SpanJson.Document
         /// </exception>
         public static JsonDocument Parse(string json, JsonDocumentOptions options = default, bool useArrayPools = true)
         {
-            if (json == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.json); }
+            if (json is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.json); }
 
             return Parse(json.AsSpan(), options, useArrayPools);
         }
@@ -719,7 +719,7 @@ namespace SpanJson.Document
             }
             catch
             {
-                if (useArrayPools && rented != null)
+                if (useArrayPools && rented is object)
                 {
                     // Holds document content, clear it before returning it.
                     rented.AsSpan(0, written).Clear();
@@ -804,7 +804,7 @@ namespace SpanJson.Document
             }
             catch
             {
-                if (useArrayPools && rented != null)
+                if (useArrayPools && rented is object)
                 {
                     // Holds document content, clear it before returning it.
                     rented.AsSpan(0, written).Clear();

@@ -24,7 +24,7 @@ namespace SpanJson.Linq
         /// <returns><c>true</c> if the tokens are equal; otherwise <c>false</c>.</returns>
         public static bool DeepEquals(JToken t1, JToken t2)
         {
-            return (t1 == t2 || (t1 != null && t2 != null && t1.DeepEquals(t2)));
+            return (t1 == t2 || (t1 is object && t2 is object && t1.DeepEquals(t2)));
         }
 
         internal abstract bool DeepEquals(JToken node);

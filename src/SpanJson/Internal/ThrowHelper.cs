@@ -56,11 +56,13 @@ namespace SpanJson
 
         #region -- Get ArgumentException --
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         internal static ArgumentException GetArgumentException(ExceptionResource resource)
         {
             return new ArgumentException(GetResourceString(resource));
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         internal static ArgumentException GetArgumentException(ExceptionResource resource, ExceptionArgument argument)
         {
             return new ArgumentException(GetResourceString(resource), GetArgumentName(argument));
@@ -103,16 +105,19 @@ namespace SpanJson
 
         #region -- Get ArgumentOutOfRangeException --
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         internal static ArgumentOutOfRangeException GetArgumentOutOfRangeException(ExceptionArgument argument)
         {
             return new ArgumentOutOfRangeException(GetArgumentName(argument));
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         internal static ArgumentOutOfRangeException GetArgumentOutOfRangeException(ExceptionArgument argument, ExceptionResource resource)
         {
             return new ArgumentOutOfRangeException(GetArgumentName(argument), GetResourceString(resource));
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         internal static ArgumentOutOfRangeException GetArgumentOutOfRangeException(ExceptionArgument argument, int paramNumber, ExceptionResource resource)
         {
             return new ArgumentOutOfRangeException(GetArgumentName(argument) + "[" + paramNumber.ToString() + "]", GetResourceString(resource));
@@ -145,16 +150,19 @@ namespace SpanJson
 
         #region -- Get ArgumentNullException --
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         internal static ArgumentNullException GetArgumentNullException(ExceptionArgument argument)
         {
             return new ArgumentNullException(GetArgumentName(argument));
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         internal static ArgumentNullException GetArgumentNullException(ExceptionResource resource)
         {
             return new ArgumentNullException(GetResourceString(resource), innerException: null);
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         internal static ArgumentNullException GetArgumentNullException(ExceptionArgument argument, ExceptionResource resource)
         {
             return new ArgumentNullException(GetArgumentName(argument), GetResourceString(resource));
@@ -195,6 +203,7 @@ namespace SpanJson
             }
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         internal static InvalidOperationException GetInvalidOperationException(ExceptionResource resource)
         {
             return new InvalidOperationException(GetResourceString(resource));

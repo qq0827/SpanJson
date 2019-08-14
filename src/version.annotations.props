@@ -2,9 +2,9 @@
   <!-- Versioning properties -->
   <PropertyGroup>
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
-    <VersionPrefix Condition=" '$(VersionPrefix)'=='' ">2.0.14</VersionPrefix>
+    <VersionPrefix Condition=" '$(VersionPrefix)'=='' ">2.0.15</VersionPrefix>
     <!--<VersionSuffix Condition=" '$(VersionSuffix)'=='' ">rtm</VersionSuffix>
-    <VersionDateSuffix Condition=" '$(VersionDateSuffix)'=='' ">190807-01</VersionDateSuffix>
+    <VersionDateSuffix Condition=" '$(VersionDateSuffix)'=='' ">190813-01</VersionDateSuffix>
     <VersionSuffix Condition=" '$(VersionDateSuffix)'!='' ">$(VersionSuffix)-$(VersionDateSuffix)</VersionSuffix>-->
   </PropertyGroup>
   <Choose>

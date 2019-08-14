@@ -136,7 +136,7 @@
             /// <returns>Resolved key of the dictionary.</returns>
             public string ResolveDictionaryKey(string dictionaryKey)
             {
-                if (_dictionayKeyPolicy != null)
+                if (_dictionayKeyPolicy is object)
                 {
                     return _dictionayKeyPolicy.ConvertName(dictionaryKey);
                 }
@@ -149,7 +149,7 @@
             /// <returns>Resolved name of the extension data.</returns>
             public string ResolveExtensionDataName(string extensionDataName)
             {
-                if (_extensionDataPolicy != null)
+                if (_extensionDataPolicy is object)
                 {
                     return _extensionDataPolicy.ConvertName(extensionDataName);
                 }
@@ -162,7 +162,7 @@
             /// <returns>Resolved name of the property.</returns>
             public string ResolvePropertyName(string propertyName)
             {
-                if (_jsonPropertyNamingPolicy != null)
+                if (_jsonPropertyNamingPolicy is object)
                 {
                     return _jsonPropertyNamingPolicy.ConvertName(propertyName);
                 }

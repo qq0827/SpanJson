@@ -14,7 +14,7 @@ namespace SpanJson.Formatters
 
         public override void Serialize(ref JsonWriter<byte> writer, SpanJsonDynamicObject value, IJsonFormatterResolver<byte> resolver)
         {
-            if (value == null) { writer.WriteUtf8Null(); return; }
+            if (value is null) { writer.WriteUtf8Null(); return; }
 
             if (value.HasRaw)
             {
@@ -39,7 +39,7 @@ namespace SpanJson.Formatters
                     writer.WriteUtf8Verbatim(MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(utf8Json), written));
 #endif
 
-                    if (valueArray != null) { ArrayPool<byte>.Shared.Return(valueArray); }
+                    if (valueArray is object) { ArrayPool<byte>.Shared.Return(valueArray); }
                 }
                 else
                 {
@@ -77,7 +77,7 @@ namespace SpanJson.Formatters
 
         public override void Serialize(ref JsonWriter<char> writer, SpanJsonDynamicObject value, IJsonFormatterResolver<char> resolver)
         {
-            if (value == null) { writer.WriteUtf16Null(); return; }
+            if (value is null) { writer.WriteUtf16Null(); return; }
 
             if (value.HasRaw)
             {
@@ -106,7 +106,7 @@ namespace SpanJson.Formatters
                     writer.WriteUtf16Verbatim(MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(utf16Json), written));
 #endif
 
-                    if (valueArray != null) { ArrayPool<char>.Shared.Return(valueArray); }
+                    if (valueArray is object) { ArrayPool<char>.Shared.Return(valueArray); }
                 }
             }
             else

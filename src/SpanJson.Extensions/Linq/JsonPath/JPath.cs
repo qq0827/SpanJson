@@ -44,7 +44,7 @@ namespace SpanJson.Linq.JsonPath
 
         public JPath(string expression)
         {
-            if (null == expression) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.expression); }
+            if (expression is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.expression); }
 
             _expression = expression.AsSpan();
             _expressionLength = (uint)_expression.Length;
@@ -265,7 +265,7 @@ namespace SpanJson.Linq.JsonPath
                 {
                     int length = (end ?? _currentIndex) - start;
 
-                    if (indexes != null)
+                    if (indexes is object)
                     {
                         if (0u >= (uint)length)
                         {
@@ -331,7 +331,7 @@ namespace SpanJson.Linq.JsonPath
                         ThrowHelper2.ThrowJsonException_Array_index_expected();
                     }
 
-                    if (indexes == null)
+                    if (indexes is null)
                     {
                         indexes = new List<int>();
                     }
@@ -405,7 +405,7 @@ namespace SpanJson.Linq.JsonPath
                 }
                 else
                 {
-                    if (end != null)
+                    if (end is object)
                     {
                         ThrowHelper2.ThrowJsonException_Unexpected_character_while_parsing_path_indexer(currentCharacter);
                     }
@@ -558,7 +558,7 @@ namespace SpanJson.Linq.JsonPath
 
                 if (_expression[_currentIndex] == ')')
                 {
-                    if (parentExpression != null)
+                    if (parentExpression is object)
                     {
                         parentExpression.Expressions.Add(booleanExpression);
                         return rootExpression;
@@ -573,7 +573,7 @@ namespace SpanJson.Linq.JsonPath
                         throw CreateUnexpectedCharacterException();
                     }
 
-                    if (parentExpression == null || parentExpression.Operator != QueryOperator.And)
+                    if (parentExpression is null || parentExpression.Operator != QueryOperator.And)
                     {
                         CompositeExpression andExpression = new CompositeExpression { Operator = QueryOperator.And };
 
@@ -581,7 +581,7 @@ namespace SpanJson.Linq.JsonPath
 
                         parentExpression = andExpression;
 
-                        if (rootExpression == null)
+                        if (rootExpression is null)
                         {
                             rootExpression = parentExpression;
                         }
@@ -596,7 +596,7 @@ namespace SpanJson.Linq.JsonPath
                         throw CreateUnexpectedCharacterException();
                     }
 
-                    if (parentExpression == null || parentExpression.Operator != QueryOperator.Or)
+                    if (parentExpression is null || parentExpression.Operator != QueryOperator.Or)
                     {
                         CompositeExpression orExpression = new CompositeExpression { Operator = QueryOperator.Or };
 
@@ -604,7 +604,7 @@ namespace SpanJson.Linq.JsonPath
 
                         parentExpression = orExpression;
 
-                        if (rootExpression == null)
+                        if (rootExpression is null)
                         {
                             rootExpression = parentExpression;
                         }
@@ -878,7 +878,7 @@ namespace SpanJson.Linq.JsonPath
 
                 if (_expression[_currentIndex] == indexerCloseChar)
                 {
-                    if (fields != null)
+                    if (fields is object)
                     {
                         fields.Add(field);
                         return (scan)
@@ -895,7 +895,7 @@ namespace SpanJson.Linq.JsonPath
                     _currentIndex++;
                     EatWhitespace();
 
-                    if (fields == null)
+                    if (fields is null)
                     {
                         fields = new List<string>();
                     }

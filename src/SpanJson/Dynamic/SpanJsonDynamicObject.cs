@@ -26,7 +26,7 @@ namespace SpanJson.Dynamic
         }
 
         [IgnoreDataMember]
-        internal bool HasRaw => _rawJson != null;
+        internal bool HasRaw => _rawJson is object;
         [IgnoreDataMember]
         internal bool IsUtf16 => _isUtf16;
         [IgnoreDataMember]

@@ -148,7 +148,7 @@ namespace SpanJson.Document
         /// </exception>
         public JsonElement GetProperty(string propertyName)
         {
-            if (propertyName == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
+            if (propertyName is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
 
             if (TryGetProperty(propertyName, out JsonElement property))
             {
@@ -268,7 +268,7 @@ namespace SpanJson.Document
         /// <seealso cref="EnumerateObject"/>
         public bool TryGetProperty(string propertyName, out JsonElement value)
         {
-            if (propertyName == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
+            if (propertyName is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
 
             return TryGetProperty(propertyName.AsSpan(), out value);
         }
@@ -1281,7 +1281,7 @@ namespace SpanJson.Document
 
             if (TokenType == JsonTokenType.Null)
             {
-                return text == null;
+                return text is null;
             }
 
             return TextEqualsHelper(text.AsSpan(), isPropertyName: false);
@@ -1476,7 +1476,7 @@ namespace SpanJson.Document
                 case JsonTokenType.BeginObject:
                     {
                         // null parent should have hit the None case
-                        Debug.Assert(_parent != null);
+                        Debug.Assert(_parent is object);
                         return _parent.GetRawValueAsString(_idx);
                     }
                 case JsonTokenType.String:
@@ -1518,7 +1518,7 @@ namespace SpanJson.Document
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void CheckValidInstance()
         {
-            if (_parent == null)
+            if (_parent is null)
             {
                 ThrowHelper.ThrowInvalidOperationException();
             }

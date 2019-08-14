@@ -53,7 +53,7 @@ namespace SpanJson
         /// </remarks>
         public void WriteStringValue(string value)
         {
-            if (value == null)
+            if (value is null)
             {
                 WriteNullValue();
             }
@@ -202,7 +202,7 @@ namespace SpanJson
             }
 #endif
 
-            if (valueArray != null)
+            if (valueArray is object)
             {
                 ArrayPool<char>.Shared.Return(valueArray);
             }
@@ -349,7 +349,7 @@ namespace SpanJson
             }
 #endif
 
-            if (valueArray != null)
+            if (valueArray is object)
             {
                 ArrayPool<byte>.Shared.Return(valueArray);
             }

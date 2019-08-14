@@ -13,7 +13,7 @@ namespace SpanJson.Helpers
             if (type.IsValueType)
             {
                 underlingType = Nullable.GetUnderlyingType(type);
-                return underlingType != null;
+                return underlingType is object;
             }
 
             underlingType = default;
@@ -22,7 +22,7 @@ namespace SpanJson.Helpers
 
         public static bool IsNullable(this Type type)
         {
-            return type.IsClass || Nullable.GetUnderlyingType(type) != null;
+            return type.IsClass || Nullable.GetUnderlyingType(type) is object;
         }
 
         public static bool TryGetTypeOfGenericInterface(this Type type, Type interfaceType, out Type[] argumentTypes)
@@ -40,7 +40,7 @@ namespace SpanJson.Helpers
 
             var interfaces = type.GetInterfaces();
             var match = interfaces.FirstOrDefault(a => a.IsGenericType && interfaceType.IsAssignableFrom(a.GetGenericTypeDefinition()));
-            if (match != null)
+            if (match is object)
             {
                 argumentTypes = match.GetGenericArguments();
                 return true;

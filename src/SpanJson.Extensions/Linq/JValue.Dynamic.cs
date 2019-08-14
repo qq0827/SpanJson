@@ -56,7 +56,7 @@ namespace SpanJson.Linq
 
             if (objA is BigInteger || objB is BigInteger)
             {
-                if (objA == null || objB == null)
+                if (objA is null || objB is null)
                 {
                     result = null;
                     return true;
@@ -92,7 +92,7 @@ namespace SpanJson.Linq
             }
             else if (objA is ulong || objB is ulong || objA is decimal || objB is decimal)
             {
-                if (objA == null || objB == null)
+                if (objA is null || objB is null)
                 {
                     result = null;
                     return true;
@@ -126,7 +126,7 @@ namespace SpanJson.Linq
             }
             else if (objA is float || objB is float || objA is double || objB is double)
             {
-                if (objA == null || objB == null)
+                if (objA is null || objB is null)
                 {
                     result = null;
                     return true;
@@ -161,7 +161,7 @@ namespace SpanJson.Linq
             else if (objA is int || objA is uint || objA is long || objA is short || objA is ushort || objA is sbyte || objA is byte ||
                      objB is int || objB is uint || objB is long || objB is short || objB is ushort || objB is sbyte || objB is byte)
             {
-                if (objA == null || objB == null)
+                if (objA is null || objB is null)
                 {
                     result = null;
                     return true;
@@ -210,7 +210,7 @@ namespace SpanJson.Linq
 
                 object value = instance.Value;
 
-                if (value == null)
+                if (value is null)
                 {
                     result = null;
                     return ReflectionUtils.IsNullable(binder.Type);

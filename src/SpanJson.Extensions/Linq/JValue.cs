@@ -76,7 +76,7 @@ namespace SpanJson.Linq
 
         internal override int GetDeepHashCode()
         {
-            int valueHashCode = (_value != null) ? _value.GetHashCode() : 0;
+            int valueHashCode = (_value is object) ? _value.GetHashCode() : 0;
 
             // GetHashCode on an enum boxes so cast to int
             return ((int)_valueType).GetHashCode() ^ valueHashCode;
@@ -86,7 +86,7 @@ namespace SpanJson.Linq
         /// <returns>A <see cref="String"/> that represents this instance.</returns>
         public override string ToString()
         {
-            if (_value == null) { return string.Empty; }
+            if (_value is null) { return string.Empty; }
 
             return _value.ToString();
         }
@@ -113,7 +113,7 @@ namespace SpanJson.Linq
         /// <returns>A <see cref="String"/> that represents this instance.</returns>
         public string ToString(string format, IFormatProvider formatProvider)
         {
-            if (_value == null)
+            if (_value is null)
             {
                 return string.Empty;
             }

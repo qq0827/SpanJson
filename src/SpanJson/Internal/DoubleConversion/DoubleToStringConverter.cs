@@ -88,7 +88,7 @@ namespace SpanJson.Internal.DoubleConversion
 
         static byte[] GetDecimalRepBuffer(int size)
         {
-            if (decimalRepBuffer == null)
+            if (decimalRepBuffer is null)
             {
                 decimalRepBuffer = new byte[size];
             }
@@ -97,7 +97,7 @@ namespace SpanJson.Internal.DoubleConversion
 
         static byte[] GetExponentialRepBuffer(int size)
         {
-            if (exponentialRepBuffer == null)
+            if (exponentialRepBuffer is null)
             {
                 exponentialRepBuffer = new byte[size];
             }
@@ -106,7 +106,7 @@ namespace SpanJson.Internal.DoubleConversion
 
         static byte[] GetToStringBuffer()
         {
-            if (toStringBuffer == null)
+            if (toStringBuffer is null)
             {
                 toStringBuffer = new byte[24];
             }
@@ -627,7 +627,7 @@ namespace SpanJson.Internal.DoubleConversion
             Double double_inspect = new Double(value);
             if (double_inspect.IsInfinite())
             {
-                if (infinity_symbol_ == null) return false;
+                if (infinity_symbol_ is null) return false;
                 if (value < 0)
                 {
                     result_builder.AddCharacter((byte)'-');
@@ -637,7 +637,7 @@ namespace SpanJson.Internal.DoubleConversion
             }
             if (double_inspect.IsNan())
             {
-                if (nan_symbol_ == null) return false;
+                if (nan_symbol_ is null) return false;
                 result_builder.AddString(nan_symbol_);
                 return true;
             }

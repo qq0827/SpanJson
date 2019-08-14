@@ -17,7 +17,7 @@ namespace SpanJson.Linq.JsonPath
                     JContainer container = value as JContainer;
 
                     value = GetNextScanValue(c, container, value);
-                    if (value == null)
+                    if (value is null)
                     {
                         break;
                     }

@@ -16,7 +16,7 @@ namespace SpanJson.Serialization
         /// <returns>String</returns>
         public string SerializeObject(object input)
         {
-            if (input == null) { return JsonSerializer.Generic.Utf16.Serialize<object>(null); }
+            if (input is null) { return JsonSerializer.Generic.Utf16.Serialize<object>(null); }
 
             var inputType = input.GetType();
             if (IsPolymorphically(inputType))
@@ -32,7 +32,7 @@ namespace SpanJson.Serialization
         /// <returns>String</returns>
         public char[] SerializeObjectToCharArray(object input)
         {
-            if (input == null) { return JsonSerializer.Generic.Utf16.SerializeToCharArray<object>(null); }
+            if (input is null) { return JsonSerializer.Generic.Utf16.SerializeToCharArray<object>(null); }
 
             var inputType = input.GetType();
             if (IsPolymorphically(inputType))
@@ -49,7 +49,7 @@ namespace SpanJson.Serialization
         /// <returns>Char array from ArrayPool</returns>
         public ArraySegment<char> SerializeObjectToArrayPool(object input)
         {
-            if (input == null) { return JsonSerializer.Generic.Utf16.SerializeToArrayPool<object>(null); }
+            if (input is null) { return JsonSerializer.Generic.Utf16.SerializeToArrayPool<object>(null); }
 
             var inputType = input.GetType();
             if (IsPolymorphically(inputType))
@@ -68,7 +68,7 @@ namespace SpanJson.Serialization
         /// <returns>Task</returns>
         public ValueTask SerializeObjectAsync(object input, TextWriter writer, CancellationToken cancellationToken = default)
         {
-            if (input == null) { return JsonSerializer.Generic.Utf16.SerializeAsync<object>(null, writer, cancellationToken); }
+            if (input is null) { return JsonSerializer.Generic.Utf16.SerializeAsync<object>(null, writer, cancellationToken); }
 
             var inputType = input.GetType();
             if (IsPolymorphically(inputType))
@@ -90,7 +90,7 @@ namespace SpanJson.Serialization
         /// <returns>Deserialized object</returns>
         public object Deserialize(string input, Type type)
         {
-            if (null == type) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
+            if (type is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
             if (IsPolymorphically(type))
             {
@@ -110,7 +110,7 @@ namespace SpanJson.Serialization
         /// <returns>Deserialized object</returns>
         public object Deserialize(char[] input, Type type)
         {
-            if (null == type) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
+            if (type is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
             if (IsPolymorphically(type))
             {
@@ -126,7 +126,7 @@ namespace SpanJson.Serialization
         /// <returns>Deserialized object</returns>
         public object Deserialize(in ArraySegment<char> input, Type type)
         {
-            if (null == type) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
+            if (type is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
             if (IsPolymorphically(type))
             {
@@ -142,7 +142,7 @@ namespace SpanJson.Serialization
         /// <returns>Deserialized object</returns>
         public object Deserialize(in ReadOnlyMemory<char> input, Type type)
         {
-            if (null == type) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
+            if (type is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
             if (IsPolymorphically(type))
             {
@@ -158,7 +158,7 @@ namespace SpanJson.Serialization
         /// <returns>Deserialized object</returns>
         public object Deserialize(in ReadOnlySpan<char> input, Type type)
         {
-            if (null == type) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
+            if (type is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
             if (IsPolymorphically(type))
             {
@@ -175,7 +175,7 @@ namespace SpanJson.Serialization
         /// <returns>Task</returns>
         public ValueTask<object> DeserializeAsync(TextReader reader, Type type, CancellationToken cancellationToken = default)
         {
-            if (null == type) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
+            if (type is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
             if (IsPolymorphically(type))
             {
@@ -195,7 +195,7 @@ namespace SpanJson.Serialization
         /// <returns>Byte array</returns>
         public byte[] SerializeObjectToUtf8Bytes(object input)
         {
-            if (input == null) { return JsonSerializer.Generic.Utf8.Serialize<object>(null); }
+            if (input is null) { return JsonSerializer.Generic.Utf8.Serialize<object>(null); }
 
             var inputType = input.GetType();
             if (IsPolymorphically(inputType))
@@ -212,7 +212,7 @@ namespace SpanJson.Serialization
         /// <returns>Byte array from ArrayPool</returns>
         public ArraySegment<byte> SerializeObjectToUtf8ArrayPool(object input)
         {
-            if (input == null) { return JsonSerializer.Generic.Utf8.SerializeToArrayPool<object>(null); }
+            if (input is null) { return JsonSerializer.Generic.Utf8.SerializeToArrayPool<object>(null); }
 
             var inputType = input.GetType();
             if (IsPolymorphically(inputType))
@@ -230,7 +230,7 @@ namespace SpanJson.Serialization
         /// <returns>Task</returns>
         public ValueTask SerializeObjectAsync(object input, Stream stream, CancellationToken cancellationToken = default)
         {
-            if (input == null) { return JsonSerializer.Generic.Utf8.SerializeAsync<object>(null, stream, cancellationToken); }
+            if (input is null) { return JsonSerializer.Generic.Utf8.SerializeAsync<object>(null, stream, cancellationToken); }
 
             var inputType = input.GetType();
             if (IsPolymorphically(inputType))
@@ -251,7 +251,7 @@ namespace SpanJson.Serialization
         /// <returns>Deserialized object</returns>
         public object Deserialize(byte[] input, Type type)
         {
-            if (null == type) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
+            if (type is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
             if (IsPolymorphically(type))
             {
@@ -267,7 +267,7 @@ namespace SpanJson.Serialization
         /// <returns>Deserialized object</returns>
         public object Deserialize(in ArraySegment<byte> input, Type type)
         {
-            if (null == type) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
+            if (type is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
             if (IsPolymorphically(type))
             {
@@ -283,7 +283,7 @@ namespace SpanJson.Serialization
         /// <returns>Deserialized object</returns>
         public object Deserialize(in ReadOnlyMemory<byte> input, Type type)
         {
-            if (null == type) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
+            if (type is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
             if (IsPolymorphically(type))
             {
@@ -306,7 +306,7 @@ namespace SpanJson.Serialization
         /// <returns>Deserialized object</returns>
         public object Deserialize(in ReadOnlySpan<byte> input, Type type)
         {
-            if (null == type) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
+            if (type is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
             if (IsPolymorphically(type))
             {
@@ -323,7 +323,7 @@ namespace SpanJson.Serialization
         /// <returns>Task</returns>
         public ValueTask<object> DeserializeAsync(Stream stream, Type type, CancellationToken cancellationToken = default)
         {
-            if (null == type) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
+            if (type is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
             if (IsPolymorphically(type))
             {

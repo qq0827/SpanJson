@@ -84,7 +84,7 @@ namespace SpanJson.Serialization
                     {
                         sb.Append(@"['");
 
-                        if (writer == null)
+                        if (writer is null)
                         {
                             writer = new StringWriter(sb);
                         }
@@ -139,7 +139,7 @@ namespace SpanJson.Serialization
                         sb.Append(escapedPropertyName.Slice(0, written));
 #endif
 
-                        if (propertyArray != null)
+                        if (propertyArray is object)
                         {
                             ArrayPool<char>.Shared.Return(propertyArray);
                         }
@@ -171,14 +171,14 @@ namespace SpanJson.Serialization
         internal static string BuildPath(List<JsonPosition> positions, JsonPosition? currentPosition)
         {
             int capacity = 0;
-            if (positions != null)
+            if (positions is object)
             {
                 for (int i = 0; i < positions.Count; i++)
                 {
                     capacity += positions[i].CalculateLength();
                 }
             }
-            if (currentPosition != null)
+            if (currentPosition is object)
             {
                 capacity += currentPosition.GetValueOrDefault().CalculateLength();
             }
@@ -186,14 +186,14 @@ namespace SpanJson.Serialization
             StringBuilder sb = new StringBuilder(capacity);
             StringWriter writer = null;
             char[] buffer = null;
-            if (positions != null)
+            if (positions is object)
             {
                 foreach (JsonPosition state in positions)
                 {
                     state.WriteTo(sb, ref writer, ref buffer);
                 }
             }
-            if (currentPosition != null)
+            if (currentPosition is object)
             {
                 currentPosition.GetValueOrDefault().WriteTo(sb, ref writer, ref buffer);
             }
@@ -218,7 +218,7 @@ namespace SpanJson.Serialization
 
             message += "Path '{0}'".FormatWith(CultureInfo.InvariantCulture, path);
 
-            if (lineInfo != null && lineInfo.HasLineInfo())
+            if (lineInfo is object && lineInfo.HasLineInfo())
             {
                 message += ", line {0}, position {1}".FormatWith(CultureInfo.InvariantCulture, lineInfo.LineNumber, lineInfo.LinePosition);
             }

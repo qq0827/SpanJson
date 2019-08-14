@@ -52,7 +52,7 @@ namespace SpanJson.Linq
         {
             get
             {
-                if (_equalityComparer == null)
+                if (_equalityComparer is null)
                 {
                     _equalityComparer = new JTokenEqualityComparer();
                 }
@@ -77,12 +77,12 @@ namespace SpanJson.Linq
             get
             {
                 JContainer parent = Parent;
-                if (parent == null)
+                if (parent is null)
                 {
                     return this;
                 }
 
-                while (parent.Parent != null)
+                while (parent.Parent is object)
                 {
                     parent = parent.Parent;
                 }
@@ -120,11 +120,11 @@ namespace SpanJson.Linq
         {
             get
             {
-                if (Parent == null) { return string.Empty; }
+                if (Parent is null) { return string.Empty; }
 
                 List<JsonPosition> positions = new List<JsonPosition>();
                 JToken previous = null;
-                for (JToken current = this; current != null; current = current.Parent)
+                for (JToken current = this; current is object; current = current.Parent)
                 {
                     switch (current.Type)
                     {
@@ -134,7 +134,7 @@ namespace SpanJson.Linq
                             break;
                         case JTokenType.Array:
                             //case JTokenType.Constructor:
-                            if (previous != null)
+                            if (previous is object)
                             {
                                 int index = ((IList<JToken>)current).IndexOf(previous);
 
@@ -158,7 +158,7 @@ namespace SpanJson.Linq
         {
             if (token.Type == JTokenType.Null) { return true; }
 
-            if (token is JValue v && v.Value == null) { return true; }
+            if (token is JValue v && v.Value is null) { return true; }
 
             return false;
         }
@@ -167,7 +167,7 @@ namespace SpanJson.Linq
         /// <param name="content">A content object that contains simple content or a collection of content objects to be added after this token.</param>
         public void AddAfterSelf(object content)
         {
-            if (_parent == null) { ThrowHelper2.ThrowInvalidOperationException_The_parent_is_missing(); }
+            if (_parent is null) { ThrowHelper2.ThrowInvalidOperationException_The_parent_is_missing(); }
 
             int index = _parent.IndexOfItem(this);
             _parent.AddInternal(index + 1, content, false);
@@ -177,7 +177,7 @@ namespace SpanJson.Linq
         /// <param name="content">A content object that contains simple content or a collection of content objects to be added before this token.</param>
         public void AddBeforeSelf(object content)
         {
-            if (_parent == null) { ThrowHelper2.ThrowInvalidOperationException_The_parent_is_missing(); }
+            if (_parent is null) { ThrowHelper2.ThrowInvalidOperationException_The_parent_is_missing(); }
 
             int index = _parent.IndexOfItem(this);
             _parent.AddInternal(index, content, false);
@@ -200,7 +200,7 @@ namespace SpanJson.Linq
             JToken token = this[key];
 
             // null check to fix MonoTouch issue - https://github.com/dolbz/Newtonsoft.Json/commit/a24e3062846b30ee505f3271ac08862bb471b822
-            return token == null ? default : Extensions.Convert<JToken, T>(token);
+            return token is null ? default : Extensions.Convert<JToken, T>(token);
         }
 
         /// <summary>Get the first child token of this token.</summary>
@@ -237,7 +237,7 @@ namespace SpanJson.Linq
         /// <summary>Removes this token from its parent.</summary>
         public void Remove()
         {
-            if (_parent == null) { ThrowHelper2.ThrowInvalidOperationException_The_parent_is_missing(); }
+            if (_parent is null) { ThrowHelper2.ThrowInvalidOperationException_The_parent_is_missing(); }
 
             _parent.RemoveItem(this);
         }
@@ -246,7 +246,7 @@ namespace SpanJson.Linq
         /// <param name="value">The value.</param>
         public void Replace(JToken value)
         {
-            if (_parent == null) { ThrowHelper2.ThrowInvalidOperationException_The_parent_is_missing(); }
+            if (_parent is null) { ThrowHelper2.ThrowInvalidOperationException_The_parent_is_missing(); }
 
             _parent.ReplaceItem(this, value);
         }
@@ -254,7 +254,7 @@ namespace SpanJson.Linq
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static JValue EnsureValue(JToken value)
         {
-            if (value == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.value); }
+            if (value is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.value); }
 
             if (value is JProperty property)
             {
@@ -268,7 +268,7 @@ namespace SpanJson.Linq
 
         internal static string GetType(JToken token)
         {
-            if (null == token) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.token); }
+            if (token is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.token); }
 
             if (token is JProperty p)
             {
@@ -305,7 +305,7 @@ namespace SpanJson.Linq
             JToken token = null;
             foreach (JToken t in p.Evaluate(this, this, errorWhenNoMatch))
             {
-                if (token != null)
+                if (token is object)
                 {
                     ThrowHelper2.ThrowJsonException_Path_returned_multiple_tokens();
                 }
@@ -338,22 +338,17 @@ namespace SpanJson.Linq
         /// <param name="annotation">The annotation to add.</param>
         public void AddAnnotation(object annotation)
         {
-            if (annotation == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.annotation); }
+            if (annotation is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.annotation); }
 
-            if (_annotations == null)
+            switch (_annotations)
             {
-                _annotations = (annotation is object[]) ? new[] { annotation } : annotation;
-            }
-            else
-            {
-                if (!(_annotations is object[] annotations))
-                {
-                    _annotations = new[] { _annotations, annotation };
-                }
-                else
-                {
+                case null:
+                    _annotations = (annotation is object[]) ? new[] { annotation } : annotation;
+                    break;
+
+                case object[] annotations:
                     int index = 0;
-                    while ((uint)index < (uint)annotations.Length && annotations[index] != null)
+                    while ((uint)index < (uint)annotations.Length && annotations[index] is object)
                     {
                         index++;
                     }
@@ -363,7 +358,11 @@ namespace SpanJson.Linq
                         _annotations = annotations;
                     }
                     annotations[index] = annotation;
-                }
+                    break;
+
+                default:
+                    _annotations = new[] { _annotations, annotation };
+                    break;
             }
         }
 
@@ -372,28 +371,24 @@ namespace SpanJson.Linq
         /// <returns>The first annotation object that matches the specified type, or <c>null</c> if no annotation is of the specified type.</returns>
         public T Annotation<T>() where T : class
         {
-            if (_annotations != null)
+            switch (_annotations)
             {
-                if (!(_annotations is object[] annotations))
-                {
-                    return (_annotations as T);
-                }
-                for (int i = 0; i < annotations.Length; i++)
-                {
-                    object annotation = annotations[i];
-                    if (annotation == null)
-                    {
-                        break;
-                    }
+                case null:
+                    return default;
 
-                    if (annotation is T local)
+                case object[] annotations:
+                    for (int i = 0; i < annotations.Length; i++)
                     {
-                        return local;
+                        object annotation = annotations[i];
+
+                        if (annotation is null) { break; }
+                        if (annotation is T local) { return local; }
                     }
-                }
+                    return default;
+
+                default:
+                    return _annotations as T;
             }
-
-            return default;
         }
 
         /// <summary>Gets the first annotation object of the specified type from this <see cref="JToken"/>.</summary>
@@ -401,36 +396,30 @@ namespace SpanJson.Linq
         /// <returns>The first annotation object that matches the specified type, or <c>null</c> if no annotation is of the specified type.</returns>
         public object Annotation(Type type)
         {
-            if (type == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
+            if (type is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
-            if (_annotations != null)
+            switch (_annotations)
             {
-                if (!(_annotations is object[] annotations))
-                {
+                case null:
+                    return null;
+
+                case object[] annotations:
+                    for (int i = 0; i < annotations.Length; i++)
+                    {
+                        object o = annotations[i];
+
+                        if (o is null) { break; }
+                        if (type.IsInstanceOfType(o)) { return o; }
+                    }
+                    return null;
+
+                default:
                     if (type.IsInstanceOfType(_annotations))
                     {
                         return _annotations;
                     }
-                }
-                else
-                {
-                    for (int i = 0; i < annotations.Length; i++)
-                    {
-                        object o = annotations[i];
-                        if (o == null)
-                        {
-                            break;
-                        }
-
-                        if (type.IsInstanceOfType(o))
-                        {
-                            return o;
-                        }
-                    }
-                }
+                    return null;
             }
-
-            return null;
         }
 
         /// <summary>Gets a collection of annotations of the specified type for this <see cref="JToken"/>.</summary>
@@ -438,35 +427,31 @@ namespace SpanJson.Linq
         /// <returns>An <see cref="IEnumerable{T}"/> that contains the annotations for this <see cref="JToken"/>.</returns>
         public IEnumerable<T> Annotations<T>() where T : class
         {
-            if (_annotations == null)
+            switch (_annotations)
             {
-                yield break;
-            }
+                case null:
+                    yield break;
 
-            if (_annotations is object[] annotations)
-            {
-                for (int i = 0; i < annotations.Length; i++)
-                {
-                    object o = annotations[i];
-                    if (o == null)
+                case object[] annotations:
+                    for (int i = 0; i < annotations.Length; i++)
                     {
-                        break;
+                        object o = annotations[i];
+                        if (o is null) { break; }
+
+                        if (o is T casted)
+                        {
+                            yield return casted;
+                        }
                     }
+                    yield break;
 
-                    if (o is T casted)
-                    {
-                        yield return casted;
-                    }
-                }
-                yield break;
+                case T annotation:
+                    yield return annotation;
+                    break;
+
+                default:
+                    yield break;
             }
-
-            if (!(_annotations is T annotation))
-            {
-                yield break;
-            }
-
-            yield return annotation;
         }
 
         /// <summary>Gets a collection of annotations of the specified type for this <see cref="JToken"/>.</summary>
@@ -474,60 +459,51 @@ namespace SpanJson.Linq
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="Object"/> that contains the annotations that match the specified type for this <see cref="JToken"/>.</returns>
         public IEnumerable<object> Annotations(Type type)
         {
-            if (type == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
+            if (type is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
-            if (_annotations == null)
+            switch (_annotations)
             {
-                yield break;
-            }
+                case null:
+                    yield break;
 
-            if (_annotations is object[] annotations)
-            {
-                for (int i = 0; i < annotations.Length; i++)
-                {
-                    object o = annotations[i];
-                    if (o == null)
+                case object[] annotations:
+                    for (int i = 0; i < annotations.Length; i++)
                     {
-                        break;
-                    }
+                        object o = annotations[i];
+                        if (o is null) { break; }
 
-                    if (type.IsInstanceOfType(o))
+                        if (type.IsInstanceOfType(o))
+                        {
+                            yield return o;
+                        }
+                    }
+                    yield break;
+
+                default:
+                    if (type.IsInstanceOfType(_annotations))
                     {
-                        yield return o;
+                        yield return _annotations;
                     }
-                }
-                yield break;
+                    yield break;
             }
-
-            if (!type.IsInstanceOfType(_annotations))
-            {
-                yield break;
-            }
-
-            yield return _annotations;
         }
 
         /// <summary>Removes the annotations of the specified type from this <see cref="JToken"/>.</summary>
         /// <typeparam name="T">The type of annotations to remove.</typeparam>
         public void RemoveAnnotations<T>() where T : class
         {
-            if (_annotations != null)
+            switch (_annotations)
             {
-                if (!(_annotations is object[] annotations))
-                {
-                    if (_annotations is T)
-                    {
-                        _annotations = null;
-                    }
-                }
-                else
-                {
+                case null:
+                    break;
+
+                case object[] annotations:
                     int index = 0;
                     int keepCount = 0;
                     while ((uint)index < (uint)annotations.Length)
                     {
                         object obj2 = annotations[index];
-                        if (obj2 == null)
+                        if (obj2 is null)
                         {
                             break;
                         }
@@ -551,7 +527,11 @@ namespace SpanJson.Linq
                     {
                         _annotations = null;
                     }
-                }
+                    break;
+
+                case T _:
+                    _annotations = null;
+                    break;
             }
         }
 
@@ -559,28 +539,20 @@ namespace SpanJson.Linq
         /// <param name="type">The <see cref="Type"/> of annotations to remove.</param>
         public void RemoveAnnotations(Type type)
         {
-            if (type == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
+            if (type is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.type); }
 
-            if (_annotations != null)
+            switch (_annotations)
             {
-                if (!(_annotations is object[] annotations))
-                {
-                    if (type.IsInstanceOfType(_annotations))
-                    {
-                        _annotations = null;
-                    }
-                }
-                else
-                {
+                case null:
+                    break;
+
+                case object[] annotations:
                     int index = 0;
                     int keepCount = 0;
                     while ((uint)index < (uint)annotations.Length)
                     {
                         object o = annotations[index];
-                        if (o == null)
-                        {
-                            break;
-                        }
+                        if (o is null) { break; }
 
                         if (!type.IsInstanceOfType(o))
                         {
@@ -601,7 +573,14 @@ namespace SpanJson.Linq
                     {
                         _annotations = null;
                     }
-                }
+                    break;
+
+                default:
+                    if (type.IsInstanceOfType(_annotations))
+                    {
+                        _annotations = null;
+                    }
+                    break;
             }
         }
     }

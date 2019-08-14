@@ -27,7 +27,7 @@ namespace SpanJson.Serialization
 
             // Check for Array.
             Type elementType = implementedType.GetElementType();
-            if (elementType != null)
+            if (elementType is object)
             {
                 return elementType;
             }
@@ -64,7 +64,7 @@ namespace SpanJson.Serialization
 
         public static ClassType GetClassType(Type type/*, JsonSerializerOptions options*/)
         {
-            Debug.Assert(type != null);
+            Debug.Assert(type is object);
 
             // We want to handle as the implemented collection type, if applicable.
             Type implementedType = GetImplementedCollectionType(type);

@@ -91,7 +91,7 @@ namespace SpanJson.Linq
 
         public static NJsonSerializerSettings CreateSerializerSettings(Action<NJsonSerializerSettings> configSettings)
         {
-            if (null == configSettings) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.configSettings); }
+            if (configSettings is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.configSettings); }
 
             var serializerSettings = new NJsonSerializerSettings();
             var converters = serializerSettings.Converters;
@@ -105,7 +105,7 @@ namespace SpanJson.Linq
 
         public static NJsonSerializerSettings CreateDeserializerSettings(Action<NJsonSerializerSettings> configSettings)
         {
-            if (null == configSettings) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.configSettings); }
+            if (configSettings is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.configSettings); }
 
             var serializerSettings = new NJsonSerializerSettings();
             var converters = serializerSettings.Converters;

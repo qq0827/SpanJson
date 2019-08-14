@@ -244,7 +244,7 @@ namespace SpanJson.Internal
                 }
                 finally
                 {
-                    if (tempArray != null) { ArrayPool<char>.Shared.Return(tempArray); }
+                    if (tempArray is object) { ArrayPool<char>.Shared.Return(tempArray); }
                 }
             }
         }
@@ -273,7 +273,7 @@ namespace SpanJson.Internal
                 }
                 finally
                 {
-                    if (tempArray != null) { ArrayPool<char>.Shared.Return(tempArray); }
+                    if (tempArray is object) { ArrayPool<char>.Shared.Return(tempArray); }
                 }
             }
         }

@@ -12,7 +12,7 @@
             if (0u >= (uint)alreadyWritten) { return JsonHelpers.Empty<byte>(); }
 
             var borrowedBuffer = _utf8Buffer;
-            if (null == borrowedBuffer) { return JsonHelpers.Empty<byte>(); }
+            if (borrowedBuffer is null) { return JsonHelpers.Empty<byte>(); }
 
             var destination = new byte[alreadyWritten];
             BinaryUtil.CopyMemory(borrowedBuffer, 0, destination, 0, alreadyWritten);

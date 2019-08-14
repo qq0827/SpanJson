@@ -106,7 +106,7 @@ namespace SpanJson.Internal.DoubleConversion
 
         static byte[] GetBuffer()
         {
-            if (kBuffer == null)
+            if (kBuffer is null)
             {
                 kBuffer = new byte[kBufferSize];
             }
@@ -118,7 +118,7 @@ namespace SpanJson.Internal.DoubleConversion
 
         static byte[] GetFallbackBuffer()
         {
-            if (fallbackBuffer == null)
+            if (fallbackBuffer is null)
             {
                 fallbackBuffer = new byte[99];
             }
@@ -295,7 +295,7 @@ namespace SpanJson.Internal.DoubleConversion
                 current = next_non_space;
             }
 
-            if (infinity_symbol_ != null)
+            if (infinity_symbol_ is object)
             {
                 if (ConsumeFirstCharacter(ref current, infinity_symbol_, 0))
                 {
@@ -318,7 +318,7 @@ namespace SpanJson.Internal.DoubleConversion
                 }
             }
 
-            if (nan_symbol_ != null)
+            if (nan_symbol_ is object)
             {
                 if (ConsumeFirstCharacter(ref current, nan_symbol_, 0))
                 {
@@ -600,7 +600,7 @@ namespace SpanJson.Internal.DoubleConversion
                 converted = StringToDouble.Strtof(new Vector(buffer, 0, buffer_pos), exponent);
             }
 
-            if (converted == null)
+            if (converted is null)
             {
                 // read-again
                 processed_characters_count = (current - input);

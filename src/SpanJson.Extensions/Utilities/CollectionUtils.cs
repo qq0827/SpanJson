@@ -35,9 +35,9 @@ namespace SpanJson.Utilities
         /// <param name="collection">The collection of elements to add.</param>
         public static void AddRange<T>(this IList<T> initial, IEnumerable<T> collection)
         {
-            if (initial == null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.initial); }
+            if (initial is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.initial); }
 
-            if (collection == null) { return; }
+            if (collection is null) { return; }
 
             foreach (T value in collection)
             {

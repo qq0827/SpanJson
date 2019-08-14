@@ -97,25 +97,32 @@ namespace SpanJson.Linq
         {
             get
             {
-                if (null == key) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.key); }
-
-                if (!(key is int idx))
+                switch (key)
                 {
-                    throw ThrowHelper2.GetArgumentException_Accessed_JArray_values_with_invalid_key_value(key);
-                }
+                    case null:
+                        throw ThrowHelper.GetArgumentNullException(ExceptionArgument.key);
 
-                return GetItem(idx);
+                    case int idx:
+                        return GetItem(idx);
+
+                    default:
+                        throw ThrowHelper2.GetArgumentException_Accessed_JArray_values_with_invalid_key_value(key);
+                }
             }
             set
             {
-                if (null == key) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.key); }
-
-                if (!(key is int idx))
+                switch (key)
                 {
-                    throw ThrowHelper2.GetArgumentException_Set_JArray_values_with_invalid_key_value(key);
-                }
+                    case null:
+                        throw ThrowHelper.GetArgumentNullException(ExceptionArgument.key);
 
-                SetItem(idx, value);
+                    case int idx:
+                        SetItem(idx, value);
+                        break;
+
+                    default:
+                        throw ThrowHelper2.GetArgumentException_Set_JArray_values_with_invalid_key_value(key);
+                }
             }
         }
 
@@ -144,7 +151,7 @@ namespace SpanJson.Linq
                 a = (IEnumerable)content;
             }
 
-            if (a == null) { return; }
+            if (a is null) { return; }
 
             MergeEnumerableContent(this, a, settings);
         }
@@ -156,7 +163,7 @@ namespace SpanJson.Linq
 
         protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-            if (_dynamicJson != null) { _dynamicJson = null; }
+            if (_dynamicJson is object) { _dynamicJson = null; }
             base.OnCollectionChanged(e);
         }
     }
