@@ -244,7 +244,7 @@ namespace SpanJson.Resolvers
 
         private static bool IsIgnored(MemberInfo memberInfo)
         {
-            return memberInfo.FirstAttribute<IgnoreDataMemberAttribute>() is object;
+            return memberInfo.HasAttribute<IgnoreDataMemberAttribute>() || memberInfo.HasAttributeNamed("JsonIgnore") ? true : false;
         }
 
         private static string GetAttributeName(MemberInfo memberInfo)
