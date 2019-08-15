@@ -14,8 +14,7 @@ namespace SpanJson.Linq
         public new static JArray Parse(byte[] utf8Json)
         {
             var jsonReader = new JsonReader<byte>(utf8Json);
-            var token = ParseCore(ref jsonReader, 0);
-            return AsJArray(token);
+            return Load(ref jsonReader);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -24,8 +23,7 @@ namespace SpanJson.Linq
             if (utf8Json.IsEmpty()) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.utf8Json); }
 
             var jsonReader = new JsonReader<byte>(utf8Json);
-            var token = ParseCore(ref jsonReader, 0);
-            return AsJArray(token);
+            return Load(ref jsonReader);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -34,8 +32,7 @@ namespace SpanJson.Linq
             if (utf8Json.IsEmpty) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.utf8Json); }
 
             var jsonReader = new JsonReader<byte>(utf8Json);
-            var token = ParseCore(ref jsonReader, 0);
-            return AsJArray(token);
+            return Load(ref jsonReader);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -44,8 +41,7 @@ namespace SpanJson.Linq
             if (utf8Json.IsEmpty) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.utf8Json); }
 
             var jsonReader = new JsonReader<byte>(utf8Json);
-            var token = ParseCore(ref jsonReader, 0);
-            return AsJArray(token);
+            return Load(ref jsonReader);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -54,6 +50,21 @@ namespace SpanJson.Linq
             var doc = JsonDocument.Parse(utf8Json, options: JsonDocumentOptions.CreateDefault(), useArrayPools: false);
             var token = FromElement(doc.RootElement);
             return AsJArray(token);
+        }
+
+        public new static JArray Load(ref JsonReader<byte> reader)
+        {
+            var nextToken = reader.ReadUtf8NextToken();
+
+            switch (nextToken)
+            {
+                case JsonTokenType.BeginArray:
+                    return (JArray)ParseCore(ref reader, 0);
+
+                case JsonTokenType.None:
+                default:
+                    throw ThrowHelper2.GetJsonReaderException_Error_reading_JArray_from_JsonReader();
+            }
         }
 
         #endregion
@@ -72,8 +83,7 @@ namespace SpanJson.Linq
         public new static JArray Parse(char[] utf16Json)
         {
             var jsonReader = new JsonReader<char>(utf16Json);
-            var token = ParseCore(ref jsonReader, 0);
-            return AsJArray(token);
+            return Load(ref jsonReader);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -82,8 +92,7 @@ namespace SpanJson.Linq
             if (utf16Json.IsEmpty()) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.utf16Json); }
 
             var jsonReader = new JsonReader<char>(utf16Json);
-            var token = ParseCore(ref jsonReader, 0);
-            return AsJArray(token);
+            return Load(ref jsonReader);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -92,31 +101,31 @@ namespace SpanJson.Linq
             if (utf16Json.IsEmpty) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.utf16Json); }
 
             var jsonReader = new JsonReader<char>(utf16Json);
-            var token = ParseCore(ref jsonReader, 0);
-            return AsJArray(token);
+            return Load(ref jsonReader);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public new static JArray Parse(in ReadOnlySpan<char> utf16Json)
         {
             if (utf16Json.IsEmpty) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.utf16Json); }
 
             var jsonReader = new JsonReader<char>(utf16Json);
-            var token = ParseCore(ref jsonReader, 0);
-            return AsJArray(token);
+            return Load(ref jsonReader);
         }
 
-        #endregion
-
-        #region ** AsJArray **
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static JArray AsJArray(JToken token)
+        public new static JArray Load(ref JsonReader<char> reader)
         {
-            if (token is null || token.Type != JTokenType.Array)
+            var nextToken = reader.ReadUtf16NextToken();
+
+            switch (nextToken)
             {
-                ThrowHelper2.ThrowJsonReaderException_Error_reading_JArray_from_JsonReader();
+                case JsonTokenType.BeginArray:
+                    return (JArray)ParseCore(ref reader, 0);
+
+                case JsonTokenType.None:
+                default:
+                    throw ThrowHelper2.GetJsonReaderException_Error_reading_JArray_from_JsonReader();
             }
-            return (JArray)(token);
         }
 
         #endregion

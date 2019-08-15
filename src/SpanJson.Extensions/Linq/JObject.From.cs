@@ -16,7 +16,7 @@ namespace SpanJson.Linq
         {
             JToken token = FromInternal<T, IncludeNullsOriginalCaseResolver<char>>(input);
 
-            return ToJObject(token);
+            return AsObject(token);
         }
 
         /// <summary>Creates a <see cref="JObject"/> from an object.</summary>
@@ -28,7 +28,7 @@ namespace SpanJson.Linq
         {
             JToken token = FromInternal<T, TResolver>(input);
 
-            return ToJObject(token);
+            return AsObject(token);
         }
 
         /// <summary>Creates a <see cref="JObject"/> from an object.</summary>
@@ -39,7 +39,7 @@ namespace SpanJson.Linq
         {
             JToken token = FromDynamicInternal<IncludeNullsOriginalCaseResolver<char>>(o);
 
-            return ToJObject(token);
+            return AsObject(token);
         }
 
         /// <summary>Creates a <see cref="JObject"/> from an object.</summary>
@@ -51,7 +51,7 @@ namespace SpanJson.Linq
         {
             JToken token = FromDynamicInternal<TResolver>(o);
 
-            return ToJObject(token);
+            return AsObject(token);
         }
 
         /// <summary>Creates a <see cref="JObject"/> from an object.</summary>
@@ -64,7 +64,7 @@ namespace SpanJson.Linq
             {
                 JToken token = FromObjectInternal(o, jsonSerializer);
 
-                return ToJObject(token);
+                return AsObject(token);
             }
             finally
             {
@@ -82,7 +82,7 @@ namespace SpanJson.Linq
             {
                 JToken token = FromObjectInternal(o, jsonSerializer);
 
-                return ToJObject(token);
+                return AsObject(token);
             }
             finally
             {
@@ -98,29 +98,29 @@ namespace SpanJson.Linq
         {
             JToken token = FromObjectInternal(o, jsonSerializer);
 
-            return ToJObject(token);
+            return AsObject(token);
         }
 
         public new static JObject FromDocument(JsonDocument doc)
         {
             JToken token = JToken.FromDocument(doc);
 
-            return ToJObject(token);
+            return AsObject(token);
         }
 
         public new static JObject FromElement(in JsonElement element)
         {
             JToken token = JToken.FromElement(element);
 
-            return ToJObject(token);
+            return AsObject(token);
         }
 
-        #region ** ToJObject **
+        #region == AsObject ==
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static JObject ToJObject(JToken token)
+        internal static JObject AsObject(JToken token)
         {
-            if (token is object && token.Type != JTokenType.Object)
+            if (token is null || token.Type != JTokenType.Object)
             {
                 ThrowHelper2.ThrowArgumentException_Object_serialized_to_JObject_instance_expected(token.Type);
             }

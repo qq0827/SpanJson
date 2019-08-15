@@ -10,14 +10,14 @@ namespace SpanJson.Formatters
         {
             var token = JToken.ParseCore(ref reader, 0);
 
-            return JObject.ToJObject(token);
+            return JObject.AsObject(token);
         }
 
         public override JObject Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
         {
             var token = JToken.ParseCore(ref reader, 0);
 
-            return JObject.ToJObject(token);
+            return JObject.AsObject(token);
         }
     }
 

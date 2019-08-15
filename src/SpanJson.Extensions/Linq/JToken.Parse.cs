@@ -54,6 +54,12 @@ namespace SpanJson.Linq
             return FromElement(doc.RootElement);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static JToken Load(ref JsonReader<byte> reader)
+        {
+            return ParseCore(ref reader, 0);
+        }
+
         internal protected static JToken ParseCore(ref JsonReader<byte> reader, int stack)
         {
             ref var pos = ref reader._pos;
@@ -203,12 +209,19 @@ namespace SpanJson.Linq
             return ParseCore(ref jsonReader, 0);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static JToken Parse(in ReadOnlySpan<char> json)
         {
             if (json.IsEmpty) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.json); }
 
             var jsonReader = new JsonReader<char>(json);
             return ParseCore(ref jsonReader, 0);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static JToken Load(ref JsonReader<char> reader)
+        {
+            return ParseCore(ref reader, 0);
         }
 
         internal protected static JToken ParseCore(ref JsonReader<char> reader, int stack)

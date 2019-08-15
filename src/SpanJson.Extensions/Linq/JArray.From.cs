@@ -16,7 +16,7 @@ namespace SpanJson.Linq
         {
             JToken token = FromInternal<T, IncludeNullsOriginalCaseResolver<char>>(input);
 
-            return ToJArray(token);
+            return AsJArray(token);
         }
 
         /// <summary>Creates a <see cref="JArray"/> from an object.</summary>
@@ -28,7 +28,7 @@ namespace SpanJson.Linq
         {
             JToken token = FromInternal<T, TResolver>(input);
 
-            return ToJArray(token);
+            return AsJArray(token);
         }
 
         /// <summary>Creates a <see cref="JArray"/> from an object.</summary>
@@ -39,7 +39,7 @@ namespace SpanJson.Linq
         {
             JToken token = FromDynamicInternal<IncludeNullsOriginalCaseResolver<char>>(o);
 
-            return ToJArray(token);
+            return AsJArray(token);
         }
 
         /// <summary>Creates a <see cref="JArray"/> from an object.</summary>
@@ -51,7 +51,7 @@ namespace SpanJson.Linq
         {
             JToken token = FromDynamicInternal<TResolver>(o);
 
-            return ToJArray(token);
+            return AsJArray(token);
         }
 
         /// <summary>Creates a <see cref="JArray"/> from an object.</summary>
@@ -64,7 +64,7 @@ namespace SpanJson.Linq
             {
                 JToken token = FromObjectInternal(o, jsonSerializer);
 
-                return ToJArray(token);
+                return AsJArray(token);
             }
             finally
             {
@@ -82,7 +82,7 @@ namespace SpanJson.Linq
             {
                 JToken token = FromObjectInternal(o, jsonSerializer);
 
-                return ToJArray(token);
+                return AsJArray(token);
             }
             finally
             {
@@ -98,29 +98,29 @@ namespace SpanJson.Linq
         {
             JToken token = FromObjectInternal(o, jsonSerializer);
 
-            return ToJArray(token);
+            return AsJArray(token);
         }
 
         public new static JArray FromDocument(JsonDocument doc)
         {
             JToken token = JToken.FromDocument(doc);
 
-            return ToJArray(token);
+            return AsJArray(token);
         }
 
         public new static JArray FromElement(in JsonElement element)
         {
             JToken token = JToken.FromElement(element);
 
-            return ToJArray(token);
+            return AsJArray(token);
         }
 
-        #region ** ToJArray **
+        #region == AsJArray ==
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static JArray ToJArray(JToken token)
+        internal static JArray AsJArray(JToken token)
         {
-            if (token.Type != JTokenType.Array)
+            if (token is null || token.Type != JTokenType.Array)
             {
                 ThrowHelper2.ThrowArgumentException_Object_serialized_to_JArray_instance_expected(token.Type);
             }

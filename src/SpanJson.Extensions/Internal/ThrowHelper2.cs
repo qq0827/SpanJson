@@ -369,23 +369,15 @@ namespace SpanJson
         #region -- JsonReaderException --
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        internal static void ThrowJsonReaderException_Error_reading_JArray_from_JsonReader()
+        internal static JsonReaderException GetJsonReaderException_Error_reading_JArray_from_JsonReader()
         {
-            throw GetJsonReaderException();
-            JsonReaderException GetJsonReaderException()
-            {
-                return new JsonReaderException("Error reading JArray from JsonReader.");
-            }
+            return new JsonReaderException("Error reading JArray from JsonReader.");
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        internal static void ThrowJsonReaderException_Error_reading_JObject_from_JsonReader()
+        internal static JsonReaderException GetJsonReaderException_Error_reading_JObject_from_JsonReader()
         {
-            throw GetJsonReaderException();
-            JsonReaderException GetJsonReaderException()
-            {
-                return new JsonReaderException("Error reading JObject from JsonReader.");
-            }
+            return new JsonReaderException("Error reading JObject from JsonReader.");
         }
 
         #endregion
