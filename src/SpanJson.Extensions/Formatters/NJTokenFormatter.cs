@@ -1,4 +1,5 @@
-﻿using NJArray = Newtonsoft.Json.Linq.JArray;
+﻿using SpanJson.Linq;
+using NJArray = Newtonsoft.Json.Linq.JArray;
 using NJProperty = Newtonsoft.Json.Linq.JProperty;
 using NJObject = Newtonsoft.Json.Linq.JObject;
 using NJToken = Newtonsoft.Json.Linq.JToken;
@@ -10,6 +11,18 @@ namespace SpanJson.Formatters
     public sealed class NJTokenFormatter : JTokenFormatterBase<NJToken>
     {
         public static readonly NJTokenFormatter Default = new NJTokenFormatter();
+
+        public override NJToken Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
+        {
+            var token = JToken.Load(ref reader);
+            return token.ToPolymorphicObject<NJToken>();
+        }
+
+        public override NJToken Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
+        {
+            var token = JToken.Load(ref reader);
+            return token.ToPolymorphicObject<NJToken>();
+        }
 
         public override void Serialize(ref JsonWriter<byte> writer, NJToken value, IJsonFormatterResolver<byte> resolver)
         {

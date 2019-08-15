@@ -224,7 +224,7 @@ namespace SpanJson.Internal
             byte[] decodedBytes = new byte[resultLength];
 
             // Convert Base64 chars into bytes:
-            if (!TryFromBase64Chars(new ReadOnlySpan<char>(inputPtr, inputLength), decodedBytes, out int _))
+            if (!TryFromBase64Chars(new ReadOnlySpan<char>(inputPtr, inputLength), decodedBytes, out _))
             {
                 ThrowHelper.ThrowFormatException_BadBase64Char();
             }

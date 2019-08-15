@@ -8,16 +8,12 @@ namespace SpanJson.Formatters
 
         public override JObject Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
         {
-            var token = JToken.ParseCore(ref reader, 0);
-
-            return JObject.AsObject(token);
+            return JObject.Load(ref reader);
         }
 
         public override JObject Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
         {
-            var token = JToken.ParseCore(ref reader, 0);
-
-            return JObject.AsObject(token);
+            return JObject.Load(ref reader);
         }
     }
 

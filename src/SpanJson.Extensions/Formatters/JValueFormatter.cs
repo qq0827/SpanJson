@@ -3,7 +3,28 @@ using SpanJson.Internal;
 
 namespace SpanJson.Formatters
 {
-    public sealed class JValueFormatter<TValue> : JTokenFormatterBase<TValue>
+    public sealed class JValueFormatter : JValueFormatter<JValue>
+    {
+        public new static readonly JValueFormatter Default = new JValueFormatter();
+
+        public override JValue Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
+        {
+            var token = JToken.ParseCore(ref reader, 0);
+            if (token is JValue jv) { return jv; }
+
+            throw ThrowHelper2.GetJsonReaderException_Error_reading_JValue_from_JsonReader();
+        }
+
+        public override JValue Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
+        {
+            var token = JToken.ParseCore(ref reader, 0);
+            if (token is JValue jv) { return jv; }
+
+            throw ThrowHelper2.GetJsonReaderException_Error_reading_JValue_from_JsonReader();
+        }
+    }
+
+    public class JValueFormatter<TValue> : JTokenFormatterBase<TValue>
         where TValue : JValue
     {
         public static readonly JValueFormatter<TValue> Default = new JValueFormatter<TValue>();

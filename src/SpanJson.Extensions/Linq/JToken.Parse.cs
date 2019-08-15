@@ -73,7 +73,7 @@ namespace SpanJson.Linq
             {
                 case JsonTokenType.Null:
                     reader.ReadUtf8Null();
-                    return null;
+                    return JValue.CreateNull();
 
                 case JsonTokenType.False:
                 case JsonTokenType.True:
@@ -109,7 +109,8 @@ namespace SpanJson.Linq
                         var jObj = new JObject();
                         while (!reader.TryReadUtf8IsEndObjectOrValueSeparator(ref count))
                         {
-                            var name = reader.ReadUtf8EscapedName();
+                            var escapedUtf8Source = reader.ReadUtf8VerbatimNameSpan(out int idx);
+                            var name = EscapingHelper.GetUnescapedTextFromUtf8WithCache(escapedUtf8Source, idx);
                             var token = ParseCore(ref reader, stack + 1);
                             jObj[name] = token; // take last one
                         }
@@ -237,7 +238,7 @@ namespace SpanJson.Linq
             {
                 case JsonTokenType.Null:
                     reader.ReadUtf16Null();
-                    return null;
+                    return JValue.CreateNull();
 
                 case JsonTokenType.False:
                 case JsonTokenType.True:
@@ -273,7 +274,8 @@ namespace SpanJson.Linq
                         var jObj = new JObject();
                         while (!reader.TryReadUtf16IsEndObjectOrValueSeparator(ref count))
                         {
-                            var name = reader.ReadUtf16EscapedName();
+                            var escapedUtf16Source = reader.ReadUtf16VerbatimNameSpan(out int escapedCharSize);
+                            var name = EscapingHelper.GetUnescapedTextFromUtf16WithCache(escapedUtf16Source, escapedCharSize);
                             var token = ParseCore(ref reader, stack + 1);
                             jObj[name] = token; // take last one
                         }

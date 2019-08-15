@@ -923,27 +923,19 @@
             public static string GetStringWithCache(in ReadOnlySpan<byte> utf8Source)
             {
                 if (utf8Source.IsEmpty) { return string.Empty; }
-                if (!s_stringCache.TryGetValue(utf8Source, out var value))
-                {
-                    GetStringWithCacheSlow(utf8Source, out value);
-                }
-                return value;
+
+                if (s_stringCache.TryGetValue(utf8Source, out var value)) { return value; }
+
+                return GetStringWithCacheSlow(utf8Source);
             }
 
             [MethodImpl(MethodImplOptions.NoInlining)]
-            private static void GetStringWithCacheSlow(in ReadOnlySpan<byte> utf8Source, out string value)
+            private static string GetStringWithCacheSlow(in ReadOnlySpan<byte> utf8Source)
             {
-                if (utf8Source.IsEmpty)
-                {
-                    value = string.Empty;
-                    s_stringCache.TryAdd(JsonHelpers.Empty<byte>(), value);
-                }
-                else
-                {
-                    var buffer = utf8Source.ToArray();
-                    value = UTF8NoBOM.GetString(buffer);
-                    s_stringCache.TryAdd(buffer, value);
-                }
+                var buffer = utf8Source.ToArray();
+                var value = UTF8NoBOM.GetString(buffer);
+                s_stringCache.TryAdd(buffer, value);
+                return value;
             }
         }
     }

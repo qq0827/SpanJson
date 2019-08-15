@@ -1,10 +1,33 @@
 ﻿using SpanJson.Internal;
+using SpanJson.Linq;
 using NJTokenType = Newtonsoft.Json.Linq.JTokenType;
+using NJValue = Newtonsoft.Json.Linq.JValue;
 
 namespace SpanJson.Formatters
 {
-    public sealed class NJValueFormatter<TValue> : JTokenFormatterBase<TValue>
-        where TValue : Newtonsoft.Json.Linq.JValue
+    public sealed class NJValueFormatter : NJValueFormatter<NJValue>
+    {
+        public new static readonly NJValueFormatter Default = new NJValueFormatter();
+
+        public override NJValue Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
+        {
+            var token = JToken.ParseCore(ref reader, 0);
+            if (token is JValue jv) { return jv.ToPolymorphicObject<NJValue>(); }
+
+            throw ThrowHelper2.GetJsonReaderException_Error_reading_JValue_from_JsonReader();
+        }
+
+        public override NJValue Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
+        {
+            var token = JToken.ParseCore(ref reader, 0);
+            if (token is JValue jv) { return jv.ToPolymorphicObject<NJValue>(); }
+
+            throw ThrowHelper2.GetJsonReaderException_Error_reading_JValue_from_JsonReader();
+        }
+    }
+
+    public class NJValueFormatter<TValue> : JTokenFormatterBase<TValue>
+        where TValue : NJValue
     {
         public static readonly NJValueFormatter<TValue> Default = new NJValueFormatter<TValue>();
 

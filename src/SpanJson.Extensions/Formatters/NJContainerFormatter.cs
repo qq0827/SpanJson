@@ -1,4 +1,5 @@
-﻿using NJArray = Newtonsoft.Json.Linq.JArray;
+﻿using SpanJson.Linq;
+using NJArray = Newtonsoft.Json.Linq.JArray;
 using NJContainer = Newtonsoft.Json.Linq.JContainer;
 using NJProperty = Newtonsoft.Json.Linq.JProperty;
 using NJObject = Newtonsoft.Json.Linq.JObject;
@@ -9,6 +10,34 @@ namespace SpanJson.Formatters
     public sealed class NJContainerFormatter : JTokenFormatterBase<NJContainer>
     {
         public static readonly NJContainerFormatter Default = new NJContainerFormatter();
+
+        public override NJContainer Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
+        {
+            var token = JToken.Load(ref reader);
+            switch (token.Type)
+            {
+                case JTokenType.Object:
+                case JTokenType.Array:
+                    return token.ToPolymorphicObject<NJContainer>();
+
+                default:
+                    throw ThrowHelper2.GetJsonReaderException_Error_reading_JContainer_from_JsonReader();
+            }
+        }
+
+        public override NJContainer Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
+        {
+            var token = JToken.Load(ref reader);
+            switch (token.Type)
+            {
+                case JTokenType.Object:
+                case JTokenType.Array:
+                    return token.ToPolymorphicObject<NJContainer>();
+
+                default:
+                    throw ThrowHelper2.GetJsonReaderException_Error_reading_JContainer_from_JsonReader();
+            }
+        }
 
         public override void Serialize(ref JsonWriter<byte> writer, NJContainer value, IJsonFormatterResolver<byte> resolver)
         {

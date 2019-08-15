@@ -1,7 +1,27 @@
-﻿namespace SpanJson.Formatters
+﻿using SpanJson.Linq;
+using NJArray = Newtonsoft.Json.Linq.JArray;
+
+namespace SpanJson.Formatters
 {
+    public sealed class NJArrayFormatter : NJArrayFormatter<NJArray>
+    {
+        public new static readonly NJArrayFormatter Default = new NJArrayFormatter();
+
+        public override NJArray Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
+        {
+             var jary = JArray.Load(ref reader);
+            return jary.ToPolymorphicObject<NJArray>();
+        }
+
+        public override NJArray Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
+        {
+            var jary = JArray.Load(ref reader);
+            return jary.ToPolymorphicObject<NJArray>();
+        }
+    }
+
     public class NJArrayFormatter<TArray> : JTokenFormatterBase<TArray>
-        where TArray : Newtonsoft.Json.Linq.JArray, new()
+        where TArray : NJArray, new()
     {
         public static readonly NJArrayFormatter<TArray> Default = new NJArrayFormatter<TArray>();
 

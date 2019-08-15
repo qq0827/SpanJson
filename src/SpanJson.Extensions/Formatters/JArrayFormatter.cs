@@ -8,18 +8,13 @@ namespace SpanJson.Formatters
 
         public override JArray Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
         {
-            var token = JToken.ParseCore(ref reader, 0);
-
-            return JArray.AsJArray(token);
+            return JArray.Load(ref reader);
         }
 
         public override JArray Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
         {
-            var token = JToken.ParseCore(ref reader, 0);
-
-            return JArray.AsJArray(token);
+            return JArray.Load(ref reader);
         }
-
     }
 
     public class JArrayFormatter<TArray> : JTokenFormatterBase<TArray>

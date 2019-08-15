@@ -6,6 +6,16 @@ namespace SpanJson.Formatters
     {
         public static readonly JTokenFormatter Default = new JTokenFormatter();
 
+        public override JToken Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
+        {
+            return JToken.ParseCore(ref reader, 0);
+        }
+
+        public override JToken Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
+        {
+            return JToken.ParseCore(ref reader, 0);
+        }
+
         public override void Serialize(ref JsonWriter<byte> writer, JToken value, IJsonFormatterResolver<byte> resolver)
         {
             if (value is null) { return; }

@@ -506,16 +506,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string ReadUtf16EscapedName()
         {
-            ref var pos = ref _pos;
-            ref var cStart = ref MemoryMarshal.GetReference(_utf16Span);
-            SkipWhitespaceUtf16(ref cStart, ref pos, _length);
-            var span = ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out var escapedCharsSize);
-            var currentChar = SkipWhitespaceUtf16(ref cStart, ref pos, _length);
-            pos++;
-            if (currentChar != JsonUtf16Constant.NameSeparator)
-            {
-                ThrowHelper.ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, pos);
-            }
+            var span = ReadUtf16VerbatimNameSpan(out int escapedCharsSize);
 
             return 0u >= (uint)escapedCharsSize ? span.ToString() : UnescapeUtf16(span, escapedCharsSize);
         }
@@ -523,16 +514,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySpan<char> ReadUtf16EscapedNameSpan()
         {
-            ref var pos = ref _pos;
-            ref var cStart = ref MemoryMarshal.GetReference(_utf16Span);
-            SkipWhitespaceUtf16(ref cStart, ref pos, _length);
-            var span = ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out var escapedCharsSize);
-            var currentChar = SkipWhitespaceUtf16(ref cStart, ref pos, _length);
-            pos++;
-            if (currentChar != JsonUtf16Constant.NameSeparator)
-            {
-                ThrowHelper.ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, pos);
-            }
+            var span = ReadUtf16VerbatimNameSpan(out int escapedCharsSize);
 
 #if NETSTANDARD2_0 || NET471 || NET451
             return 0u >= (uint)escapedCharsSize ? span : UnescapeUtf16(span, escapedCharsSize).AsSpan();
@@ -544,10 +526,15 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySpan<char> ReadUtf16VerbatimNameSpan()
         {
+            return ReadUtf16VerbatimNameSpan(out _);
+        }
+
+        public ReadOnlySpan<char> ReadUtf16VerbatimNameSpan(out int escapedCharsSize)
+        {
             ref var pos = ref _pos;
             ref var cStart = ref MemoryMarshal.GetReference(_utf16Span);
             SkipWhitespaceUtf16(ref cStart, ref pos, _length);
-            var span = ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out _);
+            var span = ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out escapedCharsSize);
             var currentChar = SkipWhitespaceUtf16(ref cStart, ref pos, _length);
             pos++;
             if (currentChar != JsonUtf16Constant.NameSeparator)
@@ -602,42 +589,44 @@ namespace SpanJson
                 return null;
             }
 
-            var span = ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out var escapedCharSize);
-            return escapedCharSize == 0 ? span.ToString() : UnescapeUtf16(span, escapedCharSize);
+            var span = ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out int escapedCharSize);
+
+            return 0u >= (uint)escapedCharSize ? span.ToString() : UnescapeUtf16(span, escapedCharSize);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySpan<char> ReadUtf16StringSpan()
         {
-            ref var pos = ref _pos;
-            ref var cStart = ref MemoryMarshal.GetReference(_utf16Span);
-            if (ReadUtf16IsNullInternal(ref cStart, ref pos, _length))
-            {
-                return default/*JsonUtf16Constant.NullTerminator*/;
-            }
+            var span = ReadUtf16VerbatimStringSpan(out int escapedCharSize);
 
-            var span = ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out var escapedCharSize);
 #if NETSTANDARD2_0 || NET471 || NET451
-            return escapedCharSize == 0 ? span : UnescapeUtf16(span, escapedCharSize).AsSpan();
+            return 0u >= (uint)escapedCharSize ? span : UnescapeUtf16(span, escapedCharSize).AsSpan();
 #else
-            return escapedCharSize == 0 ? span : UnescapeUtf16(span, escapedCharSize);
+            return 0u >= (uint)escapedCharSize ? span : UnescapeUtf16(span, escapedCharSize);
 #endif
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySpan<char> ReadUtf16VerbatimStringSpan()
         {
+            return ReadUtf16VerbatimStringSpan(out _);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<char> ReadUtf16VerbatimStringSpan(out int escapedCharSize)
+        {
             ref var pos = ref _pos;
             ref var cStart = ref MemoryMarshal.GetReference(_utf16Span);
             if (ReadUtf16IsNullInternal(ref cStart, ref pos, _length))
             {
+                escapedCharSize = 0;
                 return default/*JsonUtf16Constant.NullTerminator*/;
             }
 
-            return ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out var escapedCharSize);
+            return ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out escapedCharSize);
         }
 
-        private static
+        internal static
 #if NETSTANDARD2_0 || NET471 || NET451
             unsafe
 #endif
@@ -1411,7 +1400,7 @@ namespace SpanJson
                             }
 
                             object[] result;
-                            if (count == 0)
+                            if (0u >= (uint)count)
                             {
                                 result = JsonHelpers.Empty<object>();
                             }

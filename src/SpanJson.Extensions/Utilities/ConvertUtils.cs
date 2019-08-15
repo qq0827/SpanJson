@@ -87,9 +87,8 @@ namespace SpanJson.Utilities
 
         CombGuid = 100,
         CombGuidNullable = 101,
-        //JsonString = 102,
-        //JsonNumber = 103,
-        //JsonRaw = 104,
+
+        JToken = 102,
     }
 
     #endregion
@@ -142,11 +141,14 @@ namespace SpanJson.Utilities
 
                 { typeof(CombGuid), PrimitiveTypeCode.CombGuid },
                 { typeof(CombGuid?), PrimitiveTypeCode.CombGuidNullable },
-                //{ typeof(SpanJsonDynamicUtf16String), PrimitiveTypeCode.JsonString },
-                //{ typeof(SpanJsonDynamicUtf8String), PrimitiveTypeCode.JsonString },
-                //{ typeof(SpanJsonDynamicUtf16Number), PrimitiveTypeCode.JsonNumber },
-                //{ typeof(SpanJsonDynamicUtf8Number), PrimitiveTypeCode.JsonNumber },
-                //{ typeof(JsonElement), PrimitiveTypeCode.JsonRaw },
+
+                { typeof(SpanJson.Linq.JToken), PrimitiveTypeCode.JToken },
+                { typeof(SpanJson.Linq.JContainer), PrimitiveTypeCode.JToken },
+                { typeof(SpanJson.Linq.JObject), PrimitiveTypeCode.JToken },
+                { typeof(SpanJson.Linq.JArray), PrimitiveTypeCode.JToken },
+                { typeof(SpanJson.Linq.JProperty), PrimitiveTypeCode.JToken },
+                { typeof(SpanJson.Linq.JValue), PrimitiveTypeCode.JToken },
+                { typeof(SpanJson.Linq.JRaw), PrimitiveTypeCode.JToken },
             };
 
         internal static PrimitiveTypeCode GetTypeCode(Type t)

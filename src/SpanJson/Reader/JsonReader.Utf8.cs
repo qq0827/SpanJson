@@ -483,16 +483,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string ReadUtf8EscapedName()
         {
-            ref var pos = ref _pos;
-            ref byte bStart = ref MemoryMarshal.GetReference(_utf8Span);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
-            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out var backslashIdx);
-            var currentByte = SkipWhitespaceUtf8(ref bStart, ref pos, _length);
-            pos++;
-            if (currentByte != JsonUtf8Constant.NameSeparator)
-            {
-                ThrowHelper.ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, pos);
-            }
+            var span = ReadUtf8VerbatimNameSpan(out int backslashIdx);
 
             return (uint)backslashIdx > JsonSharedConstant.TooBigOrNegative
                 ? TextEncodings.Utf8.GetString(span)
@@ -502,16 +493,8 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySpan<byte> ReadUtf8EscapedNameSpan()
         {
-            ref var pos = ref _pos;
-            ref byte bStart = ref MemoryMarshal.GetReference(_utf8Span);
-            SkipWhitespaceUtf8(ref bStart, ref pos, _length);
-            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out var backslashIdx);
-            var currentByte = SkipWhitespaceUtf8(ref bStart, ref pos, _length);
-            pos++;
-            if (currentByte != JsonUtf8Constant.NameSeparator)
-            {
-                ThrowHelper.ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote, pos);
-            }
+            var span = ReadUtf8VerbatimNameSpan(out int backslashIdx);
+
             return (uint)backslashIdx > JsonSharedConstant.TooBigOrNegative ? span : UnescapeUtf8Bytes(span, backslashIdx);
         }
 
@@ -521,7 +504,6 @@ namespace SpanJson
             return ReadUtf8VerbatimNameSpan(out _);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySpan<byte> ReadUtf8VerbatimNameSpan(out int backslashIdx)
         {
             ref var pos = ref _pos;
@@ -549,7 +531,7 @@ namespace SpanJson
             }
 
             byte[] bytes;
-            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out var backslashIdx);
+            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out int backslashIdx);
             var result = (uint)backslashIdx > JsonSharedConstant.TooBigOrNegative
                  ? JsonReaderHelper.TryDecodeBase64(span, out bytes)
                 : JsonReaderHelper.TryGetUnescapedBase64Bytes(span, backslashIdx, out bytes);
@@ -566,7 +548,8 @@ namespace SpanJson
                 return null;
             }
 
-            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out var backslashIdx);
+            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out int backslashIdx);
+
             return (uint)backslashIdx > JsonSharedConstant.TooBigOrNegative
                 ? TextEncodings.Utf8.GetString(span)
                 : JsonReaderHelper.GetUnescapedString(span, backslashIdx);
@@ -575,14 +558,8 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySpan<byte> ReadUtf8StringSpan()
         {
-            ref var pos = ref _pos;
-            ref byte bStart = ref MemoryMarshal.GetReference(_utf8Span);
-            if (ReadUtf8IsNullInternal(ref bStart, ref pos, _length))
-            {
-                return default/*JsonUtf8Constant.NullTerminator*/;
-            }
+            var span = ReadUtf8VerbatimStringSpan(out int backslashIdx);
 
-            var span = ReadUtf8StringSpanInternal(ref bStart, ref pos, _length, out var backslashIdx);
             return (uint)backslashIdx > JsonSharedConstant.TooBigOrNegative ? span : UnescapeUtf8Bytes(span, backslashIdx);
         }
 
@@ -592,7 +569,6 @@ namespace SpanJson
             return ReadUtf8VerbatimStringSpan(out _);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySpan<byte> ReadUtf8VerbatimStringSpan(out int backslashIdx)
         {
             ref var pos = ref _pos;

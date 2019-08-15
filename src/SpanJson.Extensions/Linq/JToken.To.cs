@@ -327,6 +327,9 @@ namespace SpanJson.Linq
                 case PrimitiveTypeCode.BigInteger:
                     result = ToBigInteger(this);
                     return true;
+                case PrimitiveTypeCode.JToken:
+                    result = this;
+                    return true;
                 default:
                     result = null;
                     return false;

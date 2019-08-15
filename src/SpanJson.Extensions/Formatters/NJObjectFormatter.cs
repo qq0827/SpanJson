@@ -1,7 +1,27 @@
-﻿namespace SpanJson.Formatters
+﻿using SpanJson.Linq;
+using NJObject = Newtonsoft.Json.Linq.JObject;
+
+namespace SpanJson.Formatters
 {
+    public sealed class NJObjectFormatter : NJObjectFormatter<NJObject>
+    {
+        public new static readonly NJObjectFormatter Default = new NJObjectFormatter();
+
+        public override NJObject Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
+        {
+            var jobj = JObject.Load(ref reader);
+            return jobj.ToPolymorphicObject<NJObject>();
+        }
+
+        public override NJObject Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
+        {
+            var jobj = JObject.Load(ref reader);
+            return jobj.ToPolymorphicObject<NJObject>();
+        }
+    }
+
     public class NJObjectFormatter<TObject> : JTokenFormatterBase<TObject>
-        where TObject : Newtonsoft.Json.Linq.JObject, new()
+        where TObject : NJObject, new()
     {
         public static readonly NJObjectFormatter<TObject> Default = new NJObjectFormatter<TObject>();
 

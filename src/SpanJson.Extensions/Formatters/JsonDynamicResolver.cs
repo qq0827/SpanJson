@@ -4,9 +4,11 @@ using System.Reflection;
 using SpanJson.Document;
 using SpanJson.Dynamic;
 using SpanJson.Linq;
+using NJToken = Newtonsoft.Json.Linq.JToken;
+using NJContainer = Newtonsoft.Json.Linq.JContainer;
+using NJObject = Newtonsoft.Json.Linq.JObject;
 using NJArray = Newtonsoft.Json.Linq.JArray;
 using NJProperty = Newtonsoft.Json.Linq.JProperty;
-using NJObject = Newtonsoft.Json.Linq.JObject;
 using NJRaw = Newtonsoft.Json.Linq.JRaw;
 using NJValue = Newtonsoft.Json.Linq.JValue;
 
@@ -133,6 +135,13 @@ namespace SpanJson.Formatters
             { typeof(JContainer), JContainerFormatter.Default },
             { typeof(JObject), JObjectFormatter.Default },
             { typeof(JArray), JArrayFormatter.Default },
+            { typeof(JValue), JValueFormatter.Default },
+
+            { typeof(NJToken), NJTokenFormatter.Default },
+            { typeof(NJContainer), NJContainerFormatter.Default },
+            { typeof(NJObject), NJObjectFormatter.Default },
+            { typeof(NJArray), NJArrayFormatter.Default },
+            { typeof(NJValue), NJValueFormatter.Default },
         };
     }
 }

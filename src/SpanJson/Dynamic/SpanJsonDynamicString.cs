@@ -68,7 +68,7 @@ namespace SpanJson.Dynamic
                         string data;
                         if ((uint)Unsafe.SizeOf<TSymbol>() == JsonSharedConstant.ByteSize)
                         {
-                            data = TextEncodings.Utf8.GetStringWithCache(reader.ReadUtf8StringSpan());
+                            data = TextEncodings.Utf8.GetStringWithCache(reader.ReadUtf8StringSpan()); // Eunm 基本不需要Json转义
                         }
                         else
                         {

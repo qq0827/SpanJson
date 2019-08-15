@@ -380,6 +380,18 @@ namespace SpanJson
             return new JsonReaderException("Error reading JObject from JsonReader.");
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static JsonReaderException GetJsonReaderException_Error_reading_JContainer_from_JsonReader()
+        {
+            return new JsonReaderException("Error reading JContainer from JsonReader.");
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static JsonReaderException GetJsonReaderException_Error_reading_JValue_from_JsonReader()
+        {
+            return new JsonReaderException("Error reading JValue from JsonReader.");
+        }
+
         #endregion
 
         #region -- JsonException --

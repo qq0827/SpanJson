@@ -6,6 +6,34 @@ namespace SpanJson.Formatters
     {
         public static readonly JContainerFormatter Default = new JContainerFormatter();
 
+        public override JContainer Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
+        {
+            var token = JToken.ParseCore(ref reader, 0);
+            switch (token.Type)
+            {
+                case JTokenType.Object:
+                case JTokenType.Array:
+                    return (JContainer)token;
+
+                default:
+                    throw ThrowHelper2.GetJsonReaderException_Error_reading_JContainer_from_JsonReader();
+            }
+        }
+
+        public override JContainer Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
+        {
+            var token = JToken.ParseCore(ref reader, 0);
+            switch (token.Type)
+            {
+                case JTokenType.Object:
+                case JTokenType.Array:
+                    return (JContainer)token;
+
+                default:
+                    throw ThrowHelper2.GetJsonReaderException_Error_reading_JContainer_from_JsonReader();
+            }
+        }
+
         public override void Serialize(ref JsonWriter<byte> writer, JContainer value, IJsonFormatterResolver<byte> resolver)
         {
             if (value is null) { return; }
