@@ -142,7 +142,7 @@ namespace SpanJson.Tests
 
             StringAssert.AreEqual(@"{
   ""Value"": 18446744073709551615
-}", output.PrettyPrint());
+}", output.ToString());
         }
 
         public class TestClass_Byte
@@ -158,7 +158,7 @@ namespace SpanJson.Tests
 
             StringAssert.AreEqual(@"{
   ""Value"": 255
-}", output.PrettyPrint());
+}", output.ToString());
         }
 
         [Test]
@@ -435,7 +435,7 @@ namespace SpanJson.Tests
             {
                 StringAssert.AreEqual(@"{
   ""name"": ""value!""
-}", friend.PrettyPrint());
+}", friend.ToString());
             }
         }
 
@@ -652,24 +652,24 @@ keyword such as type of business.""
     ""DVD read/writer"",
     ""500 gigabyte hard drive""
   ]
-}", o.PrettyPrint());
+}", o.ToString());
 
             JArray list = o.Value<JArray>("Drives");
 
             StringAssert.AreEqual(@"[
   ""DVD read/writer"",
   ""500 gigabyte hard drive""
-]", list.PrettyPrint());
+]", list.ToString());
 
             JProperty cpuProperty = o.Property("CPU");
-            Assert.AreEqual(@"""CPU"":""Intel""", cpuProperty.ToString());
+            Assert.AreEqual(@"""CPU"": ""Intel""", cpuProperty.ToString());
 
             JProperty drivesProperty = o.Property("Drives");
-            StringAssert.AreEqual(@"""Drives"":[""DVD read/writer"",""500 gigabyte hard drive""]", drivesProperty.ToString());
+            StringAssert.AreEqual(@"""Drives"":[""DVD read/writer"",""500 gigabyte hard drive""]", drivesProperty.ToString(false));
             StringAssert.AreEqual(@"""Drives"": [
   ""DVD read/writer"",
   ""500 gigabyte hard drive""
-]", drivesProperty.PrettyPrint());
+]", drivesProperty.ToString());
         }
 
         [Test]
@@ -679,9 +679,9 @@ keyword such as type of business.""
 
             JObject o = JObject.Parse(json);
 
-            Assert.AreEqual(@"""Width"":1.1", o.Property("Width").ToString());
+            Assert.AreEqual(@"""Width"": 1.1", o.Property("Width").ToString());
             Assert.AreEqual(@"1.1", ((JValue)o.Property("Width").Value).ToString(CultureInfo.InvariantCulture));
-            Assert.AreEqual(@"""Open"":false", o.Property("Open").ToString());
+            Assert.AreEqual(@"""Open"": false", o.Property("Open").ToString());
             Assert.AreEqual(@"False", o.Property("Open").Value.ToString());
 
             json = @"[null,""undefined""]";
@@ -690,7 +690,7 @@ keyword such as type of business.""
             StringAssert.AreEqual(@"[
   null,
   ""undefined""
-]", a.PrettyPrint());
+]", a.ToString());
             Assert.AreEqual(@"", a.Children().ElementAt(0).ToString());
             Assert.AreEqual(@"undefined", a.Children().ElementAt(1).ToString());
         }
@@ -713,7 +713,7 @@ keyword such as type of business.""
   ""Test2"": ""Test2Value"",
   ""Test3"": ""Test3Value"",
   ""Test4"": null
-}", o.PrettyPrint());
+}", o.ToString());
 
             JArray a =
                 new JArray(
@@ -747,10 +747,10 @@ keyword such as type of business.""
   [
     ""1"",
     2,
-    3,
+    3.0,
     ""0004-05-06T07:08:09Z""
   ]
-]", a.PrettyPrint());
+]", a.ToString());
         }
 
         private class Post
@@ -799,7 +799,7 @@ keyword such as type of business.""
 
             o["Title"] = o["Title"] + " - Super effective!";
 
-            string json = o.PrettyPrint();
+            string json = o.ToString();
             // {
             //   "Title": "How to use FromObject - It's super effective!",
             //   "Categories": [
@@ -904,7 +904,7 @@ keyword such as type of business.""
       }
     ]
   }
-}", rss.PrettyPrint());
+}", rss.ToString());
 
             var postTitles =
                 from p in rss["channel"]["item"]
@@ -1015,7 +1015,7 @@ keyword such as type of business.""
                     new JProperty("Test4", null)
                     );
 
-            string json = o.PrettyPrint();
+            string json = o.ToString();
 
             StringAssert.AreEqual(@"{
   ""Test1"": ""2000-10-15T05:05:05Z"",
@@ -1092,7 +1092,7 @@ keyword such as type of business.""
       }
     ]
   }
-}", o.PrettyPrint());
+}", o.ToString());
 
             CustomAssert.IsInstanceOfType(typeof(JObject), o);
             CustomAssert.IsInstanceOfType(typeof(JObject), o["channel"]);
@@ -1157,7 +1157,7 @@ keyword such as type of business.""
       }
     ]
   }
-}", o.PrettyPrint());
+}", o.ToString());
 
             CustomAssert.IsInstanceOfType(typeof(JObject), o);
             CustomAssert.IsInstanceOfType(typeof(JObject), o["channel"]);
@@ -1299,7 +1299,7 @@ keyword such as type of business.""
   ""TimeSpan"": ""00:00:00"",
   ""NullableTimeSpan"": null,
   ""Uri"": null
-}", o.PrettyPrint());
+}", o.ToString());
 
             UriGuidTimeSpanTestClass c2 = o.ToObject<UriGuidTimeSpanTestClass>();
             Assert.AreEqual(c1.Guid, c2.Guid);
@@ -1328,7 +1328,7 @@ keyword such as type of business.""
   ""TimeSpan"": ""1.00:00:00"",
   ""NullableTimeSpan"": ""01:00:00"",
   ""Uri"": ""http://testuri.com""
-}", o.PrettyPrint());
+}", o.ToString());
 
             UriGuidTimeSpanTestClass c2 = o.ToObject<UriGuidTimeSpanTestClass>();
             Assert.AreEqual(c1.Guid, c2.Guid);
@@ -1339,7 +1339,7 @@ keyword such as type of business.""
 
             string j = JsonSerializer.Generic.Utf16.Serialize(c1);
 
-            StringAssert.AreEqual(j, o.ToString());
+            StringAssert.AreEqual(j, o.ToString(false));
         }
 
         [Test]

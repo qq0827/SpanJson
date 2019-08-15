@@ -967,13 +967,13 @@ namespace SpanJson.Tests
                     new JValue(new DateTime(2009, 2, 15, 0, 0, 0, DateTimeKind.Utc))
                     );
 
-            string json = a.PrettyPrint();
+            string json = a.ToString();
 
             StringAssert.AreEqual(@"[
   ""2009-02-15T00:00:00Z""
 ]", json);
 
-            json = a.ToString();
+            json = a.ToString(false);
 
             Assert.AreEqual(@"[""2009-02-15T00:00:00Z""]", json);
         }
@@ -986,7 +986,7 @@ namespace SpanJson.Tests
                     new JValue(new DateTime(2009, 2, 15, 0, 0, 0, DateTimeKind.Utc))
                     );
 
-            string json = a.ToString();
+            string json = a.ToString(false);
 
             Assert.AreEqual(@"[""2009-02-15T00:00:00Z""]", json);
         }
@@ -1090,7 +1090,7 @@ namespace SpanJson.Tests
     ""Fifth"": 10.21,
     ""Sixth"": 46.52
   }
-]", a2.PrettyPrint());
+]", a2.ToString());
 
             Assert.IsTrue(a.DeepEquals(a2));
         }

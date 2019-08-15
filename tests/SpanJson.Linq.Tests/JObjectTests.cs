@@ -54,7 +54,7 @@ namespace SpanJson.Tests
             var v = new JValue(s);
             dynamic o = JObject.FromObject(new { title = v });
 
-            string output = ((JObject)o).PrettyPrint();
+            string output = ((JObject)o).ToString();
 
             StringAssert.AreEqual(@"{
   ""title"": null
@@ -121,7 +121,7 @@ namespace SpanJson.Tests
 
             StringAssert.AreEqual(@"{
   ""novalue"": null
-}", o.PrettyPrint());
+}", o.ToString());
         }
 
         [Test]
@@ -515,7 +515,7 @@ Parameter name: arrayIndex");
             o["val1"] = new JRaw("1");
             o["val2"] = new JRaw("1");
 
-            string json = o.PrettyPrint();
+            string json = o.ToString();
 
             StringAssert.AreEqual(@"{
   ""val1"": 1,
@@ -570,7 +570,7 @@ Parameter name: arrayIndex");
             JObject o = new JObject();
             o["title"] = v;
 
-            string output = o.PrettyPrint();
+            string output = o.ToString();
 
             StringAssert.AreEqual(@"{
   ""title"": null
@@ -653,7 +653,7 @@ Parameter name: arrayIndex");
   ""rc"": 200,
   ""m"": """",
   ""o"": ""<div class='s1'>\r\n</div>""
-}", o.PrettyPrint());
+}", o.ToString());
         }
 
         [Test]
@@ -672,7 +672,7 @@ Parameter name: arrayIndex");
   ""BirthDate"": ""1977-12-30T00:00:00"",
   ""Department"": ""IT"",
   ""JobTitle"": ""Support""
-}", moss.PrettyPrint());
+}", moss.ToString());
 
             JObject jen = new JObject();
             jen["FirstName"] = "Jen";
@@ -687,7 +687,7 @@ Parameter name: arrayIndex");
   ""BirthDate"": ""1978-03-15T00:00:00"",
   ""Department"": ""IT"",
   ""JobTitle"": ""Manager""
-}", jen.PrettyPrint());
+}", jen.ToString());
         }
 
         [Test]
@@ -1640,7 +1640,7 @@ Parameter name: arrayIndex");
             JObject o = new JObject();
             o["title"] = v;
 
-            string output = o.PrettyPrint();
+            string output = o.ToString();
 
             StringAssert.AreEqual(@"{
   ""title"": null
@@ -1706,7 +1706,7 @@ Parameter name: arrayIndex");
 //            StringAssert.AreEqual(@"{
 //  ""code"": 0,
 //  ""msg"": ""No action taken""
-//}", o.PrettyPrint());
+//}", o.ToString());
 //        }
 
   //      [Test]

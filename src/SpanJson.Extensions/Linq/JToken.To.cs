@@ -2,13 +2,14 @@
 using System.Buffers;
 using System.Runtime.CompilerServices;
 using CuteAnt;
-using SpanJson.Internal;
+using CuteAnt.Pool;
 using SpanJson.Resolvers;
 using SpanJson.Serialization;
 using SpanJson.Utilities;
 using NJsonWriter = Newtonsoft.Json.JsonWriter;
 using NJsonSerializer = Newtonsoft.Json.JsonSerializer;
-using NJsonSerializerSettings = Newtonsoft.Json.JsonSerializerSettings;
+using NJsonTextWriter = Newtonsoft.Json.JsonTextWriter;
+using NFormatting = Newtonsoft.Json.Formatting;
 
 namespace SpanJson.Linq
 {
@@ -391,37 +392,68 @@ namespace SpanJson.Linq
 
         /// <summary>Returns the JSON for this token.</summary>
         /// <returns>The JSON for this token.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override string ToString()
         {
-            return ToString<IncludeNullsOriginalCaseResolver<char>>();
+            return ToString(true);
+        }
+
+        /// <summary>Returns the JSON for this token using the given formatting and converters.</summary>
+        /// <param name="writeIndented">Indicates how the output should be formatted.</param>
+        /// <returns>The JSON for this token using the given formatting and converters.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public string ToString(bool writeIndented)
+        {
+            if (writeIndented)
+            {
+                return ToStringInternal(this);
+            }
+            else
+            {
+                return JsonSerializer.NonGeneric.Utf16.Serialize<IncludeNullsOriginalCaseResolver<char>>(this);
+            }
         }
 
         /// <summary>Returns the JSON for this token using the given resolver.</summary>
         /// <returns>The JSON for this token using the given resolver.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string ToString<TResolver>()
+        public string ToString<TResolver>(bool writeIndented)
             where TResolver : IJsonFormatterResolver<char, TResolver>, new()
         {
-            return JsonSerializer.NonGeneric.Utf16.Serialize<TResolver>(this);
+            if (writeIndented)
+            {
+                var utf16Json = JsonSerializer.NonGeneric.Utf16.Serialize<TResolver>(this);
+                return JsonSerializer.PrettyPrinter.Print(utf16Json);
+            }
+            else
+            {
+                return JsonSerializer.NonGeneric.Utf16.Serialize<TResolver>(this);
+            }
         }
 
-        /// <summary>Returns the indented JSON for this token.</summary>
-        /// <returns>The indented JSON for this token.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string PrettyPrint()
+        private static string ToStringInternal(JToken token)
         {
-            return PrettyPrint<IncludeNullsOriginalCaseResolver<char>>();
-        }
+            var sw = StringWriterManager.Allocate();
+            var jsonSerializer = DefaultSerializerPool.Take();
 
-        /// <summary>Returns the JSON for this token using the given resolver.</summary>
-        /// <returns>The JSON for this token using the given resolver.</returns>
-        public string PrettyPrint<TResolver>()
-            where TResolver : IJsonFormatterResolver<char, TResolver>, new()
-        {
-            ArraySegment<char> jsonSource = JsonSerializer.NonGeneric.Utf16.SerializeToArrayPool<TResolver>(this);
-            var prettyJson = JsonSerializer.PrettyPrinter.Print(jsonSource);
-            if (jsonSource.NonEmpty()) { ArrayPool<char>.Shared.Return(jsonSource.Array); }
-            return prettyJson;
+            try
+            {
+                using (NJsonTextWriter jsonWriter = new NJsonTextWriter(sw))
+                {
+                    jsonWriter.ArrayPool = JsonConvertX.GlobalCharacterArrayPool;
+                    jsonWriter.CloseOutput = false;
+                    jsonWriter.Formatting = NFormatting.Indented;
+
+                    token.WriteTo(jsonWriter, jsonSerializer);
+
+                    jsonWriter.Flush();
+                }
+                return sw.ToString();
+            }
+            finally
+            {
+                StringWriterManager.Free(sw);
+                DefaultSerializerPool.Return(jsonSerializer);
+            }
         }
     }
 }

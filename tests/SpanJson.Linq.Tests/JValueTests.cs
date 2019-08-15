@@ -690,7 +690,7 @@ namespace SpanJson.Tests
   ""2013-02-01T01:02:03.004+01:00"",
   5,
   1.1
-]", a.PrettyPrint());
+]", a.ToString());
         }
 
         [Test]
@@ -704,7 +704,7 @@ namespace SpanJson.Tests
             StringAssert.AreEqual(@"[
   ""http://james.newtonking.com"",
   ""http://james.newtonking.com/install?v=7.0.1""
-]", a.PrettyPrint());
+]", a.ToString());
         }
 
         //[Test]

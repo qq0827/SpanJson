@@ -386,7 +386,7 @@ Parameter name: index");
                                 new JProperty("text", r.ListItemText),
                                 new JProperty("value", r.ListItemValue.ToString())))));
 
-            string result = "myOptions = " + optionValues.PrettyPrint();
+            string result = "myOptions = " + optionValues.ToString();
 
             StringAssert.AreEqual(@"myOptions = {
   ""options"": [

@@ -188,7 +188,6 @@ namespace SpanJson.Linq
             }
         }
 
-        //TODO
         //public static IEnumerable<T> InDocumentOrder<T>(this IEnumerable<T> source) where T : JObject;
 
         /// <summary>Returns a collection of child tokens of every array in the source collection.</summary>
@@ -257,7 +256,6 @@ namespace SpanJson.Linq
             }
         }
 
-        //TODO
         //public static void Remove<T>(this IEnumerable<T> source) where T : JContainer;
 
         /// <summary>Returns the input typed as <see cref="IJEnumerable{T}"/>.</summary>

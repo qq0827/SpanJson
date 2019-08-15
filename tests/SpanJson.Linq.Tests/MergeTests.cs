@@ -60,7 +60,7 @@ namespace SpanJson.Tests
 
             left.Merge(right);
 
-            string json = left.PrettyPrint();
+            string json = left.ToString();
 
             StringAssert.AreEqual(@"{
   ""Property1"": 1,
@@ -82,7 +82,7 @@ namespace SpanJson.Tests
 
             left.Merge(right);
 
-            string json = left.PrettyPrint();
+            string json = left.ToString();
 
             StringAssert.AreEqual(@"{
   ""Property1"": {
@@ -107,7 +107,7 @@ namespace SpanJson.Tests
 
             left.Merge(right);
 
-            string json = left.PrettyPrint();
+            string json = left.ToString();
 
             StringAssert.AreEqual(@"{
   ""Property1"": {
@@ -131,7 +131,7 @@ namespace SpanJson.Tests
 
             left.Merge(right);
 
-            string json = left.PrettyPrint();
+            string json = left.ToString();
 
             StringAssert.AreEqual(@"{
   ""Property1"": {
@@ -200,7 +200,7 @@ namespace SpanJson.Tests
                 MergeArrayHandling = MergeArrayHandling.Merge
             });
 
-            string json = left.PrettyPrint();
+            string json = left.ToString();
 
             StringAssert.AreEqual(@"{
   ""Array1"": [
@@ -251,7 +251,7 @@ namespace SpanJson.Tests
                 MergeArrayHandling = MergeArrayHandling.Concat
             });
 
-            string json = left.PrettyPrint();
+            string json = left.ToString();
 
             StringAssert.AreEqual(@"{
   ""Array1"": [
@@ -303,7 +303,7 @@ namespace SpanJson.Tests
                 MergeArrayHandling = MergeArrayHandling.Merge
             });
 
-            string json = left.PrettyPrint();
+            string json = left.ToString();
 
             StringAssert.AreEqual(@"[
   1,
@@ -355,7 +355,7 @@ namespace SpanJson.Tests
 
             left.Merge(right);
 
-            string json = left.PrettyPrint();
+            string json = left.ToString();
 
             StringAssert.AreEqual(@"{
   ""Property1"": {
@@ -395,7 +395,7 @@ namespace SpanJson.Tests
                 MergeArrayHandling = MergeArrayHandling.Replace
             });
 
-            string json = left.PrettyPrint();
+            string json = left.ToString();
 
             StringAssert.AreEqual(@"{
   ""Array1"": [
@@ -425,7 +425,7 @@ namespace SpanJson.Tests
                 MergeArrayHandling = MergeArrayHandling.Replace
             });
 
-            string json = left.PrettyPrint();
+            string json = left.ToString();
 
             StringAssert.AreEqual(@"[
   4,
@@ -459,7 +459,7 @@ namespace SpanJson.Tests
                 MergeArrayHandling = MergeArrayHandling.Union
             });
 
-            string json = left.PrettyPrint();
+            string json = left.ToString();
 
             StringAssert.AreEqual(@"{
   ""Array1"": [
@@ -619,14 +619,14 @@ namespace SpanJson.Tests
                 MergeNullValueHandling = MergeNullValueHandling.Ignore
             });
 
-            StringAssert.AreEqual(originalJson, oldFoo.PrettyPrint());
+            StringAssert.AreEqual(originalJson, oldFoo.ToString());
 
             oldFoo.Merge(newFoo, new JsonMergeSettings
             {
                 MergeNullValueHandling = MergeNullValueHandling.Merge
             });
 
-            StringAssert.AreEqual(newJson, newFoo.PrettyPrint());
+            StringAssert.AreEqual(newJson, newFoo.ToString());
         }
 
         [Test]
@@ -647,14 +647,14 @@ namespace SpanJson.Tests
                 MergeNullValueHandling = MergeNullValueHandling.Ignore
             });
 
-            StringAssert.AreEqual(originalJson, oldFoo.PrettyPrint());
+            StringAssert.AreEqual(originalJson, oldFoo.ToString());
 
             oldFoo.Merge(newFoo, new JsonMergeSettings
             {
                 MergeNullValueHandling = MergeNullValueHandling.Merge
             });
 
-            StringAssert.AreEqual(newJson, newFoo.PrettyPrint());
+            StringAssert.AreEqual(newJson, newFoo.ToString());
         }
 
         [Test]

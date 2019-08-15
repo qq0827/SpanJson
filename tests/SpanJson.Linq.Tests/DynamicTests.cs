@@ -855,7 +855,7 @@ namespace SpanJson.Tests
             product.StockValue = product.StockCount * product.Price;
             product.ProductName = product.ProductName + " (SALE)";
 
-            string json = ((JToken)product).PrettyPrint();
+            string json = ((JToken)product).ToString();
             // {
             //   "ProductName": "Elbow Grease (SALE)",
             //   "Enabled": true,
