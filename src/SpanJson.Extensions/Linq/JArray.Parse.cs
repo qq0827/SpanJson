@@ -47,9 +47,11 @@ namespace SpanJson.Linq
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public new static JArray Parse(in ReadOnlySequence<byte> utf8Json)
         {
-            var doc = JsonDocument.Parse(utf8Json, options: JsonDocumentOptions.CreateDefault(), useArrayPools: false);
-            var token = FromElement(doc.RootElement);
-            return AsJArray(token);
+            using (var doc = JsonDocument.Parse(utf8Json, options: JsonDocumentOptions.CreateDefault()))
+            {
+                var token = FromElement(doc.RootElement.Clone());
+                return AsJArray(token);
+            }
         }
 
         public new static JArray Load(ref JsonReader<byte> reader)

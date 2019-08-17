@@ -7,6 +7,7 @@ using SpanJson.Linq;
 using SpanJson.Resolvers;
 using Xunit;
 using NJObject = Newtonsoft.Json.Linq.JObject;
+using NJArray = Newtonsoft.Json.Linq.JArray;
 using NJValue = Newtonsoft.Json.Linq.JValue;
 
 namespace SpanJson.Tests
@@ -173,6 +174,38 @@ namespace SpanJson.Tests
             Assert.Equal("Redmond", basicJson.Address.City);
             Assert.Equal(98052, basicJson.Address.Zip);
             var addr = ((JObject)jObj["address"]).ToObject<BasicAddr, ExcludeNullsCamelCaseResolver<byte>, ExcludeNullsCamelCaseResolver<char>>();
+            Assert.Equal("1 Microsoft Way", addr.Street);
+            Assert.Equal("Redmond", addr.City);
+            Assert.Equal(98052, addr.Zip);
+        }
+
+        [Fact]
+        public void JsonNetObject()
+        {
+            var jObj = NJObject.Parse(TestSR.BasicJson);
+            var basicJson = jObj.ToObject<BasicJson>();
+            Assert.NotNull(basicJson);
+            Assert.Equal(30, basicJson.Age);
+            Assert.Equal("John", basicJson.First);
+            Assert.Equal("Smith", basicJson.Last);
+            Assert.NotNull(basicJson.PhoneNumbers);
+
+            Assert.Equal(2, basicJson.PhoneNumbers.Length);
+            Assert.Equal("425-000-1212", basicJson.PhoneNumbers[0]);
+            Assert.Equal("425-000-1213", basicJson.PhoneNumbers[1]);
+
+            var jArray = (NJArray)jObj["phoneNumbers"];
+
+            var phoneNumbers = jArray.ToObject<List<string>>();
+            Assert.Equal(2, phoneNumbers.Count);
+            Assert.Equal("425-000-1212", phoneNumbers[0]);
+            Assert.Equal("425-000-1213", phoneNumbers[1]);
+
+            Assert.NotNull(basicJson.Address);
+            Assert.Equal("1 Microsoft Way", basicJson.Address.Street);
+            Assert.Equal("Redmond", basicJson.Address.City);
+            Assert.Equal(98052, basicJson.Address.Zip);
+            var addr = ((NJObject)jObj["address"]).ToObject<BasicAddr>();
             Assert.Equal("1 Microsoft Way", addr.Street);
             Assert.Equal("Redmond", addr.City);
             Assert.Equal(98052, addr.Zip);

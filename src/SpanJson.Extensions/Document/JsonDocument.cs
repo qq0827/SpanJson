@@ -107,7 +107,7 @@ namespace SpanJson.Document
             // and thus need to be cleared before being returned.
             if (_extraRentedBytes is object)
             {
-                _extraRentedBytes.AsSpan(0, length).Clear();
+                //_extraRentedBytes.AsSpan(0, length).Clear();
                 ArrayPool<byte>.Shared.Return(_extraRentedBytes);
                 _extraRentedBytes = null;
             }
@@ -353,7 +353,7 @@ namespace SpanJson.Document
 
             if (otherUtf8TextArray is object)
             {
-                otherUtf8Text.Slice(0, written).Clear();
+                //otherUtf8Text.Slice(0, written).Clear();
                 ArrayPool<byte>.Shared.Return(otherUtf8TextArray);
             }
 
@@ -843,7 +843,8 @@ namespace SpanJson.Document
         {
             int endIndex = GetEndIndex(index, true);
             MetadataDb newDb = _parsedData.CopySegment(index, endIndex);
-            ReadOnlyMemory<byte> segmentCopy = GetRawValue(index, includeQuotes: true).ToArray();
+            ReadOnlyMemory<byte> segment = GetRawValue(index, includeQuotes: true);
+            ReadOnlyMemory<byte> segmentCopy = _extraRentedBytes is null ? segment : segment.ToArray();
 
             JsonDocument newDocument =
                 new JsonDocument(segmentCopy, newDb, extraRentedBytes: null, isDisposable: false);
@@ -1002,7 +1003,7 @@ namespace SpanJson.Document
         {
             if (rented.Array is object)
             {
-                rented.AsSpan().Clear();
+                //rented.AsSpan().Clear();
                 ArrayPool<byte>.Shared.Return(rented.Array);
             }
         }

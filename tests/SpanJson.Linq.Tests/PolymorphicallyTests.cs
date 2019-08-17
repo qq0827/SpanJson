@@ -226,29 +226,35 @@ namespace SpanJson.Tests
             Assert.Equal(typeof(Circle), deserialized.Shapes[2].GetType());
             Assert.Equal(5, ((Circle)deserialized.Shapes[2]).Radius);
 
-            jObj = JObject.FromObject(JsonDocument.Parse(utf8Json, useArrayPools: false));
-            deserialized = jObj.ToPolymorphicObject<Drawing>();
+            using (var doc = JsonDocument.Parse(utf8Json))
+            {
+                jObj = JObject.FromObject(doc);
+                deserialized = jObj.ToPolymorphicObject<Drawing>();
 
-            Assert.NotNull(deserialized);
-            Assert.Equal(3, deserialized.Shapes.Count);
-            Assert.Equal(typeof(Square), deserialized.Shapes[0].GetType());
-            Assert.Equal(10, ((Square)deserialized.Shapes[0]).Size);
-            Assert.Equal(typeof(Square), deserialized.Shapes[1].GetType());
-            Assert.Equal(20, ((Square)deserialized.Shapes[1]).Size);
-            Assert.Equal(typeof(Circle), deserialized.Shapes[2].GetType());
-            Assert.Equal(5, ((Circle)deserialized.Shapes[2]).Radius);
+                Assert.NotNull(deserialized);
+                Assert.Equal(3, deserialized.Shapes.Count);
+                Assert.Equal(typeof(Square), deserialized.Shapes[0].GetType());
+                Assert.Equal(10, ((Square)deserialized.Shapes[0]).Size);
+                Assert.Equal(typeof(Square), deserialized.Shapes[1].GetType());
+                Assert.Equal(20, ((Square)deserialized.Shapes[1]).Size);
+                Assert.Equal(typeof(Circle), deserialized.Shapes[2].GetType());
+                Assert.Equal(5, ((Circle)deserialized.Shapes[2]).Radius);
+            }
 
-            jObj = JObject.FromObject(JsonDocument.Parse(utf8Json, useArrayPools: false).RootElement);
-            deserialized = jObj.ToPolymorphicObject<Drawing>();
+            using (var doc = JsonDocument.Parse(utf8Json))
+            {
+                jObj = JObject.FromObject(doc.RootElement);
+                deserialized = jObj.ToPolymorphicObject<Drawing>();
 
-            Assert.NotNull(deserialized);
-            Assert.Equal(3, deserialized.Shapes.Count);
-            Assert.Equal(typeof(Square), deserialized.Shapes[0].GetType());
-            Assert.Equal(10, ((Square)deserialized.Shapes[0]).Size);
-            Assert.Equal(typeof(Square), deserialized.Shapes[1].GetType());
-            Assert.Equal(20, ((Square)deserialized.Shapes[1]).Size);
-            Assert.Equal(typeof(Circle), deserialized.Shapes[2].GetType());
-            Assert.Equal(5, ((Circle)deserialized.Shapes[2]).Radius);
+                Assert.NotNull(deserialized);
+                Assert.Equal(3, deserialized.Shapes.Count);
+                Assert.Equal(typeof(Square), deserialized.Shapes[0].GetType());
+                Assert.Equal(10, ((Square)deserialized.Shapes[0]).Size);
+                Assert.Equal(typeof(Square), deserialized.Shapes[1].GetType());
+                Assert.Equal(20, ((Square)deserialized.Shapes[1]).Size);
+                Assert.Equal(typeof(Circle), deserialized.Shapes[2].GetType());
+                Assert.Equal(5, ((Circle)deserialized.Shapes[2]).Radius);
+            }
         }
 
         public class Drawing

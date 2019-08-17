@@ -554,7 +554,7 @@ namespace SpanJson
 
             if (otherUtf8TextArray is object)
             {
-                otherUtf8Text.Slice(0, written).Clear();
+                //otherUtf8Text.Slice(0, written).Clear();
                 ArrayPool<byte>.Shared.Return(otherUtf8TextArray);
             }
 

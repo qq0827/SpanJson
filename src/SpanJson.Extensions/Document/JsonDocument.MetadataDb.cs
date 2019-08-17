@@ -105,7 +105,7 @@ namespace SpanJson.Document
 #endif
             }
 
-            internal MetadataDb(int payloadLength, bool isDisposable)
+            internal MetadataDb(int payloadLength)
             {
                 // Assume that a token happens approximately every 12 bytes.
                 // int estimatedTokens = payloadLength / 12
@@ -125,8 +125,8 @@ namespace SpanJson.Document
                     initialSize = OneMegabyte;
                 }
 
-                _isDisposable = isDisposable;
-                _data = isDisposable ? ArrayPool<byte>.Shared.Rent(initialSize) : new byte[initialSize];
+                _isDisposable = true;
+                _data = ArrayPool<byte>.Shared.Rent(initialSize);
                 Length = 0;
 #if DEBUG
                 _isLocked = false;

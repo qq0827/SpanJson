@@ -108,7 +108,7 @@ namespace SpanJson
             encodedText = EncodeHelper(utf8Bytes.AsSpan(0, actualByteCount), escapeHandling, encoder);
 
             // On the basis that this is user data, go ahead and clear it.
-            utf8Bytes.AsSpan(0, expectedByteCount).Clear();
+            //utf8Bytes.AsSpan(0, expectedByteCount).Clear();
             ArrayPool<byte>.Shared.Return(utf8Bytes);
 
             return encodedText;

@@ -196,67 +196,26 @@ namespace SpanJson
 
                 #region -- Utf8 Deserialize --
 
-                public static ValueTask<T> InnerDeserializeAsync(Stream stream, CancellationToken cancellationToken = default)
+                public static async ValueTask<T> InnerDeserializeAsync(Stream stream, CancellationToken cancellationToken = default)
                 {
                     if (stream is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.stream); }
 
 #if !NET451
                     if (stream is MemoryStream ms && ms.TryGetBuffer(out var buffer))
                     {
-                        return new ValueTask<T>(InnerDeserialize((ArraySegment<TSymbol>)(object)buffer));
+                        return InnerDeserialize((ArraySegment<TSymbol>)(object)buffer);
                     }
 #endif
 
-                    var input = stream.CanSeek
-                        ? ReadStreamFullAsync(stream, cancellationToken)
-                        : ReadStreamAsync(stream, _lastDeserializationSizeEstimate, cancellationToken);
-                    if (input.IsCompletedSuccessfully)
+                    ArraySegment<byte> drained = await stream.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
+                    try
                     {
-                        var memory = input.Result;
-                        return new ValueTask<T>(Utf8InnerDeserialize(memory));
+                        return InnerDeserialize(((ArraySegment<TSymbol>)(object)drained).AsSpan()); // 这儿需要要使用 ReadOnlySpan<TSymbol>，确保不被 JsonReader 直接用来解析动态类型
                     }
-
-                    return AwaitDeserializeAsync(input);
-                }
-
-                private static async ValueTask<ArraySegment<byte>> ReadStreamFullAsync(Stream stream, CancellationToken cancellationToken = default)
-                {
-                    var buffer = ArrayPool<byte>.Shared.Rent((int)stream.Length);
-                    var read = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
-                    return new ArraySegment<byte>(buffer, 0, read);
-                }
-
-                private static T Utf8InnerDeserialize(in ArraySegment<byte> memory)
-                {
-                    var result = InnerDeserialize((ArraySegment<TSymbol>)(object)memory);
-
-                    ArrayPool<byte>.Shared.Return(memory.Array);
-
-                    return result;
-                }
-
-                private static async ValueTask<ArraySegment<byte>> ReadStreamAsync(Stream stream, int sizeHint, CancellationToken cancellationToken = default)
-                {
-                    var totalSize = 0;
-                    var buffer = ArrayPool<byte>.Shared.Rent(sizeHint);
-                    int read;
-                    while ((read = await stream.ReadAsync(buffer, totalSize, buffer.Length - totalSize, cancellationToken).ConfigureAwait(false)) > 0)
+                    finally
                     {
-                        if (totalSize + read == buffer.Length)
-                        {
-                            FormatterUtils.GrowArray(ref buffer);
-                        }
-
-                        totalSize += read;
+                        ArrayPool<byte>.Shared.Return(drained.Array);
                     }
-
-                    return new ArraySegment<byte>(buffer, 0, totalSize);
-                }
-
-                private static async ValueTask<T> AwaitDeserializeAsync(ValueTask<ArraySegment<byte>> task)
-                {
-                    var input = await task.ConfigureAwait(false);
-                    return Utf8InnerDeserialize(input);
                 }
 
                 #endregion

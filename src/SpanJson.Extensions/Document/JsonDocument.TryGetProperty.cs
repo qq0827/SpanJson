@@ -97,7 +97,7 @@ namespace SpanJson.Document
                         // aren't long enough to end up in the rented buffer transcode path.
                         //
                         // On the basis that this is user data, go ahead and clear it.
-                        utf8Name.Clear();
+                        //utf8Name.Clear();
                         ArrayPool<byte>.Shared.Return(tmpUtf8);
                     }
                 }
@@ -205,7 +205,7 @@ namespace SpanJson.Document
                             {
                                 if (rented is object)
                                 {
-                                    rented.AsSpan(0, written).Clear();
+                                    //rented.AsSpan(0, written).Clear();
                                     ArrayPool<byte>.Shared.Return(rented);
                                 }
                             }

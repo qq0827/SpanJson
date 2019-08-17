@@ -34,7 +34,7 @@ namespace SpanJson.Internal
 
             if (unescapedArray is object)
             {
-                utf8Unescaped.Clear();
+                //utf8Unescaped.Clear();
                 ArrayPool<byte>.Shared.Return(unescapedArray);
             }
 

@@ -50,8 +50,10 @@ namespace SpanJson.Linq
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static JToken Parse(in ReadOnlySequence<byte> utf8Json)
         {
-            var doc = JsonDocument.Parse(utf8Json, options: JsonDocumentOptions.CreateDefault(), useArrayPools: false);
-            return FromElement(doc.RootElement);
+            using (var doc = JsonDocument.Parse(utf8Json, options: JsonDocumentOptions.CreateDefault()))
+            {
+                return FromElement(doc.RootElement.Clone());
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
