@@ -60,6 +60,7 @@ namespace SpanJson.Serialization
             _deserializerSettings.Converters.Add(Newtonsoft.Json.Converters.IPAddressConverter.Instance);
             _deserializerSettings.Converters.Add(Newtonsoft.Json.Converters.IPEndPointConverter.Instance);
             _deserializerSettings.Converters.Add(Newtonsoft.Json.Converters.CombGuidConverter.Instance);
+            _deserializerSettings.Converters.Add(SpanJson.Converters.JTokenConverter.Instance);
         }
 
         public JsonComplexSerializer(NJsonSerializerSettings serializerSettings, NJsonSerializerSettings deserializerSettings)

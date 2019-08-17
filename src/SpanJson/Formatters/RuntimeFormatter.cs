@@ -18,7 +18,7 @@ namespace SpanJson.Formatters
 
         public object Deserialize(ref JsonReader<TSymbol> reader, IJsonFormatterResolver<TSymbol> resolver)
         {
-            return reader.ReadDynamic();
+            return resolver.DynamicDeserializer(ref reader);
         }
 
         public void Serialize(ref JsonWriter<TSymbol> writer, object value, IJsonFormatterResolver<TSymbol> resolver)

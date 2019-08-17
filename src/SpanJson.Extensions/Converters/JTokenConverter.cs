@@ -4,10 +4,13 @@ using NJsonConverter = Newtonsoft.Json.JsonConverter;
 using NJsonReader = Newtonsoft.Json.JsonReader;
 using NJsonSerializer = Newtonsoft.Json.JsonSerializer;
 using NJsonWriter = Newtonsoft.Json.JsonWriter;
+using NJToken = Newtonsoft.Json.Linq.JToken;
+using NJContainer = Newtonsoft.Json.Linq.JContainer;
+using NJTokenType = Newtonsoft.Json.Linq.JTokenType;
 
 namespace SpanJson.Converters
 {
-    public class JTokenConverter : NJsonConverter
+    public sealed class JTokenConverter : NJsonConverter
     {
         public static readonly JTokenConverter Instance = new JTokenConverter();
 
@@ -30,7 +33,12 @@ namespace SpanJson.Converters
 
         public override object ReadJson(NJsonReader reader, Type objectType, object existingValue, NJsonSerializer serializer)
         {
-            throw ThrowHelper.GetNotSupportedException();
+            var token = NJToken.ReadFrom(reader, null);
+            if (token.Type == NJTokenType.Null && typeof(NJContainer).IsAssignableFrom(objectType))
+            {
+                return null;
+            }
+            return JToken.FromObject(token);
         }
 
         public override bool CanConvert(Type objectType)

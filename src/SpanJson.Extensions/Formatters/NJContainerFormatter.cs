@@ -41,7 +41,7 @@ namespace SpanJson.Formatters
 
         public override void Serialize(ref JsonWriter<byte> writer, NJContainer value, IJsonFormatterResolver<byte> resolver)
         {
-            if (value is null) { return; }
+            if (value is null) { writer.WriteUtf8Null(); return; }
 
             switch (value.Type)
             {
@@ -61,7 +61,7 @@ namespace SpanJson.Formatters
 
         public override void Serialize(ref JsonWriter<char> writer, NJContainer value, IJsonFormatterResolver<char> resolver)
         {
-            if (value is null) { return; }
+            if (value is null) { writer.WriteUtf16Null(); return; }
 
             switch (value.Type)
             {

@@ -9,7 +9,7 @@ namespace SpanJson.Formatters
 
         public override JValue Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
         {
-            var token = JToken.ParseCore(ref reader, 0);
+            var token = JToken.Load(ref reader);
             if (token is JValue jv) { return jv; }
 
             throw ThrowHelper2.GetJsonReaderException_Error_reading_JValue_from_JsonReader();
@@ -17,7 +17,7 @@ namespace SpanJson.Formatters
 
         public override JValue Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
         {
-            var token = JToken.ParseCore(ref reader, 0);
+            var token = JToken.Load(ref reader);
             if (token is JValue jv) { return jv; }
 
             throw ThrowHelper2.GetJsonReaderException_Error_reading_JValue_from_JsonReader();

@@ -56,12 +56,17 @@ namespace SpanJson.Linq
 
         public new static JArray Load(ref JsonReader<byte> reader)
         {
+            reader.EnsureUtf8InnerBufferCreated();
+
             var nextToken = reader.ReadUtf8NextToken();
 
             switch (nextToken)
             {
                 case JsonTokenType.BeginArray:
                     return (JArray)ParseCore(ref reader, 0);
+
+                case JsonTokenType.Null:
+                    return null;
 
                 case JsonTokenType.None:
                 default:
@@ -117,12 +122,17 @@ namespace SpanJson.Linq
 
         public new static JArray Load(ref JsonReader<char> reader)
         {
+            reader.EnsureUtf16InnerBufferCreated();
+
             var nextToken = reader.ReadUtf16NextToken();
 
             switch (nextToken)
             {
                 case JsonTokenType.BeginArray:
                     return (JArray)ParseCore(ref reader, 0);
+
+                case JsonTokenType.Null:
+                    return null;
 
                 case JsonTokenType.None:
                 default:

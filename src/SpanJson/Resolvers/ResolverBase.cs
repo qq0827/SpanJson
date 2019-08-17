@@ -80,11 +80,12 @@ namespace SpanJson.Resolvers
         private readonly JsonEscapeHandling _escapeHandling;
         private readonly JavaScriptEncoder _encoder;
 
+        private DeserializeDynamicDelegate<TSymbol> _dynamicDeserializer = ReadDynamic;
+
         // ReSharper disable StaticMemberInGenericType
         private static readonly ConcurrentDictionary<Type, IJsonFormatter> Formatters =
             new ConcurrentDictionary<Type, IJsonFormatter>();
         // ReSharper restore StaticMemberInGenericType
-
 
         protected ResolverBase(SpanJsonOptions spanJsonOptions)
         {
@@ -100,6 +101,16 @@ namespace SpanJson.Resolvers
 
         public JsonEscapeHandling EscapeHandling => _escapeHandling;
         public JavaScriptEncoder Encoder => _encoder;
+
+        public virtual DeserializeDynamicDelegate<TSymbol> DynamicDeserializer
+        {
+            get => _dynamicDeserializer;
+            set
+            {
+                if (value is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.value); }
+                _dynamicDeserializer = value;
+            }
+        }
 
         public virtual IJsonFormatter GetFormatter(Type type)
         {
@@ -654,6 +665,11 @@ namespace SpanJson.Resolvers
             } while (!ReferenceEquals(
                 Interlocked.CompareExchange(ref s_resolvers, newCache, snapshot), snapshot));
             return true;
+        }
+
+        private static object ReadDynamic(ref JsonReader<TSymbol> reader)
+        {
+            return reader.ReadDynamic();
         }
     }
 }

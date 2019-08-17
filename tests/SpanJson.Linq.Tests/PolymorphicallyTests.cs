@@ -257,6 +257,17 @@ namespace SpanJson.Tests
             }
         }
 
+        [Fact]
+        public static void IsPolymorphically()
+        {
+            Assert.False(JsonComplexSerializer.IsPolymorphically<LayerSettings>());
+        }
+
+        public class LayerSettings
+        {
+            public string[] Zones { get; set; }
+        }
+
         public class Drawing
         {
             public Drawing()

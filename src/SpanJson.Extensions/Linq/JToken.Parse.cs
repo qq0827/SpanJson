@@ -17,7 +17,7 @@ namespace SpanJson.Linq
         public static JToken Parse(byte[] utf8Json)
         {
             var jsonReader = new JsonReader<byte>(utf8Json);
-            return ParseCore(ref jsonReader, 0);
+            return Load(ref jsonReader);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -26,7 +26,7 @@ namespace SpanJson.Linq
             if (utf8Json.IsEmpty()) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.utf8Json); }
 
             var jsonReader = new JsonReader<byte>(utf8Json);
-            return ParseCore(ref jsonReader, 0);
+            return Load(ref jsonReader);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -35,7 +35,7 @@ namespace SpanJson.Linq
             if (utf8Json.IsEmpty) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.utf8Json); }
 
             var jsonReader = new JsonReader<byte>(utf8Json);
-            return ParseCore(ref jsonReader, 0);
+            return Load(ref jsonReader);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -44,7 +44,7 @@ namespace SpanJson.Linq
             if (utf8Json.IsEmpty) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.utf8Json); }
 
             var jsonReader = new JsonReader<byte>(utf8Json);
-            return ParseCore(ref jsonReader, 0);
+            return Load(ref jsonReader);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -59,10 +59,11 @@ namespace SpanJson.Linq
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static JToken Load(ref JsonReader<byte> reader)
         {
+            reader.EnsureUtf8InnerBufferCreated();
             return ParseCore(ref reader, 0);
         }
 
-        internal protected static JToken ParseCore(ref JsonReader<byte> reader, int stack)
+        internal static JToken ParseCore(ref JsonReader<byte> reader, int stack)
         {
             ref var pos = ref reader._pos;
             var nextToken = reader.ReadUtf8NextToken();
@@ -82,25 +83,12 @@ namespace SpanJson.Linq
                     return reader.ReadUtf8Boolean();
 
                 case JsonTokenType.Number:
-                    if (reader._utf8Json.NonEmpty())
-                    {
-                        return new SpanJsonDynamicUtf8Number(reader.ReadUtf8RawNumber());
-                    }
-                    else
-                    {
-                        return new SpanJsonDynamicUtf8Number(reader.ReadUtf8NumberSpan());
-                    }
+                    return new SpanJsonDynamicUtf8Number(reader.ReadUtf8RawNumber());
 
                 case JsonTokenType.String:
-                    if (reader._utf8Json.NonEmpty())
                     {
                         reader.ReadUtf8StringSpanWithQuotes(ref MemoryMarshal.GetReference(reader._utf8Span), ref pos, reader._length, out ArraySegment<byte> result);
                         return new SpanJsonDynamicUtf8String(result);
-                    }
-                    else
-                    {
-                        var span = JsonReader<byte>.ReadUtf8StringSpanWithQuotes(ref MemoryMarshal.GetReference(reader._utf8Span), ref pos, reader._length);
-                        return new SpanJsonDynamicUtf8String(span);
                     }
 
                 case JsonTokenType.BeginObject:
@@ -117,11 +105,7 @@ namespace SpanJson.Linq
                             jObj[name] = token; // take last one
                         }
 
-                        var utf8Json = reader._utf8Json;
-                        if (utf8Json.NonEmpty())
-                        {
-                            jObj._dynamicJson = utf8Json.Slice(startOffset, pos - startOffset);
-                        }
+                        jObj._dynamicJson = reader._utf8Json.Slice(startOffset, pos - startOffset);
                         return jObj;
                     }
                 case JsonTokenType.BeginArray:
@@ -154,11 +138,7 @@ namespace SpanJson.Linq
                             }
 
                             var jAry = new JArray(result);
-                            var utf8Json = reader._utf8Json;
-                            if (utf8Json.NonEmpty())
-                            {
-                                jAry._dynamicJson = utf8Json.Slice(startOffset, pos - startOffset);
-                            }
+                            jAry._dynamicJson = reader._utf8Json.Slice(startOffset, pos - startOffset);
                             return jAry;
                         }
                         finally
@@ -191,7 +171,7 @@ namespace SpanJson.Linq
         public static JToken Parse(char[] json)
         {
             var jsonReader = new JsonReader<char>(json);
-            return ParseCore(ref jsonReader, 0);
+            return Load(ref jsonReader);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -200,7 +180,7 @@ namespace SpanJson.Linq
             if (json.IsEmpty()) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.json); }
 
             var jsonReader = new JsonReader<char>(json);
-            return ParseCore(ref jsonReader, 0);
+            return Load(ref jsonReader);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -209,7 +189,7 @@ namespace SpanJson.Linq
             if (json.IsEmpty) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.json); }
 
             var jsonReader = new JsonReader<char>(json);
-            return ParseCore(ref jsonReader, 0);
+            return Load(ref jsonReader);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -218,16 +198,17 @@ namespace SpanJson.Linq
             if (json.IsEmpty) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.json); }
 
             var jsonReader = new JsonReader<char>(json);
-            return ParseCore(ref jsonReader, 0);
+            return Load(ref jsonReader);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static JToken Load(ref JsonReader<char> reader)
         {
+            reader.EnsureUtf16InnerBufferCreated();
             return ParseCore(ref reader, 0);
         }
 
-        internal protected static JToken ParseCore(ref JsonReader<char> reader, int stack)
+        internal static JToken ParseCore(ref JsonReader<char> reader, int stack)
         {
             ref var pos = ref reader._pos;
             var nextToken = reader.ReadUtf16NextToken();
@@ -247,25 +228,12 @@ namespace SpanJson.Linq
                     return reader.ReadUtf16Boolean();
 
                 case JsonTokenType.Number:
-                    if (reader._utf16Json.NonEmpty())
-                    {
-                        return new SpanJsonDynamicUtf16Number(reader.ReadUtf16RawNumber());
-                    }
-                    else
-                    {
-                        return new SpanJsonDynamicUtf16Number(reader.ReadUtf16NumberSpan());
-                    }
+                    return new SpanJsonDynamicUtf16Number(reader.ReadUtf16RawNumber());
 
                 case JsonTokenType.String:
-                    if (reader._utf16Json.NonEmpty())
                     {
                         reader.ReadUtf16StringSpanWithQuotes(ref MemoryMarshal.GetReference(reader._utf16Span), ref pos, reader._length, out ArraySegment<char> result);
                         return new SpanJsonDynamicUtf16String(result);
-                    }
-                    else
-                    {
-                        var span = JsonReader<char>.ReadUtf16StringSpanWithQuotes(ref MemoryMarshal.GetReference(reader._utf16Span), ref pos, reader._length);
-                        return new SpanJsonDynamicUtf16String(span);
                     }
 
                 case JsonTokenType.BeginObject:
@@ -282,11 +250,7 @@ namespace SpanJson.Linq
                             jObj[name] = token; // take last one
                         }
 
-                        var utf16Json = reader._utf16Json;
-                        if (utf16Json.NonEmpty())
-                        {
-                            jObj._dynamicJson = utf16Json.Slice(startOffset, pos - startOffset);
-                        }
+                        jObj._dynamicJson = reader._utf16Json.Slice(startOffset, pos - startOffset);
                         return jObj;
                     }
                 case JsonTokenType.BeginArray:
@@ -319,11 +283,7 @@ namespace SpanJson.Linq
                             }
 
                             var jAry = new JArray(result);
-                            var utf16Json = reader._utf16Json;
-                            if (utf16Json.NonEmpty())
-                            {
-                                jAry._dynamicJson = utf16Json.Slice(startOffset, pos - startOffset);
-                            }
+                            jAry._dynamicJson = reader._utf16Json.Slice(startOffset, pos - startOffset);
                             return jAry;
                         }
                         finally

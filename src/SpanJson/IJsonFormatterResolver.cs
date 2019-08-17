@@ -6,6 +6,8 @@ using SpanJson.Resolvers;
 
 namespace SpanJson
 {
+    public delegate object DeserializeDynamicDelegate<TSymbol>(ref JsonReader<TSymbol> reader) where TSymbol : struct;
+
     public interface IJsonFormatterResolver
     {
         IJsonFormatter GetFormatter(Type type);
@@ -21,6 +23,8 @@ namespace SpanJson
         JsonEscapeHandling EscapeHandling { get; }
         /// <summary>The encoder to use when escaping strings, or <see langword="null" /> to use the default encoder.</summary>
         JavaScriptEncoder Encoder { get; }
+
+        DeserializeDynamicDelegate<TSymbol> DynamicDeserializer { get; set; }
 
         /// <summary>Only support for custom formatters.</summary>
         /// <param name="type"></param>

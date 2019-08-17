@@ -15,6 +15,13 @@ namespace SpanJson
     public ref partial struct JsonReader<TSymbol> where TSymbol : struct
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void EnsureUtf16InnerBufferCreated()
+        {
+            if (_utf16Json.NonEmpty()) { return; }
+            _utf16Json = new ArraySegment<char>(_utf16Span.ToArray());
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public sbyte ReadUtf16SByte()
         {
             return checked((sbyte)ReadUtf16NumberInt64(ref MemoryMarshal.GetReference(_utf16Span), ref _pos, _length));

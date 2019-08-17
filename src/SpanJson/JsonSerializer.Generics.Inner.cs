@@ -4,7 +4,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using SpanJson.Helpers;
 using SpanJson.Internal;
 using SpanJson.Resolvers;
 
@@ -135,28 +134,24 @@ namespace SpanJson
                 {
                     if (input is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.input); }
 
-                    _lastDeserializationSizeEstimate = input.Length;
                     var jsonReader = new JsonReader<TSymbol>(input);
                     return Formatter.Deserialize(ref jsonReader, Resolver);
                 }
 
                 public static T InnerDeserialize(in ArraySegment<TSymbol> input)
                 {
-                    _lastDeserializationSizeEstimate = input.Count;
                     var jsonReader = new JsonReader<TSymbol>(input);
                     return Formatter.Deserialize(ref jsonReader, Resolver);
                 }
 
                 public static T InnerDeserialize(in ReadOnlyMemory<TSymbol> input)
                 {
-                    _lastDeserializationSizeEstimate = input.Length;
                     var jsonReader = new JsonReader<TSymbol>(input);
                     return Formatter.Deserialize(ref jsonReader, Resolver);
                 }
 
                 public static T InnerDeserialize(in ReadOnlySpan<TSymbol> input)
                 {
-                    _lastDeserializationSizeEstimate = input.Length;
                     var jsonReader = new JsonReader<TSymbol>(input);
                     return Formatter.Deserialize(ref jsonReader, Resolver);
                 }
@@ -222,9 +217,6 @@ namespace SpanJson
 
                 // ReSharper disable StaticMemberInGenericType
                 private static int _lastSerializationSizeEstimate = 256; // initial size, get's updated with each serialization
-
-                private static int _lastDeserializationSizeEstimate = 256; // initial size, get's updated with each deserialization
-                // ReSharper restore StaticMemberInGenericType
             }
         }
     }

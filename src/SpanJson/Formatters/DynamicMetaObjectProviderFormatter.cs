@@ -18,7 +18,7 @@ using Binder = Microsoft.CSharp.RuntimeBinder.Binder;
 
 namespace SpanJson.Formatters
 {
-    public class DynamicMetaObjectProviderFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T, TSymbol>
+    public class DynamicMetaObjectProviderFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T, TSymbol> // TODO Utf8 / Utf16
         where T : IDynamicMetaObjectProvider
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
         where TSymbol : struct
@@ -47,7 +47,7 @@ namespace SpanJson.Formatters
             var count = 0;
             while (!reader.TryReadIsEndObjectOrValueSeparator(ref count))
             {
-                var name = reader.ReadEscapedName();
+                var name = reader.ReadEscapedName(); // TODO read cache
                 if (KnownMembersDictionary.TryGetValue(name, out var action))
                 {
                     action(result, ref reader, resolver); // if we have known members we try to assign them directly without dynamic
@@ -55,7 +55,7 @@ namespace SpanJson.Formatters
                 else
                 {
                     var setter = GetOrAddSetMember(name);
-                    setter(result, reader.ReadDynamic());
+                    setter(result, resolver.DynamicDeserializer(ref reader));
                 }
             }
 

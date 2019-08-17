@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using SpanJson.Internal;
 
 namespace SpanJson.Resolvers
 {

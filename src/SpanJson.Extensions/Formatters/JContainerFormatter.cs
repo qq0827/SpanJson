@@ -8,7 +8,7 @@ namespace SpanJson.Formatters
 
         public override JContainer Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
         {
-            var token = JToken.ParseCore(ref reader, 0);
+            var token = JToken.Load(ref reader);
             switch (token.Type)
             {
                 case JTokenType.Object:
@@ -22,7 +22,7 @@ namespace SpanJson.Formatters
 
         public override JContainer Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
         {
-            var token = JToken.ParseCore(ref reader, 0);
+            var token = JToken.Load(ref reader);
             switch (token.Type)
             {
                 case JTokenType.Object:
@@ -36,7 +36,7 @@ namespace SpanJson.Formatters
 
         public override void Serialize(ref JsonWriter<byte> writer, JContainer value, IJsonFormatterResolver<byte> resolver)
         {
-            if (value is null) { return; }
+            if (value is null) { writer.WriteUtf8Null(); return; }
 
             switch (value.Type)
             {
@@ -56,7 +56,7 @@ namespace SpanJson.Formatters
 
         public override void Serialize(ref JsonWriter<char> writer, JContainer value, IJsonFormatterResolver<char> resolver)
         {
-            if (value is null) { return; }
+            if (value is null) { writer.WriteUtf16Null(); return; }
 
             switch (value.Type)
             {

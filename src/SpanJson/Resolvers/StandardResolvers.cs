@@ -59,6 +59,7 @@
             private readonly JsonNamingPolicy _dictionayKeyPolicy;
             private readonly JsonNamingPolicy _extensionDataPolicy;
             private readonly JsonNamingPolicy _jsonPropertyNamingPolicy;
+            private DeserializeDynamicDelegate<TSymbol> _dynamicDeserializer;
 
             static StandardResolver()
             {
@@ -73,12 +74,23 @@
                 _dictionayKeyPolicy = s_innerResolver.JsonOptions.DictionaryKeyPolicy;
                 _extensionDataPolicy = s_innerResolver.JsonOptions.ExtensionDataNamingPolicy;
                 _jsonPropertyNamingPolicy = s_innerResolver.JsonOptions.PropertyNamingPolicy;
+                _dynamicDeserializer = s_innerResolver.DynamicDeserializer;
             }
 
             public SpanJsonOptions JsonOptions => s_innerResolver.JsonOptions;
 
             public JsonEscapeHandling EscapeHandling => _escapeHandling;
             public JavaScriptEncoder Encoder => _encoder;
+            public DeserializeDynamicDelegate<TSymbol> DynamicDeserializer
+            {
+                get => _dynamicDeserializer;
+                set
+                {
+                    if (value is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.value); }
+                    _dynamicDeserializer = value;
+                    s_innerResolver.DynamicDeserializer = value;
+                }
+            }
 
             [EditorBrowsable(EditorBrowsableState.Never)]
             public bool IsSupportedType(Type type)
@@ -86,46 +98,56 @@
                 return s_innerResolver.IsSupportedType(type);
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public Func<T> GetCreateFunctor<T>()
             {
                 return CreateFunctorCache<T>.Instance;
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public JsonObjectDescription GetDynamicObjectDescription(IDynamicMetaObjectProvider provider)
             {
                 return s_innerResolver.GetDynamicObjectDescription(provider);
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public Func<T, TConverted> GetEnumerableConvertFunctor<T, TConverted>()
             {
                 return EnumerableConvertFunctorCache<T, TConverted>.Instance;
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public IJsonFormatter<object, TSymbol> GetRuntimeFormatter() => RuntimeFormatter<TSymbol, TResolver>.Default;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public IJsonFormatter<T, TSymbol> GetEnumStringFormatter<T>() where T : struct, Enum
             {
                 return EnumStringFormatterCache<T>.Instance;
             }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public IJsonFormatter<T, TSymbol> GetEnumIntegerFormatter<T>() where T : struct, Enum
             {
                 return EnumIntegerFormatter<T, TSymbol, TResolver>.Default;
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public IJsonFormatter<T, TSymbol> GetFormatter<T>()
             {
                 return FormatterCache<T>.Instance;
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public IJsonFormatter GetFormatter(Type type)
             {
                 return s_innerResolver.GetFormatter(type);
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public IJsonFormatter GetFormatter(JsonMemberInfo info, Type overrideMemberType = null)
             {
                 return s_innerResolver.GetFormatter(info, overrideMemberType);
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public JsonObjectDescription GetObjectDescription<T>()
             {
                 return ObjectDescriptionCache<T>.Instance;
@@ -170,17 +192,20 @@
                 return propertyName;
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public JsonEncodedText GetEncodedDictionaryKey(string dictionaryKey)
             {
                 //return JsonEncodedText.Encode(ResolveDictionaryKey(dictionaryKey), JsonEscapeHandling.EscapeNonAscii);
                 return EscapingHelper.GetEncodedText(ResolveDictionaryKey(dictionaryKey), _escapeHandling);
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public JsonEncodedText GetEncodedExtensionDataName(string extensionDataName)
             {
                 return EscapingHelper.GetEncodedText(ResolveExtensionDataName(extensionDataName), _escapeHandling);
             }
 
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public JsonEncodedText GetEncodedPropertyName(string propertyName)
             {
                 return EscapingHelper.GetEncodedText(ResolvePropertyName(propertyName), _escapeHandling);
