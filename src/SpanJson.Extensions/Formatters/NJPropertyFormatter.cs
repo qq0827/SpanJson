@@ -1,4 +1,6 @@
-﻿namespace SpanJson.Formatters
+﻿using SpanJson.Internal;
+
+namespace SpanJson.Formatters
 {
     public sealed class NJPropertyFormatter<TProperty> : JTokenFormatterBase<TProperty>
         where TProperty : Newtonsoft.Json.Linq.JProperty
@@ -9,7 +11,7 @@
         {
             if (value is null) { return; }
 
-            var encodedName = resolver.GetEncodedPropertyName(value.Name);
+            var encodedName = EscapingHelper.GetEncodedText(value.Name, resolver.EscapeHandling);
             writer.WriteUtf8Name(encodedName);
             var pv = value.Value;
             if (pv is object)
@@ -27,7 +29,7 @@
         {
             if (value is null) { return; }
 
-            var encodedName = resolver.GetEncodedPropertyName(value.Name);
+            var encodedName = EscapingHelper.GetEncodedText(value.Name, resolver.EscapeHandling);
             writer.WriteUtf16Name(encodedName);
             var pv = value.Value;
             if (pv is object)

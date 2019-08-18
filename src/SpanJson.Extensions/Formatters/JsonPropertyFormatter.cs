@@ -1,4 +1,5 @@
 ﻿using SpanJson.Document;
+using SpanJson.Internal;
 
 namespace SpanJson.Formatters
 {
@@ -8,13 +9,13 @@ namespace SpanJson.Formatters
 
         public override void Serialize(ref JsonWriter<byte> writer, JsonProperty value, IJsonFormatterResolver<byte> resolver)
         {
-            writer.WriteUtf8Name(resolver.GetEncodedPropertyName(value.Name));
+            writer.WriteUtf8Name(EscapingHelper.GetEncodedText(value.Name, resolver.EscapeHandling));
             JsonElementFormatter.Default.Serialize(ref writer, value.Value, resolver);
         }
 
         public override void Serialize(ref JsonWriter<char> writer, JsonProperty value, IJsonFormatterResolver<char> resolver)
         {
-            writer.WriteUtf16Name(resolver.GetEncodedPropertyName(value.Name));
+            writer.WriteUtf16Name(EscapingHelper.GetEncodedText(value.Name, resolver.EscapeHandling));
             JsonElementFormatter.Default.Serialize(ref writer, value.Value, resolver);
         }
     }

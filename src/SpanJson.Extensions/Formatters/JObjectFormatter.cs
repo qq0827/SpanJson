@@ -1,4 +1,5 @@
 ﻿using SpanJson.Linq;
+using SpanJson.Internal;
 
 namespace SpanJson.Formatters
 {
@@ -38,7 +39,7 @@ namespace SpanJson.Formatters
                 foreach (var item in value)
                 {
                     writer.IncrementDepth();
-                    writer.WriteUtf8Name(resolver.GetEncodedPropertyName(item.Key));
+                    writer.WriteUtf8Name(EscapingHelper.GetEncodedText(item.Key, resolver.EscapeHandling));
                     var propertyValue = item.Value;
                     if (propertyValue is object)
                     {
@@ -76,7 +77,7 @@ namespace SpanJson.Formatters
                 foreach (var item in value)
                 {
                     writer.IncrementDepth();
-                    writer.WriteUtf16Name(resolver.GetEncodedPropertyName(item.Key));
+                    writer.WriteUtf16Name(EscapingHelper.GetEncodedText(item.Key, resolver.EscapeHandling));
                     var propertyValue = item.Value;
                     if (propertyValue is object)
                     {

@@ -15,7 +15,7 @@ namespace SpanJson.Formatters
                 Indented = false,
                 Encoder = resolver.Encoder,
                 EscapeHandling = resolver.EscapeHandling,
-                PropertyNamingPolicy = resolver.JsonOptions.PropertyNamingPolicy,
+                //PropertyNamingPolicy = resolver.JsonOptions.PropertyNamingPolicy, // 保持原有
                 SkipValidation = false
             });
             try
@@ -36,7 +36,7 @@ namespace SpanJson.Formatters
                 Indented = false,
                 Encoder = resolver.Encoder,
                 EscapeHandling = resolver.EscapeHandling,
-                PropertyNamingPolicy = resolver.JsonOptions.PropertyNamingPolicy,
+                //PropertyNamingPolicy = resolver.JsonOptions.PropertyNamingPolicy, // 保持原有
                 SkipValidation = false
             });
             try

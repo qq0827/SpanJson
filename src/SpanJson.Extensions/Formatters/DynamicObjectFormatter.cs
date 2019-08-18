@@ -60,7 +60,7 @@ namespace SpanJson.Formatters
                     foreach (var item in dict)
                     {
                         writer.IncrementDepth();
-                        writer.WriteUtf8Name(resolver.GetEncodedPropertyName(item.Key));
+                        writer.WriteUtf8Name(EscapingHelper.GetEncodedText(item.Key, resolver.EscapeHandling));
                         WriteComplexElement(ref writer, item.Value, resolver);
                         writer.DecrementDepth();
                         if (counter++ < valueLength - 1)
@@ -123,7 +123,7 @@ namespace SpanJson.Formatters
                     foreach (var item in dict)
                     {
                         writer.IncrementDepth();
-                        writer.WriteUtf16Name(resolver.GetEncodedPropertyName(item.Key));
+                        writer.WriteUtf16Name(EscapingHelper.GetEncodedText(item.Key, resolver.EscapeHandling));
                         WriteComplexElement(ref writer, item.Value, resolver);
                         writer.DecrementDepth();
                         if (counter++ < valueLength - 1)
