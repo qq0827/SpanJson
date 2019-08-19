@@ -3,6 +3,8 @@ using System.Buffers;
 using System.Runtime.CompilerServices;
 using CuteAnt;
 using CuteAnt.Pool;
+using SpanJson.Document;
+using SpanJson.Dynamic;
 using SpanJson.Resolvers;
 using SpanJson.Serialization;
 using SpanJson.Utilities;
@@ -33,7 +35,7 @@ namespace SpanJson.Linq
             where TUtf8Resolver : IJsonFormatterResolver<byte, TUtf8Resolver>, new()
             where TUtf16Resolver : IJsonFormatterResolver<char, TUtf16Resolver>, new()
         {
-            if (TryConvertOrCast<TUtf8Resolver, TUtf16Resolver>(typeof(T), out object result)) { return (T)result; }
+            if (TryConvertOrCast(typeof(T), out object result)) { return (T)result; }
 
             return ToObjectInternal<T, TUtf8Resolver, TUtf16Resolver>();
         }
@@ -57,7 +59,7 @@ namespace SpanJson.Linq
         {
             if (objectType is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.objectType); }
 
-            if (TryConvertOrCast<TUtf8Resolver, TUtf16Resolver>(objectType, out object result)) { return result; }
+            if (TryConvertOrCast(objectType, out object result)) { return result; }
 
             return ToObjectInternal<TUtf8Resolver, TUtf16Resolver>(objectType);
         }
@@ -67,7 +69,7 @@ namespace SpanJson.Linq
         /// <returns>The new object created from the JSON value.</returns>
         public T ToPolymorphicObject<T>()
         {
-            if (TryConvertOrCast<ExcludeNullsOriginalCaseResolver<byte>, ExcludeNullsOriginalCaseResolver<char>>(typeof(T), out object result)) { return (T)result; }
+            if (TryConvertOrCast(typeof(T), out object result)) { return (T)result; }
 
             var jsonSerializer = DefaultDeserializerPool.Take();
             try
@@ -102,7 +104,7 @@ namespace SpanJson.Linq
             where TUtf8Resolver : IJsonFormatterResolver<byte, TUtf8Resolver>, new()
             where TUtf16Resolver : IJsonFormatterResolver<char, TUtf16Resolver>, new()
         {
-            if (TryConvertOrCast<TUtf8Resolver, TUtf16Resolver>(typeof(T), out object result)) { return (T)result; }
+            if (TryConvertOrCast(typeof(T), out object result)) { return (T)result; }
 
             if (jsonSerializer is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.jsonSerializer); }
 
@@ -116,7 +118,7 @@ namespace SpanJson.Linq
         {
             if (objectType is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.objectType); }
 
-            if (TryConvertOrCast<ExcludeNullsOriginalCaseResolver<byte>, ExcludeNullsOriginalCaseResolver<char>>(objectType, out object result)) { return result; }
+            if (TryConvertOrCast(objectType, out object result)) { return result; }
 
             var jsonSerializer = DefaultDeserializerPool.Take();
             try
@@ -153,7 +155,7 @@ namespace SpanJson.Linq
         {
             if (objectType is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.objectType); }
 
-            if (TryConvertOrCast<TUtf8Resolver, TUtf16Resolver>(objectType, out object result)) { return result; }
+            if (TryConvertOrCast(objectType, out object result)) { return result; }
 
             if (jsonSerializer is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.jsonSerializer); }
 
@@ -162,25 +164,66 @@ namespace SpanJson.Linq
 
         #region ** TryConvertOrCast **
 
-        private bool TryConvertOrCast<TUtf8Resolver, TUtf16Resolver>(Type objectType, out object result)
-            where TUtf8Resolver : IJsonFormatterResolver<byte, TUtf8Resolver>, new()
-            where TUtf16Resolver : IJsonFormatterResolver<char, TUtf16Resolver>, new()
+        sealed class InnerEnumStringResolver<TSymbol> : ResolverBase<TSymbol, InnerEnumStringResolver<TSymbol>> where TSymbol : struct
+        {
+            public InnerEnumStringResolver()
+                : base(new SpanJsonOptions
+                {
+                    NullOption = NullOptions.ExcludeNulls,
+                    EnumOption = EnumOptions.String
+                })
+            {
+            }
+        }
+
+        sealed class InnerEnumIntegerResolver<TSymbol> : ResolverBase<TSymbol, InnerEnumIntegerResolver<TSymbol>> where TSymbol : struct
+        {
+            public InnerEnumIntegerResolver()
+                : base(new SpanJsonOptions
+                {
+                    NullOption = NullOptions.ExcludeNulls,
+                    EnumOption = EnumOptions.Integer
+                })
+            {
+            }
+        }
+
+        private bool TryConvertOrCast(Type objectType, out object result)
         {
             PrimitiveTypeCode typeCode = ConvertUtils.GetTypeCode(objectType, out bool isEnum);
 
             if (isEnum)
             {
+                static bool TryParseQuotedInteger(Type type, JValue jv, out object v)
+                {
+                    try
+                    {
+                        Type enumType = type.IsEnum ? type : Nullable.GetUnderlyingType(type);
+                        var underlyingType = Enum.GetUnderlyingType(enumType);
+                        v = Enum.ToObject(enumType, jv.ToObject(underlyingType));
+                        return true;
+                    }
+                    catch { }
+                    v = null;
+                    return false;
+                }
                 switch (Type)
                 {
                     case JTokenType.Dynamic:
                         {
                             try
                             {
-                                result = ToObjectInternal<TUtf8Resolver, TUtf16Resolver>(objectType);
+                                result = ToObjectInternal<InnerEnumStringResolver<byte>, InnerEnumStringResolver<char>>(objectType);
                                 return true;
                             }
                             catch (Exception ex)
                             {
+                                // Try parse quoted number
+                                if (TryParseQuotedInteger(objectType, (JValue)this, out object ev))
+                                {
+                                    result = ev;
+                                    return true;
+                                }
                                 throw ThrowHelper2.GetArgumentException_Could_not_convert(objectType, this, ex);
                             }
                         }
@@ -188,19 +231,43 @@ namespace SpanJson.Linq
                         {
                             try
                             {
-                                result = JsonSerializer.NonGeneric.Utf16.Deserialize($"\"{this.ToString()}\"", objectType);
+                                result = JsonSerializer.NonGeneric.Utf16.Deserialize<InnerEnumStringResolver<char>>($"\"{this.ToString()}\"", objectType);
                                 return true;
                             }
                             catch (Exception ex)
                             {
+                                // Try parse quoted number
+                                if (TryParseQuotedInteger(objectType, (JValue)this, out object ev))
+                                {
+                                    result = ev;
+                                    return true;
+                                }
                                 throw ThrowHelper2.GetArgumentException_Could_not_convert(objectType, this, ex);
                             }
                         }
                     case JTokenType.Integer:
                         {
-                            Type enumType = objectType.IsEnum ? objectType : Nullable.GetUnderlyingType(objectType);
-                            result = Enum.ToObject(enumType, ((JValue)this).Value);
-                            return true;
+                            var innerValue = ((JValue)this).Value;
+                            switch (innerValue)
+                            {
+                                case SpanJsonDynamicUtf8Number _:
+                                case SpanJsonDynamicUtf16Number _:
+                                case JsonElement _:
+                                    try
+                                    {
+                                        result = ToObjectInternal<InnerEnumIntegerResolver<byte>, InnerEnumIntegerResolver<char>>(objectType);
+                                        return true;
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        throw ThrowHelper2.GetArgumentException_Could_not_convert(objectType, this, ex);
+                                    }
+
+                                default:
+                                    Type enumType = objectType.IsEnum ? objectType : Nullable.GetUnderlyingType(objectType);
+                                    result = Enum.ToObject(enumType, ((JValue)this).Value);
+                                    return true;
+                            }
                         }
                 }
             }

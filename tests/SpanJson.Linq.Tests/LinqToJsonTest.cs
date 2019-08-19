@@ -235,26 +235,26 @@ namespace SpanJson.Tests
             Assert.AreEqual(0, tokens.GetHashCode());
         }
 
-//        [Test]
-//        public void CommentsAndReadFrom()
-//        {
-//            StringReader textReader = new StringReader(@"[
-//    // hi
-//    1,
-//    2,
-//    3
-//]");
+        //        [Test]
+        //        public void CommentsAndReadFrom()
+        //        {
+        //            StringReader textReader = new StringReader(@"[
+        //    // hi
+        //    1,
+        //    2,
+        //    3
+        //]");
 
-//            JsonTextReader jsonReader = new JsonTextReader(textReader);
-//            JArray a = (JArray)JToken.ReadFrom(jsonReader, new JsonLoadSettings
-//            {
-//                CommentHandling = CommentHandling.Load
-//            });
+        //            JsonTextReader jsonReader = new JsonTextReader(textReader);
+        //            JArray a = (JArray)JToken.ReadFrom(jsonReader, new JsonLoadSettings
+        //            {
+        //                CommentHandling = CommentHandling.Load
+        //            });
 
-//            Assert.AreEqual(4, a.Count);
-//            Assert.AreEqual(JTokenType.Comment, a[0].Type);
-//            Assert.AreEqual(" hi", ((JValue)a[0]).Value);
-//        }
+        //            Assert.AreEqual(4, a.Count);
+        //            Assert.AreEqual(JTokenType.Comment, a[0].Type);
+        //            Assert.AreEqual(" hi", ((JValue)a[0]).Value);
+        //        }
 
         [Test]
         public void CommentsAndReadFrom_IgnoreComments()
@@ -265,7 +265,7 @@ namespace SpanJson.Tests
     2,
     3
 ]";
-            using(var doc = JsonDocument.Parse(json, new JsonDocumentOptions { CommentHandling = JsonCommentHandling.Skip }))
+            using (var doc = JsonDocument.Parse(json, new JsonDocumentOptions { CommentHandling = JsonCommentHandling.Skip }))
             {
                 JArray a = (JArray)JToken.FromDocument(doc);
 
@@ -275,77 +275,77 @@ namespace SpanJson.Tests
             }
         }
 
-//        [Test]
-//        public void StartingCommentAndReadFrom()
-//        {
-//            StringReader textReader = new StringReader(@"
-//// hi
-//[
-//    1,
-//    2,
-//    3
-//]");
+        //        [Test]
+        //        public void StartingCommentAndReadFrom()
+        //        {
+        //            StringReader textReader = new StringReader(@"
+        //// hi
+        //[
+        //    1,
+        //    2,
+        //    3
+        //]");
 
-//            JsonTextReader jsonReader = new JsonTextReader(textReader);
-//            JValue v = (JValue)JToken.ReadFrom(jsonReader, new JsonLoadSettings
-//            {
-//                CommentHandling = CommentHandling.Load
-//            });
+        //            JsonTextReader jsonReader = new JsonTextReader(textReader);
+        //            JValue v = (JValue)JToken.ReadFrom(jsonReader, new JsonLoadSettings
+        //            {
+        //                CommentHandling = CommentHandling.Load
+        //            });
 
-//            Assert.AreEqual(JTokenType.Comment, v.Type);
+        //            Assert.AreEqual(JTokenType.Comment, v.Type);
 
-//            IJsonLineInfo lineInfo = v;
-//            Assert.AreEqual(true, lineInfo.HasLineInfo());
-//            Assert.AreEqual(2, lineInfo.LineNumber);
-//            Assert.AreEqual(5, lineInfo.LinePosition);
-//        }
+        //            IJsonLineInfo lineInfo = v;
+        //            Assert.AreEqual(true, lineInfo.HasLineInfo());
+        //            Assert.AreEqual(2, lineInfo.LineNumber);
+        //            Assert.AreEqual(5, lineInfo.LinePosition);
+        //        }
 
-//        [Test]
-//        public void StartingCommentAndReadFrom_IgnoreComments()
-//        {
-//            StringReader textReader = new StringReader(@"
-//// hi
-//[
-//    1,
-//    2,
-//    3
-//]");
+        //        [Test]
+        //        public void StartingCommentAndReadFrom_IgnoreComments()
+        //        {
+        //            StringReader textReader = new StringReader(@"
+        //// hi
+        //[
+        //    1,
+        //    2,
+        //    3
+        //]");
 
-//            JsonTextReader jsonReader = new JsonTextReader(textReader);
-//            JArray a = (JArray)JToken.ReadFrom(jsonReader, new JsonLoadSettings
-//            {
-//                CommentHandling = CommentHandling.Ignore
-//            });
+        //            JsonTextReader jsonReader = new JsonTextReader(textReader);
+        //            JArray a = (JArray)JToken.ReadFrom(jsonReader, new JsonLoadSettings
+        //            {
+        //                CommentHandling = CommentHandling.Ignore
+        //            });
 
-//            Assert.AreEqual(JTokenType.Array, a.Type);
+        //            Assert.AreEqual(JTokenType.Array, a.Type);
 
-//            IJsonLineInfo lineInfo = a;
-//            Assert.AreEqual(true, lineInfo.HasLineInfo());
-//            Assert.AreEqual(3, lineInfo.LineNumber);
-//            Assert.AreEqual(1, lineInfo.LinePosition);
-//        }
+        //            IJsonLineInfo lineInfo = a;
+        //            Assert.AreEqual(true, lineInfo.HasLineInfo());
+        //            Assert.AreEqual(3, lineInfo.LineNumber);
+        //            Assert.AreEqual(1, lineInfo.LinePosition);
+        //        }
 
-//        [Test]
-//        public void StartingUndefinedAndReadFrom()
-//        {
-//            StringReader textReader = new StringReader(@"
-//undefined
-//[
-//    1,
-//    2,
-//    3
-//]");
+        //        [Test]
+        //        public void StartingUndefinedAndReadFrom()
+        //        {
+        //            StringReader textReader = new StringReader(@"
+        //undefined
+        //[
+        //    1,
+        //    2,
+        //    3
+        //]");
 
-//            JsonTextReader jsonReader = new JsonTextReader(textReader);
-//            JValue v = (JValue)JToken.ReadFrom(jsonReader);
+        //            JsonTextReader jsonReader = new JsonTextReader(textReader);
+        //            JValue v = (JValue)JToken.ReadFrom(jsonReader);
 
-//            Assert.AreEqual(JTokenType.Undefined, v.Type);
+        //            Assert.AreEqual(JTokenType.Undefined, v.Type);
 
-//            IJsonLineInfo lineInfo = v;
-//            Assert.AreEqual(true, lineInfo.HasLineInfo());
-//            Assert.AreEqual(2, lineInfo.LineNumber);
-//            Assert.AreEqual(9, lineInfo.LinePosition);
-//        }
+        //            IJsonLineInfo lineInfo = v;
+        //            Assert.AreEqual(true, lineInfo.HasLineInfo());
+        //            Assert.AreEqual(2, lineInfo.LineNumber);
+        //            Assert.AreEqual(9, lineInfo.LinePosition);
+        //        }
 
         //[Test]
         //public void StartingEndArrayAndReadFrom()
@@ -507,8 +507,8 @@ namespace SpanJson.Tests
 
             List<object> parameterValues =
                 (from p in o.Properties()
-                    where p.Value is JValue
-                    select ((JValue)p.Value).Value).ToList();
+                 where p.Value is JValue
+                 select ((JValue)p.Value).Value).ToList();
 
             Assert.AreEqual(1, parameterValues.Count);
             Assert.AreEqual("Intel", parameterValues[0].ToString());
@@ -1393,10 +1393,32 @@ keyword such as type of business.""
         [Test]
         public void ToObject_Enum_Converter()
         {
-            JObject o = JObject.Parse("{\"FooBar\":\"SOME_OTHER_VALUE\"}");
+            var utf16Json = "{\"FooBar\":\"SOME_OTHER_VALUE\"}";
 
+            JObject o = JObject.Parse(utf16Json);
             FooBar e = o["FooBar"].ToObject<FooBar>();
             Assert.AreEqual(FooBar.SomeOtherValue, e);
+
+            using (var doc = JsonDocument.Parse(utf16Json))
+            {
+                o = JObject.FromDocument(doc);
+                e = o["FooBar"].ToObject<FooBar>();
+                Assert.AreEqual(FooBar.SomeOtherValue, e);
+            }
+
+            var dynamicObj = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(utf16Json);
+            o = JObject.FromObject(dynamicObj);
+            e = o["FooBar"].ToObject<FooBar>();
+            Assert.AreEqual(FooBar.SomeOtherValue, e);
+
+            JValue v = new JValue("SOME_OTHER_VALUE");
+            Assert.AreEqual(FooBar.SomeOtherValue, v.ToObject<FooBar>());
+
+            v = new JValue(1);
+            Assert.AreEqual(FooBar.SomeOtherValue, v.ToObject<FooBar>());
+
+            v = new JValue("1");
+            Assert.AreEqual(FooBar.SomeOtherValue, v.ToObject<FooBar>());
         }
 
         public enum FooBarNoEnum
@@ -1416,101 +1438,123 @@ keyword such as type of business.""
         [Test]
         public void ToObject_Enum_NoConverter()
         {
-            JObject o = JObject.Parse("{\"FooBarNoEnum\":\"SOME_OTHER_VALUE\"}");
+            var utf16Json = "{\"FooBarNoEnum\":\"SOME_OTHER_VALUE\"}";
 
+            JObject o = JObject.Parse(utf16Json);
             FooBarNoEnum e = o["FooBarNoEnum"].ToObject<FooBarNoEnum>();
             Assert.AreEqual(FooBarNoEnum.SomeOtherValue, e);
+
+            using (var doc = JsonDocument.Parse(utf16Json))
+            {
+                o = JObject.FromDocument(doc);
+                e = o["FooBarNoEnum"].ToObject<FooBarNoEnum>();
+                Assert.AreEqual(FooBarNoEnum.SomeOtherValue, e);
+            }
+
+            var dynamicObj = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(utf16Json);
+            o = JObject.FromObject(dynamicObj);
+            e = o["FooBarNoEnum"].ToObject<FooBarNoEnum>();
+            Assert.AreEqual(FooBarNoEnum.SomeOtherValue, e);
+
+            JValue v = new JValue("SOME_OTHER_VALUE");
+            Assert.AreEqual(FooBarNoEnum.SomeOtherValue, v.ToObject<FooBarNoEnum>());
+
+            v = new JValue(1);
+            Assert.AreEqual(FooBarNoEnum.SomeOtherValue, v.ToObject<FooBarNoEnum>());
+
+            v = new JValue("1");
+            Assert.AreEqual(FooBarNoEnum.SomeOtherValue, v.ToObject<FooBarNoEnum>());
         }
 
-//        [Test]
-//        public void SerializeWithNoRedundentIdPropertiesTest()
-//        {
-//            Dictionary<string, object> dic1 = new Dictionary<string, object>();
-//            Dictionary<string, object> dic2 = new Dictionary<string, object>();
-//            Dictionary<string, object> dic3 = new Dictionary<string, object>();
-//            List<object> list1 = new List<object>();
-//            List<object> list2 = new List<object>();
+        //        [Test]
+        //        public void SerializeWithNoRedundentIdPropertiesTest()
+        //        {
+        //            Dictionary<string, object> dic1 = new Dictionary<string, object>();
+        //            Dictionary<string, object> dic2 = new Dictionary<string, object>();
+        //            Dictionary<string, object> dic3 = new Dictionary<string, object>();
+        //            List<object> list1 = new List<object>();
+        //            List<object> list2 = new List<object>();
 
-//            dic1.Add("list1", list1);
-//            dic1.Add("list2", list2);
-//            dic1.Add("dic1", dic1);
-//            dic1.Add("dic2", dic2);
-//            dic1.Add("dic3", dic3);
-//            dic1.Add("integer", 12345);
+        //            dic1.Add("list1", list1);
+        //            dic1.Add("list2", list2);
+        //            dic1.Add("dic1", dic1);
+        //            dic1.Add("dic2", dic2);
+        //            dic1.Add("dic3", dic3);
+        //            dic1.Add("integer", 12345);
 
-//            list1.Add("A string!");
-//            list1.Add(dic1);
-//            list1.Add(new List<object>());
+        //            list1.Add("A string!");
+        //            list1.Add(dic1);
+        //            list1.Add(new List<object>());
 
-//            dic3.Add("dic3", dic3);
+        //            dic3.Add("dic3", dic3);
 
-//            var json = SerializeWithNoRedundentIdProperties(dic1);
+        //            var json = SerializeWithNoRedundentIdProperties(dic1);
 
-//            StringAssert.AreEqual(@"{
-//  ""$id"": ""1"",
-//  ""list1"": [
-//    ""A string!"",
-//    {
-//      ""$ref"": ""1""
-//    },
-//    []
-//  ],
-//  ""list2"": [],
-//  ""dic1"": {
-//    ""$ref"": ""1""
-//  },
-//  ""dic2"": {},
-//  ""dic3"": {
-//    ""$id"": ""3"",
-//    ""dic3"": {
-//      ""$ref"": ""3""
-//    }
-//  },
-//  ""integer"": 12345
-//}", json);
-//        }
+        //            StringAssert.AreEqual(@"{
+        //  ""$id"": ""1"",
+        //  ""list1"": [
+        //    ""A string!"",
+        //    {
+        //      ""$ref"": ""1""
+        //    },
+        //    []
+        //  ],
+        //  ""list2"": [],
+        //  ""dic1"": {
+        //    ""$ref"": ""1""
+        //  },
+        //  ""dic2"": {},
+        //  ""dic3"": {
+        //    ""$id"": ""3"",
+        //    ""dic3"": {
+        //      ""$ref"": ""3""
+        //    }
+        //  },
+        //  ""integer"": 12345
+        //}", json);
+        //        }
 
-//        private static string SerializeWithNoRedundentIdProperties(object o)
-//        {
-//            JTokenWriter writer = new JTokenWriter();
-//            JsonSerializer serializer = JsonSerializer.Create(new JsonSerializerSettings
-//            {
-//                Formatting = Formatting.Indented,
-//                PreserveReferencesHandling = PreserveReferencesHandling.Objects
-//            });
-//            serializer.Serialize(writer, o);
+        //        private static string SerializeWithNoRedundentIdProperties(object o)
+        //        {
+        //            JTokenWriter writer = new JTokenWriter();
+        //            JsonSerializer serializer = JsonSerializer.Create(new JsonSerializerSettings
+        //            {
+        //                Formatting = Formatting.Indented,
+        //                PreserveReferencesHandling = PreserveReferencesHandling.Objects
+        //            });
+        //            serializer.Serialize(writer, o);
 
-//            JToken t = writer.Token;
+        //            JToken t = writer.Token;
 
-//            if (t is JContainer)
-//            {
-//                JContainer c = t as JContainer;
+        //            if (t is JContainer)
+        //            {
+        //                JContainer c = t as JContainer;
 
-//                // find all the $id properties in the JSON
-//                IList<JProperty> ids = c.Descendants().OfType<JProperty>().Where(d => d.Name == "$id").ToList();
+        //                // find all the $id properties in the JSON
+        //                IList<JProperty> ids = c.Descendants().OfType<JProperty>().Where(d => d.Name == "$id").ToList();
 
-//                if (ids.Count > 0)
-//                {
-//                    // find all the $ref properties in the JSON
-//                    IList<JProperty> refs = c.Descendants().OfType<JProperty>().Where(d => d.Name == "$ref").ToList();
+        //                if (ids.Count > 0)
+        //                {
+        //                    // find all the $ref properties in the JSON
+        //                    IList<JProperty> refs = c.Descendants().OfType<JProperty>().Where(d => d.Name == "$ref").ToList();
 
-//                    foreach (JProperty idProperty in ids)
-//                    {
-//                        // check whether the $id property is used by a $ref
-//                        bool idUsed = refs.Any(r => idProperty.Value.ToString() == r.Value.ToString());
+        //                    foreach (JProperty idProperty in ids)
+        //                    {
+        //                        // check whether the $id property is used by a $ref
+        //                        bool idUsed = refs.Any(r => idProperty.Value.ToString() == r.Value.ToString());
 
-//                        if (!idUsed)
-//                        {
-//                            // remove unused $id
-//                            idProperty.Remove();
-//                        }
-//                    }
-//                }
-//            }
+        //                        if (!idUsed)
+        //                        {
+        //                            // remove unused $id
+        //                            idProperty.Remove();
+        //                        }
+        //                    }
+        //                }
+        //            }
 
-//            string json = t.ToString();
-//            return json;
-//        }
+        //            string json = t.ToString();
+        //            return json;
+        //        }
 
         [Test]
         public void HashCodeTests()

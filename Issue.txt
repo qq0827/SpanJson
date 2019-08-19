@@ -19,7 +19,7 @@ Issue.007 ★ TypeNameHandling(自定义Formatter和动态特性JsonCustomSerial
 
 Issue.008 ★ byte[] => base64
 
-Issue.009 ☆ SpanJson.AspNetCore.Formatter
+Issue.009 ☆ ParseUnquotedProperty、ParseQuotedNumber、ParseQuotedBoolean
 
 Issue.010 ☆ 
 
