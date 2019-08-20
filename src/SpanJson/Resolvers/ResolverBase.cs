@@ -233,7 +233,9 @@ namespace SpanJson.Resolvers
 
         protected virtual void TryGetAnnotatedAttributeConstructor(Type type, out ConstructorInfo constructor, out JsonConstructorAttribute attribute)
         {
-            constructor = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance)
+            var declaredConstructors = type.GetTypeInfo().DeclaredConstructors.Where(c => !c.IsStatic && c.IsPublic).ToArray();
+
+            constructor = declaredConstructors
                 .FirstOrDefault(a => a.FirstAttribute<JsonConstructorAttribute>() is object);
             if (constructor is object)
             {
@@ -244,13 +246,49 @@ namespace SpanJson.Resolvers
             if (TryGetBaseClassJsonConstructorAttribute(type, out attribute))
             {
                 // We basically take the one with the most parameters, this needs to match the dictionary // TODO find better method
-                constructor = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance).OrderByDescending(a => a.GetParameters().Length)
+                constructor = declaredConstructors.OrderByDescending(a => a.GetParameters().Length)
+                    .FirstOrDefault();
+                return;
+            }
+
+            attribute = type.FirstAttribute<JsonConstructorAttribute>();
+            if (attribute is object)
+            {
+                var parameterNames = attribute.ParameterNames;
+                var hasParameterNames = parameterNames is object && (uint)parameterNames.Length > 0u;
+                var parameterTypes = attribute.ParameterTypes;
+                var hasParameterTypes = parameterTypes is object && (uint)parameterTypes.Length > 0u;
+                if (hasParameterTypes)
+                {
+                    constructor = declaredConstructors.FirstOrDefault(a => MatchConstructor(a, parameterTypes));
+                    if (constructor is object) { return; }
+                }
+                else if (hasParameterNames)
+                {
+                    constructor = declaredConstructors.OrderByDescending(a => a.GetParameters().Length).FirstOrDefault(a => a.GetParameters().Length == parameterNames.Length);
+                    if (constructor is object) { return; }
+                }
+
+                // We basically take the one with the most parameters, this needs to match the dictionary // TODO find better method
+                constructor = declaredConstructors.OrderByDescending(a => a.GetParameters().Length)
                     .FirstOrDefault();
                 return;
             }
 
             constructor = default;
             attribute = default;
+        }
+
+        private static bool MatchConstructor(ConstructorInfo constructor, Type[] givenParameterTypes)
+        {
+            var parameters = constructor.GetParameters();
+            if (parameters.Length != givenParameterTypes.Length) { return false; }
+
+            for (int idx = 0; idx < parameters.Length; idx++)
+            {
+                if (parameters[idx].ParameterType != givenParameterTypes[idx]) { return false; }
+            }
+            return true;
         }
 
         private static bool IsIgnored(MemberInfo memberInfo)

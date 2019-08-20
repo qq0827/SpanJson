@@ -15,6 +15,20 @@ namespace SpanJson
             ParameterNames = parameterNames;
         }
 
+        /// <summary>Override the constructor's parameter names to match the member names of the type, the order is relevant.</summary>
+        public JsonConstructorAttribute(Type[] parameterTypes)
+        {
+            ParameterTypes = parameterTypes;
+        }
+
+        /// <summary>Override the constructor's parameter names to match the member names of the type, the order is relevant.</summary>
+        public JsonConstructorAttribute(string[] parameterNames, Type[] parameterTypes)
+        {
+            ParameterNames = parameterNames;
+            ParameterTypes = parameterTypes;
+        }
+
         public string[] ParameterNames { get; }
+        public Type[] ParameterTypes { get; }
     }
 }

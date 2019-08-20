@@ -261,10 +261,12 @@ namespace SpanJson.Tests
         public static void IsPolymorphically()
         {
             Assert.False(JsonComplexSerializer.IsPolymorphically<LayerSettings>());
+            Assert.False(JsonComplexSerializer.IsPolymorphically<IList<string>>());
         }
 
         public class LayerSettings
         {
+            public IList<string> Roles { get; set; }
             public string[] Zones { get; set; }
         }
 
