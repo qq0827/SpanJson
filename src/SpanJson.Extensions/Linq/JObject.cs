@@ -150,7 +150,16 @@ namespace SpanJson.Linq
 
             foreach (KeyValuePair<string, JToken> contentItem in jobj)
             {
-                JProperty existingProperty = Property(contentItem.Key, settings?.PropertyNameComparison ?? StringComparison.Ordinal);
+                JProperty existingProperty;
+                var propertyNameComparison = settings?.PropertyNameComparison;
+                if (!propertyNameComparison.HasValue || StringComparison.Ordinal == propertyNameComparison.Value)
+                {
+                    existingProperty = Property(contentItem.Key);
+                }
+                else
+                {
+                    existingProperty = Property(contentItem.Key, propertyNameComparison.Value);
+                }
 
                 if (existingProperty is null)
                 {
@@ -194,7 +203,14 @@ namespace SpanJson.Linq
         /// <returns>A <see cref="JProperty"/> with the specified name or <c>null</c>.</returns>
         public JProperty Property(string name)
         {
-            return Property(name, StringComparison.Ordinal);
+            if (name is null) { return null; }
+
+            if (_properties.TryGetValue(name, out JToken property))
+            {
+                return (JProperty)property;
+            }
+
+            return null;
         }
 
         /// <summary>Gets the <see cref="JProperty"/> with the specified name.
@@ -278,13 +294,13 @@ namespace SpanJson.Linq
             {
                 if (propertyName is null) { ThrowHelper.ThrowArgumentNullException(ExceptionArgument.propertyName); }
 
-                JProperty property = Property(propertyName, StringComparison.Ordinal);
+                JProperty property = Property(propertyName);
 
                 return property?.Value;
             }
             set
             {
-                JProperty property = Property(propertyName, StringComparison.Ordinal);
+                JProperty property = Property(propertyName);
                 if (property is object)
                 {
                     property.Value = value;
@@ -303,7 +319,12 @@ namespace SpanJson.Linq
         /// <returns>The <see cref="JToken"/> with the specified property name.</returns>
         public JToken GetValue(string propertyName)
         {
-            return GetValue(propertyName, StringComparison.Ordinal);
+            //if (propertyName is null) { return null; } // Property 也会对 propertyName 进行判断
+
+            // attempt to get value via dictionary first for performance
+            var property = Property(propertyName);
+
+            return property?.Value;
         }
 
         /// <summary>Gets the <see cref="JToken"/> with the specified property name.
@@ -314,7 +335,7 @@ namespace SpanJson.Linq
         /// <returns>The <see cref="JToken"/> with the specified property name.</returns>
         public JToken GetValue(string propertyName, StringComparison comparison)
         {
-            if (propertyName is null) { return null; }
+            //if (propertyName is null) { return null; } // Property 也会对 propertyName 进行判断
 
             // attempt to get value via dictionary first for performance
             var property = Property(propertyName, comparison);

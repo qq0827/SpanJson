@@ -64,7 +64,7 @@ namespace SpanJson.Linq
         /// <returns><c>true</c> if item was successfully removed; otherwise, <c>false</c>.</returns>
         public bool Remove(string propertyName)
         {
-            JProperty property = Property(propertyName, StringComparison.Ordinal);
+            JProperty property = Property(propertyName);
             if (property is null)
             {
                 return false;
@@ -82,15 +82,15 @@ namespace SpanJson.Linq
         /// <returns><c>true</c> if a value was successfully retrieved; otherwise, <c>false</c>.</returns>
         public bool TryGetValue(string propertyName, out JToken value)
         {
-            JProperty property = Property(propertyName, StringComparison.Ordinal);
-            if (property is null)
+            JProperty property = Property(propertyName);
+            if (property is object)
             {
-                value = null;
-                return false;
+                value = property.Value;
+                return true;
             }
 
-            value = property.Value;
-            return true;
+            value = null;
+            return false;
         }
 
         ICollection<JToken> IDictionary<string, JToken>.Values => throw ThrowHelper.GetNotImplementedException();
@@ -111,7 +111,7 @@ namespace SpanJson.Linq
 
         bool ICollection<KeyValuePair<string, JToken>>.Contains(KeyValuePair<string, JToken> item)
         {
-            JProperty property = Property(item.Key, StringComparison.Ordinal);
+            JProperty property = Property(item.Key);
             if (property is null)
             {
                 return false;
