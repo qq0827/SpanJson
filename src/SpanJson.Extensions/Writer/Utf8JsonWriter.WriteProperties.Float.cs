@@ -258,7 +258,7 @@ namespace SpanJson
             Unsafe.Add(ref output, pos++) = JsonUtf8Constant.DoubleQuote;
             Unsafe.Add(ref output, pos++) = JsonUtf8Constant.KeyValueSeperator;
 
-            bool result = Utf8Formatter.TryFormat(value, FreeSpan, out int bytesWritten);
+            bool result = TryFormatSingle(value, FreeSpan, out int bytesWritten);
             Debug.Assert(result);
             pos += bytesWritten;
         }
@@ -288,7 +288,7 @@ namespace SpanJson
             Unsafe.Add(ref output, pos++) = JsonUtf8Constant.DoubleQuote;
             Unsafe.Add(ref output, pos++) = JsonUtf8Constant.KeyValueSeperator;
 
-            bool result = Utf8Formatter.TryFormat(value, FreeSpan, out int bytesWritten);
+            bool result = TryFormatSingle(value, FreeSpan, out int bytesWritten);
             Debug.Assert(result);
             pos += bytesWritten;
         }
@@ -332,7 +332,7 @@ namespace SpanJson
             Unsafe.Add(ref output, pos++) = JsonUtf8Constant.KeyValueSeperator;
             Unsafe.Add(ref output, pos++) = JsonUtf8Constant.Space;
 
-            bool result = Utf8Formatter.TryFormat(value, FreeSpan, out int bytesWritten);
+            bool result = TryFormatSingle(value, FreeSpan, out int bytesWritten);
             Debug.Assert(result);
             pos += bytesWritten;
         }
@@ -376,7 +376,7 @@ namespace SpanJson
             Unsafe.Add(ref output, pos++) = JsonUtf8Constant.KeyValueSeperator;
             Unsafe.Add(ref output, pos++) = JsonUtf8Constant.Space;
 
-            bool result = Utf8Formatter.TryFormat(value, FreeSpan, out int bytesWritten);
+            bool result = TryFormatSingle(value, FreeSpan, out int bytesWritten);
             Debug.Assert(result);
             pos += bytesWritten;
         }

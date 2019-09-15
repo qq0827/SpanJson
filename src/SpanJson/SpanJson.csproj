@@ -3,7 +3,7 @@
   <Import Project="..\version.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.2;netstandard2.0;net471;net451</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.0;netcoreapp2.2;netstandard2.0;net471;net451</TargetFrameworks>
     <RootNamespace>SpanJson</RootNamespace>
     <AssemblyName>SpanJson</AssemblyName>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
@@ -20,10 +20,12 @@
 
   <ItemGroup>
     <PackageReference Include="CuteAnt.Core" Version="$(CuteAntCorePackageVersion)" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' != 'netcoreapp3.0' ">
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="$(SystemRuntimeCompilerServicesUnsafePackageVersion)" />
     <PackageReference Include="System.Text.Encodings.Web" Version="$(SystemTextEncodingsWebPackageVersion)" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' != 'netcoreapp2.2' ">
+  <ItemGroup Condition=" '$(TargetFramework)' != 'netcoreapp2.2' and '$(TargetFramework)' != 'netcoreapp3.0' ">
     <PackageReference Include="System.Buffers" Version="$(SystemBuffersPackageVersion)" />
     <PackageReference Include="System.Memory" Version="$(SystemMemoryPackageVersion)" />
     <PackageReference Include="System.Numerics.Vectors" Version="$(SystemNumericsVectorsPackageVersion)" />

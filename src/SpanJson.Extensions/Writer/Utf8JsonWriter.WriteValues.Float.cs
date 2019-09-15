@@ -57,7 +57,7 @@ namespace SpanJson
                 Unsafe.Add(ref output, pos++) = JsonUtf8Constant.ListSeparator;
             }
 
-            bool result = Utf8Formatter.TryFormat(value, FreeSpan, out int bytesWritten);
+            bool result = TryFormatSingle(value, FreeSpan, out int bytesWritten);
             Debug.Assert(result);
             pos += bytesWritten;
         }

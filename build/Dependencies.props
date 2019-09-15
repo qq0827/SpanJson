@@ -1,59 +1,25 @@
 <Project>
   <!-- Shared Package Versions -->
   <PropertyGroup>
-    <CuteAntCoreAbstractionsPackageVersion>2.2.0-rtm-190618-01</CuteAntCoreAbstractionsPackageVersion>
-    <CuteAntCorePackageVersion>2.2.0-rtm-190618-01</CuteAntCorePackageVersion>
-    <CuteAntRuntimePackageVersion>2.2.0-rtm-190618-01</CuteAntRuntimePackageVersion>
+    <MicrosoftBuildPackageVersion>16.0.461</MicrosoftBuildPackageVersion>
+    <MicrosoftBuildRuntimePackageVersion>16.0.461</MicrosoftBuildRuntimePackageVersion>
+    <MicrosoftBuildTasksCorePackageVersion>16.0.461</MicrosoftBuildTasksCorePackageVersion>
+    <MicrosoftBuildUtilitiesCorePackageVersion>16.0.461</MicrosoftBuildUtilitiesCorePackageVersion>
 
-    <HyperionPackageVersion>0.9.8</HyperionPackageVersion>
-    <HyperionUnofficialPackageVersion>0.9.8-rtm-190310-01</HyperionUnofficialPackageVersion>
-    <ProtobufNetPackageVersion>2.4.0</ProtobufNetPackageVersion>
-    <NewtonsoftJsonPackageVersion>12.0.2</NewtonsoftJsonPackageVersion>
-    <JilPackageVersion>2.17.0</JilPackageVersion>
-    <Utf8JsonPackageVersion>1.3.7</Utf8JsonPackageVersion>
-    <CuteAntJsonExtensionsPackageVersion>2.2.0-rtm-190618-01</CuteAntJsonExtensionsPackageVersion>
+    <MicrosoftBclPackageVersion>1.1.10</MicrosoftBclPackageVersion>
+    <MicrosoftBclAsyncPackageVersion>1.0.168</MicrosoftBclAsyncPackageVersion>
+    <MicrosoftBclBuildPackageVersion>1.0.21</MicrosoftBclBuildPackageVersion>
 
-    <MicrosoftCSharpPackageVersion>4.5.0</MicrosoftCSharpPackageVersion>
-    <MicrosoftAspNetCoreMvcPackageVersion>2.2.0</MicrosoftAspNetCoreMvcPackageVersion>
-    <MicrosoftAspNetCoreMvcCorePackageVersion>2.2.5</MicrosoftAspNetCoreMvcCorePackageVersion>
-    <MicrosoftAspNetCoreTestHostPackageVersion>2.2.0</MicrosoftAspNetCoreTestHostPackageVersion>
+    <MicrosoftApplicationInsightsAspNetCorePackageVersion>2.6.1</MicrosoftApplicationInsightsAspNetCorePackageVersion>
+    <MicrosoftApplicationInsightsPackageVersion>2.9.1</MicrosoftApplicationInsightsPackageVersion>
 
-    <SystemBuffersPackageVersion>4.5.0</SystemBuffersPackageVersion>
-    <SystemCollectionsImmutablePackageVersion>1.5.0</SystemCollectionsImmutablePackageVersion>
-    <SystemIOPipelinesPackageVersion>4.5.3</SystemIOPipelinesPackageVersion>
-    <SystemMemoryPackageVersion>4.5.3</SystemMemoryPackageVersion>
-    <SystemNumericsVectorsPackageVersion>4.5.0</SystemNumericsVectorsPackageVersion>
-    <SystemThreadingTasksExtensionsPackageVersion>4.5.3</SystemThreadingTasksExtensionsPackageVersion>
-    <SystemValueTuplePackageVersion>4.5.0</SystemValueTuplePackageVersion>
-
-    <SystemRuntimeCompilerServicesUnsafePackageVersion>4.6.0-preview9.19410.6</SystemRuntimeCompilerServicesUnsafePackageVersion>
-    <SystemRuntimeInteropServicesRuntimeInformationPackageVersion>4.3.0</SystemRuntimeInteropServicesRuntimeInformationPackageVersion>
-    <SystemTextEncodingsWebPackageVersion>4.6.0-preview9.19410.6</SystemTextEncodingsWebPackageVersion>
-    <SystemTextJsonPackageVersion>4.6.0-preview9.19410.6</SystemTextJsonPackageVersion>
-
-    <SystemReflectionDispatchProxyPackageVersion>4.5.1</SystemReflectionDispatchProxyPackageVersion>
-    <SystemReflectionEmitPackageVersion>4.3.0</SystemReflectionEmitPackageVersion>
-    <SystemReflectionEmitILGenerationPackageVersion>4.3.0</SystemReflectionEmitILGenerationPackageVersion>
-    <SystemReflectionEmitLightweightPackageVersion>4.3.0</SystemReflectionEmitLightweightPackageVersion>
-    <SystemReflectionExtensionsPackageVersion>4.3.0</SystemReflectionExtensionsPackageVersion>
-    <SystemReflectionTypeExtensionsPackageVersion>4.5.1</SystemReflectionTypeExtensionsPackageVersion>
-
-    <K4osCompressionLZ4PackageVersion>1.1.9</K4osCompressionLZ4PackageVersion>
-    <K4osCompressionLZ4StreamsPackageVersion>1.1.9</K4osCompressionLZ4StreamsPackageVersion>
-    <K4osHashxxHashPackageVersion>1.0.5</K4osHashxxHashPackageVersion>
-    <Lz4netPackageVersion>1.0.15.93</Lz4netPackageVersion>
-
-    <MicrosoftNetTestSdkPackageVersion>16.2.0</MicrosoftNetTestSdkPackageVersion>
-    <BenchmarkDotNetPackageVersion>0.11.3</BenchmarkDotNetPackageVersion>
-    <BenchmarkDotNetDiagnosticsWindowsPackageVersion>0.11.3</BenchmarkDotNetDiagnosticsWindowsPackageVersion>
-    <xUnitPackageVersion>2.4.1</xUnitPackageVersion>
-    <xUnitAnalyzersPackageVersion>0.10.0</xUnitAnalyzersPackageVersion>
-    <xUnitRunnerVsPackageVersion>2.4.1</xUnitRunnerVsPackageVersion>
-    <MoqPackageVersion>4.12.0</MoqPackageVersion>
-
-    <NETCoreApp2RuntimeFrameworkVersion>2.0.9</NETCoreApp2RuntimeFrameworkVersion>
-    <MicrosoftNETCoreApp20PackageVersion>2.0.9</MicrosoftNETCoreApp20PackageVersion>
-    <MicrosoftNETCoreApp21PackageVersion>2.1.11</MicrosoftNETCoreApp21PackageVersion>
-    <MicrosoftNETCoreApp22PackageVersion>2.2.5</MicrosoftNETCoreApp22PackageVersion>
+    <MicrosoftSourceLinkGitHubPackageVersion>1.0.0-beta2-18618-05</MicrosoftSourceLinkGitHubPackageVersion>
+    <SourceLinkCreateCommandLinePackageVersion>2.8.3</SourceLinkCreateCommandLinePackageVersion>
+    <SourceLinkEmbedAllSourceFilesPackageVersion>2.8.3</SourceLinkEmbedAllSourceFilesPackageVersion>
+    <SourceLinkCreateGitHubPackageVersion>2.8.3</SourceLinkCreateGitHubPackageVersion>
+    <SourceLinkCopyPdbFilesVersion>2.8.3</SourceLinkCopyPdbFilesVersion>
+    <SourceLinkEmbedPaketFilesPackageVersion>2.8.3</SourceLinkEmbedPaketFilesPackageVersion>
+    <SourceLinkTestPackageVersion>2.8.3</SourceLinkTestPackageVersion>
+    <SourceLinkCreateBitBucketPackageVersion>2.8.3</SourceLinkCreateBitBucketPackageVersion>
   </PropertyGroup>
 </Project>

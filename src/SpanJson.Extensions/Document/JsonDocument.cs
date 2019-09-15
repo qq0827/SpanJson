@@ -8,6 +8,7 @@ using System.Buffers.Text;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 using CuteAnt;
 using SpanJson.Internal;
 
@@ -94,22 +95,23 @@ namespace SpanJson.Document
         /// <inheritdoc />
         public void Dispose()
         {
-            if (_utf8Json.IsEmpty || !IsDisposable)
+            int length = _utf8Json.Length;
+            if (0u >= (uint)length || !IsDisposable)
             {
                 return;
             }
 
-            int length = _utf8Json.Length;
-            _utf8Json = ReadOnlyMemory<byte>.Empty;
             _parsedData.Dispose();
+            _utf8Json = ReadOnlyMemory<byte>.Empty;
 
             // When "extra rented bytes exist" they contain the document,
             // and thus need to be cleared before being returned.
-            if (_extraRentedBytes is object)
+            byte[] extraRentedBytes = Interlocked.Exchange(ref _extraRentedBytes, null);
+
+            if (extraRentedBytes is object)
             {
-                //_extraRentedBytes.AsSpan(0, length).Clear();
-                ArrayPool<byte>.Shared.Return(_extraRentedBytes);
-                _extraRentedBytes = null;
+                //extraRentedBytes.AsSpan(0, length).Clear();
+                ArrayPool<byte>.Shared.Return(extraRentedBytes);
             }
         }
 
@@ -929,45 +931,8 @@ namespace SpanJson.Document
                         writer.WriteEndArray();
                         continue;
                     case JsonTokenType.PropertyName:
-                        {
-                            DbRow propertyValue = _parsedData.Get(i + DbRow.Size);
-
-                            ReadOnlySpan<byte> propertyName =
-                                _utf8Json.Slice(row.Location, row.SizeOrLength).Span;
-
-                            // "Move" to the value.
-                            i += DbRow.Size;
-
-                            switch (propertyValue.TokenType)
-                            {
-                                case JsonTokenType.String:
-                                    WriteString(propertyName, propertyValue, ref writer);
-                                    continue;
-                                case JsonTokenType.Number:
-                                    writer.WriteNumber(
-                                        propertyName,
-                                        _utf8Json.Slice(propertyValue.Location, propertyValue.SizeOrLength).Span);
-                                    continue;
-                                case JsonTokenType.True:
-                                    writer.WriteBoolean(propertyName, value: true);
-                                    continue;
-                                case JsonTokenType.False:
-                                    writer.WriteBoolean(propertyName, value: false);
-                                    continue;
-                                case JsonTokenType.Null:
-                                    writer.WriteNull(propertyName);
-                                    continue;
-                                case JsonTokenType.BeginObject:
-                                    writer.WriteStartObject(propertyName);
-                                    continue;
-                                case JsonTokenType.BeginArray:
-                                    writer.WriteStartArray(propertyName);
-                                    continue;
-                            }
-
-                            Debug.Fail($"Unexpected encounter with JsonTokenType {row.TokenType}");
-                            break;
-                        }
+                        WritePropertyName(row, writer);
+                        continue;
                 }
 
                 Debug.Fail($"Unexpected encounter with JsonTokenType {row.TokenType}");
@@ -976,7 +941,7 @@ namespace SpanJson.Document
 
         private ReadOnlySpan<byte> UnescapeString(in DbRow row, out ArraySegment<byte> rented)
         {
-            Debug.Assert(row.TokenType == JsonTokenType.String);
+            Debug.Assert(row.TokenType == JsonTokenType.String || row.TokenType == JsonTokenType.PropertyName);
             int loc = row.Location;
             int length = row.SizeOrLength;
             ReadOnlySpan<byte> text = _utf8Json.Slice(loc, length).Span;
@@ -1008,15 +973,13 @@ namespace SpanJson.Document
             }
         }
 
-        private void WriteString(in ReadOnlySpan<byte> propertyName, in DbRow row, ref Utf8JsonWriter writer)
+        private void WritePropertyName(in DbRow row, Utf8JsonWriter writer)
         {
             ArraySegment<byte> rented = default;
 
             try
             {
-                writer.WriteString(
-                    propertyName,
-                    UnescapeString(row, out rented));
+                writer.WritePropertyName(UnescapeString(row, out rented));
             }
             finally
             {

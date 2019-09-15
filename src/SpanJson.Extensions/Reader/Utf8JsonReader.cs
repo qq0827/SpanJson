@@ -1312,6 +1312,7 @@ namespace SpanJson
             {
                 if (IsLastSpan)
                 {
+                    _bytePositionInLine += localBuffer.Length + 1;  // Account for the start quote
                     SysJsonThrowHelper.ThrowJsonReaderException(ref this, ExceptionResource.EndOfStringNotFound);
                 }
                 return false;
@@ -1360,34 +1361,20 @@ namespace SpanJson
                                 SysJsonThrowHelper.ThrowJsonReaderException(ref this, ExceptionResource.InvalidCharacterAfterEscapeWithinString, currentByte);
                             }
 
-                            switch ((uint)currentByte)
+                            if ((uint)currentByte == 'u')
                             {
-                                case JsonUtf8Constant.DoubleQuote:
-                                    // Ignore an escaped quote.
-                                    // This is likely the most common case, so adding an explicit check
-                                    // to avoid doing the unnecessary checks below.
-                                    break;
-
-                                case 'n':
-                                    // Escaped new line character
-                                    _bytePositionInLine = -1; // Should be 0, but we increment _bytePositionInLine below already
-                                    _lineNumber++;
-                                    break;
-
-                                case 'u':
-                                    // Expecting 4 hex digits to follow the escaped 'u'
-                                    _bytePositionInLine++;  // move past the 'u'
-                                    if (ValidateHexDigits(data, idx + 1))
-                                    {
-                                        idx += 4;   // Skip the 4 hex digits, the for loop accounts for idx incrementing past the 'u'
-                                    }
-                                    else
-                                    {
-                                        // We found less than 4 hex digits. Check if there is more data to follow, otherwise throw.
-                                        idx = dataLen;
-                                        goto LoopDone;
-                                    }
-                                    break;
+                                // Expecting 4 hex digits to follow the escaped 'u'
+                                _bytePositionInLine++;  // move past the 'u'
+                                if (ValidateHexDigits(data, idx + 1))
+                                {
+                                    idx += 4;   // Skip the 4 hex digits, the for loop accounts for idx incrementing past the 'u'
+                                }
+                                else
+                                {
+                                    // We found less than 4 hex digits. Check if there is more data to follow, otherwise throw.
+                                    idx = dataLen;
+                                    goto LoopDone;
+                                }
                             }
                             nextCharEscaped = false;
                         }
@@ -1550,7 +1537,7 @@ namespace SpanJson
             Debug.Assert(resultExponent == ConsumeNumberResult.OperationIncomplete);
 
             _bytePositionInLine += i;
-            SysJsonThrowHelper.ThrowJsonReaderException(ref this, ExceptionResource.ExpectedEndOfDigitNotFound, nextByte);
+            SysJsonThrowHelper.ThrowJsonReaderException(ref this, ExceptionResource.ExpectedEndOfDigitNotFound, data[i]);
 
         Done:
             ValueSpan = data.Slice(0, i);
@@ -2015,47 +2002,33 @@ namespace SpanJson
                     }
 
                 case JsonTokenType.BeginObject:
-                    if (first == JsonUtf8Constant.CloseBrace)
+                    Debug.Assert(first != JsonUtf8Constant.CloseBrace);
+                    if (first != JsonUtf8Constant.DoubleQuote)
                     {
-                        EndObject();
+                        SysJsonThrowHelper.ThrowJsonReaderException(ref this, ExceptionResource.ExpectedStartOfPropertyNotFound, first);
                     }
-                    else
-                    {
-                        if (first != JsonUtf8Constant.DoubleQuote)
-                        {
-                            SysJsonThrowHelper.ThrowJsonReaderException(ref this, ExceptionResource.ExpectedStartOfPropertyNotFound, first);
-                        }
 
-                        int prevConsumed = _consumed;
-                        long prevPosition = _bytePositionInLine;
-                        long prevLineNumber = _lineNumber;
-                        if (!ConsumePropertyName())
-                        {
-                            // roll back potential changes
-                            _consumed = prevConsumed;
-                            _tokenType = JsonTokenType.BeginObject;
-                            _bytePositionInLine = prevPosition;
-                            _lineNumber = prevLineNumber;
-                            goto RollBack;
-                        }
-                        goto Done;
+                    int prevConsumed = _consumed;
+                    long prevPosition = _bytePositionInLine;
+                    long prevLineNumber = _lineNumber;
+                    if (!ConsumePropertyName())
+                    {
+                        // roll back potential changes
+                        _consumed = prevConsumed;
+                        _tokenType = JsonTokenType.BeginObject;
+                        _bytePositionInLine = prevPosition;
+                        _lineNumber = prevLineNumber;
+                        goto RollBack;
                     }
-                    break;
+                    goto Done;
 
                 case JsonTokenType.BeginArray:
-                    if (first == JsonUtf8Constant.CloseBracket)
+                    Debug.Assert(first != JsonUtf8Constant.CloseBracket);
+                    if (!ConsumeValue(first))
                     {
-                        EndArray();
+                        goto RollBack;
                     }
-                    else
-                    {
-                        if (!ConsumeValue(first))
-                        {
-                            goto RollBack;
-                        }
-                        goto Done;
-                    }
-                    break;
+                    goto Done;
 
                 case JsonTokenType.PropertyName:
                     if (!ConsumeValue(first))
@@ -2065,7 +2038,37 @@ namespace SpanJson
                     goto Done;
 
                 default:
-                    goto RollBack;
+                    Debug.Assert(_tokenType == JsonTokenType.EndArray || _tokenType == JsonTokenType.EndObject);
+                    if (_inObject)
+                    {
+                        Debug.Assert(first != JsonUtf8Constant.CloseBrace);
+                        if (first != JsonUtf8Constant.DoubleQuote)
+                        {
+                            SysJsonThrowHelper.ThrowJsonReaderException(ref this, ExceptionResource.ExpectedStartOfPropertyNotFound, first);
+                        }
+
+                        if (ConsumePropertyName())
+                        {
+                            goto Done;
+                        }
+                        else
+                        {
+                            goto RollBack;
+                        }
+                    }
+                    else
+                    {
+                        Debug.Assert(first != JsonUtf8Constant.CloseBracket);
+
+                        if (ConsumeValue(first))
+                        {
+                            goto Done;
+                        }
+                        else
+                        {
+                            goto RollBack;
+                        }
+                    }
             }
 
         Done:

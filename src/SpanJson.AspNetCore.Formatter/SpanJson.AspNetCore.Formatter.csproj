@@ -3,7 +3,7 @@
   <Import Project="..\version.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.0;netstandard2.0</TargetFrameworks>
     <RootNamespace>SpanJson.AspNetCore.Formatter</RootNamespace>
     <AssemblyName>SpanJson.AspNetCore.Formatter</AssemblyName>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
@@ -18,8 +18,11 @@
     <PackageReleaseNotes>Bugfixes and improvements</PackageReleaseNotes>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="$(MicrosoftAspNetCoreMvcCorePackageVersion)" />
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="$(MicrosoftAspNetCoreMvcCore2PackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>

@@ -58,7 +58,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ValidateBytes(in ReadOnlySpan<byte> bytes)
         {
-            if (bytes.Length > JsonSharedConstant.MaxBase46ValueTokenSize)
+            if (bytes.Length > JsonSharedConstant.MaxBase64ValueTokenSize)
                 SysJsonThrowHelper.ThrowArgumentException_ValueTooLarge(bytes.Length);
         }
 
@@ -133,14 +133,14 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ValidatePropertyAndBytes(in ReadOnlySpan<char> propertyName, in ReadOnlySpan<byte> bytes)
         {
-            if (propertyName.Length > JsonSharedConstant.MaxCharacterTokenSize || bytes.Length > JsonSharedConstant.MaxBase46ValueTokenSize)
+            if (propertyName.Length > JsonSharedConstant.MaxCharacterTokenSize || bytes.Length > JsonSharedConstant.MaxBase64ValueTokenSize)
                 SysJsonThrowHelper.ThrowArgumentException(propertyName, bytes);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ValidatePropertyAndBytes(in ReadOnlySpan<byte> propertyName, in ReadOnlySpan<byte> bytes)
         {
-            if (propertyName.Length > JsonSharedConstant.MaxUnescapedTokenSize || bytes.Length > JsonSharedConstant.MaxBase46ValueTokenSize)
+            if (propertyName.Length > JsonSharedConstant.MaxUnescapedTokenSize || bytes.Length > JsonSharedConstant.MaxBase64ValueTokenSize)
                 SysJsonThrowHelper.ThrowArgumentException(propertyName, bytes);
         }
 

@@ -105,14 +105,19 @@ namespace SpanJson.Internal
                 return idx;
             }
 
-            public static int NeedsEscaping(in ReadOnlySpan<char> utf16Source, JavaScriptEncoder encoder = null)
+            public static unsafe int NeedsEscaping(in ReadOnlySpan<char> utf16Source, JavaScriptEncoder encoder = null)
             {
                 int idx;
 
 #if !NET451
-                if (encoder is object)
+                // Some implementations of JavascriptEncoder.FindFirstCharacterToEncode may not accept
+                // null pointers and gaurd against that. Hence, check up-front and fall down to return -1.
+                if (encoder is object && !utf16Source.IsEmpty)
                 {
-                    idx = encoder.FindFirstCharacterToEncodeUtf8(MemoryMarshal.Cast<char, byte>(utf16Source));
+                    fixed (char* ptr = utf16Source)
+                    {
+                        idx = encoder.FindFirstCharacterToEncode(ptr, utf16Source.Length);
+                    }
                     goto Return;
                 }
 #endif

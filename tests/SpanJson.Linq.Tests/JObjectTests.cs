@@ -300,8 +300,8 @@ namespace SpanJson.Tests
             {
                 contains = o.ContainsKey(null);
                 Assert.AreEqual(false, contains);
-            }, @"Value cannot be null.
-Parameter name: propertyName");
+            }/*, @"Value cannot be null.
+Parameter name: propertyName"*/);
         }
 
         [Test]

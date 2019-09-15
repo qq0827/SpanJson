@@ -7,6 +7,7 @@ using System.Buffers;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 using SpanJson.Internal;
 
 namespace SpanJson.Document
@@ -155,7 +156,8 @@ namespace SpanJson.Document
 
             public void Dispose()
             {
-                if (_data is null || !_isDisposable)
+                byte[] data = Interlocked.Exchange(ref _data, null);
+                if (data is null || !_isDisposable)
                 {
                     return;
                 }
@@ -167,8 +169,7 @@ namespace SpanJson.Document
                 // The data in this rented buffer only conveys the positions and
                 // lengths of tokens in a document, but no content; so it does not
                 // need to be cleared.
-                ArrayPool<byte>.Shared.Return(_data);
-                _data = null;
+                ArrayPool<byte>.Shared.Return(data);
                 Length = 0;
             }
 

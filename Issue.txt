@@ -21,7 +21,7 @@ Issue.008 ★ byte[] => base64
 
 Issue.009 ☆ ParseUnquotedProperty、ParseQuotedNumber、ParseQuotedBoolean
 
-Issue.010 ☆ 
+Issue.010 ☆ JObject方式直接计算缓存
 
 Issue.011 ☆ 
 
