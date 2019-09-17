@@ -56,8 +56,8 @@
     <MongoDBDriverGridFSStrongNamePackageVersion>2.8.1</MongoDBDriverGridFSStrongNamePackageVersion>
     <mongocsharpdriverStrongNamePackageVersion>2.8.1</mongocsharpdriverStrongNamePackageVersion>
     <MySqlDataPackageVersion>8.0.16</MySqlDataPackageVersion>
-    <MySqlConnectorPackageVersion>0.57.0-beta9</MySqlConnectorPackageVersion>
-    <NpgsqlPackageVersion>4.0.9</NpgsqlPackageVersion>
+    <MySqlConnectorPackageVersion>0.57.0-rc1</MySqlConnectorPackageVersion>
+    <NpgsqlPackageVersion>4.0.10</NpgsqlPackageVersion>
     <OracleManagedDataAccessPackageVersion>18.6.0</OracleManagedDataAccessPackageVersion>
     <OracleManagedDataAccessCorePackageVersion>2.18.6</OracleManagedDataAccessCorePackageVersion>
     <StackExchangeRedisPackageVersion>2.0.601</StackExchangeRedisPackageVersion>
@@ -71,21 +71,21 @@
     <TopshelfSerilogPackageVersion>4.2.1</TopshelfSerilogPackageVersion>
 
     <!-- Logging related packages -->
-    <NLogPackageVersion>4.6.6</NLogPackageVersion>
-    <NLogDevPackageVersion>4.6.6</NLogDevPackageVersion>
-    <NLogExtensionsLoggingPackageVersion>1.5.2</NLogExtensionsLoggingPackageVersion>
-    <NLogWebAspNetCorePackageVersion>4.8.4</NLogWebAspNetCorePackageVersion>
+    <NLogPackageVersion>4.6.7</NLogPackageVersion>
+    <NLogDevPackageVersion>4.6.7</NLogDevPackageVersion>
+    <NLogExtensionsLoggingPackageVersion>1.5.4</NLogExtensionsLoggingPackageVersion>
+    <NLogWebAspNetCorePackageVersion>4.8.5</NLogWebAspNetCorePackageVersion>
 
     <SerilogPackageVersion>2.8.0</SerilogPackageVersion>
-    <SerilogDevPackageVersion>2.8.0</SerilogDevPackageVersion>
-    <SerilogAspNetCorePackageVersion>3.0.0-dev-00088</SerilogAspNetCorePackageVersion>
+    <SerilogDevPackageVersion>2.9.0-dev-01124</SerilogDevPackageVersion>
+    <SerilogAspNetCorePackageVersion>3.0.0</SerilogAspNetCorePackageVersion>
     <SerilogExtensionsLoggingPackageVersion>3.0.1</SerilogExtensionsLoggingPackageVersion>
-    <SerilogExtensionsHostingPackageVersion>3.0.0-dev-00019</SerilogExtensionsHostingPackageVersion>
-    <SerilogSinksConsolePackageVersion>3.1.2-dev-00823</SerilogSinksConsolePackageVersion>
+    <SerilogExtensionsHostingPackageVersion>3.0.0</SerilogExtensionsHostingPackageVersion>
+    <SerilogSinksConsolePackageVersion>3.1.2-dev-00824</SerilogSinksConsolePackageVersion>
     <SerilogExtensionsLoggingFilePackageVersion>2.0.0-dev-00032</SerilogExtensionsLoggingFilePackageVersion>
     <SerilogFormattingCompactPackageVersion>1.0.1-dev-00925</SerilogFormattingCompactPackageVersion>
     <SerilogSinksAsyncPackageVersion>1.4.0</SerilogSinksAsyncPackageVersion>
-    <SerilogSinksFilePackageVersion>4.1.0-dev-00847</SerilogSinksFilePackageVersion>
+    <SerilogSinksFilePackageVersion>4.1.0-dev-00850</SerilogSinksFilePackageVersion>
     <SerilogSinksRollingFilePackageVersion>3.3.1-dev-00771</SerilogSinksRollingFilePackageVersion>
 
     <SerilogSettingsAppSettingsPackageVersion>2.2.2</SerilogSettingsAppSettingsPackageVersion>
@@ -130,8 +130,8 @@
 
     <LibuvPackageVersion>1.10.0</LibuvPackageVersion>
 
-    <MimeKitPackageVersion>2.3.0</MimeKitPackageVersion>
-    <MailKitPackageVersion>2.3.0</MailKitPackageVersion>
+    <MimeKitPackageVersion>2.3.1.6</MimeKitPackageVersion>
+    <MailKitPackageVersion>2.3.1.6</MailKitPackageVersion>
 
     <!-- Serialization related packages -->
     <GoogleApiCommonProtosPackageVersion>1.6.0</GoogleApiCommonProtosPackageVersion>

@@ -60,15 +60,15 @@
     <MicrosoftExtensionsPrimitives2PackageVersion>2.2.0</MicrosoftExtensionsPrimitives2PackageVersion>
 
 
-    <NetFxAspNetCoreJsonPatch2PackageVersion>2.2.0</NetFxAspNetCoreJsonPatch2PackageVersion>
-    <NetFxExtensionsCaching2PackageVersion>2.2.0</NetFxExtensionsCaching2PackageVersion>
-    <NetFxExtensionsConfiguration2PackageVersion>2.2.0</NetFxExtensionsConfiguration2PackageVersion>
-    <NetFxExtensionsDependencyInjection2PackageVersion>2.2.0</NetFxExtensionsDependencyInjection2PackageVersion>
-    <NetFxExtensionsFileProviders2PackageVersion>2.2.0</NetFxExtensionsFileProviders2PackageVersion>
-    <NetFxExtensionsLogging2PackageVersion>2.2.0</NetFxExtensionsLogging2PackageVersion>
-    <NetFxExtensionsObjectPool2PackageVersion>2.2.0</NetFxExtensionsObjectPool2PackageVersion>
-    <NetFxExtensionsOptionsConfigurationExtensions2PackageVersion>2.2.0</NetFxExtensionsOptionsConfigurationExtensions2PackageVersion>
-    <NetFxExtensionsOptions2PackageVersion>2.2.0</NetFxExtensionsOptions2PackageVersion>
-    <NetFxExtensionsPrimitives2PackageVersion>2.2.0</NetFxExtensionsPrimitives2PackageVersion>
+    <NetFxAspNetCoreJsonPatchPackageVersion>2.2.0</NetFxAspNetCoreJsonPatchPackageVersion>
+    <NetFxExtensionsCachingPackageVersion>2.2.0</NetFxExtensionsCachingPackageVersion>
+    <NetFxExtensionsConfigurationPackageVersion>2.2.0</NetFxExtensionsConfigurationPackageVersion>
+    <NetFxExtensionsDependencyInjectionPackageVersion>2.2.0</NetFxExtensionsDependencyInjectionPackageVersion>
+    <NetFxExtensionsFileProvidersPackageVersion>2.2.0</NetFxExtensionsFileProvidersPackageVersion>
+    <NetFxExtensionsLoggingPackageVersion>2.2.0</NetFxExtensionsLoggingPackageVersion>
+    <NetFxExtensionsObjectPoolPackageVersion>2.2.0</NetFxExtensionsObjectPoolPackageVersion>
+    <NetFxExtensionsOptionsConfigurationExtensionsPackageVersion>2.2.0</NetFxExtensionsOptionsConfigurationExtensionsPackageVersion>
+    <NetFxExtensionsOptionsPackageVersion>2.2.0</NetFxExtensionsOptionsPackageVersion>
+    <NetFxExtensionsPrimitivesPackageVersion>2.2.0</NetFxExtensionsPrimitivesPackageVersion>
   </PropertyGroup>
 </Project>

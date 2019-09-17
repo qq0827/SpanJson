@@ -216,7 +216,7 @@ namespace SpanJson.Utilities
             return o => call(null, new[] { o });
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)] // .NET Core 3.0 Release模式下，会抛出异常 Internal CLR error. (0x80131506)
         internal static string ToString(object value)
         {
             switch (value)
