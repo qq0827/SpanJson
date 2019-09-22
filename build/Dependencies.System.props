@@ -97,42 +97,14 @@
     <SystemThreadingTasksExtensionsPackageVersion>4.5.3</SystemThreadingTasksExtensionsPackageVersion>
     <SystemValueTuplePackageVersion>4.5.0</SystemValueTuplePackageVersion>
 
-    <!-- CoreFxLab packages -->
-    <MicrosoftExperimentalCollectionsPackageVersion>1.0.6-e190309-1</MicrosoftExperimentalCollectionsPackageVersion>
-    <SystemBinaryBase64PackageVersion>0.1.1-e190309-1</SystemBinaryBase64PackageVersion>
-    <SystemBuffersExperimentalPackageVersion>0.1.1-e190309-1</SystemBuffersExperimentalPackageVersion>
-    <SystemBuffersPrimitivesPackageVersion>0.1.1-e190309-1</SystemBuffersPrimitivesPackageVersion>
-    <SystemBuffersReaderWriterPackageVersion>0.1.1-e190309-1</SystemBuffersReaderWriterPackageVersion>
-    <SystemCollectionsSequencesPackageVersion>0.1.1-e190309-1</SystemCollectionsSequencesPackageVersion>
-    <SystemTextCaseFoldingPackageVersion>0.1.1-e190309-1</SystemTextCaseFoldingPackageVersion>
-    <SystemTextEncodingsWebUtf8PackageVersion>0.1.1-e190309-1</SystemTextEncodingsWebUtf8PackageVersion>
-    <SystemTextFormattingPackageVersion>0.1.1-e190309-1</SystemTextFormattingPackageVersion>
-    <SystemTextFormattingGlobalizationPackageVersion>0.1.1-e190309-1</SystemTextFormattingGlobalizationPackageVersion>
-    <SystemTextJsonLabPackageVersion>0.1.1-e190309-1</SystemTextJsonLabPackageVersion>
-    <SystemTextJsonLabDynamicPackageVersion>0.1.1-e190309-1</SystemTextJsonLabDynamicPackageVersion>
-    <SystemTextJsonLabSerializationPackageVersion>0.1.1-e190309-1</SystemTextJsonLabSerializationPackageVersion>
-    <SystemTextPrimitivesPackageVersion>0.1.1-e190309-1</SystemTextPrimitivesPackageVersion>
-    <SystemTextUtf8StringPackageVersion>0.1.1-e190309-1</SystemTextUtf8StringPackageVersion>
-    <SystemTimePackageVersion>0.1.1-e190309-1</SystemTimePackageVersion>
-
-    <!-- .NetFx40 packages -->
-    <SystemBuffersNet40PackageVersion>2.1.0</SystemBuffersNet40PackageVersion>
-    <SystemCollectionsImmutableNet40PackageVersion>2.1.0</SystemCollectionsImmutableNet40PackageVersion>
-    <SystemReflectionMetadataNet40PackageVersion>2.1.0</SystemReflectionMetadataNet40PackageVersion>
-    <SystemSecurityClaimsNet40PackageVersion>2.1.0</SystemSecurityClaimsNet40PackageVersion>
-    <SystemTextEncodingsWebNet40PackageVersion>2.1.0</SystemTextEncodingsWebNet40PackageVersion>
-    <SystemTextRegularExpressionsNet40PackageVersion>2.1.0</SystemTextRegularExpressionsNet40PackageVersion>
-
     <!-- Ix packages -->
     <IxPackageVersion>4.0.0-preview.8.build.9</IxPackageVersion>
-    <IxUnofficialPackageVersion>3.1.1</IxUnofficialPackageVersion>
     <SystemInteractivePackageVersion>4.0.0-preview.8.build.9</SystemInteractivePackageVersion>
     <SystemInteractiveAsyncPackageVersion>4.0.0-preview.8.build.9</SystemInteractiveAsyncPackageVersion>
     <SystemInteractiveAsyncProvidersPackageVersion>4.0.0-preview.8.build.9</SystemInteractiveAsyncProvidersPackageVersion>
 
     <!-- Rx packages -->
     <RxPackageVersion>4.2.0-preview.625</RxPackageVersion>
-    <RxUnofficialPackageVersion>3.1.1</RxUnofficialPackageVersion>
     <SystemReactiveLinqPackageVersion>4.2.0-preview.625</SystemReactiveLinqPackageVersion>
 
     <!-- Obsolete packages -->

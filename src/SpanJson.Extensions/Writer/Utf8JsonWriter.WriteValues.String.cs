@@ -193,7 +193,7 @@ namespace SpanJson
 
             EscapingHelper.EscapeString(value, escapedValue, _options.EscapeHandling, firstEscapeIndexVal, _options.Encoder, out int written);
 
-#if NETCOREAPP
+#if NETCOREAPP || NETSTANDARD_2_0_GREATER
             WriteStringByOptions(MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(escapedValue), written));
 #else
             unsafe
@@ -340,7 +340,7 @@ namespace SpanJson
 
             EscapingHelper.EscapeString(utf8Value, escapedValue, _options.EscapeHandling, firstEscapeIndexVal, _options.Encoder, out int written);
 
-#if NETCOREAPP
+#if NETCOREAPP || NETSTANDARD_2_0_GREATER
             WriteStringByOptions(MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(escapedValue), written));
 #else
             unsafe

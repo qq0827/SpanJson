@@ -856,7 +856,7 @@ namespace SpanJson
 
             EscapingHelper.EscapeString(utf8Value, escapedValue, _options.EscapeHandling, firstEscapeIndex, _options.Encoder, out int written);
 
-#if NETCOREAPP
+#if NETCOREAPP || NETSTANDARD_2_0_GREATER
             WriteStringByOptions(escapedPropertyName, MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(escapedValue), written));
 #else
             unsafe
@@ -886,7 +886,7 @@ namespace SpanJson
 
             EscapingHelper.EscapeString(value, escapedValue, _options.EscapeHandling, firstEscapeIndex, _options.Encoder, out int written);
 
-#if NETCOREAPP
+#if NETCOREAPP || NETSTANDARD_2_0_GREATER
             WriteStringByOptions(escapedPropertyName, MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(escapedValue), written));
 #else
             unsafe
@@ -916,7 +916,7 @@ namespace SpanJson
 
             EscapingHelper.EscapeString(propertyName, escapedPropertyName, _options.EscapeHandling, firstEscapeIndex, _options.Encoder, out int written);
 
-#if NETCOREAPP
+#if NETCOREAPP || NETSTANDARD_2_0_GREATER
             WriteStringByOptions(MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(escapedPropertyName), written), escapedValue);
 #else
             unsafe
@@ -946,7 +946,7 @@ namespace SpanJson
 
             EscapingHelper.EscapeString(utf8PropertyName, escapedPropertyName, _options.EscapeHandling, firstEscapeIndex, _options.Encoder, out int written);
 
-#if NETCOREAPP
+#if NETCOREAPP || NETSTANDARD_2_0_GREATER
             WriteStringByOptions(MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(escapedPropertyName), written), escapedValue);
 #else
             unsafe
