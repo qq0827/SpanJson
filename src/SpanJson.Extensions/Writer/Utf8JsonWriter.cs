@@ -174,19 +174,24 @@ namespace SpanJson
 
             var destination = new byte[alreadyWritten];
             BinaryUtil.CopyMemory(borrowedBuffer, 0, destination, 0, alreadyWritten);
-            Dispose();
+#if DEBUG
+            Dispose(); // only for testing
+#endif
             return destination;
         }
 
         public void Dispose()
         {
-            var toReturn = _borrowedBuffer;
+            var toReturn = Interlocked.Exchange(ref _borrowedBuffer, null);
+            if (toReturn is null) { return; }
+
             var arrayPool = _arrayPool;
-            this = default; // for safety, to avoid using pooled array if this instance is erroneously appended to again
             if (arrayPool is object)
             {
                 arrayPool.Return(toReturn);
+                _arrayPool = null;
             }
+            _utf8Span = default;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

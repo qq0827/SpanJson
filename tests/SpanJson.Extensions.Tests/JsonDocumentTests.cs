@@ -1585,19 +1585,24 @@ namespace SpanJson.Tests
 
                 Assert.Equal(JsonValueKind.Number, root.ValueKind);
 
-#if NETCOREAPP || DESKTOPCLR
-                Assert.False(root.TryGetSingle(out float floatVal));
-                Assert.Equal(0f, floatVal);
+                //PlatformDetection.IsFullFramework
+                var isFullFramework = RuntimeInformation.FrameworkDescription.StartsWith(".NET Framework", StringComparison.OrdinalIgnoreCase);
+                if (isFullFramework)
+                {
+                    Assert.False(root.TryGetSingle(out float floatVal));
+                    Assert.Equal(0f, floatVal);
 
-                Assert.False(root.TryGetDouble(out double doubleVal));
-                Assert.Equal(0d, doubleVal);
-#else
-                Assert.True(root.TryGetSingle(out float floatVal));
-                Assert.Equal(float.PositiveInfinity, floatVal);
+                    Assert.False(root.TryGetDouble(out double doubleVal));
+                    Assert.Equal(0d, doubleVal);
+                }
+                else
+                {
+                    Assert.True(root.TryGetSingle(out float floatVal));
+                    Assert.Equal(float.PositiveInfinity, floatVal);
 
-                Assert.True(root.TryGetDouble(out double doubleVal));
-                Assert.Equal(double.PositiveInfinity, doubleVal);
-#endif
+                    Assert.True(root.TryGetDouble(out double doubleVal));
+                    Assert.Equal(double.PositiveInfinity, doubleVal);
+                }
 
                 Assert.False(root.TryGetDecimal(out decimal decimalVal));
                 Assert.Equal(0m, decimalVal);
@@ -1626,13 +1631,16 @@ namespace SpanJson.Tests
                 Assert.False(root.TryGetUInt64(out ulong ulongVal));
                 Assert.Equal(0UL, ulongVal);
 
-#if NETCOREAPP || DESKTOPCLR
-                Assert.Throws<FormatException>(() => root.GetSingle());
-                Assert.Throws<FormatException>(() => root.GetDouble());
-#else
-                Assert.Equal(float.PositiveInfinity, root.GetSingle());
-                Assert.Equal(double.PositiveInfinity, root.GetDouble());
-#endif
+                if (isFullFramework)
+                {
+                    Assert.Throws<FormatException>(() => root.GetSingle());
+                    Assert.Throws<FormatException>(() => root.GetDouble());
+                }
+                else
+                {
+                    Assert.Equal(float.PositiveInfinity, root.GetSingle());
+                    Assert.Equal(double.PositiveInfinity, root.GetDouble());
+                }
 
                 Assert.Throws<FormatException>(() => root.GetDecimal());
                 Assert.Throws<FormatException>(() => root.GetSByte());
@@ -3706,6 +3714,40 @@ namespace SpanJson.Tests
         private static void AssertContents(string expectedValue, byte[] buffer)
         {
             Assert.Equal(expectedValue, Encoding.UTF8.GetString(buffer));
+        }
+
+        [Fact]
+        public static void VerifyMultiThreadedDispose()
+        {
+            Action<object> disposeAction = (object document) => ((JsonDocument)document).Dispose();
+
+            // Create a bunch of parallel tasks that call Dispose several times on the same object.
+            Task[] tasks = new Task[100];
+            int count = 0;
+            for (int j = 0; j < 10; j++)
+            {
+                JsonDocument document = JsonDocument.Parse("123" + j);
+                for (int i = 0; i < 10; i++)
+                {
+                    tasks[count] = new Task(disposeAction, document);
+                    tasks[count].Start();
+
+                    count++;
+                }
+            }
+
+            Task.WaitAll(tasks);
+
+            // When ArrayPool gets corrupted, the Rent method might return an already rented array, which is incorrect.
+            // So we will rent as many arrays as calls to JsonElement.Dispose and check they are unique.
+            // The minimum length that we ask for is a mirror of the size of the string passed to JsonDocument.Parse.
+            HashSet<byte[]> uniqueAddresses = new HashSet<byte[]>();
+            while (count > 0)
+            {
+                byte[] arr = ArrayPool<byte>.Shared.Rent(4);
+                Assert.True(uniqueAddresses.Add(arr));
+                count--;
+            }
         }
     }
 

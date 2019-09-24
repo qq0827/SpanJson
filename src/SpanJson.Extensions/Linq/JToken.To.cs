@@ -23,7 +23,7 @@ namespace SpanJson.Linq
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T ToObject<T>()
         {
-            return ToObject<T, ExcludeNullsOriginalCaseResolver<byte>, ExcludeNullsOriginalCaseResolver<char>>();
+            return ToObject<T, IncludeNullsOriginalCaseResolver<byte>, IncludeNullsOriginalCaseResolver<char>>();
         }
 
         /// <summary>Creates an instance of the specified .NET type from the <see cref="JToken"/>.</summary>
@@ -45,7 +45,7 @@ namespace SpanJson.Linq
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public object ToObject(Type objectType)
         {
-            return ToObject<ExcludeNullsOriginalCaseResolver<byte>, ExcludeNullsOriginalCaseResolver<char>>(objectType);
+            return ToObject<IncludeNullsOriginalCaseResolver<byte>, IncludeNullsOriginalCaseResolver<char>>(objectType);
         }
 
         /// <summary>Creates an instance of the specified .NET type from the <see cref="JToken"/>.</summary>
@@ -74,7 +74,7 @@ namespace SpanJson.Linq
             var jsonSerializer = DefaultDeserializerPool.Take();
             try
             {
-                return ToObjectInternal<T, ExcludeNullsOriginalCaseResolver<byte>, ExcludeNullsOriginalCaseResolver<char>>(jsonSerializer);
+                return ToObjectInternal<T, IncludeNullsOriginalCaseResolver<byte>, IncludeNullsOriginalCaseResolver<char>>(jsonSerializer);
             }
             finally
             {
@@ -90,7 +90,7 @@ namespace SpanJson.Linq
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T ToPolymorphicObject<T>(NJsonSerializer jsonSerializer)
         {
-            return ToPolymorphicObject<T, ExcludeNullsOriginalCaseResolver<byte>, ExcludeNullsOriginalCaseResolver<char>>(jsonSerializer);
+            return ToPolymorphicObject<T, IncludeNullsOriginalCaseResolver<byte>, IncludeNullsOriginalCaseResolver<char>>(jsonSerializer);
         }
 
         /// <summary>Creates an instance of the specified .NET type from the <see cref="JToken"/>
@@ -123,7 +123,7 @@ namespace SpanJson.Linq
             var jsonSerializer = DefaultDeserializerPool.Take();
             try
             {
-                return ToObjectInternal<ExcludeNullsOriginalCaseResolver<byte>, ExcludeNullsOriginalCaseResolver<char>>(objectType, jsonSerializer);
+                return ToObjectInternal<IncludeNullsOriginalCaseResolver<byte>, IncludeNullsOriginalCaseResolver<char>>(objectType, jsonSerializer);
             }
             finally
             {
@@ -139,7 +139,7 @@ namespace SpanJson.Linq
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public object ToPolymorphicObject(Type objectType, NJsonSerializer jsonSerializer)
         {
-            return ToPolymorphicObject<ExcludeNullsOriginalCaseResolver<byte>, ExcludeNullsOriginalCaseResolver<char>>(objectType, jsonSerializer);
+            return ToPolymorphicObject<IncludeNullsOriginalCaseResolver<byte>, IncludeNullsOriginalCaseResolver<char>>(objectType, jsonSerializer);
         }
 
         /// <summary>Creates an instance of the specified .NET type from the <see cref="JToken"/>

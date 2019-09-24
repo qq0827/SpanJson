@@ -8,7 +8,7 @@ using SpanJson.Linq;
 
 namespace SpanJson.Serialization
 {
-    partial class JsonComplexSerializer<TResolver, TUtf8Resolver>
+    partial class JsonComplexSerializer<TUtf16Resolver, TUtf8Resolver>
     {
         #region -- Utf16 Serialize --
 
@@ -23,7 +23,7 @@ namespace SpanJson.Serialization
             {
                 return SerializerPool.SerializeObject(input, input.GetType());
             }
-            return JsonSerializer.Generic.Inner<T, char, TResolver>.InnerSerializeToString(input);
+            return JsonSerializer.Generic.Inner<T, char, TUtf16Resolver>.InnerSerializeToString(input);
         }
 
         /// <summary>Serialize to string.</summary>
@@ -37,7 +37,7 @@ namespace SpanJson.Serialization
             {
                 return SerializerPool.SerializeObject(input, input.GetType()).ToCharArray();
             }
-            return JsonSerializer.Generic.Inner<T, char, TResolver>.InnerSerializeToCharArray(input);
+            return JsonSerializer.Generic.Inner<T, char, TUtf16Resolver>.InnerSerializeToCharArray(input);
         }
 
         /// <summary>Serialize to char buffer from ArrayPool
@@ -51,9 +51,9 @@ namespace SpanJson.Serialization
             if (IsPolymorphically<T>())
             {
                 var token = JToken.FromPolymorphicObject(input);
-                return JsonSerializer.Generic.Inner<JToken, char, TResolver>.InnerSerializeToCharArrayPool(token);
+                return JsonSerializer.Generic.Inner<JToken, char, TUtf16Resolver>.InnerSerializeToCharArrayPool(token);
             }
-            return JsonSerializer.Generic.Inner<T, char, TResolver>.InnerSerializeToCharArrayPool(input);
+            return JsonSerializer.Generic.Inner<T, char, TUtf16Resolver>.InnerSerializeToCharArrayPool(input);
         }
 
         /// <summary>Serialize to TextWriter.</summary>
@@ -70,7 +70,7 @@ namespace SpanJson.Serialization
                 SerializerPool.SerializeToWriter(writer, input, input.GetType());
                 return default;
             }
-            return JsonSerializer.Generic.Inner<T, char, TResolver>.InnerSerializeAsync(input, writer, cancellationToken);
+            return JsonSerializer.Generic.Inner<T, char, TUtf16Resolver>.InnerSerializeAsync(input, writer, cancellationToken);
         }
 
         #endregion
@@ -89,9 +89,9 @@ namespace SpanJson.Serialization
                 return (T)DeserializerPool.DeserializeObject(input, typeof(T));
             }
 #if NETSTANDARD2_0 || NET471 || NET451
-            return JsonSerializer.Generic.Inner<T, char, TResolver>.InnerDeserialize(input.AsSpan());
+            return JsonSerializer.Generic.Inner<T, char, TUtf16Resolver>.InnerDeserialize(input.AsSpan());
 #else
-            return JsonSerializer.Generic.Inner<T, char, TResolver>.InnerDeserialize(input);
+            return JsonSerializer.Generic.Inner<T, char, TUtf16Resolver>.InnerDeserialize(input);
 #endif
         }
 
@@ -106,7 +106,7 @@ namespace SpanJson.Serialization
             {
                 return (T)DeserializerPool.DeserializeObject(input.AsSpan().ToString(), typeof(T));
             }
-            return JsonSerializer.Generic.Inner<T, char, TResolver>.InnerDeserialize(input);
+            return JsonSerializer.Generic.Inner<T, char, TUtf16Resolver>.InnerDeserialize(input);
         }
 
         /// <summary>Deserialize from string.</summary>
@@ -120,7 +120,7 @@ namespace SpanJson.Serialization
             {
                 return (T)DeserializerPool.DeserializeObject(input.AsSpan().ToString(), typeof(T));
             }
-            return JsonSerializer.Generic.Inner<T, char, TResolver>.InnerDeserialize(input);
+            return JsonSerializer.Generic.Inner<T, char, TUtf16Resolver>.InnerDeserialize(input);
         }
 
         /// <summary>Deserialize from string.</summary>
@@ -134,7 +134,7 @@ namespace SpanJson.Serialization
             {
                 return (T)DeserializerPool.DeserializeObject(input.ToString(), typeof(T));
             }
-            return JsonSerializer.Generic.Inner<T, char, TResolver>.InnerDeserialize(input);
+            return JsonSerializer.Generic.Inner<T, char, TUtf16Resolver>.InnerDeserialize(input);
         }
 
         /// <summary>Deserialize from string.</summary>
@@ -148,7 +148,7 @@ namespace SpanJson.Serialization
             {
                 return (T)DeserializerPool.DeserializeObject(input.ToString(), typeof(T));
             }
-            return JsonSerializer.Generic.Inner<T, char, TResolver>.InnerDeserialize(input);
+            return JsonSerializer.Generic.Inner<T, char, TUtf16Resolver>.InnerDeserialize(input);
         }
 
         /// <summary>Deserialize from TextReader.</summary>
@@ -164,7 +164,7 @@ namespace SpanJson.Serialization
                 var result = (T)DeserializerPool.DeserializeFromReader(reader, typeof(T));
                 return new ValueTask<T>(result);
             }
-            return JsonSerializer.Generic.Inner<T, char, TResolver>.InnerDeserializeAsync(reader, cancellationToken);
+            return JsonSerializer.Generic.Inner<T, char, TUtf16Resolver>.InnerDeserializeAsync(reader, cancellationToken);
         }
 
         #endregion

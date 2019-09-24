@@ -16,7 +16,6 @@
 
             var destination = new byte[alreadyWritten];
             BinaryUtil.CopyMemory(borrowedBuffer, 0, destination, 0, alreadyWritten);
-            Dispose();
             return destination;
         }
 

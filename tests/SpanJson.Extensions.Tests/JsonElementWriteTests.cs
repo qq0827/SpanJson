@@ -483,6 +483,24 @@ null,
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
+        public static void ReadWriteEscapedPropertyNames(bool indented)
+        {
+            const string jsonIn = " { \"p\\u0069zza\": 1, \"hello\\u003c\\u003e\": 2, \"normal\": 3 }";
+
+            WriteComplexValue(
+                indented,
+                jsonIn,
+                @"{
+  ""pizza"": 1,
+  ""hello\u003c\u003e"": 2,
+  ""normal"": 3
+}",
+                "{\"pizza\":1,\"hello\\u003c\\u003e\":2,\"normal\":3}");
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
         public static void WriteNumberAsProperty(bool indented)
         {
             WritePropertyValueBothForms(
@@ -1199,29 +1217,49 @@ null,
             string expectedIndent,
             string expectedMinimal)
         {
+            byte[] bufferOutput;
+            var options = new JsonWriterOptions
+            {
+                Indented = indented,
+                EscapeHandling = JsonEscapeHandling.EscapeNonAscii
+            };
+
             using (JsonDocument doc = JsonDocument.Parse($" [  {jsonIn}  ]", s_options))
             {
                 JsonElement target = doc.RootElement[0];
-
-                var options = new JsonWriterOptions
-                {
-                    Indented = indented,
-                    EscapeHandling = JsonEscapeHandling.EscapeNonAscii
-                };
 
                 var writer = new Utf8JsonWriter(1024, options);
 
                 target.WriteTo(ref writer);
 
-                var buffer = writer.ToByteArray();
+                bufferOutput = writer.ToByteArray();
                 if (indented && s_replaceNewlines)
                 {
                     JsonTestHelper.AssertContents(
                         expectedIndent.Replace(CompiledNewline, Environment.NewLine),
-                        buffer);
+                        bufferOutput);
                 }
 
-                JsonTestHelper.AssertContents(indented ? expectedIndent : expectedMinimal, buffer);
+                JsonTestHelper.AssertContents(indented ? expectedIndent : expectedMinimal, bufferOutput);
+            }
+
+            // After reading the output and writing it again, it should be byte-for-byte identical.
+            {
+                string bufferString = Encoding.UTF8.GetString(bufferOutput);
+
+                using (JsonDocument doc2 = JsonDocument.Parse(bufferString, s_options))
+                {
+                    var writer = new Utf8JsonWriter(1024, options);
+                    try
+                    {
+                        doc2.RootElement.WriteTo(ref writer);
+                        Assert.True(writer.WrittenSpan.SequenceEqual(bufferOutput));
+                    }
+                    finally
+                    {
+                        writer.Dispose();
+                    }
+                }
             }
         }
 

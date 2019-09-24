@@ -1373,7 +1373,8 @@ keyword such as type of business.""
                 users.Add("name2", name);
 
                 Assert.AreEqual(users["name2"], "Matthew Doig");
-            }, "The best overloaded method match for 'System.Collections.Generic.IDictionary<string,string>.Add(string, string)' has some invalid arguments");
+            });
+            //, "The best overloaded method match for 'System.Collections.Generic.IDictionary<string,string>.Add(string, string)' has some invalid arguments");
         }
 
         public enum FooBar

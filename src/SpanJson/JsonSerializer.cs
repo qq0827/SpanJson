@@ -26,8 +26,15 @@ namespace SpanJson
 #else
                 var writer = new JsonWriter<char>(true);
 #endif
-                Print(ref reader, ref writer);
-                return writer.ToString();
+                try
+                {
+                    Print(ref reader, ref writer);
+                    return writer.ToString();
+                }
+                finally
+                {
+                    writer.Dispose();
+                }
             }
 
             /// <summary>Pretty prints a json input with 2 space indentation.</summary>
@@ -41,8 +48,15 @@ namespace SpanJson
 #else
                 var writer = new JsonWriter<byte>(true);
 #endif
-                Print(ref reader, ref writer);
-                return writer.ToByteArray();
+                try
+                {
+                    Print(ref reader, ref writer);
+                    return writer.ToByteArray();
+                }
+                finally
+                {
+                    writer.Dispose();
+                }
             }
 
             /// <summary>Pretty prints a json input with 2 space indentation.</summary>
@@ -56,8 +70,15 @@ namespace SpanJson
 #else
                 var writer = new JsonWriter<byte>(true);
 #endif
-                Print(ref reader, ref writer);
-                return writer.ToByteArray();
+                try
+                {
+                    Print(ref reader, ref writer);
+                    return writer.ToByteArray();
+                }
+                finally
+                {
+                    writer.Dispose();
+                }
             }
 
             private static void Print<TSymbol>(ref JsonReader<TSymbol> reader, ref JsonWriter<TSymbol> writer) where TSymbol : struct
@@ -199,8 +220,15 @@ namespace SpanJson
 #else
                 var writer = new JsonWriter<char>(true);
 #endif
-                Minify(ref reader, ref writer);
-                return writer.ToString();
+                try
+                {
+                    Minify(ref reader, ref writer);
+                    return writer.ToString();
+                }
+                finally
+                {
+                    writer.Dispose();
+                }
             }
 
             /// <summary>Minifies the input</summary>
@@ -214,8 +242,15 @@ namespace SpanJson
 #else
                 var writer = new JsonWriter<byte>(true);
 #endif
-                Minify(ref reader, ref writer);
-                return writer.ToByteArray();
+                try
+                {
+                    Minify(ref reader, ref writer);
+                    return writer.ToByteArray();
+                }
+                finally
+                {
+                    writer.Dispose();
+                }
             }
 
             /// <summary>Minifies the input</summary>
@@ -229,8 +264,15 @@ namespace SpanJson
 #else
                 var writer = new JsonWriter<byte>(true);
 #endif
-                Minify(ref reader, ref writer);
-                return writer.ToByteArray();
+                try
+                {
+                    Minify(ref reader, ref writer);
+                    return writer.ToByteArray();
+                }
+                finally
+                {
+                    writer.Dispose();
+                }
             }
 
             private static void Minify<TSymbol>(ref JsonReader<TSymbol> reader, ref JsonWriter<TSymbol> writer) where TSymbol : struct

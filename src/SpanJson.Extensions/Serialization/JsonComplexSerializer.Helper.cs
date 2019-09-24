@@ -9,7 +9,7 @@ using SpanJson.Resolvers;
 
 namespace SpanJson.Serialization
 {
-    partial class JsonComplexSerializer<TResolver, TUtf8Resolver>
+    partial class JsonComplexSerializer<TUtf16Resolver, TUtf8Resolver>
     {
         sealed class PolymorphicallyContainer<T>
         {

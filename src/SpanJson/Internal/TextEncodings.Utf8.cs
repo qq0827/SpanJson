@@ -6,6 +6,9 @@
     using System.Diagnostics;
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
+#if NETCOREAPP_2_X_GREATER
+    using SysUtf8 = System.Text.Unicode.Utf8;
+#endif
 
     public static partial class TextEncodings
     {
@@ -87,6 +90,22 @@
 
                 return 0;
             }
+
+//            /// <summary>
+//            /// Transcodes the UTF-16 <paramref name="source"/> buffer to <paramref name="destination"/> as UTF-8.
+//            /// </summary>
+//            /// <remarks>
+//            /// If <paramref name="replaceInvalidSequences"/> is <see langword="true"/>, invalid UTF-16 sequences
+//            /// in <paramref name="source"/> will be replaced with U+FFFD in <paramref name="destination"/>, and
+//            /// this method will not return <see cref="OperationStatus.InvalidData"/>.
+//            /// </remarks>
+//#if NETCOREAPP_2_X_GREATER
+//            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+//#endif
+//            public static unsafe OperationStatus FromUtf16(ReadOnlySpan<char> source, Span<byte> destination, out int charsRead, out int bytesWritten, bool replaceInvalidSequences = true, bool isFinalBlock = true)
+//            {
+
+//            }
 
             // TODO: Replace this with publicly shipping implementation: https://github.com/dotnet/corefx/issues/34094
             /// <summary>

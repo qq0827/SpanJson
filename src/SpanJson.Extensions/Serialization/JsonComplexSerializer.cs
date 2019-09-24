@@ -15,14 +15,14 @@ namespace SpanJson.Serialization
         public static readonly JsonComplexSerializer Instance = new JsonComplexSerializer();
     }
 
-    public partial class JsonComplexSerializer<TResolver, TUtf8Resolver> : IJsonSerializer
-        where TResolver : IJsonFormatterResolver<char, TResolver>, new()
+    public partial class JsonComplexSerializer<TUtf16Resolver, TUtf8Resolver> : IJsonSerializer
+        where TUtf16Resolver : IJsonFormatterResolver<char, TUtf16Resolver>, new()
         where TUtf8Resolver : IJsonFormatterResolver<byte, TUtf8Resolver>, new()
     {
-        static readonly ConcurrentDictionary<Type, JsonSerializer.NonGeneric.Inner<char, TResolver>.Invoker> Utf16Invokers =
-            JsonSerializer.NonGeneric.Inner<char, TResolver>.Invokers;
-        static readonly Func<Type, JsonSerializer.NonGeneric.Inner<char, TResolver>.Invoker> Utf16InvokerFactory =
-            JsonSerializer.NonGeneric.Inner<char, TResolver>.InvokerFactory;
+        static readonly ConcurrentDictionary<Type, JsonSerializer.NonGeneric.Inner<char, TUtf16Resolver>.Invoker> Utf16Invokers =
+            JsonSerializer.NonGeneric.Inner<char, TUtf16Resolver>.Invokers;
+        static readonly Func<Type, JsonSerializer.NonGeneric.Inner<char, TUtf16Resolver>.Invoker> Utf16InvokerFactory =
+            JsonSerializer.NonGeneric.Inner<char, TUtf16Resolver>.InvokerFactory;
 
         static readonly ConcurrentDictionary<Type, JsonSerializer.NonGeneric.Inner<byte, TUtf8Resolver>.Invoker> Utf8Invokers =
             JsonSerializer.NonGeneric.Inner<byte, TUtf8Resolver>.Invokers;

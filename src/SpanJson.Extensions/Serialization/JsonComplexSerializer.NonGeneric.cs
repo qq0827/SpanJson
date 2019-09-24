@@ -7,7 +7,7 @@ using SpanJson.Linq;
 
 namespace SpanJson.Serialization
 {
-    partial class JsonComplexSerializer<TResolver, TUtf8Resolver>
+    partial class JsonComplexSerializer<TUtf16Resolver, TUtf8Resolver>
     {
         #region -- Utf16 Serialize --
 
@@ -55,7 +55,7 @@ namespace SpanJson.Serialization
             if (IsPolymorphically(inputType))
             {
                 var token = JToken.FromPolymorphicObject(input);
-                return JsonSerializer.Generic.Inner<JToken, char, TResolver>.InnerSerializeToCharArrayPool(token);
+                return JsonSerializer.Generic.Inner<JToken, char, TUtf16Resolver>.InnerSerializeToCharArrayPool(token);
             }
             var invoker = Utf16Invokers.GetOrAdd(inputType, Utf16InvokerFactory);
             return invoker.ToCharArrayPoolSerializer(input);

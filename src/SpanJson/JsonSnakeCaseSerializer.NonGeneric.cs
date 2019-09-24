@@ -21,7 +21,7 @@ namespace SpanJson
                 /// <returns>String</returns>
                 public static string Serialize(object input)
                 {
-                    return JsonSerializer.NonGeneric.Inner<char, IncludeNullsSnakeCaseResolver<char>>.InnerSerializeToString(input);
+                    return JsonSerializer.NonGeneric.Inner<char, ExcludeNullsSnakeCaseResolver<char>>.InnerSerializeToString(input);
                 }
 
                 /// <summary>Serialize to string.</summary>
@@ -30,7 +30,7 @@ namespace SpanJson
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static char[] SerializeToCharArray(object input)
                 {
-                    return JsonSerializer.NonGeneric.Inner<char, IncludeNullsSnakeCaseResolver<char>>.InnerSerializeToCharArray(input);
+                    return JsonSerializer.NonGeneric.Inner<char, ExcludeNullsSnakeCaseResolver<char>>.InnerSerializeToCharArray(input);
                 }
 
                 /// <summary>Serialize to char buffer from ArrayPool.
@@ -39,7 +39,7 @@ namespace SpanJson
                 /// <returns>Char array from ArrayPool</returns>
                 public static ArraySegment<char> SerializeToArrayPool(object input)
                 {
-                    return JsonSerializer.NonGeneric.Inner<char, IncludeNullsSnakeCaseResolver<char>>.InnerSerializeToCharArrayPool(input);
+                    return JsonSerializer.NonGeneric.Inner<char, ExcludeNullsSnakeCaseResolver<char>>.InnerSerializeToCharArrayPool(input);
                 }
 
                 /// <summary>Serialize to TextWriter.</summary>
@@ -49,7 +49,7 @@ namespace SpanJson
                 /// <returns>Task</returns>
                 public static ValueTask SerializeAsync(object input, TextWriter writer, CancellationToken cancellationToken = default)
                 {
-                    return JsonSerializer.NonGeneric.Inner<char, IncludeNullsSnakeCaseResolver<char>>.InnerSerializeAsync(input, writer, cancellationToken);
+                    return JsonSerializer.NonGeneric.Inner<char, ExcludeNullsSnakeCaseResolver<char>>.InnerSerializeAsync(input, writer, cancellationToken);
                 }
 
                 #endregion
@@ -63,9 +63,9 @@ namespace SpanJson
                 public static object Deserialize(string input, Type type)
                 {
 #if NETSTANDARD2_0 || NET471 || NET451
-                    return JsonSerializer.NonGeneric.Inner<char, IncludeNullsSnakeCaseResolver<char>>.InnerDeserialize(input.AsSpan(), type);
+                    return JsonSerializer.NonGeneric.Inner<char, ExcludeNullsSnakeCaseResolver<char>>.InnerDeserialize(input.AsSpan(), type);
 #else
-                    return JsonSerializer.NonGeneric.Inner<char, IncludeNullsSnakeCaseResolver<char>>.InnerDeserialize(input, type);
+                    return JsonSerializer.NonGeneric.Inner<char, ExcludeNullsSnakeCaseResolver<char>>.InnerDeserialize(input, type);
 #endif
                 }
 
@@ -75,7 +75,7 @@ namespace SpanJson
                 /// <returns>Deserialized object</returns>
                 public static object Deserialize(char[] input, Type type)
                 {
-                    return JsonSerializer.NonGeneric.Inner<char, IncludeNullsSnakeCaseResolver<char>>.InnerDeserialize(input, type);
+                    return JsonSerializer.NonGeneric.Inner<char, ExcludeNullsSnakeCaseResolver<char>>.InnerDeserialize(input, type);
                 }
 
                 /// <summary>Deserialize from string.</summary>
@@ -84,7 +84,7 @@ namespace SpanJson
                 /// <returns>Deserialized object</returns>
                 public static object Deserialize(in ArraySegment<char> input, Type type)
                 {
-                    return JsonSerializer.NonGeneric.Inner<char, IncludeNullsSnakeCaseResolver<char>>.InnerDeserialize(input, type);
+                    return JsonSerializer.NonGeneric.Inner<char, ExcludeNullsSnakeCaseResolver<char>>.InnerDeserialize(input, type);
                 }
 
                 /// <summary>Deserialize from string.</summary>
@@ -93,7 +93,7 @@ namespace SpanJson
                 /// <returns>Deserialized object</returns>
                 public static object Deserialize(in ReadOnlyMemory<char> input, Type type)
                 {
-                    return JsonSerializer.NonGeneric.Inner<char, IncludeNullsSnakeCaseResolver<char>>.InnerDeserialize(input, type);
+                    return JsonSerializer.NonGeneric.Inner<char, ExcludeNullsSnakeCaseResolver<char>>.InnerDeserialize(input, type);
                 }
 
                 /// <summary>Deserialize from string.</summary>
@@ -102,7 +102,7 @@ namespace SpanJson
                 /// <returns>Deserialized object</returns>
                 public static object Deserialize(in ReadOnlySpan<char> input, Type type)
                 {
-                    return JsonSerializer.NonGeneric.Inner<char, IncludeNullsSnakeCaseResolver<char>>.InnerDeserialize(input, type);
+                    return JsonSerializer.NonGeneric.Inner<char, ExcludeNullsSnakeCaseResolver<char>>.InnerDeserialize(input, type);
                 }
 
                 /// <summary>Deserialize from TextReader.</summary>
@@ -113,7 +113,7 @@ namespace SpanJson
                 public static ValueTask<object> DeserializeAsync(TextReader reader, Type type,
                     CancellationToken cancellationToken = default)
                 {
-                    return JsonSerializer.NonGeneric.Inner<char, IncludeNullsSnakeCaseResolver<char>>.InnerDeserializeAsync(reader, type, cancellationToken);
+                    return JsonSerializer.NonGeneric.Inner<char, ExcludeNullsSnakeCaseResolver<char>>.InnerDeserializeAsync(reader, type, cancellationToken);
                 }
 
                 #endregion
@@ -129,7 +129,7 @@ namespace SpanJson
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static byte[] Serialize(object input)
                 {
-                    return JsonSerializer.NonGeneric.Inner<byte, IncludeNullsSnakeCaseResolver<byte>>.InnerSerializeToByteArray(input);
+                    return JsonSerializer.NonGeneric.Inner<byte, ExcludeNullsSnakeCaseResolver<byte>>.InnerSerializeToByteArray(input);
                 }
 
                 /// <summary>Serialize to byte array from ArrayPool.
@@ -139,7 +139,7 @@ namespace SpanJson
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static ArraySegment<byte> SerializeToArrayPool(object input)
                 {
-                    return JsonSerializer.NonGeneric.Inner<byte, IncludeNullsSnakeCaseResolver<byte>>.InnerSerializeToByteArrayPool(input);
+                    return JsonSerializer.NonGeneric.Inner<byte, ExcludeNullsSnakeCaseResolver<byte>>.InnerSerializeToByteArrayPool(input);
                 }
 
                 /// <summary>Serialize to stream.</summary>
@@ -150,7 +150,7 @@ namespace SpanJson
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static ValueTask SerializeAsync(object input, Stream stream, CancellationToken cancellationToken = default)
                 {
-                    return JsonSerializer.NonGeneric.Inner<byte, IncludeNullsSnakeCaseResolver<byte>>.InnerSerializeAsync(input, stream, cancellationToken);
+                    return JsonSerializer.NonGeneric.Inner<byte, ExcludeNullsSnakeCaseResolver<byte>>.InnerSerializeAsync(input, stream, cancellationToken);
                 }
                 #endregion
 
@@ -163,7 +163,7 @@ namespace SpanJson
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static object Deserialize(byte[] input, Type type)
                 {
-                    return JsonSerializer.NonGeneric.Inner<byte, IncludeNullsSnakeCaseResolver<byte>>.InnerDeserialize(input, type);
+                    return JsonSerializer.NonGeneric.Inner<byte, ExcludeNullsSnakeCaseResolver<byte>>.InnerDeserialize(input, type);
                 }
 
                 /// <summary>Deserialize from Byte array.</summary>
@@ -173,7 +173,7 @@ namespace SpanJson
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static object Deserialize(in ArraySegment<byte> input, Type type)
                 {
-                    return JsonSerializer.NonGeneric.Inner<byte, IncludeNullsSnakeCaseResolver<byte>>.InnerDeserialize(input, type);
+                    return JsonSerializer.NonGeneric.Inner<byte, ExcludeNullsSnakeCaseResolver<byte>>.InnerDeserialize(input, type);
                 }
 
                 /// <summary>Deserialize from Byte array.</summary>
@@ -183,7 +183,7 @@ namespace SpanJson
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static object Deserialize(in ReadOnlyMemory<byte> input, Type type)
                 {
-                    return JsonSerializer.NonGeneric.Inner<byte, IncludeNullsSnakeCaseResolver<byte>>.InnerDeserialize(input, type);
+                    return JsonSerializer.NonGeneric.Inner<byte, ExcludeNullsSnakeCaseResolver<byte>>.InnerDeserialize(input, type);
                 }
 
                 /// <summary>Deserialize from Byte array.</summary>
@@ -193,7 +193,7 @@ namespace SpanJson
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static object Deserialize(in ReadOnlySpan<byte> input, Type type)
                 {
-                    return JsonSerializer.NonGeneric.Inner<byte, IncludeNullsSnakeCaseResolver<byte>>.InnerDeserialize(input, type);
+                    return JsonSerializer.NonGeneric.Inner<byte, ExcludeNullsSnakeCaseResolver<byte>>.InnerDeserialize(input, type);
                 }
 
                 /// <summary>Deserialize from stream.</summary>
@@ -205,7 +205,7 @@ namespace SpanJson
                 public static ValueTask<object> DeserializeAsync(Stream stream, Type type,
                     CancellationToken cancellationToken = default)
                 {
-                    return JsonSerializer.NonGeneric.Inner<byte, IncludeNullsSnakeCaseResolver<byte>>.InnerDeserializeAsync(stream, type, cancellationToken);
+                    return JsonSerializer.NonGeneric.Inner<byte, ExcludeNullsSnakeCaseResolver<byte>>.InnerDeserializeAsync(stream, type, cancellationToken);
                 }
 
                 #endregion

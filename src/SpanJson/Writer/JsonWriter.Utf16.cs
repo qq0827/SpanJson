@@ -8,9 +8,7 @@
     {
         public override string ToString()
         {
-            var s = new ReadOnlySpan<char>(_utf16Buffer, 0, _pos).ToString();
-            Dispose();
-            return s;
+            return Utf16WrittenSpan.ToString();
         }
 
         public char[] ToCharArray()
@@ -23,7 +21,6 @@
 
             var destination = new char[alreadyWritten];
             Utf16WrittenSpan.CopyTo(destination);
-            Dispose();
             return destination;
         }
 

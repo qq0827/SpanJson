@@ -10,7 +10,7 @@ namespace SpanJson.Formatters
 
         public override void Serialize(ref JsonWriter<byte> writer, JsonElement value, IJsonFormatterResolver<byte> resolver)
         {
-            var utf8Writer = new Utf8JsonWriter(1024, new JsonWriterOptions
+            var utf8Writer = new Utf8JsonWriter(4096, new JsonWriterOptions
             {
                 Indented = false,
                 Encoder = resolver.Encoder,
@@ -31,7 +31,7 @@ namespace SpanJson.Formatters
 
         public override void Serialize(ref JsonWriter<char> writer, JsonElement value, IJsonFormatterResolver<char> resolver)
         {
-            var utf8Writer = new Utf8JsonWriter(1024, new JsonWriterOptions
+            var utf8Writer = new Utf8JsonWriter(4096, new JsonWriterOptions
             {
                 Indented = false,
                 Encoder = resolver.Encoder,

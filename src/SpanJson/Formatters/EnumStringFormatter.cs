@@ -43,7 +43,6 @@ namespace SpanJson.Formatters
             return BuildDeserializeDelegateExpressions<DeserializeDelegate, T>(readerParameter, nameSpanExpression);
         }
 
-
         private delegate T DeserializeDelegate(ref JsonReader<TSymbol> reader);
     }
 

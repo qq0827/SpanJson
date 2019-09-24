@@ -4,11 +4,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using SpanJson.Resolvers;
-#if DEBUG
-using Utf8OriginalCaseResolver = SpanJson.Resolvers.ExcludeNullsOriginalCaseResolver<byte>;
-#else
-using Utf8OriginalCaseResolver = SpanJson.Resolvers.IncludeNullsOriginalCaseResolver<byte>;
-#endif
 
 namespace SpanJson
 {
@@ -27,7 +22,7 @@ namespace SpanJson
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static byte[] Serialize(object input)
                 {
-                    return Inner<byte, Utf8OriginalCaseResolver>.InnerSerializeToByteArray(input);
+                    return Inner<byte, ExcludeNullsOriginalCaseResolver<byte>>.InnerSerializeToByteArray(input);
                 }
 
                 /// <summary>Serialize to byte array with specific resolver.</summary>
@@ -47,7 +42,7 @@ namespace SpanJson
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static ArraySegment<byte> SerializeToArrayPool(object input)
                 {
-                    return Inner<byte, Utf8OriginalCaseResolver>.InnerSerializeToByteArrayPool(input);
+                    return Inner<byte, ExcludeNullsOriginalCaseResolver<byte>>.InnerSerializeToByteArrayPool(input);
                 }
 
                 /// <summary>Serialize to byte array from ArrayPool with specific resolver.
@@ -69,7 +64,7 @@ namespace SpanJson
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static ValueTask SerializeAsync(object input, Stream stream, CancellationToken cancellationToken = default)
                 {
-                    return Inner<byte, Utf8OriginalCaseResolver>.InnerSerializeAsync(input, stream, cancellationToken);
+                    return Inner<byte, ExcludeNullsOriginalCaseResolver<byte>>.InnerSerializeAsync(input, stream, cancellationToken);
                 }
 
                 /// <summary>Serialize to stream with specific resolver.</summary>
@@ -96,7 +91,7 @@ namespace SpanJson
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static object Deserialize(byte[] input, Type type)
                 {
-                    return Inner<byte, Utf8OriginalCaseResolver>.InnerDeserialize(input, type);
+                    return Inner<byte, ExcludeNullsOriginalCaseResolver<byte>>.InnerDeserialize(input, type);
                 }
 
                 /// <summary>Deserialize from Byte array with specific resolver.</summary>
@@ -118,7 +113,7 @@ namespace SpanJson
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static object Deserialize(in ArraySegment<byte> input, Type type)
                 {
-                    return Inner<byte, Utf8OriginalCaseResolver>.InnerDeserialize(input, type);
+                    return Inner<byte, ExcludeNullsOriginalCaseResolver<byte>>.InnerDeserialize(input, type);
                 }
 
                 /// <summary>Deserialize from Byte array with specific resolver.</summary>
@@ -140,7 +135,7 @@ namespace SpanJson
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static object Deserialize(in ReadOnlyMemory<byte> input, Type type)
                 {
-                    return Inner<byte, Utf8OriginalCaseResolver>.InnerDeserialize(input, type);
+                    return Inner<byte, ExcludeNullsOriginalCaseResolver<byte>>.InnerDeserialize(input, type);
                 }
 
                 /// <summary>Deserialize from Byte array with specific resolver.</summary>
@@ -162,7 +157,7 @@ namespace SpanJson
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static object Deserialize(in ReadOnlySpan<byte> input, Type type)
                 {
-                    return Inner<byte, Utf8OriginalCaseResolver>.InnerDeserialize(input, type);
+                    return Inner<byte, ExcludeNullsOriginalCaseResolver<byte>>.InnerDeserialize(input, type);
                 }
 
                 /// <summary>Deserialize from Byte array with specific resolver.</summary>
@@ -186,7 +181,7 @@ namespace SpanJson
                 public static ValueTask<object> DeserializeAsync(Stream stream, Type type,
                     CancellationToken cancellationToken = default)
                 {
-                    return Inner<byte, Utf8OriginalCaseResolver>.InnerDeserializeAsync(stream, type, cancellationToken);
+                    return Inner<byte, ExcludeNullsOriginalCaseResolver<byte>>.InnerDeserializeAsync(stream, type, cancellationToken);
                 }
 
                 /// <summary>Deserialize from stream with specific resolver.</summary>

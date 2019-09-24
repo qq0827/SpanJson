@@ -5,6 +5,7 @@
     using System.Diagnostics;
     using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
+    using System.Threading;
     using SpanJson.Internal;
 
     public ref partial struct JsonWriter<TSymbol> where TSymbol : struct
@@ -16,7 +17,7 @@
         private Span<byte> _utf8Span;
         internal char[] _utf16Buffer;
         private Span<char> _utf16Span;
-        internal int _capacity;
+        private int _capacity;
 
         internal int _pos;
         private int _depth;
@@ -135,16 +136,22 @@
             _capacity = _borrowedBuffer.Length;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void Dispose()
+        public void Dispose()
         {
-            var toReturn = _borrowedBuffer;
+            var toReturn = Interlocked.Exchange(ref _borrowedBuffer, null);
+            if (toReturn is null) { return; }
+
             var arrayPool = _arrayPool;
-            this = default; // for safety, to avoid using pooled array if this instance is erroneously appended to again
             if (arrayPool is object)
             {
                 arrayPool.Return(toReturn);
+                _arrayPool = null;
             }
+
+            _utf8Buffer = null;
+            _utf8Span = default;
+            _utf16Buffer = null;
+            _utf16Span = default;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

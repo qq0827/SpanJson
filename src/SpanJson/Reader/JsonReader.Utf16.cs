@@ -405,7 +405,7 @@ namespace SpanJson
                 byteSpan[i] = (byte)span[i];
             }
 
-            // TODO: replace with utf16 code in .net core 3.0
+            // still slow in .NET Core 3.0
             if (Utf8Parser.TryParse(byteSpan, out TimeSpan value, out var bytesConsumed) && bytesConsumed == span.Length)
             {
                 return value;
@@ -420,7 +420,11 @@ namespace SpanJson
             ref var cStart = ref MemoryMarshal.GetReference(_utf16Span);
             SkipWhitespaceUtf16(ref cStart, ref pos, _length);
             var span = ReadUtf16StringSpanInternal(ref cStart, ref pos, _length, out var escapedCharsSize);
+#if NETCOREAPP || NETSTANDARD_2_0_GREATER
+            return 0u >= (uint)escapedCharsSize ? ParseUtf16Guid(span, _pos) : ParseUtf16GuidAllocating(span, pos);
+#else
             return 0u >= (uint)escapedCharsSize ? ConvertGuidViaUtf8(span, _pos) : ParseUtf16GuidAllocating(span, pos);
+#endif
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -433,7 +437,11 @@ namespace SpanJson
             try
             {
                 UnescapeUtf16Chars(input, ref utf16Unescaped);
+#if NETCOREAPP || NETSTANDARD_2_0_GREATER
+                return ParseUtf16Guid(utf16Unescaped, pos);
+#else
                 return ConvertGuidViaUtf8(utf16Unescaped, pos);
+#endif
             }
             finally
             {
@@ -441,6 +449,19 @@ namespace SpanJson
             }
         }
 
+#if NETCOREAPP || NETSTANDARD_2_0_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Guid ParseUtf16Guid(in ReadOnlySpan<char> span, int position)
+        {
+            var format = 'D';
+            if (Guid.TryParseExact(span, MemoryMarshal.CreateSpan(ref format, 1), out var value))
+            {
+                return value;
+            }
+
+            throw ThrowHelper.GetJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.Guid, position);
+        }
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Guid ConvertGuidViaUtf8(in ReadOnlySpan<char> span, int position)
         {
@@ -450,7 +471,6 @@ namespace SpanJson
                 byteSpan[i] = (byte)span[i];
             }
 
-            // TODO: replace with utf16 code in .net core 3.0
             if (Utf8Parser.TryParse(byteSpan, out Guid result, out var bytesConsumed, 'D') && bytesConsumed == span.Length)
             {
                 return result;
@@ -458,6 +478,7 @@ namespace SpanJson
 
             throw ThrowHelper.GetJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.Guid, position);
         }
+#endif
 
         public CombGuid ReadUtf16CombGuid()
         {

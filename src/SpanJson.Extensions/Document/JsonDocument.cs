@@ -931,7 +931,7 @@ namespace SpanJson.Document
                         writer.WriteEndArray();
                         continue;
                     case JsonTokenType.PropertyName:
-                        WritePropertyName(row, writer);
+                        WritePropertyName(row, ref writer);
                         continue;
                 }
 
@@ -973,7 +973,7 @@ namespace SpanJson.Document
             }
         }
 
-        private void WritePropertyName(in DbRow row, Utf8JsonWriter writer)
+        private void WritePropertyName(in DbRow row, ref Utf8JsonWriter writer)
         {
             ArraySegment<byte> rented = default;
 
