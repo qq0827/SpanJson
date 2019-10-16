@@ -37,6 +37,7 @@ using System.Collections;
 #if DESKTOPCLR
 using System.Web.UI;
 #endif
+using CuteAnt;
 using System.Linq;
 using SpanJson.Document;
 using SpanJson.Resolvers;
@@ -499,6 +500,16 @@ Parameter name: propertyName"*/);
             o = JObject.Parse(json);
             value = o.Value<bool?>("foo");
             Assert.AreEqual(null, value);
+        }
+
+        [Test]
+        public void CombGuidValueCast()
+        {
+            JObject o = new JObject();
+            var comb = CombGuid.NewComb();
+            o["Id"] = comb;
+            Assert.AreEqual(comb.ToString(), o.Value<string>("Id"));
+            Assert.AreEqual(comb.Value, o.Value<Guid>("Id"));
         }
 
         [Test]

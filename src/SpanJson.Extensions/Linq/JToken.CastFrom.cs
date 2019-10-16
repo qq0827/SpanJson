@@ -40,7 +40,7 @@ namespace SpanJson.Linq
         private static readonly HashSet<JTokenType> BooleanTypes = new HashSet<JTokenType>(new[] { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Dynamic, JTokenType.Raw, JTokenType.Boolean });
         private static readonly HashSet<JTokenType> NumberTypes = new HashSet<JTokenType>(new[] { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Dynamic, JTokenType.Raw, JTokenType.Boolean });
         private static readonly HashSet<JTokenType> BigIntegerTypes = new HashSet<JTokenType>(new[] { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Dynamic, JTokenType.Raw, JTokenType.Boolean, JTokenType.Bytes });
-        private static readonly HashSet<JTokenType> StringTypes = new HashSet<JTokenType>(new[] { JTokenType.Date, JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Dynamic, JTokenType.Raw, JTokenType.Boolean, JTokenType.Bytes, JTokenType.Guid, JTokenType.TimeSpan, JTokenType.Uri });
+        private static readonly HashSet<JTokenType> StringTypes = new HashSet<JTokenType>(new[] { JTokenType.Date, JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Dynamic, JTokenType.Raw, JTokenType.Boolean, JTokenType.Bytes, JTokenType.Guid, JTokenType.CombGuid, JTokenType.TimeSpan, JTokenType.Uri });
         private static readonly HashSet<JTokenType> GuidTypes = new HashSet<JTokenType>(new[] { JTokenType.String, JTokenType.Comment, JTokenType.Dynamic, JTokenType.Raw, JTokenType.Guid, JTokenType.CombGuid, JTokenType.Bytes });
         private static readonly HashSet<JTokenType> CombGuidTypes = new HashSet<JTokenType>(new[] { JTokenType.String, JTokenType.Comment, JTokenType.Dynamic, JTokenType.Raw, JTokenType.Guid, JTokenType.CombGuid, JTokenType.Bytes });
         private static readonly HashSet<JTokenType> TimeSpanTypes = new HashSet<JTokenType>(new[] { JTokenType.String, JTokenType.Comment, JTokenType.Dynamic, JTokenType.Raw, JTokenType.TimeSpan });
@@ -1318,6 +1318,12 @@ namespace SpanJson.Linq
 
                 case JsonElement jsonNum:
                     return jsonNum.ToString();
+
+                case Guid guid:
+                    return guid.ToString("D");
+
+                case CombGuid comb:
+                    return comb.ToString(CombGuidFormatStringType.Comb);
 
                 default:
                     return Convert.ToString(tokenVal, CultureInfo.InvariantCulture);
