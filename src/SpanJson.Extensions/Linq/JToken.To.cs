@@ -71,14 +71,14 @@ namespace SpanJson.Linq
         {
             if (TryConvertOrCast(typeof(T), out object result)) { return (T)result; }
 
-            var jsonSerializer = DefaultDeserializerPool.Take();
+            var jsonSerializer = PolymorphicDeserializerPool.Take();
             try
             {
                 return ToObjectInternal<T, IncludeNullsOriginalCaseResolver<byte>, IncludeNullsOriginalCaseResolver<char>>(jsonSerializer);
             }
             finally
             {
-                DefaultDeserializerPool.Return(jsonSerializer);
+                PolymorphicDeserializerPool.Return(jsonSerializer);
             }
         }
 
@@ -120,14 +120,14 @@ namespace SpanJson.Linq
 
             if (TryConvertOrCast(objectType, out object result)) { return result; }
 
-            var jsonSerializer = DefaultDeserializerPool.Take();
+            var jsonSerializer = PolymorphicDeserializerPool.Take();
             try
             {
                 return ToObjectInternal<IncludeNullsOriginalCaseResolver<byte>, IncludeNullsOriginalCaseResolver<char>>(objectType, jsonSerializer);
             }
             finally
             {
-                DefaultDeserializerPool.Return(jsonSerializer);
+                PolymorphicDeserializerPool.Return(jsonSerializer);
             }
         }
 

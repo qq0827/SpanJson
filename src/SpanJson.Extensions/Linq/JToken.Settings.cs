@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using CuteAnt.Pool;
@@ -17,8 +18,8 @@ namespace SpanJson.Linq
         private static readonly NJsonSerializerSettings _polymorphicSerializerSettings;
         private static ObjectPool<NJsonSerializer> _polymorphicSerializerPool;
 
-        private static readonly NJsonSerializerSettings _defaultDeserializerSettings;
-        private static ObjectPool<NJsonSerializer> _defaultDeserializerPool;
+        private static readonly NJsonSerializerSettings _polymorphicDeserializerSettings;
+        private static ObjectPool<NJsonSerializer> _polymorphicDeserializerPool;
 
         public static NJsonSerializerSettings DefaultSerializerSettings => _defaultSerializerSettings;
         public static ObjectPool<NJsonSerializer> DefaultSerializerPool
@@ -34,11 +35,16 @@ namespace SpanJson.Linq
             get => _polymorphicSerializerPool ?? EnsurePolymorphicSerializerPoolCreated();
         }
 
-        public static NJsonSerializerSettings DefaultDeserializerSettings => _defaultDeserializerSettings;
-        public static ObjectPool<NJsonSerializer> DefaultDeserializerPool
+        [Obsolete("=> PolymorphicDeserializerSettings")]
+        public static NJsonSerializerSettings DefaultDeserializerSettings => _polymorphicDeserializerSettings;
+        [Obsolete("=> PolymorphicDeserializerPool")]
+        public static ObjectPool<NJsonSerializer> DefaultDeserializerPool => PolymorphicDeserializerPool;
+
+        public static NJsonSerializerSettings PolymorphicDeserializerSettings => _polymorphicDeserializerSettings;
+        public static ObjectPool<NJsonSerializer> PolymorphicDeserializerPool
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _defaultDeserializerPool ?? EnsureDeserializerPoolCreated();
+            get => _polymorphicDeserializerPool ?? EnsurePolymorphicDeserializerPoolCreated();
         }
 
         static JToken()
@@ -75,7 +81,7 @@ namespace SpanJson.Linq
                 converters.Add(item);
             }
 
-            _defaultDeserializerSettings = new NJsonSerializerSettings
+            _polymorphicDeserializerSettings = new NJsonSerializerSettings
             {
                 ConstructorHandling = Newtonsoft.Json.ConstructorHandling.AllowNonPublicDefaultConstructor,
 
@@ -84,9 +90,10 @@ namespace SpanJson.Linq
                 SerializationBinder = JsonSerializationBinder.Instance,
                 TypeNameHandling = Newtonsoft.Json.TypeNameHandling.Auto
             };
-            _defaultDeserializerSettings.Converters.Add(Newtonsoft.Json.Converters.IPAddressConverter.Instance);
-            _defaultDeserializerSettings.Converters.Add(Newtonsoft.Json.Converters.IPEndPointConverter.Instance);
-            _defaultDeserializerSettings.Converters.Add(Newtonsoft.Json.Converters.CombGuidConverter.Instance);
+            _polymorphicDeserializerSettings.Converters.Add(Newtonsoft.Json.Converters.IPAddressConverter.Instance);
+            _polymorphicDeserializerSettings.Converters.Add(Newtonsoft.Json.Converters.IPEndPointConverter.Instance);
+            _polymorphicDeserializerSettings.Converters.Add(Newtonsoft.Json.Converters.CombGuidConverter.Instance);
+            _polymorphicDeserializerSettings.Converters.Add(SpanJson.Converters.JTokenConverter.Instance);
         }
 
         public static NJsonSerializerSettings CreateSerializerSettings(Action<NJsonSerializerSettings> configSettings)
@@ -109,7 +116,7 @@ namespace SpanJson.Linq
 
             var serializerSettings = new NJsonSerializerSettings();
             var converters = serializerSettings.Converters;
-            foreach (var item in _defaultDeserializerSettings.Converters)
+            foreach (var item in _polymorphicDeserializerSettings.Converters)
             {
                 converters.Add(item);
             }
@@ -132,10 +139,10 @@ namespace SpanJson.Linq
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static ObjectPool<NJsonSerializer> EnsureDeserializerPoolCreated()
+        private static ObjectPool<NJsonSerializer> EnsurePolymorphicDeserializerPoolCreated()
         {
-            Interlocked.CompareExchange(ref _defaultDeserializerPool, JsonConvertX.GetJsonSerializerPool(_defaultDeserializerSettings), null);
-            return _defaultDeserializerPool;
+            Interlocked.CompareExchange(ref _polymorphicDeserializerPool, JsonConvertX.GetJsonSerializerPool(_polymorphicDeserializerSettings), null);
+            return _polymorphicDeserializerPool;
         }
     }
 }
