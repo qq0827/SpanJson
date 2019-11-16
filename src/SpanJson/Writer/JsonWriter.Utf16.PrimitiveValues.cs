@@ -356,12 +356,12 @@
 
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
 #if NETCOREAPP || NETSTANDARD_2_0_GREATER
-            value.TryFormat(Utf16FreeSpan, CombGuidFormatStringType.Comb, out int charsWritten);
-            Debug.Assert(charsWritten == 36);
+            value.TryFormat(Utf16FreeSpan, CombGuidFormatStringType.Comb32Digits, out int charsWritten);
+            Debug.Assert(charsWritten == 32);
             pos += charsWritten;
 #else
-            value.ToString(CombGuidFormatStringType.Comb).AsSpan().CopyTo(Utf16FreeSpan);
-            pos += 36;
+            value.ToString(CombGuidFormatStringType.Comb32Digits).AsSpan().CopyTo(Utf16FreeSpan);
+            pos += 32;
 #endif
             WriteUtf16DoubleQuote(ref pinnableAddr, ref pos);
         }

@@ -48,7 +48,7 @@ namespace Newtonsoft.Json.Converters
                 return;
             }
             CombGuid comb = (CombGuid)value;
-            writer.WriteValue(comb.ToString());
+            writer.WriteValue(comb.ToString(CombGuidFormatStringType.Comb32Digits));
         }
 
         /// <summary>Determines whether this instance can convert the specified object type.</summary>

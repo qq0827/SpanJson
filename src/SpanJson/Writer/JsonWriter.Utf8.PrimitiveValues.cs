@@ -308,15 +308,15 @@
 
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
 #if NETCOREAPP || NETSTANDARD_2_0_GREATER
-            value.TryFormat(Utf8FreeSpan, CombGuidFormatStringType.Comb, out int bytesWritten);
+            value.TryFormat(Utf8FreeSpan, CombGuidFormatStringType.Comb32Digits, out int bytesWritten);
             pos += bytesWritten;
 #else
-            Span<byte> tempSpan = stackalloc byte[36];
-            var bytesWritten = TextEncodings.Utf8.GetBytes(value.ToString(CombGuidFormatStringType.Comb).AsSpan(), tempSpan);
+            Span<byte> tempSpan = stackalloc byte[32];
+            var bytesWritten = TextEncodings.Utf8.GetBytes(value.ToString(CombGuidFormatStringType.Comb32Digits).AsSpan(), tempSpan);
             Debug.Assert(bytesWritten == tempSpan.Length);
             UnsafeMemory.WriteRawBytes(ref pinnableAddr, ref MemoryMarshal.GetReference(tempSpan), bytesWritten, ref pos);
 #endif
-            //new GuidBits(ref value).Write(ref pinnableAddr, ref pos); // len = 36
+            //new GuidBits(ref value).Write(ref pinnableAddr, ref pos); // len = 32
             WriteUtf8DoubleQuote(ref pinnableAddr, ref pos);
         }
 
