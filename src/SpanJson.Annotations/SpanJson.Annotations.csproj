@@ -1,6 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\nuget.props" />
-  <Import Project="..\version.annotations.props" />
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net451</TargetFrameworks>
@@ -17,4 +16,5 @@
     <PackageTags>JSON</PackageTags>
   </PropertyGroup>
 
+  <Import Project="..\version.annotations.props" />
 </Project>

@@ -1,6 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\nuget.props" />
-  <Import Project="..\version.extensions.props" />
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.0;netcoreapp2.1;netstandard2.1;netstandard2.0;net471;net451</TargetFrameworks>
@@ -30,4 +29,5 @@
     <ProjectReference Include="..\SpanJson\SpanJson.csproj" />
   </ItemGroup>
 
+  <Import Project="..\version.extensions.props" />
 </Project>

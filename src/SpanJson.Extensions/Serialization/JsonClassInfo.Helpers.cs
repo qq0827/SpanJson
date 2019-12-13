@@ -164,7 +164,6 @@ namespace SpanJson.Serialization
 
             if (!(typeof(IEnumerable).IsAssignableFrom(queryType)) ||
                 queryType == typeof(string) ||
-                queryType.IsAbstract ||
                 queryType.IsInterface ||
                 queryType.IsArray ||
                 IsNativelySupportedCollection(queryType))
@@ -209,18 +208,7 @@ namespace SpanJson.Serialization
                 }
             }
 
-            // Try non-generic interfaces without add methods
-            if (typeof(IEnumerable).IsAssignableFrom(queryType))
-            {
-                return typeof(IEnumerable);
-            }
-            else if (typeof(ICollection).IsAssignableFrom(queryType))
-            {
-                return typeof(ICollection);
-            }
-
-            // No natively supported collection that we support as derived types was detected.
-            return queryType;
+            return typeof(IEnumerable);
         }
 
         public static bool IsDeserializedByAssigningFromList(Type type)

@@ -1,6 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\nuget.props" />
-  <Import Project="..\version.props" />
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.0;netcoreapp2.1;netstandard2.1;netstandard2.0;net471;net451</TargetFrameworks>
@@ -47,30 +46,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Formatters\BclFormatter.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>BclFormatter.cs</LastGenOutput>
-    </None>
-    <None Update="Dynamic\SpanJsonDynamicString.Operators.tt">
-      <LastGenOutput>SpanJsonDynamicString.Operators.cs</LastGenOutput>
-      <Generator>TextTemplatingFileGenerator</Generator>
-    </None>
-    <None Update="Dynamic\SpanJsonDynamicNumber.Operators.tt">
-      <LastGenOutput>SpanJsonDynamicNumber.Operators.cs</LastGenOutput>
-      <Generator>TextTemplatingFileGenerator</Generator>
-    </None>
-    <None Update="Writer\JsonWriter.PrimitiveWrappers.tt">
-      <LastGenOutput>JsonWriter.PrimitiveWrappers.cs</LastGenOutput>
-      <Generator>TextTemplatingFileGenerator</Generator>
-    </None>
-    <None Update="Reader\JsonReader.PrimitiveWrappers.tt">
-      <LastGenOutput>JsonReader.PrimitiveWrappers.cs</LastGenOutput>
-      <Generator>TextTemplatingFileGenerator</Generator>
-    </None>
-    <None Update="Writer\JsonWriter.Utf8.WriteVerbatimIntegers.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>JsonWriter.Utf8.WriteVerbatimIntegers.cs</LastGenOutput>
-    </None>
     <Compile Update="Formatters\BclFormatter.cs">
       <DependentUpon>BclFormatter.tt</DependentUpon>
       <DesignTime>True</DesignTime>
@@ -106,14 +81,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>JsonWriter.PrimitiveWrappers.tt</DependentUpon>
     </Compile>
-    <None Update="Internal\UnsafeMemory32.tt">
-      <LastGenOutput>UnsafeMemory32.cs</LastGenOutput>
-      <Generator>TextTemplatingFileGenerator</Generator>
-    </None>
-    <None Update="Internal\UnsafeMemory64.tt">
-      <LastGenOutput>UnsafeMemory64.cs</LastGenOutput>
-      <Generator>TextTemplatingFileGenerator</Generator>
-    </None>
     <Compile Update="Internal\UnsafeMemory32.cs">
       <DependentUpon>UnsafeMemory32.tt</DependentUpon>
       <DesignTime>True</DesignTime>
@@ -127,9 +94,44 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Formatters\BclFormatter.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>BclFormatter.cs</LastGenOutput>
+    </None>
+    <None Update="Dynamic\SpanJsonDynamicString.Operators.tt">
+      <LastGenOutput>SpanJsonDynamicString.Operators.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="Dynamic\SpanJsonDynamicNumber.Operators.tt">
+      <LastGenOutput>SpanJsonDynamicNumber.Operators.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="Writer\JsonWriter.PrimitiveWrappers.tt">
+      <LastGenOutput>JsonWriter.PrimitiveWrappers.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="Reader\JsonReader.PrimitiveWrappers.tt">
+      <LastGenOutput>JsonReader.PrimitiveWrappers.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="Writer\JsonWriter.Utf8.WriteVerbatimIntegers.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>JsonWriter.Utf8.WriteVerbatimIntegers.cs</LastGenOutput>
+    </None>
+    <None Update="Internal\UnsafeMemory32.tt">
+      <LastGenOutput>UnsafeMemory32.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="Internal\UnsafeMemory64.tt">
+      <LastGenOutput>UnsafeMemory64.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
     <EmbeddedResource Update="Internal\Strings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+
+  <Import Project="..\version.props" />
+  <Import Project="..\version.props" />
 </Project>
