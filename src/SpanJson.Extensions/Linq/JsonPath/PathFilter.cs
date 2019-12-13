@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Globalization;
 
 namespace SpanJson.Linq.JsonPath
 {
@@ -9,7 +8,6 @@ namespace SpanJson.Linq.JsonPath
 
         protected static JToken GetTokenIndex(JToken t, bool errorWhenNoMatch, int index)
         {
-
             if (t is JArray a)
             {
                 if ((uint)a.Count <= (uint)index)

@@ -50,7 +50,12 @@ namespace SpanJson.Linq
         /// otherwise, <c>false</c>.</returns>
         public override bool Equals(object obj)
         {
-            return Equals(obj as JValue);
+            if (obj is JValue v)
+            {
+                return Equals(v);
+            }
+
+            return false;
         }
 
         /// <summary>Serves as a hash function for a particular type.</summary>

@@ -29,7 +29,12 @@ namespace SpanJson.Linq.JsonPath
 
     internal abstract class QueryExpression
     {
-        public QueryOperator Operator { get; set; }
+        internal QueryOperator Operator;
+
+        public QueryExpression(QueryOperator @operator)
+        {
+            Operator = @operator;
+        }
 
         public abstract bool IsMatch(JToken root, JToken t);
     }
@@ -38,7 +43,7 @@ namespace SpanJson.Linq.JsonPath
     {
         public List<QueryExpression> Expressions { get; set; }
 
-        public CompositeExpression()
+        public CompositeExpression(QueryOperator @operator) : base(@operator)
         {
             Expressions = new List<QueryExpression>();
         }
@@ -67,8 +72,14 @@ namespace SpanJson.Linq.JsonPath
 
     internal class BooleanQueryExpression : QueryExpression
     {
-        public object Left { get; set; }
-        public object Right { get; set; }
+        public readonly object Left;
+        public readonly object Right;
+
+        public BooleanQueryExpression(QueryOperator @operator, object left, object right) : base(@operator)
+        {
+            Left = left;
+            Right = right;
+        }
 
         private IEnumerable<JToken> GetResult(JToken root, JToken t, object o)
         {
@@ -252,7 +263,7 @@ namespace SpanJson.Linq.JsonPath
                     return false;
             }
 
-            return string.Equals(currentValueString, queryValueString, StringComparison.Ordinal);
+            return string.Equals(currentValueString, queryValueString);
         }
 
         internal static bool EqualsWithStrictMatch(JValue value, JValue queryValue)
@@ -277,7 +288,7 @@ namespace SpanJson.Linq.JsonPath
 
             if (valueType.IsString() && queryValueType.IsString())
             {
-                return string.Equals(value.Value.ToString(), queryValue.Value.ToString(), StringComparison.Ordinal);
+                return string.Equals(value.Value.ToString(), queryValue.Value.ToString());
             }
 
             // we handle floats and integers the exact same way, so they are pseudo equivalent

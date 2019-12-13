@@ -457,8 +457,10 @@ namespace SpanJson.Linq
         /// <param name="serializer">The calling serializer.</param>
         public abstract void WriteTo(NJsonWriter writer, NJsonSerializer serializer);
 
-        /// <summary>Returns the JSON for this token.</summary>
-        /// <returns>The JSON for this token.</returns>
+        /// <summary>Returns the indented JSON for this token.</summary>
+        /// <remarks><c>ToString()</c> returns a non-JSON string value for tokens with a type of <see cref="JTokenType.String"/>.
+        /// If you want the JSON for all token types then you should use <see cref="WriteTo(NJsonWriter, NJsonSerializer)"/>.</remarks>
+        /// <returns>The indented JSON for this token.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override string ToString()
         {

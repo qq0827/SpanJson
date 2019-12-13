@@ -1,11 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SpanJson.Linq.JsonPath
 {
     internal class QueryScanFilter : PathFilter
     {
-        public QueryExpression Expression { get; set; }
+        internal QueryExpression Expression;
+
+        public QueryScanFilter(QueryExpression expression)
+        {
+            Expression = expression;
+        }
 
         public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {

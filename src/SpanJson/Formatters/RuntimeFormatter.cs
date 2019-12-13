@@ -63,7 +63,7 @@ namespace SpanJson.Formatters
 
         private static bool MatchSerializeMethod(MethodInfo mi)
         {
-            if (!string.Equals("Serialize", mi.Name, StringComparison.Ordinal)) { return false; }
+            if (!string.Equals("Serialize", mi.Name)) { return false; }
 
             var parameters = mi.GetParameters();
             if (parameters.Length != 3) { return false; }

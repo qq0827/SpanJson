@@ -78,8 +78,9 @@ namespace SpanJson.Utilities
                 return false;
             }
 
-            foreach (char c in s)
+            for (int i = 0; i < s.Length; i++)
             {
+                char c = s[i];
                 if (c >= charEscapeFlags.Length || charEscapeFlags[c])
                 {
                     return true;
@@ -196,7 +197,7 @@ namespace SpanJson.Utilities
                             continue;
                         }
 
-                        bool isEscapedUnicodeText = string.Equals(escapedValue, EscapedUnicodeText, StringComparison.Ordinal);
+                        bool isEscapedUnicodeText = string.Equals(escapedValue, EscapedUnicodeText);
 
                         if (i > lastWritePosition)
                         {

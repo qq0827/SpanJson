@@ -320,11 +320,14 @@ namespace SpanJson.Linq
 
         internal virtual bool RemoveItem(JToken item)
         {
-            int index = IndexOfItem(item);
-            if (index >= 0)
+            if (item is object)
             {
-                RemoveItemAt(index);
-                return true;
+                int index = IndexOfItem(item);
+                if (index >= 0)
+                {
+                    RemoveItemAt(index);
+                    return true;
+                }
             }
 
             return false;
@@ -451,13 +454,13 @@ namespace SpanJson.Linq
         {
             if (currentValue is JValue v1)
             {
-                // null will get turned into a JValue of type null
-                if (v1.Type == JTokenType.Null && newValue is null)
+                if (newValue is null)
                 {
-                    return true;
+                    // null will get turned into a JValue of type null
+                    return v1.Type == JTokenType.Null ? true : false;
                 }
 
-                return v1.Equals(newValue);
+                return v1.Equals(newValue) ? true : false;
             }
 
             return false;
@@ -575,7 +578,7 @@ namespace SpanJson.Linq
 
         internal static void MergeEnumerableContent(JContainer target, IEnumerable content, JsonMergeSettings settings)
         {
-            switch (settings.MergeArrayHandling)
+            switch (settings?.MergeArrayHandling ?? MergeArrayHandling.Concat)
             {
                 case MergeArrayHandling.Concat:
                     foreach (JToken item in content)
@@ -595,6 +598,7 @@ namespace SpanJson.Linq
                     }
                     break;
                 case MergeArrayHandling.Replace:
+                    if (target == content) { break; }
                     target.ClearItems();
                     foreach (JToken item in content)
                     {

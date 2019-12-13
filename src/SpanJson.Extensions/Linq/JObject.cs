@@ -88,6 +88,8 @@ namespace SpanJson.Linq
 
         internal override int IndexOfItem(JToken item)
         {
+            if (item is null) { return -1; }
+
             return _properties.IndexOfReference(item);
         }
 
@@ -257,17 +259,12 @@ namespace SpanJson.Linq
         {
             get
             {
-                switch (key)
+                return key switch
                 {
-                    case null:
-                        throw ThrowHelper.GetArgumentNullException(ExceptionArgument.key);
-
-                    case string propertyName:
-                        return this[propertyName];
-
-                    default:
-                        throw ThrowHelper2.GetArgumentException_Accessed_JObject_values_with_invalid_key_value(key);
-                }
+                    null => throw ThrowHelper.GetArgumentNullException(ExceptionArgument.key),
+                    string propertyName => this[propertyName],
+                    _ => throw ThrowHelper2.GetArgumentException_Accessed_JObject_values_with_invalid_key_value(key),
+                };
             }
             set
             {
@@ -308,7 +305,7 @@ namespace SpanJson.Linq
                 else
                 {
                     OnPropertyChanging(propertyName);
-                    Add(new JProperty(propertyName, value));
+                    Add(propertyName, value);
                     OnPropertyChanged(propertyName);
                 }
             }

@@ -58,7 +58,12 @@ namespace SpanJson.Linq
         /// <returns>A collection of the sibling tokens before this token, in document order.</returns>
         public IEnumerable<JToken> BeforeSelf()
         {
-            for (JToken o = Parent.First; o != this; o = o.Next)
+            if (Parent is null)
+            {
+                yield break;
+            }
+
+            for (JToken o = Parent.First; o != this && o is object; o = o.Next)
             {
                 yield return o;
             }

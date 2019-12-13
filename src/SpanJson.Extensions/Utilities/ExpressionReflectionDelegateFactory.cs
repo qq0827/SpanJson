@@ -116,7 +116,7 @@ namespace SpanJson.Utilities
                     if (isByRef)
                     {
                         ParameterExpression variable = Expression.Variable(parameterType);
-                        refParameterMap.Add(new ByRefParameter {Value = argExpression, Variable = variable, IsOut = parameter.IsOut});
+                        refParameterMap.Add(new ByRefParameter { Value = argExpression, Variable = variable, IsOut = parameter.IsOut });
 
                         argExpression = variable;
                     }
@@ -221,6 +221,7 @@ namespace SpanJson.Utilities
             Expression resultExpression;
 
             MethodInfo getMethod = propertyInfo.GetGetMethod(true);
+            if (getMethod is null) { ThrowHelper2.GetArgumentException_Property_does_not_have_a_getter(); }
 
             if (getMethod.IsStatic)
             {
@@ -321,6 +322,7 @@ namespace SpanJson.Utilities
             Expression readValueParameter = EnsureCastExpression(valueParameter, propertyInfo.PropertyType);
 
             MethodInfo setMethod = propertyInfo.GetSetMethod(true);
+            if (setMethod is null) { ThrowHelper2.GetArgumentException_Property_does_not_have_a_setter(); }
 
             Expression setExpression;
             if (setMethod.IsStatic)
@@ -339,11 +341,11 @@ namespace SpanJson.Utilities
             Action<T, object> compiled = (Action<T, object>)lambdaExpression.Compile();
             return compiled;
         }
-        
+
         private Expression EnsureCastExpression(Expression expression, Type targetType, bool allowWidening = false)
         {
             Type expressionType = expression.Type;
-            
+
             // check if a cast or conversion is required
             if (expressionType == targetType || (!expressionType.IsValueType && targetType.IsAssignableFrom(expressionType)))
             {
@@ -367,10 +369,10 @@ namespace SpanJson.Utilities
                             Expression.Call(toTargetTypeMethod, expression));
                     }
                 }
-                
+
                 return Expression.Condition(
                     Expression.Equal(expression, Expression.Constant(null, typeof(object))),
-                    Expression.Default(targetType), 
+                    Expression.Default(targetType),
                     convert);
             }
 

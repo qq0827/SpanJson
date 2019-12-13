@@ -111,7 +111,7 @@ namespace SpanJson.Helpers
             Attribute[] attributes = type.GetCustomAttributes(false).Cast<Attribute>().ToArray();
             for (int i = 0; i < attributes.Length; i++)
             {
-                if (string.Equals(attributes[i].GetType().FullName, "System.Runtime.CompilerServices.IsByRefLikeAttribute", StringComparison.Ordinal))
+                if (string.Equals(attributes[i].GetType().FullName, "System.Runtime.CompilerServices.IsByRefLikeAttribute"))
                 {
                     return true;
                 }

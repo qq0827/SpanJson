@@ -42,6 +42,18 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static ArgumentException GetArgumentException_Property_does_not_have_a_getter()
+        {
+            return new ArgumentException("Property does not have a getter.");
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static ArgumentException GetArgumentException_Property_does_not_have_a_setter()
+        {
+            return new ArgumentException("Property does not have a setter.");
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
         internal static ArgumentException GetArgumentException_Accessed_JArray_values_with_invalid_key_value(object key)
         {
             return new ArgumentException(string.Format(CultureInfo.InvariantCulture, "Accessed JArray values with invalid key value: {0}. Int32 array index expected.", MiscellaneousUtils.ToString(key)));

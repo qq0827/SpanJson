@@ -4,7 +4,12 @@ namespace SpanJson.Linq.JsonPath
 {
     internal class ScanMultipleFilter : PathFilter
     {
-        public List<string> Names { get; set; }
+        private List<string> _names;
+
+        public ScanMultipleFilter(List<string> names)
+        {
+            _names = names;
+        }
 
         public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {
@@ -24,7 +29,7 @@ namespace SpanJson.Linq.JsonPath
 
                     if (value is JProperty property)
                     {
-                        foreach (string name in Names)
+                        foreach (string name in _names)
                         {
                             if (property.Name == name)
                             {

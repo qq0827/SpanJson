@@ -193,6 +193,8 @@ namespace SpanJson.Linq
 
         internal override int IndexOfItem(JToken item)
         {
+            if (item is null) { return -1; }
+
             return _content.IndexOf(item);
         }
 

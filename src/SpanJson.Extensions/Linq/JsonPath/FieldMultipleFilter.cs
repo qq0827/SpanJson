@@ -4,7 +4,12 @@ namespace SpanJson.Linq.JsonPath
 {
     internal class FieldMultipleFilter : PathFilter
     {
-        public List<string> Names { get; set; }
+        internal List<string> Names;
+
+        public FieldMultipleFilter(List<string> names)
+        {
+            Names = names;
+        }
 
         public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {

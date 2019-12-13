@@ -677,10 +677,10 @@ namespace SpanJson.Utilities
 
         private static object EnsureTypeAssignable(object value, Type initialType, Type targetType)
         {
-            Type valueType = value?.GetType();
-
             if (value is object)
             {
+                Type valueType = value?.GetType();
+
                 if (targetType.IsAssignableFrom(valueType))
                 {
                     return value;

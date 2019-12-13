@@ -97,17 +97,12 @@ namespace SpanJson.Linq
         {
             get
             {
-                switch (key)
+                return key switch
                 {
-                    case null:
-                        throw ThrowHelper.GetArgumentNullException(ExceptionArgument.key);
-
-                    case int idx:
-                        return GetItem(idx);
-
-                    default:
-                        throw ThrowHelper2.GetArgumentException_Accessed_JArray_values_with_invalid_key_value(key);
-                }
+                    null => throw ThrowHelper.GetArgumentNullException(ExceptionArgument.key),
+                    int idx => GetItem(idx),
+                    _ => throw ThrowHelper2.GetArgumentException_Accessed_JArray_values_with_invalid_key_value(key),
+                };
             }
             set
             {
@@ -136,6 +131,8 @@ namespace SpanJson.Linq
 
         internal override int IndexOfItem(JToken item)
         {
+            if (item is null) { return -1; }
+
             return _values.IndexOfReference(item);
         }
 

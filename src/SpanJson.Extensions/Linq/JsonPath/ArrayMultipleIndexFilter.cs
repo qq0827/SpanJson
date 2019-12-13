@@ -4,7 +4,12 @@ namespace SpanJson.Linq.JsonPath
 {
     internal class ArrayMultipleIndexFilter : PathFilter
     {
-        public List<int> Indexes { get; set; }
+        internal List<int> Indexes;
+
+        public ArrayMultipleIndexFilter(List<int> indexes)
+        {
+            Indexes = indexes;
+        }
 
         public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {

@@ -4,7 +4,12 @@ namespace SpanJson.Linq.JsonPath
 {
     internal class ScanFilter : PathFilter
     {
-        public string Name { get; set; }
+        internal string Name;
+
+        public ScanFilter(string name)
+        {
+            Name = name;
+        }
 
         public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {

@@ -124,6 +124,8 @@ namespace SpanJson.Linq.JsonPath
                         }
 
                         filters.Add(ParseIndexer(currentChar, scan));
+                        scan = false;
+
                         _currentIndex++;
                         currentPartStartIndex = _currentIndex;
                         followingIndexer = true;
@@ -205,14 +207,14 @@ namespace SpanJson.Linq.JsonPath
 
         private static PathFilter CreatePathFilter(string member, bool scan)
         {
-            PathFilter filter = (scan) ? (PathFilter)new ScanFilter { Name = member } : new FieldFilter { Name = member };
+            PathFilter filter = (scan) ? (PathFilter)new ScanFilter(member) : new FieldFilter(member);
             return filter;
         }
 
         private static PathFilter CreatePathFilter(in ReadOnlySpan<char> memberSpan, bool scan)
         {
             var member = memberSpan.IsEmpty ? null : memberSpan.ToString();
-            PathFilter filter = (scan) ? (PathFilter)new ScanFilter { Name = member } : new FieldFilter { Name = member };
+            PathFilter filter = (scan) ? (PathFilter)new ScanFilter(member) : new FieldFilter(member);
             return filter;
         }
 
@@ -280,7 +282,7 @@ namespace SpanJson.Linq.JsonPath
 #endif
 
                         indexes.Add(index);
-                        return new ArrayMultipleIndexFilter { Indexes = indexes };
+                        return new ArrayMultipleIndexFilter(indexes);
                     }
                     else if (colonCount > 0)
                     {
@@ -455,17 +457,11 @@ namespace SpanJson.Linq.JsonPath
 
             if (!scan)
             {
-                return new QueryFilter
-                {
-                    Expression = expression
-                };
+                return new QueryFilter(expression);
             }
             else
             {
-                return new QueryScanFilter
-                {
-                    Expression = expression
-                };
+                return new QueryScanFilter(expression);
             }
         }
 
@@ -473,8 +469,7 @@ namespace SpanJson.Linq.JsonPath
         {
             if (_expression[_currentIndex] == '$')
             {
-                expressionPath = new List<PathFilter>();
-                expressionPath.Add(RootFilter.Instance);
+                expressionPath = new List<PathFilter> { RootFilter.Instance };
             }
             else if (_expression[_currentIndex] == '@')
             {
@@ -549,12 +544,7 @@ namespace SpanJson.Linq.JsonPath
                     right = ParseSide();
                 }
 
-                BooleanQueryExpression booleanExpression = new BooleanQueryExpression
-                {
-                    Left = left,
-                    Operator = op,
-                    Right = right
-                };
+                BooleanQueryExpression booleanExpression = new BooleanQueryExpression(op, left, right);
 
                 if (_expression[_currentIndex] == ')')
                 {
@@ -575,7 +565,7 @@ namespace SpanJson.Linq.JsonPath
 
                     if (parentExpression is null || parentExpression.Operator != QueryOperator.And)
                     {
-                        CompositeExpression andExpression = new CompositeExpression { Operator = QueryOperator.And };
+                        CompositeExpression andExpression = new CompositeExpression(QueryOperator.And);
 
                         parentExpression?.Expressions.Add(andExpression);
 
@@ -598,7 +588,7 @@ namespace SpanJson.Linq.JsonPath
 
                     if (parentExpression is null || parentExpression.Operator != QueryOperator.Or)
                     {
-                        CompositeExpression orExpression = new CompositeExpression { Operator = QueryOperator.Or };
+                        CompositeExpression orExpression = new CompositeExpression(QueryOperator.Or);
 
                         parentExpression?.Expressions.Add(orExpression);
 
@@ -798,9 +788,9 @@ namespace SpanJson.Linq.JsonPath
         private bool Match(string s)
         {
             int currentPosition = _currentIndex;
-            foreach (char c in s)
+            for (int i = 0; i < s.Length; i++)
             {
-                if ((uint)currentPosition < _expressionLength && _expression[currentPosition] == c)
+                if ((uint)currentPosition < _expressionLength && _expression[currentPosition] == s[i])
                 {
                     currentPosition++;
                 }
@@ -882,8 +872,8 @@ namespace SpanJson.Linq.JsonPath
                     {
                         fields.Add(field);
                         return (scan)
-                            ? (PathFilter)new ScanMultipleFilter { Names = fields }
-                            : (PathFilter)new FieldMultipleFilter { Names = fields };
+                            ? (PathFilter)new ScanMultipleFilter(fields)
+                            : (PathFilter)new FieldMultipleFilter(fields);
                     }
                     else
                     {

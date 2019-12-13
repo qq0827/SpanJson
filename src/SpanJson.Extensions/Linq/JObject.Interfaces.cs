@@ -171,14 +171,15 @@ namespace SpanJson.Linq
 
         PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties(Attribute[] attributes)
         {
-            PropertyDescriptorCollection descriptors = new PropertyDescriptorCollection(null);
-
+            PropertyDescriptor[] propertiesArray = new PropertyDescriptor[Count];
+            int i = 0;
             foreach (KeyValuePair<string, JToken> propertyValue in this)
             {
-                descriptors.Add(new JPropertyDescriptor(propertyValue.Key));
+                propertiesArray[i] = new JPropertyDescriptor(propertyValue.Key);
+                i++;
             }
 
-            return descriptors;
+            return new PropertyDescriptorCollection(propertiesArray);
         }
 
         AttributeCollection ICustomTypeDescriptor.GetAttributes()

@@ -53,9 +53,10 @@ namespace SpanJson.Utilities
         internal static RegexOptions GetRegexOptions(string optionsText)
         {
             RegexOptions options = RegexOptions.None;
-            foreach (char c in optionsText)
+
+            for (int i = 0; i < optionsText.Length; i++)
             {
-                switch (c)
+                switch (optionsText[i])
                 {
                     case 'i':
                         options |= RegexOptions.IgnoreCase;
