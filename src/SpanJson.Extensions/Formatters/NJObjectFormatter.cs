@@ -10,12 +10,16 @@ namespace SpanJson.Formatters
 
         public override NJObject Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
         {
+            if (reader.ReadUtf8IsNull()) { return null; }
+
             var jobj = JObject.Load(ref reader);
             return jobj.ToPolymorphicObject<NJObject>();
         }
 
         public override NJObject Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
         {
+            if (reader.ReadUtf16IsNull()) { return null; }
+
             var jobj = JObject.Load(ref reader);
             return jobj.ToPolymorphicObject<NJObject>();
         }

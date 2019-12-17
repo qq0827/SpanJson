@@ -8,6 +8,8 @@ namespace SpanJson.Formatters
 
         public override JContainer Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
         {
+            if (reader.ReadUtf8IsNull()) { return null; }
+
             var token = JToken.Load(ref reader);
             switch (token.Type)
             {
@@ -22,6 +24,8 @@ namespace SpanJson.Formatters
 
         public override JContainer Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
         {
+            if (reader.ReadUtf16IsNull()) { return null; }
+
             var token = JToken.Load(ref reader);
             switch (token.Type)
             {

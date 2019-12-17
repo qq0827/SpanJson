@@ -9,12 +9,16 @@ namespace SpanJson.Formatters
 
         public override NJArray Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
         {
-             var jary = JArray.Load(ref reader);
+            if (reader.ReadUtf8IsNull()) { return null; }
+
+            var jary = JArray.Load(ref reader);
             return jary.ToPolymorphicObject<NJArray>();
         }
 
         public override NJArray Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
         {
+            if (reader.ReadUtf16IsNull()) { return null; }
+
             var jary = JArray.Load(ref reader);
             return jary.ToPolymorphicObject<NJArray>();
         }

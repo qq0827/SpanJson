@@ -11,6 +11,8 @@ namespace SpanJson.Formatters
 
         public override NJValue Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
         {
+            if (reader.ReadUtf8IsNull()) { return null; }
+
             var token = JToken.Load(ref reader);
             if (token is JValue jv) { return jv.ToPolymorphicObject<NJValue>(); }
 
@@ -19,6 +21,8 @@ namespace SpanJson.Formatters
 
         public override NJValue Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
         {
+            if (reader.ReadUtf16IsNull()) { return null; }
+
             var token = JToken.Load(ref reader);
             if (token is JValue jv) { return jv.ToPolymorphicObject<NJValue>(); }
 

@@ -8,11 +8,15 @@ namespace SpanJson.Formatters
 
         public override JToken Deserialize(ref JsonReader<byte> reader, IJsonFormatterResolver<byte> resolver)
         {
+            if (reader.ReadUtf8IsNull()) { return null; }
+
             return JToken.Load(ref reader);
         }
 
         public override JToken Deserialize(ref JsonReader<char> reader, IJsonFormatterResolver<char> resolver)
         {
+            if (reader.ReadUtf16IsNull()) { return null; }
+
             return JToken.Load(ref reader);
         }
 
