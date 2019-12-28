@@ -74,7 +74,7 @@ namespace SpanJson.Tests
                 数 = Numbers.三,
             };
             var serialized = JsonSerializer.Generic.Utf16.Serialize(person);
-            var encoded = EscapeHelper.FullyEscape(serialized);
+            var encoded = EscapeHelper.NonAsciiEscape(serialized);
             Assert.NotNull(encoded);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<Person>(encoded);
             Assert.NotNull(deserialized);
@@ -93,7 +93,7 @@ namespace SpanJson.Tests
                 数 = Numbers.三,
             };
             var serialized = JsonSerializer.Generic.Utf16.Serialize(person);
-            var encoded = EscapeHelper.FullyEscape(serialized);
+            var encoded = EscapeHelper.NonAsciiEscape(serialized);
             Assert.NotNull(encoded);
             var bytes = Encoding.UTF8.GetBytes(encoded);
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<Person>(bytes);
@@ -101,6 +101,25 @@ namespace SpanJson.Tests
             Assert.Equal(person.人, deserialized.人);
             Assert.Equal(person.名称, deserialized.名称);
             Assert.Equal(person.数, deserialized.数);
+        }
+
+        [Fact]
+        public void EmoticonsUtf16()
+        {
+            var input = "😀😁";
+            var fullyEscaped = "\"\\ud83d\\ude00\\ud83d\\ude01\"";
+            var output = JsonSerializer.Generic.Utf16.Deserialize<string>(fullyEscaped);
+            Assert.Equal(input, output);
+        }
+
+
+        [Fact]
+        public void EmoticonsUtf8()
+        {
+            var input = "😀😁";
+            var fullyEscaped = Encoding.UTF8.GetBytes("\"\\ud83d\\ude00\\ud83d\\ude01\"");
+            var output = JsonSerializer.Generic.Utf8.Deserialize<string>(fullyEscaped);
+            Assert.Equal(input, output);
         }
     }
 }

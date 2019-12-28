@@ -50,6 +50,18 @@ namespace SpanJson
             throw new JsonParserException(error, _pos);
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void ThrowJsonParserException(JsonParserException.ParserError error, int pos)
+        {
+            throw new JsonParserException(error, pos);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void ThrowJsonParserException(JsonParserException.ParserError error, JsonParserException.ValueType type, int pos)
+        {
+            throw new JsonParserException(error, type, pos);
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReadBeginArrayOrThrow()
         {
@@ -332,6 +344,23 @@ namespace SpanJson
 
             ThrowNotSupportedException();
             return default;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ReadSymbolOrThrow(TSymbol symbol)
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                ReadUtf16SymbolOrThrow(Unsafe.As<TSymbol, char>(ref symbol));
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                ReadUtf8SymbolOrThrow(Unsafe.As<TSymbol, byte>(ref symbol));
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
         }
 
     }

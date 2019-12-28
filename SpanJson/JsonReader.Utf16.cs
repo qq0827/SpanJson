@@ -267,10 +267,33 @@ namespace SpanJson
             }
         }
 
+
         public DateTime ReadUtf16DateTime()
         {
-            var span = ReadUtf16EscapedStringSpanInternal();
-            if (DateTimeParser.TryParseDateTime(span, out var value, out var charsConsumed) && charsConsumed == span.Length)
+            SkipWhitespaceUtf16();
+            var span = ReadUtf16StringSpanInternal(out var escapedCharsSize);
+            return escapedCharsSize == 0 ? ParseUtf16DateTime(span) : ParseUtf16DateTimeAllocating(span);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private DateTime ParseUtf16DateTime(in ReadOnlySpan<char> span)
+        {
+            if (DateTimeParser.TryParseDateTime(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
+            {
+                return value;
+            }
+
+            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.DateTime);
+            return default;
+        }
+
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private DateTime ParseUtf16DateTimeAllocating(in ReadOnlySpan<char> input)
+        {
+            Span<char> span = stackalloc char[JsonSharedConstant.MaxDateTimeLength];
+            UnescapeUtf16Chars(input, ref span);
+            if (DateTimeParser.TryParseDateTime(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return value;
             }
@@ -281,8 +304,30 @@ namespace SpanJson
 
         public DateTimeOffset ReadUtf16DateTimeOffset()
         {
-            var span = ReadUtf16EscapedStringSpanInternal();
-            if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var charsConsumed) && charsConsumed == span.Length)
+            SkipWhitespaceUtf16();
+            var span = ReadUtf16StringSpanInternal(out var escapedCharsSize);
+            return escapedCharsSize == 0 ? ParseUtf16DateTimeOffset(span) : ParseUtf16DateTimeOffsetAllocating(span);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private DateTimeOffset ParseUtf16DateTimeOffset(in ReadOnlySpan<char> span)
+        {
+            if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
+            {
+                return value;
+            }
+
+            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.DateTimeOffset);
+            return default;
+        }
+
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private DateTimeOffset ParseUtf16DateTimeOffsetAllocating(in ReadOnlySpan<char> input)
+        {
+            Span<char> span = stackalloc char[JsonSharedConstant.MaxDateTimeOffsetLength];
+            UnescapeUtf16Chars(input, ref span);
+            if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return value;
             }
@@ -293,37 +338,63 @@ namespace SpanJson
 
         public TimeSpan ReadUtf16TimeSpan()
         {
-            var span = ReadUtf16EscapedStringSpanInternal();
-            Span<byte> byteSpan = stackalloc byte[26];
-            for (int i = 0; i < span.Length; i++)
+            SkipWhitespaceUtf16();
+            var span = ReadUtf16StringSpanInternal(out var escapedCharsSize);
+            return escapedCharsSize == 0 ? ConvertTimeSpanViaUtf8(span, _pos) : ParseUtf16TimeSpanAllocating(span);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private TimeSpan ParseUtf16TimeSpanAllocating(in ReadOnlySpan<char> input)
+        {
+            Span<char> span = stackalloc char[JsonSharedConstant.MaxTimeSpanLength];
+            UnescapeUtf16Chars(input, ref span);
+            return ConvertTimeSpanViaUtf8(span, _pos);
+        }
+
+        public Guid ReadUtf16Guid()
+        {
+            SkipWhitespaceUtf16();
+            var span = ReadUtf16StringSpanInternal(out var escapedCharsSize);
+            return escapedCharsSize == 0 ? ParseUtf16Guid(span, _pos) : ParseUtf16GuidAllocating(span);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private Guid ParseUtf16GuidAllocating(in ReadOnlySpan<char> input)
+        {
+            Span<char> span = stackalloc char[JsonSharedConstant.MaxGuidLength];
+            UnescapeUtf16Chars(input, ref span);
+            return ParseUtf16Guid(span, _pos);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Guid ParseUtf16Guid(in ReadOnlySpan<char> span, int position)
+        {
+            var format = 'D';
+            if (Guid.TryParseExact(span, MemoryMarshal.CreateSpan(ref format, 1), out var value))
+            {
+                return value;
+            }
+
+            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.Guid, position);
+            return default;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static TimeSpan ConvertTimeSpanViaUtf8(in ReadOnlySpan<char> span, int position)
+        {
+            Span<byte> byteSpan = stackalloc byte[JsonSharedConstant.MaxTimeSpanLength];
+            for (var i = 0; i < span.Length; i++)
             {
                 byteSpan[i] = (byte) span[i];
             }
-            // TODO: replace with utf16 code in .net core 3.0
+
+            // still slow in .NET Core 3.0
             if (Utf8Parser.TryParse(byteSpan, out TimeSpan value, out var bytesConsumed) && bytesConsumed == span.Length)
             {
                 return value;
             }
 
-            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.TimeSpan);
-            return default;
-        }
-
-        public Guid ReadUtf16Guid()
-        {
-            var span = ReadUtf16EscapedStringSpanInternal();
-            Span<byte> byteSpan = stackalloc byte[36]; // easy way
-            for (var i = 0; i < span.Length; i++)
-            {
-                byteSpan[i] = (byte) span[i];
-            }
-            // TODO: replace with utf16 code in .net core 3.0
-            if (Utf8Parser.TryParse(byteSpan, out Guid result, out var bytesConsumed, 'D') && bytesConsumed == span.Length)
-            {
-                return result;
-            }
-
-            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.Guid);
+            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.TimeSpan, position);
             return default;
         }
 
@@ -381,13 +452,19 @@ namespace SpanJson
             return escapedCharSize == 0 ? span.ToString() : UnescapeUtf16(span, escapedCharSize);
         }
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private string UnescapeUtf16(in ReadOnlySpan<char> span, int escapedCharSize)
+        private static string UnescapeUtf16(in ReadOnlySpan<char> span, int escapedCharSize)
         {
             var unescapedLength = span.Length - escapedCharSize;
             var result = new string('\0', unescapedLength);
-            var charOffset = 0;
             var writeableSpan = MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(result.AsSpan()), unescapedLength);
+            UnescapeUtf16Chars(span, ref writeableSpan);
+            return result;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void UnescapeUtf16Chars(in ReadOnlySpan<char> span, ref Span<char> result)
+        {
+            var charOffset = 0;
             var from = 0;
             var index = 0;
             while (index < span.Length)
@@ -397,10 +474,10 @@ namespace SpanJson
                 {
                     // We copy everything up to the escaped char as utf16 to the string
                     var copyLength = index - from;
-                    span.Slice(from, copyLength).CopyTo(writeableSpan.Slice(charOffset));
+                    span.Slice(from, copyLength).CopyTo(result.Slice(charOffset));
                     charOffset += copyLength;
                     index++;
-                    current =  ref span[index++];
+                    current = ref span[index++];
                     char unescaped = default;
                     switch (current)
                     {
@@ -437,17 +514,18 @@ namespace SpanJson
                                 break;
                             }
 
-                            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
+                            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, index);
                             break;
                         }
+
                         default:
                         {
-                            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
+                            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, index);
                             break;
                         }
                     }
 
-                    writeableSpan[charOffset++] = unescaped;
+                    result[charOffset++] = unescaped;
                     from = index;
                 }
                 else
@@ -458,10 +536,12 @@ namespace SpanJson
 
             if (from < span.Length) // still data to copy
             {
-                span.Slice(from).CopyTo(writeableSpan.Slice(charOffset));
+                var sliceLength = span.Length - from;
+                span.Slice(from, sliceLength).CopyTo(result.Slice(charOffset));
+                charOffset += sliceLength;
             }
 
-            return result;
+            result = result.Slice(0, charOffset);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -501,15 +581,6 @@ namespace SpanJson
             ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             escapedCharsSize = default;
             return default;
-        }
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ReadOnlySpan<char> ReadUtf16EscapedStringSpanInternal()
-        {
-            SkipWhitespaceUtf16();
-            var span = ReadUtf16StringSpanInternal(out var escapedCharSize);
-            return escapedCharSize == 0 ? span : UnescapeUtf16(span, escapedCharSize);
         }
 
         /// <summary>
@@ -589,6 +660,7 @@ namespace SpanJson
                         pos++;
                         continue;
                     }
+
                     default:
                         return;
                 }
@@ -746,6 +818,29 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ReadUtf16SymbolOrThrow(char constant)
+        {
+            if (!ReadUtf16IsSymbol(constant))
+            {
+                ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool ReadUtf16IsSymbol(char constant)
+        {
+            SkipWhitespaceUtf16();
+            ref var pos = ref _pos;
+            if (_chars[pos] == constant)
+            {
+                pos++;
+                return true;
+            }
+
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SkipNextUtf16Segment()
         {
             SkipNextUtf16Segment(0);
@@ -768,6 +863,7 @@ namespace SpanJson
                         stack++;
                         continue;
                     }
+
                     case JsonToken.EndObject:
                     case JsonToken.EndArray:
                     {
@@ -780,6 +876,7 @@ namespace SpanJson
 
                         return;
                     }
+
                     case JsonToken.Number:
                     case JsonToken.String:
                     case JsonToken.True:
@@ -829,6 +926,7 @@ namespace SpanJson
 
                     break;
                 }
+
                 case JsonToken.String:
                 {
                     if (SkipUtf16String(ref pos))
@@ -839,6 +937,7 @@ namespace SpanJson
                     ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
                     break;
                 }
+
                 case JsonToken.Null:
                 case JsonToken.True:
                     pos += 4;
@@ -884,7 +983,7 @@ namespace SpanJson
                 if (c == JsonUtf16Constant.ReverseSolidus)
                 {
                     escapedCharsSize++;
-                    c =  ref Unsafe.Add(ref cStart, ++stringLength);
+                    c = ref Unsafe.Add(ref cStart, ++stringLength);
                     if (c == 'u')
                     {
                         escapedCharsSize += 4; // add only 4 and not 5 as we still need one unescaped char
@@ -941,20 +1040,24 @@ namespace SpanJson
                     ReadUtf16Null();
                     return null;
                 }
+
                 case JsonToken.False:
                 case JsonToken.True:
                 {
                     return ReadUtf16Boolean();
                 }
+
                 case JsonToken.Number:
                 {
                     return new SpanJsonDynamicUtf16Number(ReadUtf16NumberInternal());
                 }
+
                 case JsonToken.String:
                 {
                     var span = ReadUtf16StringSpanWithQuotes();
                     return new SpanJsonDynamicUtf16String(span);
                 }
+
                 case JsonToken.BeginObject:
                 {
                     pos++;
@@ -969,6 +1072,7 @@ namespace SpanJson
 
                     return new SpanJsonDynamicObject(dictionary);
                 }
+
                 case JsonToken.BeginArray:
                 {
                     pos++;
@@ -1007,6 +1111,7 @@ namespace SpanJson
                         }
                     }
                 }
+
                 default:
                 {
                     ThrowJsonParserException(JsonParserException.ParserError.EndOfData);

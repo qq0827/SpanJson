@@ -42,7 +42,7 @@ namespace SpanJson
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void Dispose()
+        public void Dispose()
         {
             var toReturn = Data;
             this = default; // for safety, to avoid using pooled array if this instance is erroneously appended to again
@@ -312,6 +312,33 @@ namespace SpanJson
                 }
 
                 WriteUtf8DoubleQuote();
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteNameSeparator()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                if (_pos > _chars.Length - 1)
+                {
+                    Grow(1);
+                }
+
+                WriteUtf16NameSeparator();
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                if (_pos > _bytes.Length - 1)
+                {
+                    Grow(1);
+                }
+
+                WriteUtf8NameSeparator();
             }
             else
             {

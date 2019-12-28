@@ -1,5 +1,4 @@
 # SpanJson
-[![Build status](https://ci.appveyor.com/api/projects/status/h49loskhn09g03in/branch/master?svg=true)](https://ci.appveyor.com/project/Tornhoof/spanjson/branch/master)
 [![NuGet](https://img.shields.io/nuget/v/SpanJson.svg)](https://www.nuget.org/packages/SpanJson)
 
 See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
@@ -17,7 +16,7 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
 - Dynamics
 - Enums (string and integer, for integer see section Custom Resolver), incl. Flags
 - Anonymous types
-- ``Dictionary``, ``ConcurrentDictionary`` with string/enum as key, the enum is formatted as a string.
+- ``Dictionary``, ``ConcurrentDictionary`` with string/int/enum as key, the enum is formatted as a string.
 - Serialization/Deserialization of most IEnumerable<T> types (Stack and ConcurrentStack are not supported)
 - Support for ``[DataMember(Name="MemberName")]`` to set field name
 - Support for ``[IgnoreDataMember]`` to ignore a specific member
