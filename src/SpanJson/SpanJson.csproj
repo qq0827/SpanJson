@@ -133,5 +133,4 @@
   </ItemGroup>
 
   <Import Project="..\version.props" />
-  <Import Project="..\version.props" />
 </Project>

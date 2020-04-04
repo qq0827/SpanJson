@@ -182,6 +182,9 @@ namespace SpanJson
 
         public bool ReadUtf16Boolean()
         {
+            const uint _LE = 'e';
+            const uint _UE = 'E';
+
             ref var pos = ref _pos;
             ref var cStart = ref MemoryMarshal.GetReference(_utf16Span);
             SkipWhitespaceUtf16(ref cStart, ref pos, _length);
@@ -190,16 +193,27 @@ namespace SpanJson
                 ref var start = ref Unsafe.Add(ref cStart, pos);
                 ref var bstart = ref Unsafe.As<char, byte>(ref start);
                 var value = Unsafe.ReadUnaligned<ulong>(ref bstart);
-                if (value == 0x0065007500720074UL /*eurt */)
+                switch (value)
                 {
-                    pos += 4;
-                    return true;
-                }
+                    case 0x0065007500720074UL: // eurt
+                    case 0x0065007500720054UL: // eurT
+                    case 0x0045005500520054UL: // EURT
+                        pos += 4;
+                        return true;
 
-                if ((uint)pos + 5u <= _length && value == 0x0073006C00610066UL /* slaf */ && Unsafe.Add(ref cStart, pos + 4) == 'e')
-                {
-                    pos += 5;
-                    return false;
+                    case 0x0073006C00610066UL: // slaf
+                    case 0x0073006C00610046UL: // slaF
+                    case 0x0053004C00410046UL: // SLAF
+                        if ((uint)pos + 5u <= _length)
+                        {
+                            var lastChar = Unsafe.Add(ref cStart, pos + 4);
+                            if (lastChar == _LE || lastChar == _UE)
+                            {
+                                pos += 5;
+                                return false;
+                            }
+                        }
+                        break;
                 }
             }
 
