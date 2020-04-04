@@ -29,7 +29,7 @@ namespace SpanJson.AspNetCore.Formatter.Tests
         {
             unchecked
             {
-                var hashCode = (Hello != null ? Hello.GetHashCode() : 0);
+                var hashCode = Hello != null ? Hello.GetHashCode() : 0;
                 hashCode = (hashCode * 397) ^ (World != null ? World.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (int) Enum;
                 return hashCode;

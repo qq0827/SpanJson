@@ -1,1 +1,0 @@
-dotnet test --framework netcoreapp3.0 -- RunConfiguration.TargetPlatform=x64
